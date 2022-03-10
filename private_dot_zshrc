@@ -1,0 +1,38 @@
+# Clone zcomet if necessary
+if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
+  command git clone https://github.com/agkozak/zcomet.git ${ZDOTDIR:-${HOME}}/.zcomet/bin
+fi
+
+source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
+
+# Environment Variables
+export EDITOR=code
+
+# Plugins
+zcomet load agkozak/zsh-z
+zcomet load trystan2k/zsh-tab-title
+zcomet load mollifier/cd-gitroot
+# Load ssh keys
+zstyle :omz:plugins:ssh-agent identities id_github id_hulu id_dss
+zcomet load ohmyzsh plugins/ssh-agent
+
+# It is good to load these popular plugins last, and in this order:
+zcomet load zsh-users/zsh-syntax-highlighting
+zcomet load zsh-users/zsh-autosuggestions
+
+# Run compinit and compile its cache
+zcomet compinit
+
+source $HOME/zsh/aliases.zsh
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+    [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && \. "$(brew --prefix)/opt/nvm/nvm.sh" # This loads nvm
+    [ -s "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+    
+# Volta Set-up
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# Starship Prompt
+eval "$(starship init zsh)"
