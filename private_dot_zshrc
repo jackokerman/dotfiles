@@ -14,9 +14,6 @@ export PATH="/opt/homebrew/bin:$PATH"
 zcomet load agkozak/zsh-z
 zcomet load trystan2k/zsh-tab-title
 zcomet load mollifier/cd-gitroot
-# Load ssh keys
-# zstyle :omz:plugins:ssh-agent identities id_github id_hulu id_dss
-# zcomet load ohmyzsh plugins/ssh-agent
 
 # It is good to load these popular plugins last, and in this order:
 zcomet load zsh-users/zsh-syntax-highlighting
