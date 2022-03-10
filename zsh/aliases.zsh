@@ -28,7 +28,7 @@ alias grnm='git branch -m'
 alias gbd='git branch -D'
 
 # LSD
-alias ls='lsd'
+# alias ls='lsd'
 alias ll='ls -l'
 alias l1='ls -1'
 alias la='ls -a'
