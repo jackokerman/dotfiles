@@ -1,0 +1,45 @@
+{{- if (eq .chezmoi.os "darwin") -}}
+#!/bin/sh
+
+# Install Mac Apps via Homebrew Cask
+echo "Install Mac Apps via Homebrew Cask"
+
+set -eufo pipefail
+
+{{ $taps := list -}}
+
+{{ $brews := list 
+  "lsd"
+  "starship"
+  "volta"
+-}}
+
+{{ $casks := list
+  "bartender"
+  "boop"
+  "hyper"
+  "firefox"
+  "google-chrome"
+  "karabiner-elements"
+  "meetingbar"
+  "monitorcontrol"
+  "notunes"
+  "obsidian"
+  "raycast"
+  "spotify"
+  "via"
+  "visual-studio-code"
+-}}
+
+brew bundle --no-lock --file=/dev/stdin <<EOF || :
+{{ range ($taps | sortAlpha | uniq) -}}
+tap "{{ . }}"
+{{ end }}
+{{ range ($brews | sortAlpha | uniq) -}}
+brew "{{ . }}"
+{{ end }}
+{{ range ($casks | sortAlpha | uniq) -}}
+cask "{{ . }}"
+{{ end }}
+EOF
+{{ end -}}

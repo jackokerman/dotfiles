@@ -7,14 +7,16 @@ source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 
 # Environment Variables
 export EDITOR=code
+export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+
+# Path
+export PATH=$HOME/bin:$PATH
+export PATH="/opt/homebrew/bin:$PATH"
 
 # Plugins
 zcomet load agkozak/zsh-z
 zcomet load trystan2k/zsh-tab-title
 zcomet load mollifier/cd-gitroot
-# Load ssh keys
-zstyle :omz:plugins:ssh-agent identities id_github id_hulu id_dss
-zcomet load ohmyzsh plugins/ssh-agent
 
 # It is good to load these popular plugins last, and in this order:
 zcomet load zsh-users/zsh-syntax-highlighting
@@ -24,11 +26,6 @@ zcomet load zsh-users/zsh-autosuggestions
 zcomet compinit
 
 source $HOME/zsh/aliases.zsh
-
-# NVM
-export NVM_DIR="$HOME/.nvm"
-    [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && \. "$(brew --prefix)/opt/nvm/nvm.sh" # This loads nvm
-    [ -s "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
     
 # Volta Set-up
 export VOLTA_HOME="$HOME/.volta"
