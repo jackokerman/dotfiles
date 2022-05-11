@@ -19,9 +19,12 @@ set -eufo pipefail
 {{ $casks := list
   "bartender"
   "boop"
-  "hyper"
+  "divvy"
+  "fantastical"
   "firefox"
   "google-chrome"
+  "hazeover"
+  "hyper"
   "karabiner-elements"
   "meetingbar"
   "monitorcontrol"
@@ -32,6 +35,7 @@ set -eufo pipefail
   "spotify"
   "via"
   "visual-studio-code"
+  "warp"
 -}}
 
 brew bundle --no-lock --file=/dev/stdin <<EOF || :
