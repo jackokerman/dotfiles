@@ -1,4 +1,6 @@
 # Dotfiles
+
+## Dotfile Setup
 1. Install Xcode command line tools:
 ```shell
 xcode-select --install
@@ -13,3 +15,6 @@ xcode-select --install
 ```shell
 sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply jackokerman
 ```
+
+## Mac Setup
+- Disable spotlight keyboard shortcut.
