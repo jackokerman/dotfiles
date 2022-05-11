@@ -18,3 +18,6 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply jackokerman
 
 ## Mac Setup
 - Disable spotlight keyboard shortcut.
+- Setup Raycast
+  - Set hotkey to `Command+Space`
+  - Set hotkey for emoji search to `^+Option+Space` to replace defaul emoji keyboard
