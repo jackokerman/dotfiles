@@ -25,4 +25,6 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply jackokerman
 - Download "New Machine" directory from Dropbox and install patched fonts
 - Setup Raycast
   - Set hotkey to `Command+Space`
-  - Set hotkey for emoji search to `^+Option+Space` to replace defaul emoji keyboard
+  - Set hotkey for emoji search to `^+Option+Space` to replace default emoji keyboard
+- Setup VS Code
+  - Enable Setting Sync to pull down saved settings
