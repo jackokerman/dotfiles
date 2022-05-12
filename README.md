@@ -17,7 +17,11 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply jackokerman
 ```
 
 ## Mac Setup
-- Disable spotlight keyboard shortcut.
+- Map Caps Lock key to Control
+- Setup Rectangle Pro window management
+  - Open the app and update accessibility settings when prompted
+  - In settings, check "Sync configuration over iCloud" to load saved settings
+- Disable spotlight keyboard shortcut
 - Setup Raycast
   - Set hotkey to `Command+Space`
   - Set hotkey for emoji search to `^+Option+Space` to replace defaul emoji keyboard
