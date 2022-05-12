@@ -17,14 +17,13 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply jackokerman
 ```
 
 ## Mac Setup
+- Login with Apple ID and ensure iCloud Drive syncing is enabled (some apps use this for syncing data and settings)
 - Map Caps Lock key to Control
 - Setup Rectangle Pro window management
   - Open the app and update accessibility settings when prompted
   - In settings, check "Sync configuration over iCloud" to load saved settings
 - Disable spotlight keyboard shortcut
 - Download "New Machine" directory from Dropbox and install patched fonts
-- Setup Raycast
-  - Set hotkey to `Command+Space`
-  - Set hotkey for emoji search to `^+Option+Space` to replace default emoji keyboard
+- Run `mackup restore` to restore settings for apps saced with [mackup](https://github.com/lra/mackup)
 - Setup VS Code
   - Enable Setting Sync to pull down saved settings
