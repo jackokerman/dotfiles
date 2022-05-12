@@ -22,6 +22,7 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply jackokerman
   - Open the app and update accessibility settings when prompted
   - In settings, check "Sync configuration over iCloud" to load saved settings
 - Disable spotlight keyboard shortcut
+- Download "New Machine" directory from Dropbox and install patched fonts
 - Setup Raycast
   - Set hotkey to `Command+Space`
   - Set hotkey for emoji search to `^+Option+Space` to replace defaul emoji keyboard
