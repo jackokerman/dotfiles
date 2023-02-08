@@ -27,8 +27,8 @@ alias grnm='git branch -m'
 # Delete the current branch
 alias gbd='git branch -D'
 
-# LSD
-alias ls='lsd'
+# ls (exa)
+alias ls='exa --icons --group-directories-first'
 alias ll='ls -l'
 alias l1='ls -1'
 alias la='ls -a'
@@ -46,4 +46,3 @@ alias brs="brew search"
 alias reload='$SHELL -l'
 alias c='clear'
 alias cl='clear'
-
