@@ -34,6 +34,7 @@
     # os_icon               # os identifier
     dir                     # current directory
     vcs                     # git status
+    command_execution_time  # duration of the last command
     # =========================[ Line #2 ]=========================
     newline                 # \n
     prompt_char             # prompt symbol
@@ -45,72 +46,71 @@
   # last prompt line gets hidden if it would overlap with left prompt.
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
-    status                  # exit code of the last command
-    command_execution_time  # duration of the last command
-    background_jobs         # presence of background jobs
-    direnv                  # direnv status (https://direnv.net/)
-    asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
-    virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
-    anaconda                # conda environment (https://conda.io/)
-    pyenv                   # python environment (https://github.com/pyenv/pyenv)
-    goenv                   # go environment (https://github.com/syndbg/goenv)
-    nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
-    nvm                     # node.js version from nvm (https://github.com/nvm-sh/nvm)
-    nodeenv                 # node.js environment (https://github.com/ekalinin/nodeenv)
-    # node_version          # node.js version
-    # go_version            # go version (https://golang.org)
-    # rust_version          # rustc version (https://www.rust-lang.org)
-    # dotnet_version        # .NET version (https://dotnet.microsoft.com)
-    # php_version           # php version (https://www.php.net/)
-    # laravel_version       # laravel php framework version (https://laravel.com/)
-    # java_version          # java version (https://www.java.com/)
-    # package               # name@version from package.json (https://docs.npmjs.com/files/package.json)
-    rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
-    rvm                     # ruby version from rvm (https://rvm.io)
-    fvm                     # flutter version management (https://github.com/leoafarias/fvm)
-    luaenv                  # lua version from luaenv (https://github.com/cehoffman/luaenv)
-    jenv                    # java version from jenv (https://github.com/jenv/jenv)
-    plenv                   # perl version from plenv (https://github.com/tokuhirom/plenv)
-    perlbrew                # perl version from perlbrew (https://github.com/gugod/App-perlbrew)
-    phpenv                  # php version from phpenv (https://github.com/phpenv/phpenv)
-    scalaenv                # scala version from scalaenv (https://github.com/scalaenv/scalaenv)
-    haskell_stack           # haskell version from stack (https://haskellstack.org/)
-    kubecontext             # current kubernetes context (https://kubernetes.io/)
-    terraform               # terraform workspace (https://www.terraform.io)
-    # terraform_version     # terraform version (https://www.terraform.io)
-    aws                     # aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
-    aws_eb_env              # aws elastic beanstalk environment (https://aws.amazon.com/elasticbeanstalk/)
-    azure                   # azure account name (https://docs.microsoft.com/en-us/cli/azure)
-    gcloud                  # google cloud cli account and project (https://cloud.google.com/)
-    google_app_cred         # google application credentials (https://cloud.google.com/docs/authentication/production)
-    toolbox                 # toolbox name (https://github.com/containers/toolbox)
-    context                 # user@hostname
-    nordvpn                 # nordvpn connection status, linux only (https://nordvpn.com/)
-    ranger                  # ranger shell (https://github.com/ranger/ranger)
-    nnn                     # nnn shell (https://github.com/jarun/nnn)
-    lf                      # lf shell (https://github.com/gokcehan/lf)
-    xplr                    # xplr shell (https://github.com/sayanarijit/xplr)
-    vim_shell               # vim shell indicator (:sh)
-    midnight_commander      # midnight commander shell (https://midnight-commander.org/)
-    nix_shell               # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
-    # vpn_ip                # virtual private network indicator
-    # load                  # CPU load
-    # disk_usage            # disk usage
-    # ram                   # free RAM
-    # swap                  # used swap
-    todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
-    timewarrior             # timewarrior tracking status (https://timewarrior.net/)
-    taskwarrior             # taskwarrior task count (https://taskwarrior.org/)
-    # cpu_arch              # CPU architecture
-    # time                  # current time
+    # status                  # exit code of the last command
+    # background_jobs         # presence of background jobs
+    # direnv                  # direnv status (https://direnv.net/)
+    # asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
+    # virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
+    # anaconda                # conda environment (https://conda.io/)
+    # pyenv                   # python environment (https://github.com/pyenv/pyenv)
+    # goenv                   # go environment (https://github.com/syndbg/goenv)
+    # nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
+    # nvm                     # node.js version from nvm (https://github.com/nvm-sh/nvm)
+    # nodeenv                 # node.js environment (https://github.com/ekalinin/nodeenv)
+    # node_version            # node.js version
+    # go_version              # go version (https://golang.org)
+    # rust_version            # rustc version (https://www.rust-lang.org)
+    # dotnet_version          # .NET version (https://dotnet.microsoft.com)
+    # php_version             # php version (https://www.php.net/)
+    # laravel_version         # laravel php framework version (https://laravel.com/)
+    # java_version            # java version (https://www.java.com/)
+    # package                 # name@version from package.json (https://docs.npmjs.com/files/package.json)
+    # rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
+    # rvm                     # ruby version from rvm (https://rvm.io)
+    # fvm                     # flutter version management (https://github.com/leoafarias/fvm)
+    # luaenv                  # lua version from luaenv (https://github.com/cehoffman/luaenv)
+    # jenv                    # java version from jenv (https://github.com/jenv/jenv)
+    # plenv                   # perl version from plenv (https://github.com/tokuhirom/plenv)
+    # perlbrew                # perl version from perlbrew (https://github.com/gugod/App-perlbrew)
+    # phpenv                  # php version from phpenv (https://github.com/phpenv/phpenv)
+    # scalaenv                # scala version from scalaenv (https://github.com/scalaenv/scalaenv)
+    # haskell_stack           # haskell version from stack (https://haskellstack.org/)
+    # kubecontext             # current kubernetes context (https://kubernetes.io/)
+    # terraform               # terraform workspace (https://www.terraform.io)
+    # terraform_version       # terraform version (https://www.terraform.io)
+    # aws                     # aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+    # aws_eb_env              # aws elastic beanstalk environment (https://aws.amazon.com/elasticbeanstalk/)
+    # azure                   # azure account name (https://docs.microsoft.com/en-us/cli/azure)
+    # gcloud                  # google cloud cli account and project (https://cloud.google.com/)
+    # google_app_cred         # google application credentials (https://cloud.google.com/docs/authentication/production)
+    # toolbox                 # toolbox name (https://github.com/containers/toolbox)
+    # context                 # user@hostname
+    # nordvpn                 # nordvpn connection status, linux only (https://nordvpn.com/)
+    # ranger                  # ranger shell (https://github.com/ranger/ranger)
+    # nnn                     # nnn shell (https://github.com/jarun/nnn)
+    # lf                      # lf shell (https://github.com/gokcehan/lf)
+    # xplr                    # xplr shell (https://github.com/sayanarijit/xplr)
+    # vim_shell               # vim shell indicator (:sh)
+    # midnight_commander      # midnight commander shell (https://midnight-commander.org/)
+    # nix_shell               # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
+    # vpn_ip                  # virtual private network indicator
+    # load                    # CPU load
+    # disk_usage              # disk usage
+    # ram                     # free RAM
+    # swap                    # used swap
+    # todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
+    # timewarrior             # timewarrior tracking status (https://timewarrior.net/)
+    # taskwarrior             # taskwarrior task count (https://taskwarrior.org/)
+    # cpu_arch                # CPU architecture
+    # time                    # current time
     # =========================[ Line #2 ]=========================
-    newline                 # \n
-    # ip                    # ip address and bandwidth usage for a specified network interface
-    # public_ip             # public IP address
-    # proxy                 # system-wide http/https/ftp proxy
-    # battery               # internal battery
-    # wifi                  # wifi speed
-    # example               # example user-defined segment (see prompt_example function below)
+    newline                   # \n
+    # ip                      # ip address and bandwidth usage for a specified network interface
+    # public_ip               # public IP address
+    # proxy                   # system-wide http/https/ftp proxy
+    # battery                 # internal battery
+    # wifi                    # wifi speed
+    # example                 # example user-defined segment (see prompt_example function below)
   )
 
   # Defines character set used by powerlevel10k. It's best to let `p10k configure` set it for you.
@@ -329,8 +329,7 @@
   #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_VISUAL_IDENTIFIER_EXPANSION='⭐'
   #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_FOREGROUND=4
   #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_SHORTENED_FOREGROUND=4
-  #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_ANCHOR_FOREGROUND=4#
-  #
+  #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_ANCHOR_FOREGROUND=4#POWERLEVEL9K_VCS_BRANCH_ICON
   #   Styling for WORK_NON_EXISTENT.
   #   typeset -g POWERLEVEL9K_DIR_WORK_NON_EXISTENT_VISUAL_IDENTIFIER_EXPANSION='⭐'
   #   typeset -g POWERLEVEL9K_DIR_WORK_NON_EXISTENT_FOREGROUND=4
@@ -374,18 +373,25 @@
 
     if (( $1 )); then
       # Styling for up-to-date Git status.
-      local       meta='%f'   # default foreground
-      local      clean='%13F'  # green foreground
-      local   modified='%3F'  # yellow foreground
-      local  untracked='%4F'  # blue foreground
-      local conflicted='%1F'  # red foreground
+      local   meta='%f'           # default foreground
+      local   clean='%2F'         # green foreground
+      local   modified='%3F'      # yellow foreground
+      local   untracked='%F{9}'   # blue foreground
+      local   conflicted='%1F'    # red foreground
+      local   state_color='%F{9}' # red foreground
+      local   branch_color='%13F' # bold purple branchname to match starship
+      local   tag_color='%F{10}'  # bold green tag name to match starship
+
     else
       # Styling for incomplete and stale Git status.
-      local       meta='%f'  # default foreground
-      local      clean='%f'  # default foreground
-      local   modified='%f'  # default foreground
-      local  untracked='%f'  # default foreground
-      local conflicted='%f'  # default foreground
+      local   meta='%f'           # default foreground
+      local   clean='%f'          # default foreground
+      local   modified='%f'       # default foreground
+      local   untracked='%f'      # default foreground
+      local   conflicted='%f'     # default foreground
+      local   state_color='%f'    # default foreground
+      local   branch_color='%f'   # default foreground
+      local   tag_color='%f'      # default foreground
     fi
 
     local res
@@ -395,8 +401,10 @@
       # If local branch name is at most 32 characters long, show it in full.
       # Otherwise show the first 12 … the last 12.
       # Tip: To always show local branch name in full without truncation, delete the next line.
-      (( $#branch > 32 )) && branch[13,-13]="…"  # <-- this line
-      res+="${clean}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${branch//\%/%%}"
+      # (( $#branch > 32 )) && branch[13,-13]="…"  # <-- this line
+      res+="${branch_color}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${branch//\%/%%}"
+      # Original line below commented out to always make branch name a specific color.
+      # res+="${clean}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${branch//\%/%%}"
     fi
 
     if [[ -n $VCS_STATUS_TAG
@@ -409,54 +417,85 @@
       # Otherwise show the first 12 … the last 12.
       # Tip: To always show tag name in full without truncation, delete the next line.
       (( $#tag > 32 )) && tag[13,-13]="…"  # <-- this line
-      res+="${meta}#${clean}${tag//\%/%%}"
+      res+="${branch_color}#${branch_color}${tag//\%/%%}"
     fi
 
     # Display the current Git commit if there is no branch and no tag.
     # Tip: To always display the current Git commit, delete the next line.
     [[ -z $VCS_STATUS_LOCAL_BRANCH && -z $VCS_STATUS_TAG ]] &&  # <-- this line
-      res+="${meta}@${clean}${VCS_STATUS_COMMIT[1,8]}"
+      res+="${tag_color}@${tag_color}${VCS_STATUS_COMMIT[1,8]}"
 
     # Show tracking branch name if it differs from local branch.
     if [[ -n ${VCS_STATUS_REMOTE_BRANCH:#$VCS_STATUS_LOCAL_BRANCH} ]]; then
-      res+="${meta}:${clean}${(V)VCS_STATUS_REMOTE_BRANCH//\%/%%}"
+      res+="${branch_color}:${branch_color}${(V)VCS_STATUS_REMOTE_BRANCH//\%/%%}"
     fi
 
-    # Display "wip" if the latest commit's summary contains "wip" or "WIP".
-    if [[ $VCS_STATUS_COMMIT_SUMMARY == (|*[^[:alnum:]])(wip|WIP)(|[^[:alnum:]]*) ]]; then
-      res+=" ${modified}wip"
-    fi
+    # # Display "wip" if the latest commit's summary contains "wip" or "WIP".
+    # if [[ $VCS_STATUS_COMMIT_SUMMARY == (|*[^[:alnum:]])(wip|WIP)(|[^[:alnum:]]*) ]]; then
+    #   res+=" ${modified}wip"
+    # fi
 
+    # # ⇣42 if behind the remote.
+    # (( VCS_STATUS_COMMITS_BEHIND )) && res+=" ${clean}⇣${VCS_STATUS_COMMITS_BEHIND}"
+    # # ⇡42 if ahead of the remote; no leading space if also behind the remote: ⇣42⇡42.
+    # (( VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND )) && res+=" "
+    # (( VCS_STATUS_COMMITS_AHEAD  )) && res+="${clean}⇡${VCS_STATUS_COMMITS_AHEAD}"
+    # # ⇠42 if behind the push remote.
+    # (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" ${clean}⇠${VCS_STATUS_PUSH_COMMITS_BEHIND}"
+    # (( VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" "
+    # # ⇢42 if ahead of the push remote; no leading space if also behind: ⇠42⇢42.
+    # (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && res+="${clean}⇢${VCS_STATUS_PUSH_COMMITS_AHEAD}"
+    # # *42 if have stashes.
+    # (( VCS_STATUS_STASHES        )) && res+=" ${clean}*${VCS_STATUS_STASHES}"
+    # # 'merge' if the repo is in an unusual state.
+    # [[ -n $VCS_STATUS_ACTION     ]] && res+=" ${conflicted}${VCS_STATUS_ACTION}"
+    # # ~42 if have merge conflicts.
+    # (( VCS_STATUS_NUM_CONFLICTED )) && res+=" ${conflicted}~${VCS_STATUS_NUM_CONFLICTED}"
+    # # +42 if have staged changes.
+    # (( VCS_STATUS_NUM_STAGED     )) && res+=" ${modified}+${VCS_STATUS_NUM_STAGED}"
+    # # !42 if have unstaged changes.
+    # (( VCS_STATUS_NUM_UNSTAGED   )) && res+=" ${modified}!${VCS_STATUS_NUM_UNSTAGED}"
+    # # ?42 if have untracked files. It's really a question mark, your font isn't broken.
+    # # See POWERLEVEL9K_VCS_UNTRACKED_ICON above if you want to use a different icon.
+    # # Remove the next line if you don't want to see untracked files at all.
+    # (( VCS_STATUS_NUM_UNTRACKED  )) && res+=" ${untracked}${(g::)POWERLEVEL9K_VCS_UNTRACKED_ICON}${VCS_STATUS_NUM_UNTRACKED}"
+    # # "─" if the number of unstaged files is unknown. This can happen due to
+    # # POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY (see below) being set to a non-negative number lower
+    # # than the number of files in the Git index, or due to bash.showDirtyState being set to false
+    # # in the repository config. The number of staged and untracked files may also be unknown
+    # # in this case.
+    # (( VCS_STATUS_HAS_UNSTAGED == -1 )) && res+=" ${modified}─"
+
+    local vcs_status
+
+    # = if have merge conflicts.
+    (( VCS_STATUS_NUM_CONFLICTED )) && vcs_status+="="
+    # $ if have stashes.
+    (( VCS_STATUS_STASHES        )) && vcs_status+="$"
+    # ! if have unstaged changes.
+    (( VCS_STATUS_NUM_UNSTAGED   )) && vcs_status+="!"
+    # + if have staged changes.
+    (( VCS_STATUS_NUM_STAGED     )) && vcs_status+="+"
+    # ? if have untracked files.
+    (( VCS_STATUS_NUM_UNTRACKED  )) && vcs_status+="?"
+
+    (( VCS_STATUS_COMMITS_BEHIND || VCS_STATUS_COMMITS_AHEAD )) && {
+      [ ! -z "$vcs_status" ] && vcs_status+=" "
+      vcs_status+="$state_color"
+    }
     # ⇣42 if behind the remote.
-    (( VCS_STATUS_COMMITS_BEHIND )) && res+=" ${clean}⇣${VCS_STATUS_COMMITS_BEHIND}"
-    # ⇡42 if ahead of the remote; no leading space if also behind the remote: ⇣42⇡42.
-    (( VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND )) && res+=" "
-    (( VCS_STATUS_COMMITS_AHEAD  )) && res+="${clean}⇡${VCS_STATUS_COMMITS_AHEAD}"
-    # ⇠42 if behind the push remote.
-    (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" ${clean}⇠${VCS_STATUS_PUSH_COMMITS_BEHIND}"
-    (( VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" "
-    # ⇢42 if ahead of the push remote; no leading space if also behind: ⇠42⇢42.
-    (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && res+="${clean}⇢${VCS_STATUS_PUSH_COMMITS_AHEAD}"
-    # *42 if have stashes.
-    (( VCS_STATUS_STASHES        )) && res+=" ${clean}*${VCS_STATUS_STASHES}"
+    (( VCS_STATUS_COMMITS_BEHIND )) && vcs_status+="⇣$VCS_STATUS_COMMITS_BEHIND"
+    (( VCS_STATUS_COMMITS_AHEAD  )) && vcs_status+="⇡$VCS_STATUS_COMMITS_AHEAD"
+
     # 'merge' if the repo is in an unusual state.
-    [[ -n $VCS_STATUS_ACTION     ]] && res+=" ${conflicted}${VCS_STATUS_ACTION}"
-    # ~42 if have merge conflicts.
-    (( VCS_STATUS_NUM_CONFLICTED )) && res+=" ${conflicted}~${VCS_STATUS_NUM_CONFLICTED}"
-    # +42 if have staged changes.
-    (( VCS_STATUS_NUM_STAGED     )) && res+=" ${modified}+${VCS_STATUS_NUM_STAGED}"
-    # !42 if have unstaged changes.
-    (( VCS_STATUS_NUM_UNSTAGED   )) && res+=" ${modified}!${VCS_STATUS_NUM_UNSTAGED}"
-    # ?42 if have untracked files. It's really a question mark, your font isn't broken.
-    # See POWERLEVEL9K_VCS_UNTRACKED_ICON above if you want to use a different icon.
-    # Remove the next line if you don't want to see untracked files at all.
-    (( VCS_STATUS_NUM_UNTRACKED  )) && res+=" ${untracked}${(g::)POWERLEVEL9K_VCS_UNTRACKED_ICON}${VCS_STATUS_NUM_UNTRACKED}"
-    # "─" if the number of unstaged files is unknown. This can happen due to
-    # POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY (see below) being set to a non-negative number lower
-    # than the number of files in the Git index, or due to bash.showDirtyState being set to false
-    # in the repository config. The number of staged and untracked files may also be unknown
-    # in this case.
-    (( VCS_STATUS_HAS_UNSTAGED == -1 )) && res+=" ${modified}─"
+    if [[ -n $VCS_STATUS_ACTION ]]; then
+      [ ! -z "$vcs_status" ] && vcs_status+=" "
+      vcs_status+="${state_color}${VCS_STATUS_ACTION}"
+    fi
+
+    if [ ! -z "$vcs_status" ]; then
+      res+=" ${state_color}[${vcs_status}${state_color}]"
+    fi
 
     typeset -g my_git_format=$res
   }
