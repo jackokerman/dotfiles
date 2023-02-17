@@ -143,10 +143,6 @@ export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agen
 export PATH=$HOME/bin:$PATH
 export PATH="/opt/homebrew/bin:$PATH"
 
-# # Plugins
-# zcomet load agkozak/zsh-z
-# zcomet load mollifier/cd-gitroot
-
 source $HOME/zsh/aliases.zsh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
