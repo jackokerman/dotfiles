@@ -1,6 +1,6 @@
 # Editing
-alias aliases='$EDITOR ~/zsh/aliases.zsh'
-alias zshrc='$EDITOR ~/.zshrc'
+alias aliases='$EDITOR $HOME/aliases.zsh'
+alias zshrc='$EDITOR $HOME/.zshrc'
 
 # Git
 alias gst='git status'
