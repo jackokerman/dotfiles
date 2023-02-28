@@ -143,7 +143,7 @@ export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agen
 export PATH=$HOME/bin:$PATH
 export PATH="/opt/homebrew/bin:$PATH"
 
-source $HOME/zsh/aliases.zsh
+source $HOME/aliases.zsh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
