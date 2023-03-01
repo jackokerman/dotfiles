@@ -144,6 +144,8 @@ export PATH=$HOME/bin:$PATH
 export PATH="/opt/homebrew/bin:$PATH"
 
 source $HOME/aliases.zsh
+# Load local configuration if it exists, i.e. machine-specific config.
+[[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
