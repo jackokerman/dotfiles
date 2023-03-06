@@ -1,6 +1,6 @@
 # Editing
-alias zshrc='$EDITOR $HOME/.zshrc'
-alias aliases='$EDITOR $HOME/aliases.zsh'
+alias zshrc='eval $EDITOR $HOME/.zshrc'
+alias aliases='eval $EDITOR $HOME/aliases.zsh'
 
 # Git
 alias gst='git status'
@@ -48,6 +48,7 @@ alias br='brew'
 alias brci='brew install --cask'
 alias bri='brew install'
 alias brs='brew search'
+
 # ls (exa)
 alias ls='exa --icons --group-directories-first'
 alias ll='ls -l'
