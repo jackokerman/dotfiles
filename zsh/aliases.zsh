@@ -1,5 +1,6 @@
 # Editing
 alias zshrc='eval $EDITOR $HOME/.zshrc'
+alias zshrc-local='eval $EDITOR $HOME/.zshrc.local'
 alias aliases='eval $EDITOR $HOME/aliases.zsh'
 
 # Git
