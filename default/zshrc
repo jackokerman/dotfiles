@@ -142,7 +142,9 @@ export EDITOR="code --wait --new-window"
 export PATH=$HOME/bin:$PATH
 export PATH="/opt/homebrew/bin:$PATH"
 
-source $HOME/aliases.zsh
+# Aliases
+source $HOME/.aliases
+
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
