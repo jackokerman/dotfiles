@@ -11,9 +11,7 @@ else
   echo "bashdot is already installed, skipping."
 fi
 
-# Install bashdot default profile
-echo "Installing bashdot default profile..."
+# Install dotfiles using bashdot
 pushd ~/dotfiles
 bashdot install default
 popd
-echo "bashdot default profile installed successfully."
