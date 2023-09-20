@@ -1,6 +1,7 @@
 # Editing
-alias zshrc='$EDITOR $HOME/.zshrc'
-alias aliases='$EDITOR $HOME/aliases.zsh'
+alias zshrc='eval $EDITOR $HOME/.zshrc'
+alias zshrc-local='eval $EDITOR $HOME/.zshrc.local'
+alias aliases='eval $EDITOR $HOME/.aliases'
 
 # Git
 alias gst='git status'
@@ -38,7 +39,6 @@ alias gbd='git branch -D'
 # Work In Progress commit (alternative to stashing)
 alias gwip='git add -A; git commit -m "WIP"'
 alias gunwip='git reset HEAD~1'
-
 # Select recent branch interacctively using fzf
 alias gbr='git branch --sort=-committerdate | fzf --header "Checkout Recent Branch" --preview "git diff --color=always {1}" --pointer "" | xargs git checkout'
 alias gbs='gbr'
@@ -48,6 +48,7 @@ alias br='brew'
 alias brci='brew install --cask'
 alias bri='brew install'
 alias brs='brew search'
+
 # ls (exa)
 alias ls='exa --icons --group-directories-first'
 alias ll='ls -l'
