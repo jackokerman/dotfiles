@@ -1,67 +1,27 @@
+if OS.mac?
+  # Taps
+  tap "homebrew/cask"
+
+  # Casks
+  cask "bartender"
+  cask "hyper"
+  cask "iterm2"
+  cask "keepingyouawake"
+  cask "kitty"
+  cask "raycast"
+  cask "spotify"
+end
+
 tap "homebrew/bundle"
-tap "homebrew/cask"
-tap "homebrew/cask-drivers"
 tap "homebrew/core"
-tap "stripe/stripe-cli"
-brew "awscli"
-brew "bat"
-brew "icu4c"
-brew "buildifier"
-brew "buildozer"
-brew "coreutils"
-brew "openldap"
-brew "curl"
-brew "diffutils"
-brew "dotnet"
-brew "exa"
-brew "findutils"
-brew "fzf"
-brew "gawk"
-brew "git"
-brew "gnu-sed"
-brew "gnu-tar"
-brew "go"
-brew "go@1.18"
-brew "gsl"
-brew "jq"
-brew "libfaketime"
-brew "libfido2"
-brew "libxml2"
-brew "libxslt"
-brew "mackup"
-brew "mas"
-brew "moreutils"
-brew "node-build"
-brew "nodenv"
-brew "postgresql@14"
-brew "pyenv"
-brew "python@3.10"
-brew "python@3.9"
-brew "ruby-build"
-brew "rbenv"
-brew "ripgrep"
-brew "rsync"
-brew "shellcheck"
-brew "starship"
-brew "stow"
-brew "thrift"
-brew "tldr"
-brew "vale"
-brew "watchman"
-brew "wget"
-brew "stripe/stripe-cli/stripe"
-cask "alacritty"
-cask "amethyst"
-cask "bartender"
-cask "boop"
-cask "divvy"
-cask "fantastical"
-cask "fig"
-cask "firefox"
-cask "hyper"
-cask "iterm2"
-cask "keepingyouawake"
-cask "kitty"
-cask "monitorcontrol"
-cask "raycast"
-cask "spotify"
+
+# Packages
+brew "bat"    # a better cat
+brew "exa"    # a better ls
+brew "fd"     # find alternative
+brew "fzf"    # a fuzzy finder
+brew "git"    # git version control (latest)
+brew "jq"     # parse and work with JSON
+brew "python" # python (latest)
+brew "wget"   # internet file retriever
+brew "zsh"    # zsh shell (latest)
