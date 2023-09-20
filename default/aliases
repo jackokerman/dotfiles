@@ -49,14 +49,17 @@ alias brci='brew install --cask'
 alias bri='brew install'
 alias brs='brew search'
 
-# ls (exa)
-alias ls='exa --icons --group-directories-first'
-alias ll='ls -l'
-alias l1='ls -1'
-alias la='ls -a'
-alias lal='ls -la'
-alias lla='ls -la'
-alias lt='ls --tree'
+# exa (a better ls). Check to make sure exa is available to the shell before
+# aliasing so we can still use ls if exa is not installed.
+if command -v exa &>/dev/null; then
+  alias ls='exa --icons --group-directories-first'
+  alias ll='ls -l'
+  alias l1='ls -1'
+  alias la='ls -a'
+  alias lal='ls -la'
+  alias lla='ls -la'
+  alias lt='ls --tree'
+fi
 
 # Misc
 alias reload='$SHELL -l'
