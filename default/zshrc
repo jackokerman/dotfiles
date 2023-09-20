@@ -135,13 +135,6 @@ for key ('j') bindkey -M vicmd ${key} history-substring-search-down
 unset key
 # }}} End configuration added by Zim install
 
-# Environment Variables
-export EDITOR="code --wait --new-window"
-
-# Path
-export PATH=$HOME/bin:$PATH
-export PATH="/opt/homebrew/bin:$PATH"
-
 # Aliases
 source $HOME/.aliases
 
