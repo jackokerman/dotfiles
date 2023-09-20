@@ -1,0 +1,6 @@
+# Environment Variables
+export EDITOR="code --wait --new-window"
+
+# Path
+export PATH=$HOME/bin:$PATH
+export PATH="/opt/homebrew/bin:$PATH"
