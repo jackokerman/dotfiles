@@ -1,6 +1,6 @@
 # Environment Variables
 export EDITOR="code --wait --new-window"
-export BAT_CONFIG_PATH="$HOME/.bat/config"
+# export BAT_CONFIG_PATH="$HOME/.bat/config"
 
 # Path
 export PATH=$HOME/bin:$PATH
