@@ -146,3 +146,4 @@ source $HOME/.aliases
 
 # Bootstrap fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+ 
