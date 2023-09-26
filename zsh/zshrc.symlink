@@ -138,11 +138,11 @@ unset key
 # Aliases
 source $HOME/.aliases
 
-# Load local configuration if it exists, i.e. machine-specific config.
-[[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Load local configuration if it exists, i.e. machine-specific config.
+[[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
 # Bootstrap fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
