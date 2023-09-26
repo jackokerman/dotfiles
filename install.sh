@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Taken from curl https://github.com/nicknisi/dotfiles/raw/main/install.sh
+# Adapted from curl https://github.com/nicknisi/dotfiles/raw/main/install.sh
 
 DOTFILES="$(pwd)"
 COLOR_GRAY="\033[1;38;5;243m"
@@ -12,8 +12,7 @@ COLOR_YELLOW="\033[1;33m"
 COLOR_NONE="\033[0m"
 
 title() {
-    echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
-    echo -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
+    echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}\n"
 }
 
 error() {
