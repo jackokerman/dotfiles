@@ -68,12 +68,32 @@ setup_symlinks() {
     done
 }
 
+setup_shell() {
+    title "Setting up shell"
+
+    # fzf setup
+    if command -v brew >/dev/null && [[ -f "$(brew --prefix)/opt/fzf/install" ]]; then
+        info "Setting up fzf"
+        "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
+    fi
+
+    # bat setup
+    if command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
+        info "Setting up bat"
+        bat cache --build
+    fi
+}
+
 case "$1" in
 link)
     setup_symlinks
     ;;
+shell)
+    setup_shell
+    ;;
 all)
     setup_symlinks
+    setup_shell
     ;;
 *)
     echo -e $"\nUsage: $(basename "$0") {|link|all}\n"

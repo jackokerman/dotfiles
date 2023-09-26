@@ -1,6 +1,6 @@
 # Environment Variables
-export EDITOR="code --wait --new-window"
-# export BAT_CONFIG_PATH="$HOME/.bat/config"
+# Set `EDITOR` to VS Code if it's installed
+command -v code >/dev/null && export EDITOR="code --wait --new-window"
 
 # Path
 export PATH=$HOME/bin:$PATH
