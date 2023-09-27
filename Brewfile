@@ -4,7 +4,6 @@ if OS.mac?
 
   # Casks
   cask "bartender"
-  cask "hyper"
   cask "iterm2"
   cask "keepingyouawake"
   cask "kitty"
