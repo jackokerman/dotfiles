@@ -1,6 +1,13 @@
 # Environment Variables
+
 # Set `EDITOR` to VS Code if it's installed
 command -v code >/dev/null && export EDITOR="code --wait --new-window"
+# FZF colors from nightfly theme
+export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
+ --color=fg:#acb4c2,bg:#011627,hl:#ff5874
+ --color=fg+:#d6deeb,bg+:#2c3043,hl+:#f78c6c
+ --color=info:#e3d18a,prompt:#82aaff,pointer:#a1cd5e
+ --color=marker:#c792ea,spinner:#a1cd5e,header:#2c3043'
 
 # Path
 export PATH=$HOME/bin:$PATH
