@@ -1,14 +1,19 @@
 if OS.mac?
   # Taps
   tap "homebrew/cask"
+  tap "koekeishiya/formulae"
 
-  # Casks
-  cask "bartender"
-  cask "iterm2"
-  cask "keepingyouawake"
-  cask "kitty"
-  cask "raycast"
-  cask "spotify"
+  # yabai
+  brew "yabai"
+  brew "skhd"
+
+  # Applications
+  cask "bartender"        # clean up Mac OS menu bar
+  cask "iterm2"           # popular terminal emulator
+  cask "keepingyouawake"  # preven mac from going to sleep
+  cask "kitty"            # a better terminal emulator
+  cask "raycast"          # spotlight replacement
+  cask "spotify"          # music streaming service
 end
 
 tap "homebrew/bundle"
