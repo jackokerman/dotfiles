@@ -144,6 +144,6 @@ source $HOME/.aliases
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
-# Bootstrap fzf
+# Setup fzf (install script should already have run at this point)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
  

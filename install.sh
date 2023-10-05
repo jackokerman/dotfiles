@@ -96,7 +96,7 @@ all)
     setup_shell
     ;;
 *)
-    echo -e $"\nUsage: $(basename "$0") {|link|all}\n"
+    echo -e $"\nUsage: $(basename "$0") {|link|shell|all}\n"
     exit 1
     ;;
 esac

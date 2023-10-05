@@ -20,18 +20,17 @@ zmodule termtitle
 zmodule utility
 # Jump to "frecently" visited directories
 zmodule agkozak/zsh-z
+# Adds completions and aliases for Homebrew
+zmodule homebrew
 
 #
 # Prompt
 #
 
-# Exposes to prompts how long the last command took to execute, used by asciiship.
-# zmodule duration-info
-# Exposes git repository status information to prompts, used by asciiship.
-# zmodule git-info
-# A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
-# zmodule asciiship
+# A highly configuratable prompt, but the async git segment is painfully slow on
+# large mono repos
 zmodule romkatv/powerlevel10k --use degit
+# zmodule spaceship-prompt/spaceship-prompt --name spaceship --no-submodules
 
 #
 # Completion
