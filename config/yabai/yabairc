@@ -28,6 +28,8 @@ yabai -m config mouse_follows_focus on
  
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
+yabai -m rule --add app="^Logi Options$" manage=off
+yabai -m rule --add app="Raycast" manage=off
 
 # Automatically float windows that can't be resized
 # yabai -m signal --add event=window_created action='yabai -m query --windows --window $YABAI_WINDOW_ID | jq -er ".\"can-resize\" or .\"is-floating\"" || yabai -m window $YABAI_WINDOW_ID --toggle float'
