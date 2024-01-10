@@ -31,6 +31,7 @@ yabai -m rule --add app="^Messages$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^1Password$" manage=off
+yabai -m rule --add app="^Safari$" title="(General|Tabs|Autofill|Passwords|Search|Security|Privacy|Websites|Profiles|Extensions|Advanced|Developer|Feature Flags)" manage=off
 
 # Automatically float windows that can't be resized
 # yabai -m signal --add event=window_created action='yabai -m query --windows --window $YABAI_WINDOW_ID | jq -er ".\"can-resize\" or .\"is-floating\"" || yabai -m window $YABAI_WINDOW_ID --toggle float'
