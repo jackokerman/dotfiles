@@ -21,7 +21,7 @@ tap "homebrew/core"
 
 # Packages
 brew "bat"    # a better cat
-brew "exa"    # a better ls
+brew "eza"    # a better ls
 brew "fd"     # find alternative
 brew "fzf"    # a fuzzy finder
 brew "git"    # git version control (latest)
