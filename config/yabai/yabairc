@@ -1,3 +1,8 @@
+# Commands
+# yabai --start-service
+# yabai --restart-service
+# yabai --stop-service
+
 # bsp or float (default: float)
 yabai -m config layout bsp
 
