@@ -29,7 +29,7 @@ yabai -m config mouse_action2 resize
 yabai -m config focus_follows_mouse off
 
 # Set mouse follows focus mode (default: off)
-yabai -m config mouse_follows_focus on
+yabai -m config mouse_follows_focus off
 
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Messages$" manage=off
