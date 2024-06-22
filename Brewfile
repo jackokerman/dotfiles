@@ -14,6 +14,7 @@ if OS.mac?
   cask "kitty"            # a better terminal emulator
   cask "raycast"          # spotlight replacement
   cask "spotify"          # music streaming service
+  cask "shottr"           # screenshot tool
 end
 
 tap "homebrew/bundle"
