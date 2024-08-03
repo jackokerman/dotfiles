@@ -8,13 +8,14 @@ if OS.mac?
   brew "skhd"
 
   # Applications
-  cask "bartender"        # clean up Mac OS menu bar
-  cask "iterm2"           # popular terminal emulator
-  cask "keepingyouawake"  # preven mac from going to sleep
-  cask "kitty"            # a better terminal emulator
-  cask "raycast"          # spotlight replacement
-  cask "spotify"          # music streaming service
-  cask "shottr"           # screenshot tool
+  cask "bartender"          # clean up Mac OS menu bar
+  cask "iterm2"             # popular terminal emulator
+  cask "keepingyouawake"    # preven mac from going to sleep
+  cask "kitty"              # a better terminal emulator
+  cask "raycast"            # spotlight replacement
+  cask "spotify"            # music streaming service
+  cask "shottr"             # screenshot tool
+  cask "karabiner-elements" # keyboard customizer
 end
 
 tap "homebrew/bundle"
