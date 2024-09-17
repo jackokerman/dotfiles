@@ -31,3 +31,4 @@ brew "jq"     # parse and work with JSON
 brew "python" # python (latest)
 brew "wget"   # internet file retriever
 brew "zsh"    # zsh shell (latest)
+brew "deno"   # a better node
