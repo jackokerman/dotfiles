@@ -43,6 +43,8 @@ alias gunwip='git reset HEAD~1'
 # Select recent branch interacctively using fzf
 alias gbr='git branch --sort=-committerdate | fzf --header "Checkout Recent Branch" --preview "git diff --color=always {1}" --pointer "" | xargs git checkout'
 alias gbs='gbr'
+# Fetch and rebase from master (update current branch)
+alias grbm='git fetch origin && git rebase origin/master'
 
 # Brew
 alias br='brew'
