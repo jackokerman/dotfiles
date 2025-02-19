@@ -145,8 +145,13 @@ source $HOME/.aliases
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
 # Setup fzf
-# If installed via homebrew:
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# If installed via apt:
-[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
-[ -f /usr/share/doc/fzf/examples/completions.zsh ] && source /usr/share/doc/fzf/examples/completions.zsh
+if command -v fzf >/dev/null 2>&1; then
+    if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
+        # APT installation
+        source /usr/share/doc/fzf/examples/key-bindings.zsh
+        source /usr/share/doc/fzf/examples/completion.zsh
+    elif [ -f ~/.fzf.zsh ]; then
+        # Homebrew installation
+        source ~/.fzf.zsh
+    fi
+fi
