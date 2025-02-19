@@ -77,20 +77,17 @@ setup_shell() {
         "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
     fi
 
-    # bat setup
-    # If bat is installed from apt as batcat, create a symlink to bat
+    # symlink bat if it is installed as batcat
     if command -v batcat >/dev/null 2>&1 && ! command -v bat >/dev/null 2>&1; then
         info "Creating bat symlink from batcat"
-        mkdir -p "${HOME}/.local/bin"
-        ln -sf "$(command -v batcat)" "${HOME}/.local/bin/bat"
+        mkdir -p "$HOME/.local/bin"
+        ln -sf "$(command -v batcat)" "$HOME/.local/bin/bat"
 
-        # Add ~/.local/bin to PATH if not already present
-        if ! echo "$PATH" | grep -q "${HOME}/.local/bin"; then
-            echo "export PATH=${HOME}/.local/bin:\$PATH" >>"${HOME}/.zshrc"
-            # Set for current session so building the cache works
-            export PATH="${HOME}/.local/bin:$PATH"
-        fi
+        # Set for current session only so that bat cache can be built
+        export PATH="$HOME/.local/bin:$PATH"
     fi
+
+    # build the bat cache so custom theme can be applied
     if command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
         info "Setting up bat"
         bat cache --build
