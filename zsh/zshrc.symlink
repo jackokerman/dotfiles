@@ -96,6 +96,13 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 #typeset -A ZSH_HIGHLIGHT_STYLES
 #ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
 
+#
+# fzf-tab
+#
+
+# See https://github.com/Aloxaf/fzf-tab?tab=readme-ov-file#configure
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+
 # ------------------
 # Initialize modules
 # ------------------
