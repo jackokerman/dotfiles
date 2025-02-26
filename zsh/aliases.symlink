@@ -56,13 +56,15 @@ alias brs='brew search'
 # aliasing so we can still use ls if eza is not installed.
 if command -v eza &>/dev/null; then
   alias ls='eza --icons --group-directories-first'
-  alias ll='ls -l'
-  alias l1='ls -1'
-  alias la='ls -a'
-  alias lal='ls -la'
-  alias lla='ls -la'
-  alias lt='ls --tree'
 fi
+
+# ls
+alias ll='ls -l'
+alias l1='ls -1'
+alias la='ls -a'
+alias lal='ls -la'
+alias lla='ls -la'
+alias lt='ls --tree'
 
 # Misc
 alias reload='$SHELL -l'
