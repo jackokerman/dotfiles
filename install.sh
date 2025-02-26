@@ -71,6 +71,14 @@ setup_symlinks() {
 setup_shell() {
     title "Setting up shell"
 
+    # Install Zap zsh plugin manager if not already installed
+    if [ ! -d "$HOME/.local/share/zap" ]; then
+        info "Installing Zap"
+        zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --keep --branch release-v1
+    else
+        info "Zap already installed... Skipping."
+    fi
+
     # fzf setup
     if command -v brew >/dev/null && [[ -f "$(brew --prefix)/opt/fzf/install" ]]; then
         info "Setting up fzf"
