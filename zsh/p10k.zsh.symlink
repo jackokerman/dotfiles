@@ -32,9 +32,10 @@
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
     # os_icon               # os identifier
-    # context                 # user@hostname
+    # context               # user@hostname
     dir                     # current directory
-    vcs                     # git status
+    # vcs                   # git status — disabled because it's slow on large repos
+    vcs_branch              # git branch — fast alternative to git status that only shows branch
     command_execution_time  # duration of the last command
     # =========================[ Line #2 ]=========================
     newline                 # \n
@@ -1627,6 +1628,19 @@
   # Type `p10k help segment` for documentation and a more sophisticated example.
   function prompt_example() {
     p10k segment -f 2 -i '⭐' -t 'hello, %n'
+  }
+
+  # Add "on  branch_name" to the prompt if we're in a git repo.
+  function prompt_vcs_branch() {
+    local repo_root
+    repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+
+    if [[ -n "$repo_root" ]]; then
+      local branch_name
+      branch_name=$(sed 's|^ref: refs/heads/||' "$repo_root/.git/HEAD")
+      # Start with default color for "on", then switch to purple for branch 
+      p10k segment -i '' -t "%fon %F{13}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${branch_name}%f"
+    fi
   }
 
   # User-defined prompt segments may optionally provide an instant_prompt_* function. Its job
