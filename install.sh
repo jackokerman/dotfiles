@@ -32,15 +32,13 @@ success() {
     echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
-get_linkables() {
-    find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
-}
-
 setup_symlinks() {
     title "Creating symlinks"
 
-    for file in $(get_linkables); do
-        target="$HOME/.$(basename "$file" '.symlink')"
+    # Symlink all files in the /zsh directory, e.g. zsh/.zshrc -> ~/.zshrc
+    zsh_files=$(find "$DOTFILES/zsh" -mindepth 1 -maxdepth 1 2>/dev/null)
+    for file in $zsh_files; do
+        target="$HOME/$(basename "$file")"
         if [ -e "$target" ]; then
             info "~${target#$HOME} already exists... Skipping."
         else
