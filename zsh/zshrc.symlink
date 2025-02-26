@@ -162,3 +162,14 @@ if command -v fzf >/dev/null 2>&1; then
         source ~/.fzf.zsh
     fi
 fi
+
+function fast_git_branch() {
+  local repo_root
+  repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+
+  if [[ -n "$repo_root" ]]; then 
+    sed 's|^ref: refs/heads/||' "$repo_root/.git/HEAD"
+  else
+    echo ""
+  fi
+}
