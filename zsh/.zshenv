@@ -1,7 +1,11 @@
 # Environment Variables
 
-# Set `EDITOR` to VS Code if it's installed
-command -v code >/dev/null && export EDITOR="code --wait --new-window"
+# Set `EDITOR` to Cursor if it's installed, otherwise VS Code, otherwise use default
+if command -v cursor >/dev/null; then
+  export EDITOR="cursor --wait --new-window"
+elif command -v code >/dev/null; then
+  export EDITOR="code --wait --new-window"
+fi
 
 # Nightfly theme for fzf, upstream: github.com/bluz71/vim-nightfly-colors
 export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
