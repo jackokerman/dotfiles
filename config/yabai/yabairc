@@ -43,7 +43,7 @@ yabai -m rule --add app="^Things$" manage=off
 yabai -m rule --add app="^Mac Mouse Fix$" manage=off
 yabai -m rule --add app="^Karabiner-EventViewer$" manage=off
 yabai -m rule --add app="^Reminders$" manage=off
-yabai -m rule --add app="^Obsidian$" mange=off
+yabai -m rule --add app="^Obsidian$" manage=off
 yabai -m rule --add app="^CleanShot X$" manage=off mouse_follows_focus=off
 
 # Automatically float windows that can't be resized. Disabled for now because
