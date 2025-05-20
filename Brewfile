@@ -9,6 +9,7 @@ if OS.mac?
 
   # Applications
   cask "bartender"          # clean up Mac OS menu bar
+  cask "hammerspoon"        # desktop automation application
   cask "iterm2"             # popular terminal emulator
   cask "keepingyouawake"    # preven mac from going to sleep
   cask "kitty"              # a better terminal emulator
