@@ -1,0 +1,5 @@
+# Ignore all spoons
+Spoons/*
+
+# But keep SpoonInstall
+!Spoons/SpoonInstall.spoon/ 
