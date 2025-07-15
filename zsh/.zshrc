@@ -1,3 +1,10 @@
+# Exit early if COMPOSER_NO_INTERACTION is set. This is needed to allow Cursor
+# to run terminal commands without hanging, as prompt customizations can cause
+# issues in non-interactive shells.
+if [[ -n "$COMPOSER_NO_INTERACTION" ]]; then
+  return 0
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
