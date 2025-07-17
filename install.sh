@@ -3,25 +3,27 @@
 # Adapted from curl https://github.com/nicknisi/dotfiles/raw/main/install.sh
 
 DOTFILES="$(pwd)"
-COLOR_GRAY="\033[1;38;5;243m"
-COLOR_BLUE="\033[1;34m"
-COLOR_GREEN="\033[1;32m"
-COLOR_RED="\033[1;31m"
-COLOR_PURPLE="\033[1;35m"
-COLOR_YELLOW="\033[1;33m"
+
+# Colors for logging output
+COLOR_BLUE="\033[34m"
+COLOR_GREEN="\033[32m"
+COLOR_RED="\033[31m"
+COLOR_PURPLE="\033[35m"
+COLOR_YELLOW="\033[33m"
 COLOR_NONE="\033[0m"
 
+# Logging functions
 title() {
     echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}\n"
 }
 
 error() {
-    echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
+    echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1" >&2
     exit 1
 }
 
 warning() {
-    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
+    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1" >&2
 }
 
 info() {
@@ -32,18 +34,27 @@ success() {
     echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
+# Create symlinks for zsh config files and config directories
 setup_symlinks() {
     title "Creating symlinks"
 
     # Symlink all files in the /zsh directory, e.g. zsh/.zshrc -> ~/.zshrc
-    zsh_files=$(find "$DOTFILES/zsh" -mindepth 1 -maxdepth 1 2>/dev/null)
+    zsh_files=$(find "$DOTFILES/zsh" -mindepth 1 -maxdepth 1 -type f 2>/dev/null)
     for file in $zsh_files; do
         target="$HOME/$(basename "$file")"
         if [ -e "$target" ]; then
-            info "~${target#$HOME} already exists... Skipping."
+            if [ -L "$target" ]; then
+                info "~${target#$HOME} already exists as symlink... Skipping."
+            else
+                warning "~${target#$HOME} already exists (not a symlink)... Skipping."
+            fi
         else
             info "Creating symlink for $file"
-            ln -s "$file" "$target"
+            if ln -s "$file" "$target"; then
+                success "Created symlink: ~${target#$HOME}"
+            else
+                error "Failed to create symlink for $file"
+            fi
         fi
     done
 
@@ -54,18 +65,27 @@ setup_symlinks() {
         mkdir -p "$HOME/.config"
     fi
 
-    config_files=$(find "$DOTFILES/config" -mindepth 1 -maxdepth 1 2>/dev/null)
+    config_files=$(find "$DOTFILES/config" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
     for config in $config_files; do
         target="$HOME/.config/$(basename "$config")"
         if [ -e "$target" ]; then
-            info "~${target#$HOME} already exists... Skipping."
+            if [ -L "$target" ]; then
+                info "~${target#$HOME} already exists as symlink... Skipping."
+            else
+                warning "~${target#$HOME} already exists (not a symlink)... Skipping."
+            fi
         else
             info "Creating symlink for $config"
-            ln -s "$config" "$target"
+            if ln -s "$config" "$target"; then
+                success "Created symlink: ~${target#$HOME}"
+            else
+                error "Failed to create symlink for $config"
+            fi
         fi
     done
 }
 
+# Install and configure shell tools (Zap, fzf, bat)
 setup_shell() {
     title "Setting up shell"
 
@@ -100,22 +120,31 @@ setup_shell() {
     fi
 }
 
-case "$1" in
-link)
-    setup_symlinks
-    ;;
-shell)
-    setup_shell
-    ;;
-all)
-    setup_symlinks
-    setup_shell
-    ;;
-*)
-    echo -e $"\nUsage: $(basename "$0") {|link|shell|all}\n"
-    exit 1
-    ;;
-esac
+# Main function that handles command line arguments and orchestrates the setup
+main() {
+    case "${1:-}" in
+        link)
+            setup_symlinks
+            ;;
+        shell)
+            setup_shell
+            ;;
+        all)
+            setup_symlinks
+            setup_shell
+            ;;
+        *)
+            echo -e "\nUsage: $(basename "$0") {link|shell|all}\n"
+            echo "  link  - Create symlinks for zsh and config files"
+            echo "  shell - Set up shell tools (Zap, fzf, bat)"
+            echo "  all   - Run both link and shell setup"
+            echo
+            exit 1
+            ;;
+    esac
 
-echo -e
-success "Done."
+    echo -e
+    success "Done."
+}
+
+main "$@"
