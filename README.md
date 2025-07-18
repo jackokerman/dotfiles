@@ -11,22 +11,22 @@ git clone https://github.com/jackokerman/dotfiles.git
 cd dotfiles
 ```
 
-2. Run the install script with desired options:
+2. Run the install script:
 
 ```bash
-# To create symlinks only (zsh config, bat themes, etc.)
+# Create symlinks for all config files
 ./install.sh link
 
-# To set up shell tools (Zap, fzf, bat)
+# Set up shell tools (Zap, fzf, bat)
 ./install.sh shell
 
-# To install Homebrew packages from Brewfile
+# Install Homebrew packages from Brewfile
 ./install.sh brew
 
-# To configure macOS system preferences
+# Configure macOS system preferences
 ./install.sh macos
 
-# To run all setup steps (recommended)
+# Run all setup steps (recommended)
 ./install.sh all
 ```
 
