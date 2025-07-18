@@ -85,6 +85,48 @@ setup_symlinks() {
     done
 }
 
+# Create symlinks for local configurations
+setup_local() {
+    local config_dir="$1"
+    
+    if [ -z "$config_dir" ]; then
+        error "No directory specified. Usage: ./install.sh link-local <directory>"
+    fi
+    
+    if [ ! -d "$config_dir" ]; then
+        error "Directory does not exist: $config_dir"
+    fi
+    
+    title "Creating local symlinks from $config_dir"
+    
+    # Define allowed files that can be linked as local configs
+    local allowed_files=(".zshrc" ".gitconfig")
+    
+    for file in "${allowed_files[@]}"; do
+        local source_file="$config_dir/$file"
+        local target_file="$HOME/${file#.}-local"
+        
+        if [ -f "$source_file" ]; then
+            if [ -e "$target_file" ]; then
+                if [ -L "$target_file" ]; then
+                    info "~${target_file#$HOME} already exists as symlink... Skipping."
+                else
+                    warning "~${target_file#$HOME} already exists (not a symlink)... Skipping."
+                fi
+            else
+                info "Creating symlink for $source_file"
+                if ln -s "$source_file" "$target_file"; then
+                    success "Created symlink: ~${target_file#$HOME}"
+                else
+                    error "Failed to create symlink for $source_file"
+                fi
+            fi
+        else
+            info "File $file not found in $config_dir... Skipping."
+        fi
+    done
+}
+
 # Install and configure shell tools (Zap, fzf, bat)
 setup_shell() {
     title "Setting up shell"
@@ -184,6 +226,9 @@ main() {
         link)
             setup_symlinks
             ;;
+        link-local)
+            setup_local "$2"
+            ;;
         shell)
             setup_shell
             ;;
@@ -200,12 +245,13 @@ main() {
             setup_macos
             ;;
         *)
-            echo -e "\nUsage: $(basename "$0") {link|shell|brew|macos|all}\n"
-            echo "  link  - Create symlinks for zsh and config files"
-            echo "  shell - Set up shell tools (Zap, fzf, bat)"
-            echo "  brew  - Install applications and packages from Brewfile"
-            echo "  macos - Configure macOS system preferences"
-            echo "  all   - Run all setup steps (link, shell, brew, macos)"
+            echo -e "\nUsage: $(basename "$0") {link|link-local|shell|brew|macos|all}\n"
+            echo "  link       - Create symlinks for zsh and config files"
+            echo "  link-local - Create symlinks for local context configs (usage: link-local <directory>)"
+            echo "  shell      - Set up shell tools (Zap, fzf, bat)"
+            echo "  brew       - Install applications and packages from Brewfile"
+            echo "  macos      - Configure macOS system preferences"
+            echo "  all        - Run all setup steps (link, shell, brew, macos)"
             echo
             exit 1
             ;;
