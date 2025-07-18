@@ -72,3 +72,13 @@ git config-shared alias.st "status"
 - **Machine-specific settings**: `~/.zshrc-local` (not in version control)
 
 Edit `~/.zshrc-local` to add machine-specific settings like PATH modifications or local aliases.
+
+## Local Configurations
+
+Install local configurations from a directory:
+
+```bash
+./install.sh link-local /path/to/config/directory
+```
+
+This will look for `zshrc` and `gitconfig` files in the directory and create symlinks as `~/.zshrc-local` and `~/.gitconfig-local`.
