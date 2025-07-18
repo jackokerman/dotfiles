@@ -48,3 +48,29 @@ After running the installation commands on macOS, some applications require manu
    ```
 
 4. **Hammerspoon**: Launch and grant accessibility permissions
+
+## Git Configuration
+
+The Git configuration uses a shared approach with local overrides:
+
+- **Shared settings** are in `~/.config/git/config` (symlinked from dotfiles)
+- **Machine-specific settings** should be added to `~/.gitconfig-local` (not in version control)
+
+This allows you to:
+- Keep shared aliases and settings in version control
+- Override settings per machine (email, name, editor preferences, etc.)
+- Preserve existing work configurations without conflicts
+
+To add machine-specific settings, simply edit `~/.gitconfig-local`.
+
+### Convenience Commands
+
+Use these Git aliases to easily edit config files:
+
+```bash
+# Edit local machine-specific settings
+git config-local user.email "your-email@example.com"
+
+# Edit shared settings (in version control)
+git config-shared alias.st "status"
+```
