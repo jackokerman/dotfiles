@@ -34,6 +34,8 @@ local function getRichLinkToCurrentChromeTab()
     " – Figma",
     -- Notion's "(9+) " comment indicator (can be removed if not needed)
     "%(%d+%+*%) ",
+    -- Trailhead: Remove "| Trailhead" suffix
+    " %| Trailhead",
   }
 
   for _, pattern in ipairs(removePatterns) do
