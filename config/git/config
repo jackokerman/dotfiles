@@ -1,0 +1,11 @@
+[pull]
+    rebase = true
+
+[alias]
+    # Convenience aliases for editing config files
+    config-shared = "!git config --file ~/.config/git/config"
+    config-local = "!git config --file ~/.gitconfig-local"
+
+[include]
+    path = ~/.gitconfig-local 
+ 
