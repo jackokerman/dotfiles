@@ -20,51 +20,31 @@ cd dotfiles
 # To set up shell tools (Zap, fzf, bat)
 ./install.sh shell
 
-# To do both (recommended)
+# To install Homebrew packages from Brewfile
+./install.sh brew
+
+# To configure macOS system preferences
+./install.sh macos
+
+# To run all setup steps (recommended)
 ./install.sh all
 ```
 
-## Additional setup commands
+## Configuration for macOS
 
-### macOS system preferences
-Configure system preferences and defaults:
-
-```bash
-./macos
-```
-
-### Install homebrew applications
-Install all applications and packages defined in Brewfile:
-
-```bash
-brew bundle
-```
-
-### Karabiner-elements configuration
-Generate and install Karabiner-Elements configuration:
-
-```bash
-deno run --allow-env --allow-read --allow-write karabiner-config.ts
-```
-
-## Manual configuration steps
-
-After running the installation commands, some applications require manual setup:
+After running the installation commands on macOS, some applications require manual setup:
 
 1. **iTerm2**: Import the profile from `com.googlecode.iterm2.plist`
-2. **Karabiner-Elements**: Use the generated configuration
-3. **yabai & skhd**: Start the services and grant accessibility permissions
-4. **Hammerspoon**: Grant accessibility permissions and load the configuration
 
-## Quick setup for new machine
+2. **Karabiner-Elements**: Generate configuration with:
+   ```bash
+   deno run --allow-env --allow-read --allow-write karabiner-config.ts
+   ```
 
-For a complete setup on a new machine, run these commands in order:
+3. **yabai & skhd**: Start the services and grant accessibility permissions:
+   ```bash
+   yabai --start-service
+   skhd --start-service
+   ```
 
-```bash
-git clone https://github.com/jackokerman/dotfiles.git
-cd dotfiles
-./install.sh all
-./macos
-brew bundle
-deno run --allow-env --allow-read --allow-write karabiner-config.ts
-```
+4. **Hammerspoon**: Launch and grant accessibility permissions

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Adapted from curl https://github.com/nicknisi/dotfiles/raw/main/install.sh
+# Originally adapted from Nick Nisi's dotfiles
 
 DOTFILES="$(pwd)"
 
@@ -120,6 +120,64 @@ setup_shell() {
     fi
 }
 
+# Install applications and packages from Brewfile
+setup_brew() {
+    title "Installing Homebrew packages"
+    
+    # Check if we're running on macOS
+    if [ "$(uname -s)" != "Darwin" ]; then
+        error "Homebrew setup can only be run on macOS"
+    fi
+    
+    # Install Homebrew if not already installed
+    if ! command -v brew >/dev/null 2>&1; then
+        info "Homebrew not found. Installing Homebrew..."
+        if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+            success "Homebrew installed successfully"
+            
+            # Add Homebrew to PATH for current session
+            if [ -f "/opt/homebrew/bin/brew" ]; then
+                export PATH="/opt/homebrew/bin:$PATH"
+            elif [ -f "/usr/local/bin/brew" ]; then
+                export PATH="/usr/local/bin:$PATH"
+            fi
+        else
+            error "Failed to install Homebrew"
+        fi
+    else
+        info "Homebrew already installed... Skipping installation."
+    fi
+    
+    # Install packages from Brewfile
+    info "Installing packages from Brewfile"
+    if brew bundle; then
+        success "Homebrew packages installed successfully"
+    else
+        error "Failed to install Homebrew packages"
+    fi
+}
+
+# Configure macOS system preferences
+setup_macos() {
+    title "Configuring macOS system preferences"
+    
+    # Check if we're running on macOS
+    if [ "$(uname -s)" != "Darwin" ]; then
+        error "macOS configuration can only be run on macOS"
+    fi
+    
+    if [ -f "$DOTFILES/macos" ]; then
+        info "Running macOS configuration script"
+        if "$DOTFILES/macos"; then
+            success "macOS configuration completed"
+        else
+            error "Failed to configure macOS settings"
+        fi
+    else
+        error "macOS configuration script not found at $DOTFILES/macos"
+    fi
+}
+
 # Main function that handles command line arguments and orchestrates the setup
 main() {
     case "${1:-}" in
@@ -129,15 +187,25 @@ main() {
         shell)
             setup_shell
             ;;
+        brew)
+            setup_brew
+            ;;
+        macos)
+            setup_macos
+            ;;
         all)
             setup_symlinks
+            setup_brew
             setup_shell
+            setup_macos
             ;;
         *)
-            echo -e "\nUsage: $(basename "$0") {link|shell|all}\n"
+            echo -e "\nUsage: $(basename "$0") {link|shell|brew|macos|all}\n"
             echo "  link  - Create symlinks for zsh and config files"
             echo "  shell - Set up shell tools (Zap, fzf, bat)"
-            echo "  all   - Run both link and shell setup"
+            echo "  brew  - Install applications and packages from Brewfile"
+            echo "  macos - Configure macOS system preferences"
+            echo "  all   - Run all setup steps (link, shell, brew, macos)"
             echo
             exit 1
             ;;
