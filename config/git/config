@@ -1,6 +1,9 @@
 [pull]
     rebase = true
 
+[push]
+    autoSetupRemote = true
+
 [alias]
     # Convenience aliases for editing config files
     config-shared = "!git config --file ~/.config/git/config"
