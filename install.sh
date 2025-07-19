@@ -104,7 +104,7 @@ setup_local() {
     
     for file in "${allowed_files[@]}"; do
         local source_file="$config_dir/$file"
-        local target_file="$HOME/${file#.}-local"
+        local target_file="$HOME/$file-local"
         
         if [ -f "$source_file" ]; then
             if [ -e "$target_file" ]; then
