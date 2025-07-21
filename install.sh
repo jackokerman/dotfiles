@@ -34,6 +34,30 @@ success() {
     echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
+# Helper function to create symlink with proper error handling
+create_symlink() {
+    local source="$1"
+    local target="$2"
+    local description="${3:-$(basename "$source")}"
+    
+    if [ -e "$target" ]; then
+        if [ -L "$target" ]; then
+            info "~${target#$HOME} already exists as symlink... Skipping."
+        else
+            warning "~${target#$HOME} already exists (not a symlink)... Skipping."
+        fi
+        return 0
+    fi
+    
+    info "Creating symlink for $description"
+    if ln -s "$source" "$target"; then
+        success "Created symlink: ~${target#$HOME}"
+        return 0
+    else
+        error "Failed to create symlink for $description"
+    fi
+}
+
 # Create symlinks for zsh config files and config directories
 setup_symlinks() {
     title "Creating symlinks"
@@ -41,21 +65,7 @@ setup_symlinks() {
     # Symlink all files in the /zsh directory, e.g. zsh/.zshrc -> ~/.zshrc
     zsh_files=$(find "$DOTFILES/zsh" -mindepth 1 -maxdepth 1 -type f 2>/dev/null)
     for file in $zsh_files; do
-        target="$HOME/$(basename "$file")"
-        if [ -e "$target" ]; then
-            if [ -L "$target" ]; then
-                info "~${target#$HOME} already exists as symlink... Skipping."
-            else
-                warning "~${target#$HOME} already exists (not a symlink)... Skipping."
-            fi
-        else
-            info "Creating symlink for $file"
-            if ln -s "$file" "$target"; then
-                success "Created symlink: ~${target#$HOME}"
-            else
-                error "Failed to create symlink for $file"
-            fi
-        fi
+        create_symlink "$file" "$HOME/$(basename "$file")"
     done
 
     echo -e
@@ -67,21 +77,7 @@ setup_symlinks() {
 
     config_files=$(find "$DOTFILES/config" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
     for config in $config_files; do
-        target="$HOME/.config/$(basename "$config")"
-        if [ -e "$target" ]; then
-            if [ -L "$target" ]; then
-                info "~${target#$HOME} already exists as symlink... Skipping."
-            else
-                warning "~${target#$HOME} already exists (not a symlink)... Skipping."
-            fi
-        else
-            info "Creating symlink for $config"
-            if ln -s "$config" "$target"; then
-                success "Created symlink: ~${target#$HOME}"
-            else
-                error "Failed to create symlink for $config"
-            fi
-        fi
+        create_symlink "$config" "$HOME/.config/$(basename "$config")"
     done
 }
 
@@ -107,20 +103,7 @@ setup_local() {
         local target_file="$HOME/$file-local"
         
         if [ -f "$source_file" ]; then
-            if [ -e "$target_file" ]; then
-                if [ -L "$target_file" ]; then
-                    info "~${target_file#$HOME} already exists as symlink... Skipping."
-                else
-                    warning "~${target_file#$HOME} already exists (not a symlink)... Skipping."
-                fi
-            else
-                info "Creating symlink for $source_file"
-                if ln -s "$source_file" "$target_file"; then
-                    success "Created symlink: ~${target_file#$HOME}"
-                else
-                    error "Failed to create symlink for $source_file"
-                fi
-            fi
+            create_symlink "$source_file" "$target_file" "$file"
         else
             info "File $file not found in $config_dir... Skipping."
         fi
