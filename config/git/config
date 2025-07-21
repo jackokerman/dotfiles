@@ -1,3 +1,15 @@
+[init]
+    defaultBranch = main
+
+[include]
+    # Include local git settings from ~/.gitconfig-local
+    # This allows machine-specific settings (like user.name, user.email, etc.)
+    # to be kept outside of version control
+    path = ~/.gitconfig-local
+
+[fetch]
+    prune = true
+
 [pull]
     rebase = true
 
@@ -7,8 +19,5 @@
 [alias]
     # Convenience aliases for editing config files
     config-shared = "!git config --file ~/.config/git/config"
-    config-local = "!git config --file ~/.gitconfig-local"
-
-[include]
-    path = ~/.gitconfig-local 
+    config-local = "!git config --file ~/.gitconfig-local" 
  
