@@ -34,7 +34,7 @@ yabai -m config mouse_follows_focus off
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Messages$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
-yabai -m rule --add app="^Logi Options+$" manage=off
+yabai -m rule --add app="^Logi Options\+$" manage=off
 yabai -m rule --add app="^1Password$" manage=off
 yabai -m rule --add app="^Safari$" title="(General|Tabs|AutoFill|Passwords|Search|Security|Privacy|Websites|Profiles|Extensions|Advanced|Developer|Feature Flags)" manage=off
 yabai -m rule --add app="^Raycast$" manage=off
