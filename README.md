@@ -73,12 +73,12 @@ git config-shared alias.st "status"
 
 Edit `~/.zshrc-local` to add machine-specific settings like PATH modifications or local aliases.
 
-## Local Configurations
+## Directory Configuration
 
-Install local configurations from a directory:
+Add additional configuration files from a custom directory:
 
 ```bash
-./install.sh link-local /path/to/config/directory
+./install.sh link-dir /path/to/config/directory
 ```
 
-This will look for `zshrc` and `gitconfig` files in the directory and create symlinks as `~/.zshrc-local` and `~/.gitconfig-local`.
+This creates a "dotfiles overlay" by symlinking all files from the specified directory to your home directory. Use this when you want to add environment-specific or additional configuration files that aren't part of your main dotfiles repository.

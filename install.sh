@@ -38,7 +38,6 @@ success() {
 create_symlink() {
     local source="$1"
     local target="$2"
-    local description="${3:-$(basename "$source")}"
     
     if [ -e "$target" ]; then
         if [ -L "$target" ]; then
@@ -49,6 +48,7 @@ create_symlink() {
         return 0
     fi
     
+    local description="$(basename "$source")"
     info "Creating symlink for $description"
     if ln -s "$source" "$target"; then
         success "Created symlink: ~${target#$HOME}"
@@ -58,15 +58,31 @@ create_symlink() {
     fi
 }
 
+# Generic function to create symlinks from a source directory
+create_symlinks_from_dir() {
+    local source_dir="$1"
+    local target_dir="$2"
+    
+    if [ ! -d "$source_dir" ]; then
+        error "Source directory does not exist: $source_dir"
+    fi
+    
+    # Define patterns to exclude (version control files)
+    local exclude_patterns="-name .git -o -name .gitignore -o -name .gitmodules -o -name README.md"
+    
+    # Link all files and directories, excluding version control files
+    local items=$(find "$source_dir" -mindepth 1 -maxdepth 1 \( $exclude_patterns \) -prune -o -print 2>/dev/null)
+    for item in $items; do
+        create_symlink "$item" "$target_dir/$(basename "$item")"
+    done
+}
+
 # Create symlinks for zsh config files and config directories
 setup_symlinks() {
     title "Creating symlinks"
 
     # Symlink all files in the /zsh directory, e.g. zsh/.zshrc -> ~/.zshrc
-    zsh_files=$(find "$DOTFILES/zsh" -mindepth 1 -maxdepth 1 -type f 2>/dev/null)
-    for file in $zsh_files; do
-        create_symlink "$file" "$HOME/$(basename "$file")"
-    done
+    create_symlinks_from_dir "$DOTFILES/zsh" "$HOME"
 
     echo -e
     info "installing to ~/.config"
@@ -75,39 +91,21 @@ setup_symlinks() {
         mkdir -p "$HOME/.config"
     fi
 
-    config_files=$(find "$DOTFILES/config" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
-    for config in $config_files; do
-        create_symlink "$config" "$HOME/.config/$(basename "$config")"
-    done
+    # Symlink all directories in the /config directory
+    create_symlinks_from_dir "$DOTFILES/config" "$HOME/.config"
 }
 
-# Create symlinks for local configurations
-setup_local() {
+# Create symlinks for directory configurations
+setup_directory() {
     local config_dir="$1"
     
     if [ -z "$config_dir" ]; then
-        error "No directory specified. Usage: ./install.sh link-local <directory>"
+        error "No directory specified. Usage: ./install.sh link-dir <directory>"
     fi
     
-    if [ ! -d "$config_dir" ]; then
-        error "Directory does not exist: $config_dir"
-    fi
+    title "Creating symlinks from $config_dir"
     
-    title "Creating local symlinks from $config_dir"
-    
-    # Define allowed files that can be linked as local configs
-    local allowed_files=(".zshrc" ".gitconfig")
-    
-    for file in "${allowed_files[@]}"; do
-        local source_file="$config_dir/$file"
-        local target_file="$HOME/$file-local"
-        
-        if [ -f "$source_file" ]; then
-            create_symlink "$source_file" "$target_file" "$file"
-        else
-            info "File $file not found in $config_dir... Skipping."
-        fi
-    done
+    create_symlinks_from_dir "$config_dir" "$HOME"
 }
 
 # Install and configure shell tools (Zap, fzf, bat)
@@ -209,8 +207,8 @@ main() {
         link)
             setup_symlinks
             ;;
-        link-local)
-            setup_local "$2"
+        link-dir)
+            setup_directory "$2"
             ;;
         shell)
             setup_shell
@@ -228,9 +226,9 @@ main() {
             setup_macos
             ;;
         *)
-            echo -e "\nUsage: $(basename "$0") {link|link-local|shell|brew|macos|all}\n"
+            echo -e "\nUsage: $(basename "$0") {link|link-dir|shell|brew|macos|all}\n"
             echo "  link       - Create symlinks for zsh and config files"
-            echo "  link-local - Create symlinks for local context configs (usage: link-local <directory>)"
+            echo "  link-dir   - Create symlinks for directory configs (usage: link-dir <directory>)"
             echo "  shell      - Set up shell tools (Zap, fzf, bat)"
             echo "  brew       - Install applications and packages from Brewfile"
             echo "  macos      - Configure macOS system preferences"
