@@ -19,5 +19,27 @@
 [alias]
     # Convenience aliases for editing config files
     config-shared = "!git config --file ~/.config/git/config"
-    config-local = "!git config --file ~/.gitconfig-local" 
+    config-local = "!git config --file ~/.gitconfig-local"
+    
+    # Squash commits into a single commit with custom message
+    # Supports both count-based and hash-based targeting
+    # 
+    # Count-based (squashes last N commits):
+    #   git squash -m "message" 3          # Squash last 3 commits
+    # 
+    # Hash-based (squashes from hash to HEAD):
+    #   git squash -m "message" abc1234    # Squash from abc1234^ to HEAD (excludes abc1234)
+    #   git squash -m "message" abc1234^   # Squash from abc1234 to HEAD (includes abc1234)
+    #   git squash -m "message" HEAD~5     # Squash last 5 commits (alternative syntax)
+    #   git squash -m "message" main       # Squash from main to HEAD
+    squash = "!f() { \
+        if echo \"$3\" | grep -q '^[0-9]\\+$'; then \
+            git reset --soft HEAD~$3 && git commit -m \"$2\"; \
+        elif git rev-parse --verify \"$3\" >/dev/null 2>&1; then \
+            git reset --soft \"$3\" && git commit -m \"$2\"; \
+        else \
+            echo \"Error: Invalid commit hash or count: $3\"; \
+            exit 1; \
+        fi; \
+    }; f" 
  
