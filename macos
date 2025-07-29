@@ -109,6 +109,15 @@ defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 # (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
+# Set keyboard repeat rate and delay for better VIM usage
+# Set a fast key repeat rate (lower number = faster)
+defaults write NSGlobalDomain KeyRepeat -int 2
+# Set a short initial key repeat delay (lower number = faster)
+defaults write NSGlobalDomain InitialKeyRepeat -int 4
+
+# Disable press and hold for special characters (prevents accidental character input)
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
 # Set language and text formats
 # Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
 # `Inches`, `en_GB` with `en_US`, and `true` with `false`.
