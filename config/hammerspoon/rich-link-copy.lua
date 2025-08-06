@@ -36,6 +36,8 @@ local function getRichLinkToCurrentChromeTab()
     "%(%d+%+*%) ",
     -- Trailhead: Remove "| Trailhead" suffix
     " %| Trailhead",
+    -- Confluence: Remove " - Confluence" suffix
+    " %- Confluence",
   }
 
   for _, pattern in ipairs(removePatterns) do
@@ -60,6 +62,19 @@ local function getRichLinkToCurrentChromeTab()
         local ticket, rest = title:match("%[(.-)%]%s*(.*)")
         if ticket and rest and ticket ~= "" then
           return ticket .. ": " .. rest
+        else
+          return title
+        end
+      end
+    },
+    -- Confluence: Extract meaningful part of title
+    ["confluence"] = {
+      pattern = "confluence",
+      format = function(title)
+        -- Remove the space and owner information (e.g., " - People & Workplace")
+        local cleanTitle = title:match("^(.+) %- [^-]+$")
+        if cleanTitle then
+          return cleanTitle
         else
           return title
         end
