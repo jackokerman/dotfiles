@@ -70,10 +70,30 @@ create_symlinks_from_dir() {
     # Define patterns to exclude (version control files)
     local exclude_patterns="-name .git -o -name .gitignore -o -name .gitmodules -o -name README.md"
     
+    # Create target directory if it doesn't exist
+    if [ ! -d "$target_dir" ]; then
+        mkdir -p "$target_dir"
+    fi
+    
     # Link all files and directories, excluding version control files
     local items=$(find "$source_dir" -mindepth 1 -maxdepth 1 \( $exclude_patterns \) -prune -o -print 2>/dev/null)
     for item in $items; do
-        create_symlink "$item" "$target_dir/$(basename "$item")"
+        local basename_item=$(basename "$item")
+        local target_item="$target_dir/$basename_item"
+        
+        if [ -d "$item" ]; then
+            # If it's a directory, recursively process it
+            if [ -d "$target_item" ]; then
+                # Target directory exists, merge contents
+                create_symlinks_from_dir "$item" "$target_item"
+            else
+                # Target doesn't exist, create symlink
+                create_symlink "$item" "$target_item"
+            fi
+        else
+            # It's a file, create symlink
+            create_symlink "$item" "$target_item"
+        fi
     done
 }
 
