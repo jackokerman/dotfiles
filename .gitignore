@@ -2,3 +2,4 @@
 .zshrc.local
 .vscode
 ~/.gitconfig-local
+config/hammerspoon/init-local.lua
