@@ -42,4 +42,6 @@
             exit 1; \
         fi; \
     }; f" 
- 
+
+[advice]
+    skippedCherryPicks = false
