@@ -110,10 +110,10 @@ defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
 # Set keyboard repeat rate and delay for better VIM usage
-# Set a fast key repeat rate (lower number = faster)
-defaults write NSGlobalDomain KeyRepeat -int 1
 # Set a short initial key repeat delay (lower number = faster)
-defaults write NSGlobalDomain InitialKeyRepeat -int 8
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+# Set a fast key repeat rate (lower number = faster)
+defaults write NSGlobalDomain KeyRepeat -int 2
 
 # Disable press and hold for special characters (prevents accidental character input)
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
