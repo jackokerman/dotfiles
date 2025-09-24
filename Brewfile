@@ -2,12 +2,14 @@ if OS.mac?
   # Taps
   tap "homebrew/cask"
   tap "koekeishiya/formulae"
+  tap "nikitabobko/tap"
 
   # yabai
   brew "yabai"
   brew "skhd"
 
   # Applications
+  cask "aerospace"          # window manager
   cask "bartender"          # clean up Mac OS menu bar
   cask "hammerspoon"        # desktop automation application
   cask "iterm2"             # popular terminal emulator
