@@ -112,6 +112,9 @@ automatically-unhide-macos-hidden-apps = false
     alt-minus = 'resize smart -50'
     alt-equal = 'resize smart +50'
 
+    # See: https://nikitabobko.github.io/AeroSpace/commands#fullscreen
+    alt-f = 'fullscreen'
+
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
     alt-1 = 'workspace 1'
     alt-2 = 'workspace 2'
@@ -127,7 +130,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-c = 'workspace C'
     alt-d = 'workspace D'
     alt-e = 'workspace E'
-    alt-f = 'workspace F'
+    # alt-f = 'workspace F' # Disabled so we can use for fullscreen
     alt-g = 'workspace G'
     alt-i = 'workspace I'
     alt-m = 'workspace M'
