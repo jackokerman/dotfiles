@@ -1,7 +1,6 @@
 if OS.mac?
   # Taps
   tap "homebrew/cask"
-  tap "koekeishiya/formulae"
 
   # Applications
   cask "bartender"                  # clean up Mac OS menu bar
