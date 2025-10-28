@@ -219,6 +219,21 @@ setup_macos() {
     else
         error "macOS configuration script not found at $DOTFILES/macos"
     fi
+    
+    # Generate Karabiner-Elements configuration if available
+    if [ -f "$DOTFILES/karabiner-config.ts" ]; then
+        if command -v deno >/dev/null 2>&1; then
+            info "Generating Karabiner-Elements configuration"
+            if deno run --allow-env --allow-read --allow-write "$DOTFILES/karabiner-config.ts"; then
+                success "Karabiner-Elements configuration generated"
+            else
+                warning "Failed to generate Karabiner-Elements configuration"
+            fi
+        else
+            warning "Deno not found. Skipping Karabiner-Elements configuration generation."
+            info "Install Deno with: brew install deno"
+        fi
+    fi
 }
 
 # Main function that handles command line arguments and orchestrates the setup

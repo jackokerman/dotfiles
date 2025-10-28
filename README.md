@@ -34,25 +34,18 @@ cd dotfiles
 
 After running the installation commands on macOS, some applications require manual setup:
 
-1. **iTerm2**: Import the profile from `com.googlecode.iterm2.plist`
+1. iTerm2: Import the profile from `com.googlecode.iterm2.plist`
 
-2. **Karabiner-Elements**: Generate configuration with:
-   ```bash
-   deno run --allow-env --allow-read --allow-write karabiner-config.ts
-   ```
+2. Karabiner-Elements: The configuration is automatically generated when running `./install.sh macos` or `./install.sh all`. Just launch Karabiner-Elements to apply the settings
 
-3. **yabai & skhd**: Start the services and grant accessibility permissions:
-   ```bash
-   yabai --start-service
-   skhd --start-service
-   ```
+3. AeroSpace: Launch the application and grant accessibility permissions. The configuration includes `start-at-login = true`, so it will automatically start on subsequent logins
 
-4. **Hammerspoon**: Launch and grant accessibility permissions
+4. Hammerspoon: Launch and grant accessibility permissions
 
 ## Git Configuration
 
-- **Shared settings**: `~/.config/git/config` (symlinked from dotfiles)
-- **Machine-specific settings**: `~/.gitconfig-local` (not in version control)
+- Shared settings: `~/.config/git/config` (symlinked from dotfiles)
+- Machine-specific settings: `~/.gitconfig-local` (not in version control)
 
 Edit `~/.gitconfig-local` to add machine-specific settings like email, name, or editor preferences.
 
@@ -68,8 +61,8 @@ git config-shared alias.st "status"
 
 ## Zsh Configuration
 
-- **Shared settings**: `~/.zshrc` (symlinked from dotfiles)
-- **Machine-specific settings**: `~/.zshrc-local` (not in version control)
+- Shared settings: `~/.zshrc` (symlinked from dotfiles)
+- Machine-specific settings: `~/.zshrc-local` (not in version control)
 
 Edit `~/.zshrc-local` to add machine-specific settings like PATH modifications or local aliases.
 
