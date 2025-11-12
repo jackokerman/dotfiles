@@ -83,8 +83,11 @@ create_symlinks_from_dir() {
         
         if [ -d "$item" ]; then
             # If it's a directory, recursively process it
-            if [ -d "$target_item" ]; then
-                # Target directory exists, merge contents
+            if [ -L "$target_item" ]; then
+                # Target is already a symlink, skip
+                info "~${target_item#$HOME} already exists as symlink... Skipping."
+            elif [ -d "$target_item" ]; then
+                # Target directory exists as regular directory, merge contents
                 create_symlinks_from_dir "$item" "$target_item"
             else
                 # Target doesn't exist, create symlink
