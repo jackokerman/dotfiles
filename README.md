@@ -30,17 +30,34 @@ cd dotfiles
 ./install.sh all
 ```
 
-## Configuration for macOS
+## Post-Installation Setup
 
-After running the installation commands on macOS, some applications require manual setup:
+### Accessibility Permissions
 
-1. iTerm2: Configuration is automatically restored when installing. The Dynamic Profile is symlinked from `config/iterm2/Default.json` to `~/Library/Application Support/iTerm2/DynamicProfiles/`
+After running `./install.sh all`, launch and grant accessibility permissions when prompted:
 
-2. Karabiner-Elements: The configuration is automatically generated when running `./install.sh macos` or `./install.sh all`. Just launch Karabiner-Elements to apply the settings
+1. Karabiner-Elements
+2. AeroSpace
+3. Hammerspoon
 
-3. AeroSpace: Launch the application and grant accessibility permissions. The configuration includes `start-at-login = true`, so it will automatically start on subsequent logins
+All applications are configured to start automatically on subsequent logins.
 
-4. Hammerspoon: Launch and grant accessibility permissions
+### Font Installation
+
+MonoLisa Nerd Font is used for terminal and text editors. To install:
+
+1. Download the font files (.otf) from your Dropbox
+2. Open Font Book (macOS Font Manager)
+3. Drag and drop the .otf files into Font Book, or use File > Add Fonts
+4. The font will be available system-wide once installed
+
+### Raycast Configuration
+
+Raycast is installed but requires manual setup:
+
+1. Launch Raycast and set the hotkey to Cmd+Space
+2. Disable Spotlight: System Settings > Keyboard > Keyboard Shortcuts > Spotlight > uncheck "Show Spotlight search"
+3. (Optional) Enable Settings Sync in Raycast preferences for personal machines to sync extensions and configurations
 
 ## Git Configuration
 
