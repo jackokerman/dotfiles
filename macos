@@ -154,6 +154,12 @@ defaults write com.apple.screencapture disable-shadow -bool true
 # Enable HiDPI display modes (requires restart)
 sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
 
+# Disable True Tone
+sudo defaults write /Library/Preferences/.GlobalPreferences.plist TrueTone -bool false
+
+# Disable automatic brightness adjustment
+sudo defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Automatic Display Enabled" -bool false
+
 ###############################################################################
 # Finder                                                                      #
 ###############################################################################
