@@ -34,7 +34,7 @@ cd dotfiles
 
 After running the installation commands on macOS, some applications require manual setup:
 
-1. iTerm2: Import the profile from `com.googlecode.iterm2.plist`
+1. iTerm2: Configuration is automatically restored when installing. The Dynamic Profile is symlinked from `config/iterm2/Default.json` to `~/Library/Application Support/iTerm2/DynamicProfiles/`
 
 2. Karabiner-Elements: The configuration is automatically generated when running `./install.sh macos` or `./install.sh all`. Just launch Karabiner-Elements to apply the settings
 
