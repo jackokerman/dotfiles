@@ -4,9 +4,10 @@ My personal dotfiles. Includes cross-platform shell configurations and macOS-spe
 
 ## Installation
 
-1. Clone this repository:
+1. Clone this repository to your home directory:
 
 ```bash
+cd ~
 git clone https://github.com/jackokerman/dotfiles.git
 cd dotfiles
 ```
