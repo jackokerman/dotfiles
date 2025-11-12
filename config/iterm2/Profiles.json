@@ -1,4 +1,6 @@
 {
+"Profiles": [
+{
   "Link Color" : {
     "Red Component" : 0.50196081399917603,
     "Color Space" : "sRGB",
@@ -402,4 +404,6 @@
     "Green Component" : 0.23137255012989044
   },
   "Guid" : "1C6E5878-4155-4357-95EF-077A16C0A4CA"
+}
+]
 }
