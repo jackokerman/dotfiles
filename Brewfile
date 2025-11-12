@@ -6,7 +6,6 @@ if OS.mac?
   cask "hammerspoon"                # desktop automation application
   cask "iterm2"                     # popular terminal emulator
   cask "keepingyouawake"            # preven mac from going to sleep
-  cask "kitty"                      # a better terminal emulator
   cask "raycast"                    # spotlight replacement
   cask "spotify"                    # music streaming service
   cask "shottr"                     # screenshot tool
