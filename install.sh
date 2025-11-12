@@ -101,8 +101,29 @@ create_symlinks_from_dir() {
 setup_symlinks() {
     title "Creating symlinks"
 
-    # Symlink all files in the /zsh directory, e.g. zsh/.zshrc -> ~/.zshrc
-    create_symlinks_from_dir "$DOTFILES/zsh" "$HOME"
+    # Handle .zshrc specially - if it exists, append a source line instead of symlinking
+    if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+        info "Existing .zshrc found, appending source line for dotfiles config"
+        if ! grep -q "source.*dotfiles/zsh/.zshrc" "$HOME/.zshrc"; then
+            echo "" >> "$HOME/.zshrc"
+            echo "# Load personal dotfiles configuration" >> "$HOME/.zshrc"
+            echo "source $DOTFILES/zsh/.zshrc" >> "$HOME/.zshrc"
+            success "Appended source line to existing .zshrc"
+        else
+            info "~/.zshrc already sources dotfiles config... Skipping."
+        fi
+    else
+        # Normal symlink for .zshrc if it doesn't exist
+        create_symlink "$DOTFILES/zsh/.zshrc" "$HOME/.zshrc"
+    fi
+
+    # Symlink other zsh files (.zshenv, .p10k.zsh, .aliases)
+    for file in "$DOTFILES/zsh"/.zshenv "$DOTFILES/zsh"/.p10k.zsh "$DOTFILES/zsh"/.aliases; do
+        if [ -f "$file" ]; then
+            local basename_file=$(basename "$file")
+            create_symlink "$file" "$HOME/$basename_file"
+        fi
+    done
 
     echo -e
     info "installing to ~/.config"
@@ -196,7 +217,7 @@ setup_brew() {
     if brew bundle; then
         success "Homebrew packages installed successfully"
     else
-        error "Failed to install Homebrew packages"
+        warning "Some Homebrew packages failed to install. Continuing with remaining setup..."
     fi
 }
 
