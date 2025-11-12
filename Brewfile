@@ -8,7 +8,6 @@ if OS.mac?
   cask "keepingyouawake"            # preven mac from going to sleep
   cask "raycast"                    # spotlight replacement
   cask "spotify"                    # music streaming service
-  cask "shottr"                     # screenshot tool
   cask "karabiner-elements"         # keyboard customizer
   cask "nikitabobko/tap/aerospace"  # a tiling window manager
 end
