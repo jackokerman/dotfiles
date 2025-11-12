@@ -1,0 +1,56 @@
+{
+  "stashWorkspace": "S",
+  "layouts": {
+    "browser": {
+      "workspace": "B",
+      "layout": "tiles",
+      "orientation": "horizontal",
+      "windows": [
+        {
+          "bundleId": "com.google.Chrome"
+        }
+      ]
+    },
+    "messaging": {
+      "workspace": "M",
+      "layout": "h_tiles",
+      "orientation": "horizontal",
+      "windows": [
+        {
+          "bundleId": "com.tinyspeck.slackmacgap"
+        },
+        {
+          "orientation": "vertical",
+          "windows": [
+            {
+              "bundleId": "com.google.Chrome.app.fmgjjmmmlfnkbppncabfkddbjimcfncm"
+            },
+            {
+              "bundleId": "com.google.Chrome.app.kjbdgfilnfhdoflbpgamdcdgpehopbep"
+            }
+          ]
+        }
+      ]
+    },
+    "notes": {
+      "workspace": "N",
+      "layout": "tiles",
+      "orientation": "horizontal",
+      "windows": [
+        {
+          "bundleId": "md.obsidian"
+        }
+      ]
+    },
+    "tasks": {
+      "workspace": "T",
+      "layout": "tiles",
+      "orientation": "horizontal",
+      "windows": [
+        {
+          "bundleId": "com.google.Chrome.app.ncocdijngbioiajbolgcnndalmbpaabn"
+        }
+      ]
+    }
+  }
+}
