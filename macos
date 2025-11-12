@@ -2,9 +2,10 @@
 
 # ~/.macos — https://mths.be/macos
 
-# Close any open System Preferences panes, to prevent them from overriding
-# settings we’re about to change
-osascript -e 'tell application "System Preferences" to quit'
+# Close any open System Settings panes, to prevent them from overriding
+# settings we're about to change
+osascript -e 'tell application "System Settings" to quit' 2>/dev/null
+osascript -e 'tell application "System Preferences" to quit' 2>/dev/null
 
 # Ask for the administrator password upfront
 sudo -v
@@ -58,8 +59,8 @@ defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 # Disable the “Are you sure you want to open this application?” dialog
 defaults write com.apple.LaunchServices LSQuarantine -bool false
 
-# Remove duplicates in the “Open With” menu (also see `lscleanup` alias)
-/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+# Remove duplicates in the "Open With" menu (also see `lscleanup` alias)
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -r -domain local -domain system -domain user
 
 # Display ASCII control characters using caret notation in standard text views
 # Try e.g. `cd /tmp; unidecode "\x{0000}" > cc.txt; open -e cc.txt`
@@ -119,10 +120,10 @@ defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
 # Set language and text formats
-# Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
+# Note: if you're in the US, replace `EUR` with `USD`, `Centimeters` with
 # `Inches`, `en_GB` with `en_US`, and `true` with `false`.
 defaults write NSGlobalDomain AppleLanguages -array "en"
-defaults write NSGlobalDomain AppleLocale -string "en_US@currency=USD"
+defaults write NSGlobalDomain AppleLocale -string "en_US@currency=usd"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Inches"
 defaults write NSGlobalDomain AppleMetricUnits -bool false
 
@@ -293,6 +294,10 @@ defaults write com.apple.dock show-recents -bool false
 # Disable the Launchpad gesture (pinch with thumb and three fingers)
 defaults write com.apple.dock showLaunchpadGestureEnabled -int 0
 
+# Disable Stage Manager
+defaults write com.apple.WindowManager GloballyEnabled -bool false
+defaults write com.apple.WindowManager AutoHide -bool false
+
 ###############################################################################
 # Safari & WebKit                                                             #
 ###############################################################################
@@ -436,13 +441,10 @@ defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 defaults write com.apple.ActivityMonitor SortDirection -int 0
 
 ###############################################################################
-# Address Book, Dashboard, iCal, TextEdit, and Disk Utility                   #
+# Calendar, TextEdit, and Disk Utility                                        #
 ###############################################################################
 
-# Enable the debug menu in Address Book
-defaults write com.apple.addressbook ABShowDebugMenu -bool true
-
-# Enable the debug menu in iCal (pre-10.8)
+# Enable the debug menu in Calendar
 defaults write com.apple.iCal IncludeDebugMenu -bool true
 
 # Use plain text mode for new TextEdit documents
@@ -517,6 +519,35 @@ defaults write com.google.Chrome.canary DisablePrintPreview -bool true
 # Expand the print dialog by default
 defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
 defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true
+
+###############################################################################
+# Additional System Settings                                                  #
+###############################################################################
+
+# Disable notification badge on System Settings icon
+defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
+
+# Disable thumbnail preview after screenshot
+defaults write com.apple.screencapture show-thumbnail -bool false
+
+# Disable reduce motion
+defaults write com.apple.universalaccess reduceMotion -bool false
+
+# Disable Siri
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+defaults write com.apple.Siri StatusMenuVisible -bool false
+defaults write com.apple.Siri UserHasDeclinedEnable -bool true
+
+# Menu bar: show battery percentage
+defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+
+# Show date and time in menu bar
+defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
+defaults write com.apple.menuextra.clock Show24Hour -bool false
+defaults write com.apple.menuextra.clock ShowAMPM -bool true
+defaults write com.apple.menuextra.clock ShowDate -int 1
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+defaults write com.apple.menuextra.clock ShowSeconds -bool false
 
 echo "Done. Note that some of these changes require a logout/restart to take effect."
 
