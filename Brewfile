@@ -7,6 +7,7 @@ if OS.mac?
   cask "spotify"                    # music streaming service
   cask "karabiner-elements"         # keyboard customizer
   cask "nikitabobko/tap/aerospace"  # a tiling window manager
+  cask "cleanshot"                  # screenshot tool
 end
 
 # Packages
