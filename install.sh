@@ -203,12 +203,12 @@ setup_brew() {
 # Configure macOS system preferences
 setup_macos() {
     title "Configuring macOS system preferences"
-    
+
     # Check if we're running on macOS
     if [ "$(uname -s)" != "Darwin" ]; then
         error "macOS configuration can only be run on macOS"
     fi
-    
+
     if [ -f "$DOTFILES/macos" ]; then
         info "Running macOS configuration script"
         if "$DOTFILES/macos"; then
@@ -219,7 +219,17 @@ setup_macos() {
     else
         error "macOS configuration script not found at $DOTFILES/macos"
     fi
-    
+
+    # Set up iTerm2 Dynamic Profile
+    if [ -f "$DOTFILES/config/iterm2/Default.json" ]; then
+        info "Installing iTerm2 Dynamic Profile"
+        mkdir -p "$HOME/Library/Application Support/iTerm2/DynamicProfiles"
+        ln -sf "$DOTFILES/config/iterm2/Default.json" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/Default.json"
+        success "iTerm2 Dynamic Profile installed"
+    else
+        warning "iTerm2 profile not found at $DOTFILES/config/iterm2/Default.json"
+    fi
+
     # Generate Karabiner-Elements configuration if available
     if [ -f "$DOTFILES/karabiner-config.ts" ]; then
         if command -v deno >/dev/null 2>&1; then
