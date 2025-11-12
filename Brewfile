@@ -1,7 +1,4 @@
 if OS.mac?
-  # Taps
-  tap "homebrew/cask"
-
   # Applications
   cask "hammerspoon"                # desktop automation application
   cask "iterm2"                     # popular terminal emulator
@@ -11,9 +8,6 @@ if OS.mac?
   cask "karabiner-elements"         # keyboard customizer
   cask "nikitabobko/tap/aerospace"  # a tiling window manager
 end
-
-tap "homebrew/bundle"
-tap "homebrew/core"
 
 # Packages
 brew "bat"                          # a better cat
