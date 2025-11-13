@@ -44,12 +44,14 @@ All applications are configured to start automatically on subsequent logins.
 
 ### iTerm2 Configuration
 
-To import iTerm2 profiles:
+Configure iTerm2 to load preferences from your dotfiles:
 
-1. Open iTerm2 Settings → Profiles
-2. Click "Other Actions..." (bottom left) → Import JSON Profiles
-3. Select `config/iterm2/Profiles.json` from your dotfiles directory
-4. Set the imported profile as your default
+1. Open iTerm2 → Settings → General → Preferences
+2. Check "Load preferences from a custom folder or URL"
+3. Set the folder path to your dotfiles directory (e.g., `~/dotfiles`)
+4. When prompted to save current settings, click "Cancel"
+5. Quit iTerm2 and relaunch to load preferences from your dotfiles
+6. (Optional) Check "Save changes to folder when iTerm2 quits" to automatically save settings changes
 
 ### Raycast Configuration
 
