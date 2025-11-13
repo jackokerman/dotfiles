@@ -244,16 +244,6 @@ setup_macos() {
         error "macOS configuration script not found at $DOTFILES/macos"
     fi
 
-    # Set up iTerm2 Dynamic Profile
-    if [ -f "$DOTFILES/config/iterm2/Profiles.json" ]; then
-        info "Installing iTerm2 Dynamic Profiles"
-        mkdir -p "$HOME/Library/Application Support/iTerm2/DynamicProfiles"
-        ln -sf "$DOTFILES/config/iterm2/Profiles.json" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/Profiles.json"
-        success "iTerm2 Dynamic Profiles installed"
-        info "Note: In iTerm2, go to Settings → Profiles and set your default profile"
-    else
-        warning "iTerm2 profiles not found at $DOTFILES/config/iterm2/Profiles.json"
-    fi
 
     # Generate Karabiner-Elements configuration if available
     if [ -f "$DOTFILES/karabiner-config.ts" ]; then
