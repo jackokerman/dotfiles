@@ -4,51 +4,32 @@
 # Automatically extracts, patches, and installs MonoLisa fonts with Nerd Font glyphs
 #
 # Usage:
-#   1. Download MonoLisa ZIP from your email link
-#   2. Place ZIP file in fonts/monolisa/source/
-#   3. This script is called automatically by install.sh during macOS setup
+#   1. Download MonoLisa ZIP from your email link to ~/Downloads/
+#   2. This script is called automatically by install.sh during macOS setup
+#   3. The script will look for the ZIP in ~/Downloads/ automatically
 
 set -e
 
 # Get the absolute path to the dotfiles directory
-# Assumes this script is in dotfiles/fonts/monolisa/
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DOTFILES="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Colors for logging output
-COLOR_BLUE="\033[34m"
-COLOR_GREEN="\033[32m"
-COLOR_RED="\033[31m"
-COLOR_YELLOW="\033[33m"
-COLOR_NONE="\033[0m"
-
-# Logging functions (from install.sh)
-info() {
-    echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
-}
-
-success() {
-    echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
-}
-
-warning() {
-    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1" >&2
-}
-
-error() {
-    echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1" >&2
-    exit 1
-}
+# Source shared logging utilities
+source "$SCRIPT_DIR/logging.sh"
 
 # Directories
-SOURCE_DIR="$SCRIPT_DIR/source"
-EXTRACTED_DIR="$SCRIPT_DIR/extracted"
-PATCHED_DIR="$SCRIPT_DIR/patched"
-PATCHER_DIR="$SCRIPT_DIR/monolisa-nerdfont-patch"
+DOWNLOADS_DIR="$HOME/Downloads"
+TMP_DIR="$DOTFILES/tmp"
+EXTRACTED_DIR="$TMP_DIR/monolisa-extracted"
+PATCHED_DIR="$TMP_DIR/monolisa-patched"
+PATCHER_DIR="$TMP_DIR/monolisa-nerdfont-patch"
 
 # Clone or update the patcher tool
 setup_patcher() {
     info "Setting up Nerd Font patcher..."
+
+    # Create tmp directory if it doesn't exist
+    mkdir -p "$TMP_DIR"
 
     if [ -d "$PATCHER_DIR" ]; then
         info "Updating patcher to latest version..."
@@ -64,13 +45,13 @@ setup_patcher() {
 
 # Extract the ZIP file
 extract_fonts() {
-    info "Looking for MonoLisa ZIP file..."
+    info "Looking for MonoLisa ZIP file in ~/Downloads/..."
 
-    local zip_file="$SOURCE_DIR"/*.zip
+    local zip_file=$(find "$DOWNLOADS_DIR" -name "*MonoLisa*" -o -name "*monolisa*" | grep -i "\.zip$" | head -n 1)
 
-    if [ ! -f $zip_file ]; then
-        warning "No ZIP file found in $SOURCE_DIR"
-        info "Download MonoLisa and place the ZIP file in: $SOURCE_DIR"
+    if [ -z "$zip_file" ]; then
+        warning "No MonoLisa ZIP file found in $DOWNLOADS_DIR"
+        info "Download MonoLisa and place the ZIP file in: $DOWNLOADS_DIR"
         return 1
     fi
 
