@@ -269,6 +269,16 @@ setup_macos() {
             info "Install Deno with: brew install deno"
         fi
     fi
+
+    # Install MonoLisa fonts with Nerd Font patches
+    if [ -f "$DOTFILES/fonts/monolisa/patch-monolisa.sh" ]; then
+        info "Setting up MonoLisa fonts"
+        if "$DOTFILES/fonts/monolisa/patch-monolisa.sh"; then
+            success "MonoLisa fonts setup complete"
+        else
+            warning "Font patching was skipped"
+        fi
+    fi
 }
 
 # Main function that handles command line arguments and orchestrates the setup
@@ -301,7 +311,7 @@ main() {
             echo "  link-dir   - Create symlinks for directory configs (usage: link-dir <directory>)"
             echo "  shell      - Set up shell tools (Zap, fzf, bat)"
             echo "  brew       - Install applications and packages from Brewfile"
-            echo "  macos      - Configure macOS system preferences"
+            echo "  macos      - Configure macOS system preferences (includes fonts)"
             echo "  all        - Run all setup steps (link, shell, brew, macos)"
             echo
             exit 1

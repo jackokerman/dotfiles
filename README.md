@@ -12,23 +12,22 @@ git clone https://github.com/jackokerman/dotfiles.git
 cd dotfiles
 ```
 
-2. Run the install script:
+2. (Optional) Download MonoLisa font:
+   - Visit the [MonoLisa orders page](https://www.monolisa.dev/orders) and log in with your email and order number
+   - Download and place the ZIP file in `fonts/monolisa/source/`
+   - The font will be automatically patched and installed during setup
+
+3. Run the install script:
 
 ```bash
-# Create symlinks for all config files
-./install.sh link
-
-# Set up shell tools (Zap, fzf, bat)
-./install.sh shell
-
-# Install Homebrew packages from Brewfile
-./install.sh brew
-
-# Configure macOS system preferences
-./install.sh macos
-
 # Run all setup steps (recommended)
 ./install.sh all
+
+# Or run individual steps:
+./install.sh link   # Create symlinks for config files
+./install.sh shell  # Set up shell tools (Zap, fzf, bat)
+./install.sh brew   # Install Homebrew packages
+./install.sh macos  # Configure macOS system preferences
 ```
 
 ## Post-Installation Setup
@@ -42,15 +41,6 @@ After running `./install.sh all`, launch and grant accessibility permissions whe
 3. Hammerspoon
 
 All applications are configured to start automatically on subsequent logins.
-
-### Font Installation
-
-MonoLisa Nerd Font is used for terminal and text editors. To install:
-
-1. Download the font files (.otf) from your Dropbox
-2. Open Font Book (macOS Font Manager)
-3. Drag and drop the .otf files into Font Book, or use File > Add Fonts
-4. The font will be available system-wide once installed
 
 ### Raycast Configuration
 
