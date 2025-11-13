@@ -3,3 +3,10 @@
 .vscode
 ~/.gitconfig-local
 config/hammerspoon/init-local.lua
+
+# MonoLisa font files (only keep the script in git)
+fonts/monolisa/monolisa-nerdfont-patch/
+fonts/monolisa/source/*
+!fonts/monolisa/source/.gitkeep
+fonts/monolisa/extracted/
+fonts/monolisa/patched/

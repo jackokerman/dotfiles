@@ -21,3 +21,4 @@ brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
+brew "fontforge"                    # font editor (required for Nerd Font patching)
