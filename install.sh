@@ -4,35 +4,8 @@
 
 DOTFILES="$(pwd)"
 
-# Colors for logging output
-COLOR_BLUE="\033[34m"
-COLOR_GREEN="\033[32m"
-COLOR_RED="\033[31m"
-COLOR_PURPLE="\033[35m"
-COLOR_YELLOW="\033[33m"
-COLOR_NONE="\033[0m"
-
-# Logging functions
-title() {
-    echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}\n"
-}
-
-error() {
-    echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1" >&2
-    exit 1
-}
-
-warning() {
-    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1" >&2
-}
-
-info() {
-    echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
-}
-
-success() {
-    echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
-}
+# Source shared logging utilities
+source "$DOTFILES/scripts/logging.sh"
 
 # Helper function to create symlink with proper error handling
 create_symlink() {
@@ -233,23 +206,23 @@ setup_macos() {
         error "macOS configuration can only be run on macOS"
     fi
 
-    if [ -f "$DOTFILES/macos" ]; then
+    if [ -f "$DOTFILES/scripts/macos.sh" ]; then
         info "Running macOS configuration script"
-        if "$DOTFILES/macos"; then
+        if "$DOTFILES/scripts/macos.sh"; then
             success "macOS configuration completed"
         else
             error "Failed to configure macOS settings"
         fi
     else
-        error "macOS configuration script not found at $DOTFILES/macos"
+        error "macOS configuration script not found at $DOTFILES/scripts/macos.sh"
     fi
 
 
     # Generate Karabiner-Elements configuration if available
-    if [ -f "$DOTFILES/karabiner-config.ts" ]; then
+    if [ -f "$DOTFILES/scripts/karabiner-config.ts" ]; then
         if command -v deno >/dev/null 2>&1; then
             info "Generating Karabiner-Elements configuration"
-            if deno run --allow-env --allow-read --allow-write "$DOTFILES/karabiner-config.ts"; then
+            if deno run --allow-env --allow-read --allow-write "$DOTFILES/scripts/karabiner-config.ts"; then
                 success "Karabiner-Elements configuration generated"
             else
                 warning "Failed to generate Karabiner-Elements configuration"
@@ -261,9 +234,9 @@ setup_macos() {
     fi
 
     # Install MonoLisa fonts with Nerd Font patches
-    if [ -f "$DOTFILES/fonts/monolisa/patch-monolisa.sh" ]; then
+    if [ -f "$DOTFILES/scripts/patch-monolisa.sh" ]; then
         info "Setting up MonoLisa fonts"
-        if "$DOTFILES/fonts/monolisa/patch-monolisa.sh"; then
+        if "$DOTFILES/scripts/patch-monolisa.sh"; then
             success "MonoLisa fonts setup complete"
         else
             warning "Font patching was skipped"
