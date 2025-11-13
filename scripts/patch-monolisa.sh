@@ -43,6 +43,60 @@ setup_patcher() {
     fi
 }
 
+# Get font version using fontforge
+get_font_version() {
+    local font_file="$1"
+
+    if [ ! -f "$font_file" ]; then
+        return 1
+    fi
+
+    local font_dir="$(dirname "$font_file")"
+    local font_name="$(basename "$font_file")"
+
+    # Extract version using fontforge, filter out warnings
+    local version=$(cd "$font_dir" 2>/dev/null && \
+                    fontforge -lang=py -c "import fontforge; font = fontforge.open('$font_name'); print(font.version)" 2>&1 | \
+                    grep -v "Copyright\|License\|Version:\|Based on\|Core python\|Warning:" | \
+                    tail -1)
+
+    # Extract base version (before semicolon if present)
+    # e.g., "2.017;Nerd Fonts 3.4.0" -> "2.017"
+    echo "$version" | cut -d';' -f1
+}
+
+# Check if patching can be skipped
+should_skip_patching() {
+    # Look for extracted MonoLisa font (unpatched)
+    local extracted_font=$(find "$EXTRACTED_DIR" -type f -name "MonoLisa-Regular.*" \( -name "*.ttf" -o -name "*.otf" \) | head -n 1)
+
+    # Look for installed MonoLisa Nerd Font (patched)
+    local installed_font="$HOME/Library/Fonts/MonoLisaNerdFont-Regular.ttf"
+
+    if [ -z "$extracted_font" ] || [ ! -f "$installed_font" ]; then
+        # Can't compare - continue with patching
+        return 1
+    fi
+
+    local extracted_version=$(get_font_version "$extracted_font")
+    local installed_version=$(get_font_version "$installed_font")
+
+    if [ -z "$extracted_version" ] || [ -z "$installed_version" ]; then
+        # Couldn't get versions - continue with patching
+        return 1
+    fi
+
+    info "Downloaded version: $extracted_version"
+    info "Installed version: $installed_version"
+
+    if [ "$extracted_version" = "$installed_version" ]; then
+        success "MonoLisa v$installed_version already installed, skipping patch"
+        return 0  # Skip patching
+    fi
+
+    return 1  # Continue with patching
+}
+
 # Extract the ZIP file
 extract_fonts() {
     info "Looking for MonoLisa ZIP file in ~/Downloads/..."
@@ -123,6 +177,12 @@ install_fonts() {
 main() {
     setup_patcher
     extract_fonts || return 1
+
+    # Check if we can skip patching
+    if should_skip_patching; then
+        return 0
+    fi
+
     patch_fonts
     install_fonts
 }
