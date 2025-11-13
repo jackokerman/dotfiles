@@ -42,6 +42,15 @@ After running `./install.sh all`, launch and grant accessibility permissions whe
 
 All applications are configured to start automatically on subsequent logins.
 
+### iTerm2 Configuration
+
+To import iTerm2 profiles:
+
+1. Open iTerm2 Settings → Profiles
+2. Click "Other Actions..." (bottom left) → Import JSON Profiles
+3. Select `config/iterm2/Profiles.json` from your dotfiles directory
+4. Set the imported profile as your default
+
 ### Raycast Configuration
 
 Raycast is installed but requires manual setup:

@@ -1,6 +1,4 @@
 {
-"Profiles": [
-{
   "Link Color" : {
     "Red Component" : 0.50196081399917603,
     "Color Space" : "sRGB",
@@ -394,7 +392,7 @@
     "Alpha Component" : 1,
     "Green Component" : 0.85882353782653809
   },
-  "Normal Font" : "MonoLisaNerdFontComplete-Bold 14",
+  "Normal Font" : "MonoLisaNF-Bold 14",
   "Custom Directory" : "No",
   "Ansi 0 Color" : {
     "Red Component" : 0.11372549086809158,
@@ -404,6 +402,4 @@
     "Green Component" : 0.23137255012989044
   },
   "Guid" : "1C6E5878-4155-4357-95EF-077A16C0A4CA"
-}
-]
 }
