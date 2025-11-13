@@ -64,6 +64,15 @@ async function main() {
 
   writeToProfile(PROFILE_NAME, [
     rule(
+      "Caps Lock: Tap for Caps Lock, Hold for Control (built-in keyboard only)",
+    ).manipulators([
+      withCondition({ type: "device_if", identifiers: [{ is_built_in_keyboard: true }] })([
+        map("caps_lock")
+          .to("left_control")
+          .toIfAlone("caps_lock"),
+      ]),
+    ]),
+    rule(
       "Disable all keys on an Apple Magic Keyboard except Touch ID",
     ).manipulators([
       withMapper([
