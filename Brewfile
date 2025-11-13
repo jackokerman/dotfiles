@@ -8,7 +8,7 @@ if OS.mac?
   cask "karabiner-elements"         # keyboard customizer
   cask "nikitabobko/tap/aerospace"  # a tiling window manager
   cask "cleanshot"                  # screenshot tool
-  cask "logitech-options+"          # software for Logitech mouse
+  cask "logi-options+"          # software for Logitech mouse
 end
 
 # Packages
