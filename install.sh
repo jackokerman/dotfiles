@@ -206,6 +206,15 @@ setup_macos() {
         error "macOS configuration can only be run on macOS"
     fi
 
+    # Enable Touch ID for sudo commands (must run before other sudo commands)
+    if [ -f "$DOTFILES/scripts/enable-touchid-sudo.sh" ]; then
+        if "$DOTFILES/scripts/enable-touchid-sudo.sh"; then
+            success "Touch ID setup completed"
+        else
+            warning "Touch ID setup was skipped or failed"
+        fi
+    fi
+
     if [ -f "$DOTFILES/scripts/macos.sh" ]; then
         info "Running macOS configuration script"
         if "$DOTFILES/scripts/macos.sh"; then
