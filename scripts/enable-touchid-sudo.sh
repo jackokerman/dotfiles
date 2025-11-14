@@ -8,8 +8,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/logging.sh"
 
-title "Enabling Touch ID for sudo"
-
 # Check macOS version
 MACOS_VERSION=$(sw_vers -productVersion | cut -d. -f1)
 if [[ $MACOS_VERSION -lt 14 ]]; then
