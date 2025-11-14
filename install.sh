@@ -226,6 +226,20 @@ setup_macos() {
         error "macOS configuration script not found at $DOTFILES/scripts/macos.sh"
     fi
 
+    # Setup Dock with applications and folders
+    if [ -f "$DOTFILES/scripts/setup-dock.sh" ]; then
+        if command -v dockutil >/dev/null 2>&1; then
+            info "Setting up Dock"
+            if "$DOTFILES/scripts/setup-dock.sh"; then
+                success "Dock setup completed"
+            else
+                warning "Failed to setup Dock"
+            fi
+        else
+            warning "dockutil not found. Skipping Dock setup."
+            info "Install dockutil with: brew install dockutil"
+        fi
+    fi
 
     # Generate Karabiner-Elements configuration if available
     if [ -f "$DOTFILES/scripts/karabiner-config.ts" ]; then

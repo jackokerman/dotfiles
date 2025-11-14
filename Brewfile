@@ -8,7 +8,8 @@ if OS.mac?
   cask "karabiner-elements"         # keyboard customizer
   cask "nikitabobko/tap/aerospace"  # a tiling window manager
   cask "cleanshot"                  # screenshot tool
-  cask "logi-options+"          # software for Logitech mouse
+  cask "logi-options+"              # software for Logitech mouse
+  cask "obsidian"                   # knowledge base with markdown files
 end
 
 # Packages
@@ -22,4 +23,5 @@ brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
+brew "dockutil"                     # tool for managing dock items
 brew "fontforge"                    # font editor (required for Nerd Font patching)
