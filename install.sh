@@ -163,14 +163,14 @@ setup_shell() {
 # Install applications and packages from Brewfile
 setup_brew() {
     title "Installing Homebrew packages"
-    
-    # Check if we're running on macOS
-    if [ "$(uname -s)" != "Darwin" ]; then
-        error "Homebrew setup can only be run on macOS"
-    fi
-    
+
     # Install Homebrew if not already installed
     if ! command -v brew >/dev/null 2>&1; then
+        # Only auto-install on macOS
+        if [ "$(uname -s)" != "Darwin" ]; then
+            info "Skipping Homebrew setup (brew not found and not on macOS)"
+            return 0
+        fi
         info "Homebrew not found. Installing Homebrew..."
         if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
             success "Homebrew installed successfully"
@@ -203,7 +203,8 @@ setup_macos() {
 
     # Check if we're running on macOS
     if [ "$(uname -s)" != "Darwin" ]; then
-        error "macOS configuration can only be run on macOS"
+        info "Skipping macOS configuration (not running on macOS)"
+        return 0
     fi
 
     # Enable Touch ID for sudo commands (must run before other sudo commands)
