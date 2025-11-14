@@ -23,5 +23,4 @@ brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
-brew "dockutil"                     # tool for managing dock items
 brew "fontforge"                    # font editor (required for Nerd Font patching)
