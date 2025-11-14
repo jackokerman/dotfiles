@@ -159,9 +159,9 @@ info "Configuring Screen settings"
 # defaults write com.apple.screensaver askForPassword -int 1
 # defaults write com.apple.screensaver askForPasswordDelay -int 0
 
-# Save screenshots to ~/Desktop/Screenshots
-mkdir -p "${HOME}/Desktop/Screenshots"
-defaults write com.apple.screencapture location -string "${HOME}/Desktop/Screenshots"
+# Save screenshots to ~/Screenshots
+mkdir -p "${HOME}/Screenshots"
+defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
 
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
@@ -266,6 +266,36 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 
 # Always show hidden files
 defaults write com.apple.finder AppleShowAllFiles true
+
+# Configure Finder sidebar favorites
+info "Configuring Finder sidebar..."
+
+# Install PyObjC if not already installed (needed for sidebar management)
+if ! python3 -c "from LaunchServices import LSSharedFileListCreate" 2>/dev/null; then
+    info "Installing PyObjC for sidebar management..."
+    if pip3 install pyobjc-framework-LaunchServices 2>/dev/null; then
+        info "PyObjC installed successfully"
+    else
+        info "Warning: Could not install PyObjC. Sidebar configuration will be skipped."
+        info "You can manually configure your Finder sidebar in Finder > Settings > Sidebar"
+    fi
+fi
+
+# Run the sidebar configuration script
+SIDEBAR_SCRIPT="$(dirname "$0")/configure-finder-sidebar.py"
+if python3 "$SIDEBAR_SCRIPT" configure 2>/dev/null; then
+    info "Finder sidebar configured successfully"
+else
+    info "Warning: Finder sidebar configuration failed. You may need to configure it manually."
+fi
+
+# Hide tags section from Finder sidebar
+defaults write com.apple.finder ShowRecentTags -bool false
+
+# Clear all existing file tags
+info "Clearing existing file tags..."
+# This removes the tag database
+rm -f ~/Library/SyncedPreferences/com.apple.finder.plist 2>/dev/null || true
 
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #
