@@ -37,7 +37,7 @@ add_app_if_exists '/Applications/Super Whisper.app'
 
 # Add folders/stacks (right side)
 info "Adding folders..."
-dockutil --add "$HOME/Desktop/Screenshots" --view grid --display stack --section others --no-restart
+dockutil --add "$HOME/Screenshots" --view grid --display stack --section others --no-restart
 dockutil --add "$HOME/Downloads" --view grid --display stack --section others --no-restart
 
 # Load local dock configuration if it exists (for machine-specific additions like Slack)
