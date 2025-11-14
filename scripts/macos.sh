@@ -2,6 +2,11 @@
 
 # ~/.macos — https://mths.be/macos
 
+# Source logging utilities
+source "$(dirname "$0")/logging.sh"
+
+title "Configuring macOS system preferences"
+
 # Close any open System Settings panes, to prevent them from overriding
 # settings we're about to change
 osascript -e 'tell application "System Settings" to quit' 2>/dev/null
@@ -20,6 +25,8 @@ done 2>/dev/null &
 ###############################################################################
 # General UI/UX                                                               #
 ###############################################################################
+
+info "Configuring General UI/UX settings"
 
 # Disable transparency in the menu bar and elsewhere on Yosemite
 defaults write com.apple.universalaccess reduceTransparency -bool true
@@ -101,6 +108,8 @@ defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 # Trackpad, mouse, keyboard, Bluetooth accessories, and input                 #
 ###############################################################################
 
+info "Configuring Trackpad, mouse, and keyboard settings"
+
 # Trackpad: enable tap to click for this user and for the login screen
 # For built-in trackpad
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
@@ -144,6 +153,8 @@ defaults write NSGlobalDomain AppleMetricUnits -bool false
 # Screen                                                                      #
 ###############################################################################
 
+info "Configuring Screen settings"
+
 # Require password immediately after sleep or screen saver begins
 # defaults write com.apple.screensaver askForPassword -int 1
 # defaults write com.apple.screensaver askForPasswordDelay -int 0
@@ -170,6 +181,8 @@ sudo defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Aut
 ###############################################################################
 # Finder                                                                      #
 ###############################################################################
+
+info "Configuring Finder settings"
 
 # Finder: allow quitting via ⌘ + Q; doing so will also hide desktop icons
 defaults write com.apple.finder QuitMenuItem -bool true
@@ -258,6 +271,8 @@ defaults write com.apple.finder AppleShowAllFiles true
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################
 
+info "Configuring Dock settings"
+
 # Enable highlight hover effect for the grid view of a stack (Dock)
 defaults write com.apple.dock mouse-over-hilite-stack -bool true
 
@@ -319,7 +334,9 @@ defaults write com.apple.WindowManager AutoHide -bool false
 # Safari & WebKit                                                             #
 ###############################################################################
 
-# Privacy: don’t send search queries to Apple
+info "Configuring Safari & WebKit settings"
+
+# Privacy: don't send search queries to Apple
 defaults write com.apple.Safari UniversalSearchEnabled -bool false
 defaults write com.apple.Safari SuppressSearchSuggestions -bool true
 
@@ -405,6 +422,8 @@ defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
 # Mail                                                                        #
 ###############################################################################
 
+info "Configuring Mail settings"
+
 # Disable send and reply animations in Mail.app
 defaults write com.apple.mail DisableReplyAnimations -bool true
 defaults write com.apple.mail DisableSendAnimations -bool true
@@ -430,12 +449,16 @@ defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnab
 # Terminal & iTerm 2                                                          #
 ###############################################################################
 
-# Don’t display the annoying prompt when quitting iTerm
+info "Configuring Terminal & iTerm 2 settings"
+
+# Don't display the annoying prompt when quitting iTerm
 defaults write com.googlecode.iterm2 PromptOnQuit -bool false
 
 ###############################################################################
 # Time Machine                                                                #
 ###############################################################################
+
+info "Configuring Time Machine settings"
 
 # Prevent Time Machine from prompting to use new hard drives as backup volume
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
@@ -443,6 +466,8 @@ defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 ###############################################################################
 # Activity Monitor                                                            #
 ###############################################################################
+
+info "Configuring Activity Monitor settings"
 
 # Show the main window when launching Activity Monitor
 defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
@@ -460,6 +485,8 @@ defaults write com.apple.ActivityMonitor SortDirection -int 0
 ###############################################################################
 # Calendar, TextEdit, and Disk Utility                                        #
 ###############################################################################
+
+info "Configuring Calendar, TextEdit, and Disk Utility settings"
 
 # Enable the debug menu in Calendar
 defaults write com.apple.iCal IncludeDebugMenu -bool true
@@ -480,6 +507,8 @@ defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool true
 ###############################################################################
 # Mac App Store                                                               #
 ###############################################################################
+
+info "Configuring Mac App Store settings"
 
 # Enable the WebKit Developer Tools in the Mac App Store
 defaults write com.apple.appstore WebKitDeveloperExtras -bool true
@@ -512,6 +541,8 @@ defaults write com.apple.commerce AutoUpdateRestartRequired -bool true
 # Photos                                                                      #
 ###############################################################################
 
+info "Configuring Photos settings"
+
 # Prevent Photos from opening automatically when devices are plugged in
 defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 
@@ -519,7 +550,9 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 # Messages                                                                    #
 ###############################################################################
 
-# Disable smart quotes as it’s annoying for messages that contain code
+info "Configuring Messages settings"
+
+# Disable smart quotes as it's annoying for messages that contain code
 defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
 
 # Disable continuous spell checking
@@ -528,6 +561,8 @@ defaults write com.apple.messageshelper.MessageController SOInputLineSettings -d
 ###############################################################################
 # Google Chrome & Google Chrome Canary                                        #
 ###############################################################################
+
+info "Configuring Google Chrome settings"
 
 # Use the system-native print preview dialog
 defaults write com.google.Chrome DisablePrintPreview -bool true
@@ -540,6 +575,8 @@ defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool t
 ###############################################################################
 # Additional System Settings                                                  #
 ###############################################################################
+
+info "Configuring Additional System Settings"
 
 # Disable notification badge on System Settings icon
 defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
@@ -566,11 +603,15 @@ defaults write com.apple.menuextra.clock ShowDate -int 1
 defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
 defaults write com.apple.menuextra.clock ShowSeconds -bool false
 
-echo "Done. Note that some of these changes require a logout/restart to take effect."
-
 ###############################################################################
 # Hammerspoon                                                                 #
 ###############################################################################
 
+info "Configuring Hammerspoon settings"
+
 # Set Hammerspoon config location to ~/.config/hammerspoon/init.lua
 defaults write org.hammerspoon.Hammerspoon MJConfigFile "~/.config/hammerspoon/init.lua"
+
+success "✓ macOS system preferences configured successfully"
+echo ""
+info "Note: Some changes require a logout/restart to take effect"
