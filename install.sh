@@ -199,13 +199,13 @@ setup_brew() {
 
 # Configure macOS system preferences
 setup_macos() {
-    title "Configuring macOS system preferences"
-
     # Check if we're running on macOS
     if [ "$(uname -s)" != "Darwin" ]; then
         info "Skipping macOS configuration (not running on macOS)"
         return 0
     fi
+
+    title "Configuring macOS system preferences"
 
     # Enable Touch ID for sudo commands (must run before other sudo commands)
     if [ -f "$DOTFILES/scripts/enable-touchid-sudo.sh" ]; then
