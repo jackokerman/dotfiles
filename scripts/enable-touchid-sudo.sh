@@ -29,12 +29,10 @@ if [[ -f "$SUDO_LOCAL" ]] && grep -q "^auth.*sufficient.*pam_tid\.so" "$SUDO_LOC
     exit 0
 fi
 
-# Request sudo access
-info "This will modify $SUDO_LOCAL to enable Touch ID for sudo commands"
-sudo -v
-
 # If sudo_local doesn't exist, create it from the template
 if [[ ! -f "$SUDO_LOCAL" ]]; then
+    info "This will modify $SUDO_LOCAL to enable Touch ID for sudo commands"
+    sudo -v
     if [[ -f "${SUDO_LOCAL}.template" ]]; then
         info "Creating $SUDO_LOCAL from template"
         sudo cp "${SUDO_LOCAL}.template" "$SUDO_LOCAL"
@@ -49,10 +47,14 @@ fi
 # Uncomment the pam_tid.so line or add it if it doesn't exist
 if grep -q "^#.*auth.*sufficient.*pam_tid\.so" "$SUDO_LOCAL"; then
     # Line exists but is commented, uncomment it
+    info "This will modify $SUDO_LOCAL to enable Touch ID for sudo commands"
+    sudo -v
     info "Uncommenting Touch ID line in $SUDO_LOCAL"
     sudo sed -i '' 's/^#\(auth.*sufficient.*pam_tid\.so\)/\1/' "$SUDO_LOCAL"
 elif ! grep -q "pam_tid\.so" "$SUDO_LOCAL"; then
     # Line doesn't exist at all, add it at the top after any comments
+    info "This will modify $SUDO_LOCAL to enable Touch ID for sudo commands"
+    sudo -v
     info "Adding Touch ID line to $SUDO_LOCAL"
     sudo sed -i '' "1a\\
 $PAM_TID_LINE
