@@ -11,6 +11,7 @@ if OS.mac?
   cask "cleanshot"                  # screenshot tool
   cask "logi-options+"              # software for Logitech mouse
   cask "obsidian"                   # knowledge base with markdown files
+  cask "1password"                  # password manager
 end
 
 # Packages
