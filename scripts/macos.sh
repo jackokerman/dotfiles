@@ -119,10 +119,8 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Enable dragging with drag lock (double tap to drag)
-defaults write com.apple.AppleMultitouchTrackpad Dragging -bool true
+# Enable drag lock (double tap to drag, double tap to release)
 defaults write com.apple.AppleMultitouchTrackpad DragLock -bool true
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Dragging -bool true
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad DragLock -bool true
 
 # Enable full keyboard access for all controls
@@ -597,8 +595,8 @@ defaults write com.apple.assistant.support "Assistant Enabled" -bool false
 defaults write com.apple.Siri StatusMenuVisible -bool false
 defaults write com.apple.Siri UserHasDeclinedEnable -bool true
 
-# Menu bar: show battery percentage
-defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+# Menu bar: show battery percentage (Control Center method for Big Sur+)
+defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -int 1
 
 # Show date and time in menu bar
 defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
