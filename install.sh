@@ -40,8 +40,8 @@ create_symlinks_from_dir() {
         error "Source directory does not exist: $source_dir"
     fi
     
-    # Define patterns to exclude (version control files)
-    local exclude_patterns="-name .git -o -name .gitignore -o -name .gitmodules -o -name README.md"
+    # Define patterns to exclude (version control files and install scripts)
+    local exclude_patterns="-name .git -o -name .gitignore -o -name .gitmodules -o -name README.md -o -name install.sh"
     
     # Create target directory if it doesn't exist
     if [ ! -d "$target_dir" ]; then
