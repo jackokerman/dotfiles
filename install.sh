@@ -57,8 +57,14 @@ create_symlinks_from_dir() {
         if [ -d "$item" ]; then
             # If it's a directory, recursively process it
             if [ -L "$target_item" ]; then
-                # Target is already a symlink, skip
-                info "~${target_item#$HOME} already exists as symlink... Skipping."
+                # Target is already a symlink - resolve and merge if it's a directory
+                local resolved_target=$(readlink -f "$target_item" 2>/dev/null || readlink "$target_item")
+                if [ -d "$resolved_target" ]; then
+                    # It's a symlinked directory, merge contents into it
+                    create_symlinks_from_dir "$item" "$resolved_target"
+                else
+                    info "~${target_item#$HOME} already exists as symlink... Skipping."
+                fi
             elif [ -d "$target_item" ]; then
                 # Target directory exists as regular directory, merge contents
                 create_symlinks_from_dir "$item" "$target_item"
