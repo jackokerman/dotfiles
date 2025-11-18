@@ -333,6 +333,33 @@ defaults write com.apple.dock showLaunchpadGestureEnabled -int 0
 defaults write com.apple.WindowManager GloballyEnabled -bool false
 defaults write com.apple.WindowManager AutoHide -bool false
 
+# Disable hot corners
+# Possible values:
+#  0: no-op
+#  2: Mission Control
+#  3: Show application windows
+#  4: Desktop
+#  5: Start screen saver
+#  6: Disable screen saver
+#  7: Dashboard
+# 10: Put display to sleep
+# 11: Launchpad
+# 12: Notification Center
+# 13: Lock Screen
+# 14: Quick Note
+# Top left screen corner → No action
+defaults write com.apple.dock wvous-tl-corner -int 0
+defaults write com.apple.dock wvous-tl-modifier -int 0
+# Top right screen corner → No action
+defaults write com.apple.dock wvous-tr-corner -int 0
+defaults write com.apple.dock wvous-tr-modifier -int 0
+# Bottom left screen corner → No action
+defaults write com.apple.dock wvous-bl-corner -int 0
+defaults write com.apple.dock wvous-bl-modifier -int 0
+# Bottom right screen corner → No action (disables Quick Note)
+defaults write com.apple.dock wvous-br-corner -int 0
+defaults write com.apple.dock wvous-br-modifier -int 0
+
 ###############################################################################
 # Safari & WebKit                                                             #
 ###############################################################################
