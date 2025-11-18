@@ -118,6 +118,48 @@ setup_symlinks() {
     create_symlinks_from_dir "$DOTFILES/config" "$HOME/.config"
 }
 
+# Merge VS Code and Cursor settings template into existing config
+setup_vscode_settings() {
+    title "Setting up VS Code and Cursor settings"
+
+    local vscode_user_dir="$HOME/Library/Application Support/Code/User"
+    local cursor_user_dir="$HOME/Library/Application Support/Cursor/User"
+    local template_settings="$DOTFILES/config/vscode/settings.json"
+
+    # Ensure the User directories exist
+    mkdir -p "$vscode_user_dir"
+    mkdir -p "$cursor_user_dir"
+
+    # Helper function to merge settings
+    merge_settings() {
+        local target_file="$1"
+        local editor_name="$2"
+
+        if [ -f "$target_file" ]; then
+            info "Merging template settings into existing $editor_name configuration"
+            # Use jq to merge JSON (preserves existing settings, updates template keys)
+            if jq -s '.[0] * .[1]' "$target_file" "$template_settings" > "$target_file.tmp"; then
+                mv "$target_file.tmp" "$target_file"
+                success "$editor_name settings merged successfully"
+            else
+                rm -f "$target_file.tmp"
+                error "Failed to merge $editor_name settings"
+            fi
+        else
+            info "Creating new $editor_name settings from template"
+            cp "$template_settings" "$target_file"
+            success "$editor_name settings created from template"
+        fi
+    }
+
+    # Merge settings for both editors
+    merge_settings "$vscode_user_dir/settings.json" "VS Code"
+    merge_settings "$cursor_user_dir/settings.json" "Cursor"
+
+    echo -e
+    success "VS Code and Cursor settings configured"
+}
+
 # Create symlinks for directory configurations
 setup_directory() {
     local config_dir="$1"
@@ -264,6 +306,7 @@ main() {
     case "${1:-}" in
         link)
             setup_symlinks
+            setup_vscode_settings
             ;;
         link-dir)
             setup_directory "$2"
@@ -279,6 +322,7 @@ main() {
             ;;
         all)
             setup_symlinks
+            setup_vscode_settings
             setup_brew
             setup_shell
             setup_macos
