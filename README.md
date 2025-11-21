@@ -61,6 +61,14 @@ Raycast is installed but requires manual setup:
 2. Disable Spotlight: System Settings > Keyboard > Keyboard Shortcuts > Spotlight > uncheck "Show Spotlight search"
 3. (Optional) Enable Settings Sync in Raycast preferences for personal machines to sync extensions and configurations
 
+#### Raycast Script Commands
+
+Custom script commands are included in `config/raycast-scripts/`.
+
+After running `./install.sh link`, add the script directory to Raycast:
+1. Raycast Preferences → Extensions → Script Commands
+2. Add Directory: `~/.config/raycast-scripts`
+
 ## Git Configuration
 
 - Shared settings: `~/.config/git/config` (symlinked from dotfiles)
