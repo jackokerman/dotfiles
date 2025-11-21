@@ -17,6 +17,7 @@ brew "bat"                          # a better cat
 brew "eza"                          # a better ls
 brew "fd"                           # find alternative
 brew "fzf"                          # a fuzzy finder
+brew "gh"                           # GitHub CLI
 brew "git"                          # git version control (latest)
 brew "jq"                           # parse and work with JSON
 brew "python"                       # python (latest)
