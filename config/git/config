@@ -45,3 +45,6 @@
 
 [advice]
     skippedCherryPicks = false
+
+[branch]
+	autoSetupMerge = simple
