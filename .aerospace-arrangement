@@ -1,0 +1,14 @@
+#!/bin/bash
+# Base arrangement config for aerospace window management
+# This config is used on personal machines (no -local override)
+# Format: "APP_NAME|FILTER|WORKSPACE"
+#   APP_NAME: Application name from aerospace (e.g., "Google Chrome")
+#   FILTER: Optional window title filter (empty for no filter)
+#   WORKSPACE: Single letter workspace (e.g., "B", "M", "T")
+
+declare -a AEROSPACE_ARRANGEMENTS=(
+    "Google Chrome||B"           # Browser to workspace B
+    "Messages||M"                # iMessage to workspace M
+    "Godspeed||T"                # Godspeed task manager to workspace T
+    "Discord||D"                 # Discord to workspace D
+)
