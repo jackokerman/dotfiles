@@ -107,6 +107,11 @@ setup_symlinks() {
         fi
     done
 
+    # Symlink aerospace arrangement config
+    if [ -f "$DOTFILES/.aerospace-arrangement" ]; then
+        create_symlink "$DOTFILES/.aerospace-arrangement" "$HOME/.aerospace-arrangement"
+    fi
+
     echo -e
     info "installing to ~/.config"
     if [ ! -d "$HOME/.config" ]; then
