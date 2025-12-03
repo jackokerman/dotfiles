@@ -6,6 +6,7 @@ font-size = 14
 
 # Cursor
 cursor-style = block
+mouse-hide-while-typing = true
 
 # Theme
 theme = nightfly
