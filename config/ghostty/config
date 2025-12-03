@@ -1,0 +1,11 @@
+# Ghostty Terminal Configuration
+
+# Font configuration
+font-family = MonoLisa Nerd Font
+font-size = 14
+
+# Cursor
+cursor-style = block
+
+# Theme
+theme = nightfly

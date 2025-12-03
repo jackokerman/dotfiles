@@ -2,6 +2,7 @@ if OS.mac?
   # Applications
   cask "hammerspoon"                # desktop automation application
   cask "iterm2"                     # popular terminal emulator
+  cask "ghostty"                    # modern terminal emulator
   cask "keepingyouawake"            # preven mac from going to sleep
   cask "raycast"                    # spotlight replacement
   cask "spotify"                    # music streaming service
