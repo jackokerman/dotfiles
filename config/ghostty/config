@@ -3,9 +3,12 @@
 # Font configuration
 font-family = MonoLisa Nerd Font
 font-size = 14
+font-thicken = true
 
 # Cursor
 cursor-style = block
+cursor-style-blink = false
+shell-integration-features = false
 mouse-hide-while-typing = true
 
 # Theme
