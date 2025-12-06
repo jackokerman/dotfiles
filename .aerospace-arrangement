@@ -8,7 +8,10 @@
 
 declare -a AEROSPACE_ARRANGEMENTS=(
     "Google Chrome||B"           # Browser to workspace B
+    "Arc||B"                     # Arc browser to workspace B
+    "Calendar||C"                # Calendar to workspace C
     "Messages||M"                # iMessage to workspace M
+    "Obsidian||N"                # Obsidian notes to workspace N
     "Godspeed||T"                # Godspeed task manager to workspace T
     "Discord||D"                 # Discord to workspace D
 )
