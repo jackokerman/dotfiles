@@ -16,7 +16,6 @@ fi
 [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
 
 plug "romkatv/powerlevel10k"
-plug "agkozak/zsh-z"
 plug "Aloxaf/fzf-tab"
 plug "zsh-users/zsh-completions"
 plug "zsh-users/zsh-syntax-highlighting"
@@ -28,6 +27,9 @@ plug "trystan2k/zsh-tab-title"
 # Load and initialize completion system
 autoload -Uz compinit
 compinit
+
+# Initialize zoxide for smarter directory jumping
+eval "$(zoxide init zsh)"
 
 # Aliases
 source $HOME/.aliases
