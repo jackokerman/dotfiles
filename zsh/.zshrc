@@ -28,8 +28,10 @@ plug "trystan2k/zsh-tab-title"
 autoload -Uz compinit
 compinit
 
-# Initialize zoxide for smarter directory jumping
-eval "$(zoxide init zsh)"
+# Initialize zoxide for smarter directory jumping (if available)
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
 
 # Aliases
 source $HOME/.aliases
