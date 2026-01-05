@@ -12,6 +12,7 @@ if OS.mac?
   cask "logi-options+"              # software for Logitech mouse
   cask "obsidian"                   # knowledge base with markdown files
   cask "1password"                  # password manager
+  cask "font-symbols-only-nerd-font" # Nerd Font symbols for fallback
 end
 
 # Packages
@@ -26,5 +27,4 @@ brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
-brew "fontforge"                    # font editor (required for Nerd Font patching)
 brew "zoxide"                       # smarter cd command (z/zi)

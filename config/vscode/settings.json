@@ -1,7 +1,7 @@
 {
   "workbench.colorTheme": "Night Owl",
   "editor.fontSize": 14,
-  "editor.fontFamily": "\"MonoLisa Nerd Font\", Menlo, Consolas, monospace",
+  "editor.fontFamily": "\"MonoLisa Variable\", \"Symbols Nerd Font Mono\", Menlo, Consolas, monospace",
   "editor.minimap.enabled": false,
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.fontLigatures.enabled": true
