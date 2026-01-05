@@ -295,15 +295,6 @@ setup_macos() {
         fi
     fi
 
-    # Install MonoLisa fonts with Nerd Font patches
-    if [ -f "$DOTFILES/scripts/patch-monolisa.sh" ]; then
-        info "Setting up MonoLisa fonts"
-        if "$DOTFILES/scripts/patch-monolisa.sh"; then
-            success "MonoLisa fonts setup complete"
-        else
-            warning "Font patching was skipped"
-        fi
-    fi
 }
 
 # Main function that handles command line arguments and orchestrates the setup

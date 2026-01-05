@@ -14,8 +14,9 @@ cd dotfiles
 
 2. (Optional) Download MonoLisa font:
    - Visit the [MonoLisa orders page](https://www.monolisa.dev/orders) and log in with your email and order number
-   - Download and place the ZIP file in `fonts/monolisa/source/`
-   - The font will be automatically patched and installed during setup
+   - Download the **Complete** version (variable fonts) and extract the ZIP
+   - Copy the `.ttf` files from the `ttf/` folder to `~/Library/Fonts/`
+   - The dotfiles use MonoLisa Variable with [Symbols Nerd Font](https://github.com/ryanoasis/nerd-fonts) as fallback for icons
 
 3. Run the install script:
 

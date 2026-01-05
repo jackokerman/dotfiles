@@ -1,7 +1,8 @@
 # Ghostty Terminal Configuration
 
 # Font configuration
-font-family = MonoLisa Nerd Font
+font-family = MonoLisa Variable
+font-family = Symbols Nerd Font Mono
 font-size = 14
 font-thicken = true
 
