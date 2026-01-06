@@ -295,6 +295,11 @@ setup_macos() {
         fi
     fi
 
+    # Install fonts
+    if [ -f "$DOTFILES/scripts/install-fonts.sh" ]; then
+        info "Installing fonts"
+        "$DOTFILES/scripts/install-fonts.sh"
+    fi
 }
 
 # Main function that handles command line arguments and orchestrates the setup
