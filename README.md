@@ -12,11 +12,12 @@ git clone https://github.com/jackokerman/dotfiles.git
 cd dotfiles
 ```
 
-2. (Optional) Download MonoLisa font:
-   - Visit the [MonoLisa orders page](https://www.monolisa.dev/orders) and log in with your email and order number
-   - Download the **Complete** version (variable fonts) and extract the ZIP
-   - Copy the `.ttf` files from the `ttf/` folder to `~/Library/Fonts/`
-   - The dotfiles use MonoLisa Variable with [Symbols Nerd Font](https://github.com/ryanoasis/nerd-fonts) as fallback for icons
+2. Download MonoLisa font (installed automatically by the setup script):
+   - Visit the [MonoLisa orders page](https://www.monolisa.dev/orders) and log in with your email and order number (check your purchase confirmation email)
+   - Download the **Complete** version (variable fonts) ZIP to `~/Downloads/`
+   - The install script will extract and install it automatically
+
+   > Note: [Symbols Nerd Font](https://github.com/ryanoasis/nerd-fonts) (for terminal icons) is downloaded automatically during setup.
 
 3. Run the install script:
 
