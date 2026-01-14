@@ -67,6 +67,6 @@ alias lla='ls -la'
 alias lt='ls --tree'
 
 # Misc
-alias reload='$SHELL -l'
+alias reload='exec $SHELL -l'
 alias c='clear'
 alias cl='clear'
