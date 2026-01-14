@@ -63,9 +63,9 @@ After running `./install.sh link`, add the script directory to Raycast:
 ## Git Configuration
 
 - Shared settings: `~/.config/git/config` (symlinked from dotfiles)
-- Machine-specific settings: `~/.gitconfig-local` (not in version control)
+- Machine-specific settings: `~/.gitconfig.local` (not in version control)
 
-Edit `~/.gitconfig-local` to add machine-specific settings like email, name, or editor preferences.
+Edit `~/.gitconfig.local` to add machine-specific settings like email, name, or editor preferences.
 
 ### Convenience Commands
 
@@ -80,9 +80,9 @@ git config-shared alias.st "status"
 ## Zsh Configuration
 
 - Shared settings: `~/.zshrc` and `~/.zshenv` (symlinked from dotfiles)
-- Machine-specific settings: `~/.zshrc-local` and `~/.zshenv-local` (not in version control)
+- Machine-specific settings: `~/.zshrc.local` and `~/.zshenv.local` (not in version control)
 
-Use `.zshenv-local` for environment variables (PATH, exports) and `.zshrc-local` for interactive shell settings (aliases, functions).
+Use `.zshenv.local` for environment variables (PATH, exports) and `.zshrc.local` for interactive shell settings (aliases, functions).
 
 ## Directory Configuration
 
@@ -98,12 +98,12 @@ Example overlay structure:
 
 ```
 work-dotfiles/
-├── .gitconfig-local                  # Work email and signing key
-├── .zshenv-local                     # Work-specific PATH and env vars
-├── .zshrc-local                      # Work-specific aliases and functions
+├── .gitconfig.local                  # Work email and signing key
+├── .zshenv.local                     # Work-specific PATH and env vars
+├── .zshrc.local                      # Work-specific aliases and functions
 └── .config/
     └── hammerspoon/
-        └── init-local.lua            # Work-specific key bindings
+        └── init.local.lua            # Work-specific key bindings
 ```
 
-Files are symlinked to `$HOME`, so `.gitconfig-local` becomes `~/.gitconfig-local`.
+Files are symlinked to `$HOME`, so `.gitconfig.local` becomes `~/.gitconfig.local`.

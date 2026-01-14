@@ -1,6 +1,6 @@
 #!/bin/bash
 # Base arrangement config for aerospace window management
-# This config is used on personal machines (no -local override)
+# This config is used on personal machines (no .local override)
 # Format: "APP_NAME|FILTER|WORKSPACE"
 #   APP_NAME: Application name from aerospace (e.g., "Google Chrome")
 #   FILTER: Optional window title filter (empty for no filter)

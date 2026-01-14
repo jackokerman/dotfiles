@@ -29,7 +29,7 @@ spoon.RichLinkCopy:bindHotkeys({
 })
 
 -- Load local config if present (machine-specific initialization)
-local localInit = hs.configdir .. "/init-local.lua"
+local localInit = hs.configdir .. "/init.local.lua"
 if hs.fs.attributes(localInit) then
     dofile(localInit)
 end

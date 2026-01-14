@@ -5,4 +5,4 @@ Spoons/*
 !Spoons/SpoonInstall.spoon/
 
 # Ignore local configuration files (work-specific)
-init-local.lua 
+init.local.lua
