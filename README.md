@@ -27,7 +27,7 @@ cd dotfiles
 
 # Or run individual steps:
 ./install.sh link   # Create symlinks for config files
-./install.sh shell  # Set up shell tools (Zap, fzf, bat)
+./install.sh shell  # Set up shell tools (fzf, bat)
 ./install.sh brew   # Install Homebrew packages
 ./install.sh macos  # Configure macOS system preferences
 ```
@@ -43,17 +43,6 @@ After running `./install.sh all`, launch and grant accessibility permissions whe
 3. Hammerspoon
 
 All applications are configured to start automatically on subsequent logins.
-
-### iTerm2 Configuration
-
-Configure iTerm2 to load preferences from your dotfiles:
-
-1. Open iTerm2 → Settings → General → Preferences
-2. Check "Load preferences from a custom folder or URL"
-3. Set the folder path to your dotfiles directory (e.g., `~/dotfiles`)
-4. When prompted to save current settings, click "Cancel"
-5. Quit iTerm2 and relaunch to load preferences from your dotfiles
-6. (Optional) Check "Save changes to folder when iTerm2 quits" to automatically save settings changes
 
 ### Raycast Configuration
 
@@ -90,10 +79,10 @@ git config-shared alias.st "status"
 
 ## Zsh Configuration
 
-- Shared settings: `~/.zshrc` (symlinked from dotfiles)
-- Machine-specific settings: `~/.zshrc-local` (not in version control)
+- Shared settings: `~/.zshrc` and `~/.zshenv` (symlinked from dotfiles)
+- Machine-specific settings: `~/.zshrc-local` and `~/.zshenv-local` (not in version control)
 
-Edit `~/.zshrc-local` to add machine-specific settings like PATH modifications or local aliases.
+Use `.zshenv-local` for environment variables (PATH, exports) and `.zshrc-local` for interactive shell settings (aliases, functions).
 
 ## Directory Configuration
 
@@ -103,4 +92,18 @@ Add additional configuration files from a custom directory:
 ./install.sh link-dir /path/to/config/directory
 ```
 
-This creates a "dotfiles overlay" by symlinking all files from the specified directory to your home directory. Use this when you want to add environment-specific or additional configuration files that aren't part of your main dotfiles repository.
+This creates a "dotfiles overlay" by symlinking files to your home directory. Existing files are never overwritten (skipped with a warning), and directories are merged recursively.
+
+Example overlay structure:
+
+```
+work-dotfiles/
+├── .gitconfig-local                  # Work email and signing key
+├── .zshenv-local                     # Work-specific PATH and env vars
+├── .zshrc-local                      # Work-specific aliases and functions
+└── .config/
+    └── hammerspoon/
+        └── init-local.lua            # Work-specific key bindings
+```
+
+Files are symlinked to `$HOME`, so `.gitconfig-local` becomes `~/.gitconfig-local`.
