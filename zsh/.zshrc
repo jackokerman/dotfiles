@@ -12,23 +12,28 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Zap plugin manager
-[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
+# Start of plugin manager
 
-plug "romkatv/powerlevel10k"
-plug "Aloxaf/fzf-tab"
-plug "zsh-users/zsh-completions"
-plug "zsh-users/zsh-syntax-highlighting"
-plug "zsh-users/zsh-history-substring-search"
-plug "zsh-users/zsh-autosuggestions"
-plug "wintermi/zsh-brew"
-plug "trystan2k/zsh-tab-title"
+source $HOME/.zfetch.zsh
 
-# Load and initialize completion system
+zfetch "romkatv/powerlevel10k" "powerlevel10k.zsh-theme"
+
+# completions (order matters: fpath before compinit, fzf-tab after)
+zfetch completions
 autoload -Uz compinit
 compinit
+zfetch "Aloxaf/fzf-tab"
 
-# Initialize zoxide for smarter directory jumping (if available)
+# plugins
+zfetch "zsh-users/zsh-syntax-highlighting"
+zfetch "zsh-users/zsh-history-substring-search"
+zfetch "zsh-users/zsh-autosuggestions"
+zfetch "wintermi/zsh-brew"
+zfetch "trystan2k/zsh-tab-title"
+
+# End of plugin manager
+
+# initialize zoxide for smarter directory jumping (if available)
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi

@@ -99,8 +99,8 @@ setup_symlinks() {
         create_symlink "$DOTFILES/zsh/.zshrc" "$HOME/.zshrc"
     fi
 
-    # Symlink other zsh files (.zshenv, .p10k.zsh, .aliases)
-    for file in "$DOTFILES/zsh"/.zshenv "$DOTFILES/zsh"/.p10k.zsh "$DOTFILES/zsh"/.aliases; do
+    # Symlink other zsh files (.zshenv, .p10k.zsh, .aliases, .zfetch.zsh)
+    for file in "$DOTFILES/zsh"/.zshenv "$DOTFILES/zsh"/.p10k.zsh "$DOTFILES/zsh"/.aliases "$DOTFILES/zsh"/.zfetch.zsh; do
         if [ -f "$file" ]; then
             local basename_file=$(basename "$file")
             create_symlink "$file" "$HOME/$basename_file"
@@ -178,17 +178,9 @@ setup_directory() {
     create_symlinks_from_dir "$config_dir" "$HOME"
 }
 
-# Install and configure shell tools (Zap, fzf, bat)
+# Install and configure shell tools (fzf, bat)
 setup_shell() {
     title "Setting up shell"
-
-    # Install Zap zsh plugin manager if not already installed
-    if [ ! -d "$HOME/.local/share/zap" ]; then
-        info "Installing Zap"
-        zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --keep --branch release-v1
-    else
-        info "Zap already installed... Skipping."
-    fi
 
     # fzf setup
     if command -v brew >/dev/null && [[ -f "$(brew --prefix)/opt/fzf/install" ]]; then
@@ -332,7 +324,7 @@ main() {
             echo -e "\nUsage: $(basename "$0") {link|link-dir|shell|brew|macos|all}\n"
             echo "  link       - Create symlinks for zsh and config files"
             echo "  link-dir   - Create symlinks for directory configs (usage: link-dir <directory>)"
-            echo "  shell      - Set up shell tools (Zap, fzf, bat)"
+            echo "  shell      - Set up shell tools (fzf, bat)"
             echo "  brew       - Install applications and packages from Brewfile"
             echo "  macos      - Configure macOS system preferences (includes fonts)"
             echo "  all        - Run all setup steps (link, shell, brew, macos)"
