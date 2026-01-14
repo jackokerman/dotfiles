@@ -9,7 +9,7 @@
 
 # Arrange windows to their designated workspaces based on config files
 # Sources ~/.aerospace-arrangement (base config)
-# Sources ~/.aerospace-arrangement-local if exists (machine-specific override)
+# Sources ~/.aerospace-arrangement.local if exists (machine-specific override)
 #
 # Configuration format: "APP_NAME|FILTER|WORKSPACE"
 #   APP_NAME: Application name as shown in aerospace (e.g., "Google Chrome", "Slack")
@@ -35,8 +35,8 @@ if [ -f ~/.aerospace-arrangement ]; then
 fi
 
 # Source local arrangement config if it exists (overrides base)
-if [ -f ~/.aerospace-arrangement-local ]; then
-    source ~/.aerospace-arrangement-local
+if [ -f ~/.aerospace-arrangement.local ]; then
+    source ~/.aerospace-arrangement.local
 fi
 
 # Get all windows as JSON

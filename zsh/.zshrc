@@ -45,7 +45,7 @@ source $HOME/.aliases
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Load local configuration if it exists, i.e. machine-specific config.
-[[ ! -f ~/.zshrc-local ]] || source ~/.zshrc-local
+[[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
 # Setup fzf
 if command -v fzf >/dev/null 2>&1; then

@@ -34,4 +34,4 @@ export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
 # Source local environment overrides if they exist (e.g., work-specific config)
-[[ -f ~/.zshenv-local ]] && source ~/.zshenv-local
+[[ -f ~/.zshenv.local ]] && source ~/.zshenv.local
