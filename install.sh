@@ -83,11 +83,6 @@ create_symlinks_from_dir() {
 setup_symlinks() {
     title "Creating symlinks"
 
-    # Run migration script if it exists (temporary - remove after all machines updated)
-    if [ -f "$DOTFILES/scripts/migrate-local-naming.sh" ]; then
-        "$DOTFILES/scripts/migrate-local-naming.sh"
-    fi
-
     # Handle .zshrc specially - if it exists, append a source line instead of symlinking
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
         info "Existing .zshrc found, appending source line for dotfiles config"
