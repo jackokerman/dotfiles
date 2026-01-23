@@ -7,7 +7,7 @@
 #   zfetch update                          - Update all plugins
 #   zfetch ls                              - List installed plugins
 
-ZPLUGDIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+ZPLUGDIR="${ZFETCH_PLUGIN_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins}"
 [[ -d "$ZPLUGDIR" ]] || mkdir -p "$ZPLUGDIR"
 typeset -A plugins
 

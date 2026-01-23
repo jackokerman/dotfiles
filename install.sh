@@ -203,6 +203,16 @@ setup_shell() {
         info "Setting up bat"
         bat cache --build
     fi
+
+    # Initialize zsh to trigger plugin installation during setup
+    # This prevents plugin installation output on first interactive shell
+    if command -v zsh >/dev/null 2>&1 && [ -f "$HOME/.zshrc" ]; then
+        info "Initializing ZSH plugins..."
+        # Run zsh with full .zshrc to trigger zfetch plugin installation
+        # Output goes to setup logs, not first interactive SSH
+        zsh -i -c 'exit 0' 2>&1 || true
+        success "ZSH plugins initialized"
+    fi
 }
 
 # Install applications and packages from Brewfile
