@@ -7,35 +7,34 @@
 # @raycast.icon /Applications/Ghostty.app/Contents/Resources/Ghostty.icns
 # @raycast.packageName Window Manager
 
-try
-    # Save current focused workspace before switching to Ghostty
-    set currentWorkspace to do shell script "aerospace list-workspaces --focused"
+# Creates a new Ghostty window on the current workspace.
+# Works whether Ghostty is already running or not.
 
-    # Check if Ghostty is running
+try
+    set targetWorkspace to do shell script "aerospace list-workspaces --focused"
+
     tell application "System Events"
-        set isGhosttyRunning to exists (processes where name is "Ghostty")
+        set isRunning to exists (processes where name is "Ghostty")
     end tell
 
-    # Create new Ghostty window
-    if not isGhosttyRunning then
-        tell application "Ghostty" to activate
-    else
-        tell application "Ghostty" to activate
+    if isRunning then
+        # Use menu click to create window (avoids activating existing windows)
         tell application "System Events"
             tell process "Ghostty"
-                keystroke "n" using {command down}
+                click menu item "New Window" of menu "File" of menu bar 1
             end tell
         end tell
+    else
+        # Launch in background
+        do shell script "open -gja Ghostty"
     end if
 
-    # Wait for the new window to be created and focused
-    delay 0.2
+    delay 0.3
 
-    # Move the new window to the original workspace
-    do shell script "aerospace move-node-to-workspace " & currentWorkspace
+    # Move the new window (now focused) to target workspace
+    set windowId to do shell script "aerospace list-windows --focused --format '%{window-id}'"
+    do shell script "aerospace move-node-to-workspace --window-id " & windowId & " " & targetWorkspace & " && aerospace focus --window-id " & windowId
 
 on error errMsg
     return "Error: " & errMsg
 end try
-
-return
