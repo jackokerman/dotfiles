@@ -5,87 +5,98 @@
 
 set -e
 
-PERSONAL_CLAUDE="$HOME/dotfiles/.claude"
-OVERLAY_CLAUDE="${1:-}"  # Optional overlay path (e.g., ~/stripe-dotfiles/.claude)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PERSONAL_CLAUDE="$SCRIPT_DIR"
+OVERLAY_CLAUDE="${1:-}"
 TARGET="$HOME/.claude"
 
-echo "Bootstrapping Claude config..."
-echo "  Personal: $PERSONAL_CLAUDE"
-[[ -n "$OVERLAY_CLAUDE" ]] && echo "  Overlay:  $OVERLAY_CLAUDE"
+# Source shared utilities (includes logging and symlink functions)
+if [[ -f "$HOME/dotfiles/scripts/utils.sh" ]]; then
+    source "$HOME/dotfiles/scripts/utils.sh"
+elif [[ -f "$HOME/dotfiles/scripts/logging.sh" ]]; then
+    # Fallback to just logging if utils.sh doesn't exist yet
+    source "$HOME/dotfiles/scripts/logging.sh"
+    # Define minimal versions of needed functions
+    create_symlink() {
+        local source="$1" target="$2"
+        [[ -L "$target" ]] && [[ "$(readlink "$target")" == "$source" ]] && return 0
+        [[ -e "$target" ]] && { cp "$target" "$target.backup" 2>/dev/null; rm -f "$target"; }
+        ln -sf "$source" "$target" && success "Linked: ~${target#$HOME}"
+    }
+    merge_json_settings() {
+        local source="$1" target="$2"
+        [[ -f "$target" ]] && cp "$target" "$target.backup"
+        if command -v jq &>/dev/null && [[ -f "$target" ]]; then
+            local source_perms=$(jq -r '.permissions.allow // []' "$source")
+            local target_perms=$(jq -r '.permissions.allow // []' "$target")
+            local merged_perms=$(echo "$source_perms $target_perms" | jq -s 'add | unique | sort')
+            jq -s '.[0] * .[1]' "$target" "$source" | jq --argjson perms "$merged_perms" '.permissions.allow = $perms' > "$target.tmp" && mv "$target.tmp" "$target"
+        else
+            cp "$source" "$target"
+        fi
+    }
+    create_symlinks_from_dir() {
+        local src="$1" tgt="$2"
+        [[ -d "$src" ]] || return 0
+        mkdir -p "$tgt"
+        for item in "$src"/*; do
+            [[ -e "$item" ]] || continue
+            local name=$(basename "$item")
+            [[ -d "$item" ]] && create_symlinks_from_dir "$item" "$tgt/$name" || create_symlink "$item" "$tgt/$name"
+        done
+    }
+else
+    echo "Error: dotfiles not found" >&2
+    exit 1
+fi
 
-# 1. Create target directories
+title "Bootstrapping Claude config"
+info "Personal: $PERSONAL_CLAUDE"
+[[ -n "$OVERLAY_CLAUDE" ]] && info "Overlay:  $OVERLAY_CLAUDE"
+
+# 1. Ensure target directories exist
 mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/rules"
 
-# 2. Copy settings.local.json (overlay wins)
-# Note: Claude writes session permissions to settings.json, not here
-# Backup existing settings.local.json in case user wants to review accumulated permissions
-if [[ -f "$TARGET/settings.local.json" ]]; then
-  cp "$TARGET/settings.local.json" "$TARGET/settings.local.json.backup"
-  echo "  Backed up existing settings.local.json"
-fi
-rm -f "$TARGET/settings.local.json"
-if [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/settings.local.json" ]]; then
-  cp "$OVERLAY_CLAUDE/settings.local.json" "$TARGET/settings.local.json"
-  echo "  Copied settings.local.json (from overlay)"
-elif [[ -f "$PERSONAL_CLAUDE/settings.local.json" ]]; then
-  cp "$PERSONAL_CLAUDE/settings.local.json" "$TARGET/settings.local.json"
-  echo "  Copied settings.local.json (from personal)"
+# 2. Symlink directories from personal, then overlay (overlay wins on conflicts)
+# This handles: commands/, rules/, agents/, hooks/, etc.
+for dir in commands rules agents hooks; do
+    create_symlinks_from_dir "$PERSONAL_CLAUDE/$dir" "$TARGET/$dir"
+    [[ -n "$OVERLAY_CLAUDE" ]] && create_symlinks_from_dir "$OVERLAY_CLAUDE/$dir" "$TARGET/$dir"
+done
+
+# 3. Merge settings.json (overlay wins on values, permissions arrays are unioned)
+# Claude reads/writes settings.json on startup - merging preserves accumulated permissions
+if [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/settings.json" ]]; then
+    merge_json_settings "$OVERLAY_CLAUDE/settings.json" "$TARGET/settings.json"
+elif [[ -f "$PERSONAL_CLAUDE/settings.json" ]]; then
+    merge_json_settings "$PERSONAL_CLAUDE/settings.json" "$TARGET/settings.json"
 fi
 
-# 3. Concatenate CLAUDE.md (personal + overlay)
-# Personal preferences (communication style, JS standards) persist with work context added
+# 4. Concatenate CLAUDE.md (personal + overlay, not symlinked)
+# Personal preferences persist with work context added
 rm -f "$TARGET/CLAUDE.md"
 if [[ -f "$PERSONAL_CLAUDE/CLAUDE.md" ]] && [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/CLAUDE.md" ]]; then
-  cat "$PERSONAL_CLAUDE/CLAUDE.md" > "$TARGET/CLAUDE.md"
-  echo "" >> "$TARGET/CLAUDE.md"
-  echo "---" >> "$TARGET/CLAUDE.md"
-  echo "" >> "$TARGET/CLAUDE.md"
-  cat "$OVERLAY_CLAUDE/CLAUDE.md" >> "$TARGET/CLAUDE.md"
-  echo "  Concatenated CLAUDE.md (personal + overlay)"
+    cat "$PERSONAL_CLAUDE/CLAUDE.md" > "$TARGET/CLAUDE.md"
+    echo -e "\n---\n" >> "$TARGET/CLAUDE.md"
+    cat "$OVERLAY_CLAUDE/CLAUDE.md" >> "$TARGET/CLAUDE.md"
+    success "CLAUDE.md concatenated (personal + overlay)"
 elif [[ -f "$PERSONAL_CLAUDE/CLAUDE.md" ]]; then
-  cp "$PERSONAL_CLAUDE/CLAUDE.md" "$TARGET/CLAUDE.md"
-  echo "  Copied CLAUDE.md (from personal)"
+    cp "$PERSONAL_CLAUDE/CLAUDE.md" "$TARGET/CLAUDE.md"
+    success "CLAUDE.md copied (from personal)"
 elif [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/CLAUDE.md" ]]; then
-  cp "$OVERLAY_CLAUDE/CLAUDE.md" "$TARGET/CLAUDE.md"
-  echo "  Copied CLAUDE.md (from overlay)"
+    cp "$OVERLAY_CLAUDE/CLAUDE.md" "$TARGET/CLAUDE.md"
+    success "CLAUDE.md copied (from overlay)"
 fi
 
-# 4. Symlink rules from personal (code style, etc.)
-# Symlinks allow edits to apply to next session without re-running bootstrap
-if [[ -d "$PERSONAL_CLAUDE/rules" ]]; then
-  for rule in "$PERSONAL_CLAUDE/rules"/*.md; do
-    [[ -f "$rule" ]] && ln -sf "$rule" "$TARGET/rules/$(basename "$rule")"
-  done
+# 5. Clean up deprecated files (settings.local.json is no longer used)
+rm -f "$TARGET/settings.local.json" "$TARGET/settings.local.json.backup"
+
+# 6. Prime Claude to initialize settings
+# This ensures Claude reads settings.json before the first interactive session
+if command -v claude &> /dev/null; then
+    info "Priming Claude to initialize settings..."
+    claude -p "" 2>/dev/null || true
 fi
 
-# 5. Symlink rules from overlay (overwrites personal if same name)
-if [[ -n "$OVERLAY_CLAUDE" ]] && [[ -d "$OVERLAY_CLAUDE/rules" ]]; then
-  for rule in "$OVERLAY_CLAUDE/rules"/*.md; do
-    [[ -f "$rule" ]] && ln -sf "$rule" "$TARGET/rules/$(basename "$rule")"
-  done
-fi
-
-# Count rules
-rule_count=$(ls -1 "$TARGET/rules"/*.md 2>/dev/null | wc -l | tr -d ' ')
-echo "  Symlinked $rule_count rules"
-
-# 6. Symlink commands from personal
-if [[ -d "$PERSONAL_CLAUDE/commands" ]]; then
-  for cmd in "$PERSONAL_CLAUDE/commands"/*.md; do
-    [[ -f "$cmd" ]] && ln -sf "$cmd" "$TARGET/commands/$(basename "$cmd")"
-  done
-fi
-
-# 7. Symlink commands from overlay (overwrites personal if same name)
-if [[ -n "$OVERLAY_CLAUDE" ]] && [[ -d "$OVERLAY_CLAUDE/commands" ]]; then
-  for cmd in "$OVERLAY_CLAUDE/commands"/*.md; do
-    [[ -f "$cmd" ]] && ln -sf "$cmd" "$TARGET/commands/$(basename "$cmd")"
-  done
-fi
-
-# Count commands
-cmd_count=$(ls -1 "$TARGET/commands"/*.md 2>/dev/null | wc -l | tr -d ' ')
-echo "  Symlinked $cmd_count commands"
-
-echo "Done! Claude config bootstrapped to ~/.claude"
+success "Claude config bootstrapped to ~/.claude"

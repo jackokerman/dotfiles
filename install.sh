@@ -4,80 +4,8 @@
 
 DOTFILES="$(pwd)"
 
-# Source shared logging utilities
-source "$DOTFILES/scripts/logging.sh"
-
-# Helper function to create symlink with proper error handling
-create_symlink() {
-    local source="$1"
-    local target="$2"
-    
-    if [ -e "$target" ]; then
-        if [ -L "$target" ]; then
-            info "~${target#$HOME} already exists as symlink... Skipping."
-        else
-            warning "~${target#$HOME} already exists (not a symlink)... Skipping."
-        fi
-        return 0
-    fi
-    
-    local description="$(basename "$source")"
-    info "Creating symlink for $description"
-    if ln -s "$source" "$target"; then
-        success "Created symlink: ~${target#$HOME}"
-        return 0
-    else
-        error "Failed to create symlink for $description"
-    fi
-}
-
-# Generic function to create symlinks from a source directory
-create_symlinks_from_dir() {
-    local source_dir="$1"
-    local target_dir="$2"
-    
-    if [ ! -d "$source_dir" ]; then
-        error "Source directory does not exist: $source_dir"
-    fi
-    
-    # Define patterns to exclude (version control files and install scripts)
-    local exclude_patterns="-name .git -o -name .gitignore -o -name .gitmodules -o -name README.md -o -name install.sh"
-    
-    # Create target directory if it doesn't exist
-    if [ ! -d "$target_dir" ]; then
-        mkdir -p "$target_dir"
-    fi
-    
-    # Link all files and directories, excluding version control files
-    local items=$(find "$source_dir" -mindepth 1 -maxdepth 1 \( $exclude_patterns \) -prune -o -print 2>/dev/null)
-    for item in $items; do
-        local basename_item=$(basename "$item")
-        local target_item="$target_dir/$basename_item"
-        
-        if [ -d "$item" ]; then
-            # If it's a directory, recursively process it
-            if [ -L "$target_item" ]; then
-                # Target is already a symlink - resolve and merge if it's a directory
-                local resolved_target=$(readlink -f "$target_item" 2>/dev/null || readlink "$target_item")
-                if [ -d "$resolved_target" ]; then
-                    # It's a symlinked directory, merge contents into it
-                    create_symlinks_from_dir "$item" "$resolved_target"
-                else
-                    info "~${target_item#$HOME} already exists as symlink... Skipping."
-                fi
-            elif [ -d "$target_item" ]; then
-                # Target directory exists as regular directory, merge contents
-                create_symlinks_from_dir "$item" "$target_item"
-            else
-                # Target doesn't exist, create symlink
-                create_symlink "$item" "$target_item"
-            fi
-        else
-            # It's a file, create symlink
-            create_symlink "$item" "$target_item"
-        fi
-    done
-}
+# Source shared utilities (includes logging and symlink/merge functions)
+source "$DOTFILES/scripts/utils.sh"
 
 # Create symlinks for zsh config files and config directories
 setup_symlinks() {
