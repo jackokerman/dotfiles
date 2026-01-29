@@ -17,27 +17,24 @@ title "Bootstrapping Claude config"
 info "Personal: $PERSONAL_CLAUDE"
 [[ -n "$OVERLAY_CLAUDE" ]] && info "Overlay:  $OVERLAY_CLAUDE"
 
-# 1. Ensure target directories exist
+# Ensure target directories exist
 mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/rules"
 
-# 2. Symlink directories from personal, then overlay (overlay wins on conflicts)
-# This handles: commands/, rules/, agents/, hooks/, etc.
+# Symlink directories from personal, then overlay (overlay wins on conflicts)
 for dir in commands rules agents hooks; do
     create_symlinks_from_dir "$PERSONAL_CLAUDE/$dir" "$TARGET/$dir"
     [[ -n "$OVERLAY_CLAUDE" ]] && create_symlinks_from_dir "$OVERLAY_CLAUDE/$dir" "$TARGET/$dir"
 done
 
-# 3. Merge settings.json (overlay wins on values, permissions arrays are unioned)
-# Claude reads/writes settings.json on startup - merging preserves accumulated permissions
+# Merge settings.json (overlay wins on values, permissions arrays are unioned)
 if [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/settings.json" ]]; then
     merge_json_settings "$OVERLAY_CLAUDE/settings.json" "$TARGET/settings.json"
 elif [[ -f "$PERSONAL_CLAUDE/settings.json" ]]; then
     merge_json_settings "$PERSONAL_CLAUDE/settings.json" "$TARGET/settings.json"
 fi
 
-# 4. Concatenate CLAUDE.md (personal + overlay, not symlinked)
-# Personal preferences persist with work context added
+# Concatenate CLAUDE.md (personal + overlay)
 rm -f "$TARGET/CLAUDE.md"
 if [[ -f "$PERSONAL_CLAUDE/CLAUDE.md" ]] && [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/CLAUDE.md" ]]; then
     cat "$PERSONAL_CLAUDE/CLAUDE.md" > "$TARGET/CLAUDE.md"
@@ -52,11 +49,21 @@ elif [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/CLAUDE.md" ]]; then
     success "CLAUDE.md copied (from overlay)"
 fi
 
-# 5. Clean up deprecated files (settings.local.json is no longer used)
+# Clean up deprecated files
 rm -f "$TARGET/settings.local.json" "$TARGET/settings.local.json.backup"
 
-# 6. Prime Claude to initialize settings
-# This ensures Claude reads settings.json before the first interactive session
+# Mark onboarding complete and set theme to skip setup wizard
+CLAUDE_JSON="$HOME/.claude.json"
+if command -v jq &> /dev/null; then
+    if [[ -f "$CLAUDE_JSON" ]]; then
+        jq '.hasCompletedOnboarding = true | .theme = "dark"' "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
+    else
+        echo '{"hasCompletedOnboarding": true, "theme": "dark"}' > "$CLAUDE_JSON"
+    fi
+    success "Onboarding marked complete, theme set to dark"
+fi
+
+# Prime Claude to initialize settings
 if command -v claude &> /dev/null; then
     info "Priming Claude to initialize settings..."
     claude -p "" 2>/dev/null || true
