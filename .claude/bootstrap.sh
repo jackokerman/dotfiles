@@ -27,13 +27,6 @@ for dir in commands rules agents hooks; do
     [[ -n "$OVERLAY_CLAUDE" ]] && create_symlinks_from_dir "$OVERLAY_CLAUDE/$dir" "$TARGET/$dir"
 done
 
-# Merge settings.json (overlay wins on values, permissions arrays are unioned)
-if [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/settings.json" ]]; then
-    merge_json_settings "$OVERLAY_CLAUDE/settings.json" "$TARGET/settings.json"
-elif [[ -f "$PERSONAL_CLAUDE/settings.json" ]]; then
-    merge_json_settings "$PERSONAL_CLAUDE/settings.json" "$TARGET/settings.json"
-fi
-
 # Concatenate CLAUDE.md (personal + overlay)
 rm -f "$TARGET/CLAUDE.md"
 if [[ -f "$PERSONAL_CLAUDE/CLAUDE.md" ]] && [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/CLAUDE.md" ]]; then
@@ -52,7 +45,23 @@ fi
 # Clean up deprecated files
 rm -f "$TARGET/settings.local.json" "$TARGET/settings.local.json.backup"
 
-# Mark onboarding complete and set theme to skip setup wizard
+# Prime Claude FIRST to let it create default settings files
+# This must happen BEFORE we merge our settings, otherwise Claude overwrites them
+if command -v claude &> /dev/null; then
+    info "Priming Claude to initialize default settings..."
+    claude -p "" 2>/dev/null || true
+fi
+
+# NOW merge settings.json (overlay wins on values, permissions arrays are unioned)
+# This happens AFTER priming so our settings persist
+if [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/settings.json" ]]; then
+    merge_json_settings "$OVERLAY_CLAUDE/settings.json" "$TARGET/settings.json"
+elif [[ -f "$PERSONAL_CLAUDE/settings.json" ]]; then
+    merge_json_settings "$PERSONAL_CLAUDE/settings.json" "$TARGET/settings.json"
+fi
+
+# Mark onboarding complete and set theme AFTER priming
+# Claude may modify .claude.json during startup, so we set our values last
 CLAUDE_JSON="$HOME/.claude.json"
 if command -v jq &> /dev/null; then
     if [[ -f "$CLAUDE_JSON" ]]; then
@@ -61,12 +70,6 @@ if command -v jq &> /dev/null; then
         echo '{"hasCompletedOnboarding": true, "theme": "dark"}' > "$CLAUDE_JSON"
     fi
     success "Onboarding marked complete, theme set to dark"
-fi
-
-# Prime Claude to initialize settings
-if command -v claude &> /dev/null; then
-    info "Priming Claude to initialize settings..."
-    claude -p "" 2>/dev/null || true
 fi
 
 success "Claude config bootstrapped to ~/.claude"
