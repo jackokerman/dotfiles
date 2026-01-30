@@ -16,8 +16,7 @@ cd dotfiles
    - Visit the [MonoLisa orders page](https://www.monolisa.dev/orders) and log in with your email and order number (check your purchase confirmation email)
    - Download the **Complete** version (variable fonts) ZIP to `~/Downloads/`
    - The install script will extract and install it automatically
-
-   > Note: [Symbols Nerd Font](https://github.com/ryanoasis/nerd-fonts) (for terminal icons) is downloaded automatically during setup.
+   - **Note**: [Symbols Nerd Font](https://github.com/ryanoasis/nerd-fonts) (for terminal icons) is downloaded automatically during setup.
 
 3. Run the install script:
 
