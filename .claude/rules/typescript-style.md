@@ -8,7 +8,19 @@
 ## Functions
 - Prefer function declarations over function expressions (`function foo()` over `const foo = ()`)
   - Declarations are hoisted, allowing main components at top with helpers below
-- Use object destructuring for function parameters (props, options objects)
+- Destructure object parameters in the function signature (not in the body)
+  - Applies to React component props and any function taking an options object
+  ```typescript
+  // Preferred - destructure in signature
+  function UserCard({ name, email, avatar }: UserCardProps) { ... }
+  function fetchData({ url, retries }: FetchOptions) { ... }
+
+  // Avoid - destructure in body
+  function UserCard(props: UserCardProps) {
+    const { name, email, avatar } = props;
+    ...
+  }
+  ```
 - Prefer object parameters over positional arguments when there are more than 1-2 params
   - Makes adding optional parameters easy without updating all call sites
   - Pairs well with typed objects that have JSDoc descriptions
