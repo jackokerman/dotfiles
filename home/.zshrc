@@ -18,7 +18,7 @@ source $HOME/.zfetch.zsh
 
 zfetch "romkatv/powerlevel10k" "powerlevel10k.zsh-theme"
 
-# completions (order matters: fpath before compinit, fzf-tab after)
+# completions (zfetch completions adds zsh-completions to fpath)
 zfetch completions
 if ! (( $+functions[_complete] )); then
   # Only run compinit if not already initialized. Calling compinit twice
@@ -26,7 +26,7 @@ if ! (( $+functions[_complete] )); then
   autoload -Uz compinit
   compinit
 fi
-zfetch "Aloxaf/fzf-tab"
+zfetch "Aloxaf/fzf-tab"  # after compinit, before other plugins
 
 # plugins
 zfetch "zsh-users/zsh-syntax-highlighting"
