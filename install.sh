@@ -14,7 +14,11 @@ setup_symlinks() {
     # Handle .zshrc specially - if it exists as a regular file, append a source line
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
         info "Existing .zshrc found, appending source line for dotfiles config"
-        if ! grep -q "source.*dotfiles.*zshrc" "$HOME/.zshrc"; then
+        if grep -q "source.*/dotfiles/zsh/.zshrc" "$HOME/.zshrc"; then
+            # Migrate old path to new path
+            sed -i '' 's|dotfiles/zsh/.zshrc|dotfiles/home/.zshrc|' "$HOME/.zshrc"
+            success "Updated .zshrc source path to new location"
+        elif ! grep -q "source.*dotfiles/home/.zshrc" "$HOME/.zshrc"; then
             echo "" >> "$HOME/.zshrc"
             echo "# Load personal dotfiles configuration" >> "$HOME/.zshrc"
             echo "source $DOTFILES/home/.zshrc" >> "$HOME/.zshrc"
