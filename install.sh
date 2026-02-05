@@ -7,48 +7,25 @@ DOTFILES="$(pwd)"
 # Source shared utilities (includes logging and symlink/merge functions)
 source "$DOTFILES/scripts/utils.sh"
 
-# Create symlinks for zsh config files and config directories
+# Create symlinks for all dotfiles in home/ directory
 setup_symlinks() {
     title "Creating symlinks"
 
-    # Handle .zshrc specially - if it exists, append a source line instead of symlinking
+    # Handle .zshrc specially - if it exists as a regular file, append a source line
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
         info "Existing .zshrc found, appending source line for dotfiles config"
-        if ! grep -q "source.*dotfiles/zsh/.zshrc" "$HOME/.zshrc"; then
+        if ! grep -q "source.*dotfiles.*zshrc" "$HOME/.zshrc"; then
             echo "" >> "$HOME/.zshrc"
             echo "# Load personal dotfiles configuration" >> "$HOME/.zshrc"
-            echo "source $DOTFILES/zsh/.zshrc" >> "$HOME/.zshrc"
+            echo "source $DOTFILES/home/.zshrc" >> "$HOME/.zshrc"
             success "Appended source line to existing .zshrc"
         else
             info "~/.zshrc already sources dotfiles config... Skipping."
         fi
-    else
-        # Normal symlink for .zshrc if it doesn't exist
-        create_symlink "$DOTFILES/zsh/.zshrc" "$HOME/.zshrc"
     fi
 
-    # Symlink other zsh files (.zshenv, .p10k.zsh, .aliases, .zfetch.zsh)
-    for file in "$DOTFILES/zsh"/.zshenv "$DOTFILES/zsh"/.p10k.zsh "$DOTFILES/zsh"/.aliases "$DOTFILES/zsh"/.zfetch.zsh; do
-        if [ -f "$file" ]; then
-            local basename_file=$(basename "$file")
-            create_symlink "$file" "$HOME/$basename_file"
-        fi
-    done
-
-    # Symlink aerospace arrangement config
-    if [ -f "$DOTFILES/.aerospace-arrangement" ]; then
-        create_symlink "$DOTFILES/.aerospace-arrangement" "$HOME/.aerospace-arrangement"
-    fi
-
-    echo -e
-    info "installing to ~/.config"
-    if [ ! -d "$HOME/.config" ]; then
-        info "Creating ~/.config"
-        mkdir -p "$HOME/.config"
-    fi
-
-    # Symlink all directories in the /config directory
-    create_symlinks_from_dir "$DOTFILES/config" "$HOME/.config"
+    # Symlink everything in home/ to ~/ (convention: home/ mirrors ~/)
+    create_symlinks_from_dir "$DOTFILES/home" "$HOME"
 }
 
 # Merge VS Code and Cursor settings template into existing config
@@ -57,7 +34,7 @@ setup_vscode_settings() {
 
     local vscode_user_dir="$HOME/Library/Application Support/Code/User"
     local cursor_user_dir="$HOME/Library/Application Support/Cursor/User"
-    local template_settings="$DOTFILES/config/vscode/settings.json"
+    local template_settings="$DOTFILES/vscode-settings.json"
 
     # Ensure the User directories exist
     mkdir -p "$vscode_user_dir"
@@ -260,7 +237,7 @@ main() {
             ;;
         *)
             echo -e "\nUsage: $(basename "$0") {link|link-dir|shell|brew|macos|all}\n"
-            echo "  link       - Create symlinks for zsh and config files"
+            echo "  link       - Create symlinks for dotfiles (home/ → ~/)"
             echo "  link-dir   - Create symlinks for directory configs (usage: link-dir <directory>)"
             echo "  shell      - Set up shell tools (fzf, bat)"
             echo "  brew       - Install applications and packages from Brewfile"
