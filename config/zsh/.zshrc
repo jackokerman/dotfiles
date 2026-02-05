@@ -5,7 +5,7 @@ if [[ -n "$COMPOSER_NO_INTERACTION" ]]; then
   return 0
 fi
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -14,7 +14,7 @@ fi
 
 # Start of plugin manager
 
-source $HOME/.zfetch.zsh
+source $ZDOTDIR/.zfetch.zsh
 
 zfetch "romkatv/powerlevel10k" "powerlevel10k.zsh-theme"
 
@@ -45,10 +45,10 @@ if command -v zoxide >/dev/null 2>&1; then
 fi
 
 # Aliases
-source $HOME/.aliases
+source $ZDOTDIR/.aliases
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
+[[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
