@@ -28,8 +28,9 @@ setup_symlinks() {
         fi
     fi
 
-    # Symlink everything in home/ to ~/ (convention: home/ mirrors ~/)
+    # Symlink dotfiles: home/ → ~/, config/ → ~/.config/
     create_symlinks_from_dir "$DOTFILES/home" "$HOME"
+    create_symlinks_from_dir "$DOTFILES/config" "$HOME/.config"
 }
 
 # Merge VS Code and Cursor settings template into existing config
