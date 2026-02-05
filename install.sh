@@ -116,7 +116,7 @@ setup_shell() {
 
     # Initialize zsh to trigger plugin installation during setup
     # This prevents plugin installation output on first interactive shell
-    if command -v zsh >/dev/null 2>&1 && [ -f "$HOME/.zshrc" ]; then
+    if command -v zsh >/dev/null 2>&1 && [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/.zshrc" ]; then
         info "Initializing ZSH plugins..."
         # Run zsh with full .zshrc to trigger zfetch plugin installation
         # Output goes to setup logs, not first interactive SSH
