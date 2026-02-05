@@ -26,7 +26,9 @@ if ! (( $+functions[_complete] )); then
   autoload -Uz compinit
   compinit
 fi
-zfetch "Aloxaf/fzf-tab"  # after compinit, before other plugins
+
+# fzf-tab needs to be loaded after compinit, before other plugins that use completion.
+zfetch "Aloxaf/fzf-tab"
 
 # plugins
 zfetch "zsh-users/zsh-syntax-highlighting"
