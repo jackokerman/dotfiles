@@ -53,11 +53,11 @@ Raycast is installed but requires manual setup:
 
 #### Raycast Script Commands
 
-Custom script commands are included in `config/raycast-scripts/`.
+Custom script commands are included in `home/.raycast-scripts/`.
 
 After running `./install.sh link`, add the script directory to Raycast:
 1. Raycast Preferences → Extensions → Script Commands
-2. Add Directory: `~/.config/raycast-scripts`
+2. Add Directory: `~/.raycast-scripts`
 
 ## Git Configuration
 
@@ -97,12 +97,13 @@ Example overlay structure:
 
 ```
 work-dotfiles/
-├── .gitconfig.local                  # Work email and signing key
-├── .zshenv.local                     # Work-specific PATH and env vars
-├── .zshrc.local                      # Work-specific aliases and functions
-└── .config/
-    └── hammerspoon/
-        └── init.local.lua            # Work-specific key bindings
+└── home/
+    ├── .gitconfig.local              # Work email and signing key
+    ├── .zshenv.local                 # Work-specific PATH and env vars
+    ├── .zshrc.local                  # Work-specific aliases and functions
+    └── .config/
+        └── hammerspoon/
+            └── init.local.lua        # Work-specific key bindings
 ```
 
-Files are symlinked to `$HOME`, so `.gitconfig.local` becomes `~/.gitconfig.local`.
+Files are symlinked to `$HOME`, so `home/.gitconfig.local` becomes `~/.gitconfig.local`.
