@@ -5,6 +5,14 @@ if [[ -n "$COMPOSER_NO_INTERACTION" ]]; then
   return 0
 fi
 
+# Source system-managed ~/.zshrc if present (e.g., Chef-managed on work machines).
+# Only source if it's a real file (not a symlink to our config). The guard variable
+# prevents infinite recursion when ~/.zshrc tries to source our old path.
+if [[ -z "$_DOTFILES_ZSHRC_LOADED" && -f ~/.zshrc && ! -L ~/.zshrc ]]; then
+  _DOTFILES_ZSHRC_LOADED=1
+  source ~/.zshrc 2>/dev/null || true
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
