@@ -20,10 +20,9 @@ zfetch "romkatv/powerlevel10k" "powerlevel10k.zsh-theme"
 
 # completions (order matters: fpath before compinit, fzf-tab after)
 zfetch completions
-if ! (( $+functions[compdef] )); then
-  # Only run compinit if not already initialized. Some environments require
-  # sourcing a file that calls compinit before this one runs, and calling it
-  # twice resets completion registrations.
+if ! (( $+functions[_complete] )); then
+  # Only run compinit if not already initialized. Calling compinit twice
+  # resets completion registrations.
   autoload -Uz compinit
   compinit
 fi
