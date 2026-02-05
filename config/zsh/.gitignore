@@ -1,1 +1,5 @@
+# Generated files
 .zcompdump
+.zcompdump-*
+.zsh_history
+.zsh_sessions/
