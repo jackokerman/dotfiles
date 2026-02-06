@@ -22,7 +22,7 @@ error() {
 }
 
 warning() {
-    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1" >&2
+    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
 }
 
 info() {
