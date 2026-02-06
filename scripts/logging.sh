@@ -13,7 +13,7 @@ COLOR_NONE="\033[0m"
 
 # Logging functions
 title() {
-    echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}\n"
+    echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
 }
 
 error() {

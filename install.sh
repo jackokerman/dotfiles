@@ -70,9 +70,6 @@ setup_vscode_settings() {
     # Merge settings for both editors
     merge_settings "$vscode_user_dir/settings.json" "VS Code"
     merge_settings "$cursor_user_dir/settings.json" "Cursor"
-
-    echo -e
-    success "VS Code and Cursor settings configured"
 }
 
 # Create symlinks for directory configurations
@@ -253,7 +250,6 @@ main() {
             ;;
     esac
 
-    echo -e
     success "Done."
 }
 
