@@ -94,8 +94,18 @@ create_symlinks_from_dir() {
         local target_item="$target_dir/$basename_item"
 
         if [ -d "$item" ]; then
-            if [ -d "$target_item" ] || [ -L "$target_item" ]; then
-                # Recursively merge directory contents
+            if [ -L "$target_item" ]; then
+                # Target is a symlink - check if it points to the right place
+                local current_source=$(readlink "$target_item")
+                if [ "$current_source" = "$item" ]; then
+                    info "~${target_item#$HOME} already linked... Skipping."
+                else
+                    info "Updating symlink: ~${target_item#$HOME}"
+                    rm "$target_item"
+                    create_symlink "$item" "$target_item"
+                fi
+            elif [ -d "$target_item" ]; then
+                # Target is a real directory - recurse to merge contents
                 create_symlinks_from_dir "$item" "$target_item"
             else
                 create_symlink "$item" "$target_item"
