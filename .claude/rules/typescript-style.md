@@ -8,6 +8,23 @@
 ## Functions
 - Prefer function declarations over function expressions (`function foo()` over `const foo = ()`)
   - Declarations are hoisted, allowing main components at top with helpers below
+  - Exception: use arrow functions when returning functions from hooks or factories
+  ```typescript
+  // Preferred - arrow function for returned callback
+  function useObjectCreator() {
+    return useCallback(
+      (options: CreateOptions) => {
+        // ...
+      },
+      [deps]
+    );
+  }
+
+  // Also fine - arrow for inline return values
+  function createHandler(config: Config) {
+    return (event: Event) => handleEvent(event, config);
+  }
+  ```
 - Destructure object parameters in the function signature (not in the body)
   - Applies to React component props and any function taking an options object
   ```typescript
