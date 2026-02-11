@@ -58,9 +58,25 @@
 
 ## Type Safety
 - Enable TypeScript strict mode
-- Never use `any` - it defeats the purpose of TypeScript. Use `unknown` and narrow the type
 - Prefer `type` over `interface`
 - Prefer type inference where obvious, explicit types for function signatures
+
+### The `any` type is forbidden
+
+Never use `any`. This is a hard rule, not a suggestion.
+
+**Before writing `any` in any context, you MUST stop and ask the user.** Do not proceed with implementation, commits, or PRs that include `any`. Instead:
+
+1. Explain why you believe `any` might be necessary
+2. Show what alternatives you considered (`unknown`, generics, type narrowing, conditional types)
+3. Wait for explicit approval before proceeding
+
+Common situations where `any` seems tempting but isn't needed:
+- External API responses → use `unknown` and validate/narrow
+- Generic containers → use proper generics with constraints
+- Complex unions → use discriminated unions or branded types
+- Third-party libs without types → write declaration files or use `@types/*`
+- Callback parameters → use proper function signatures with generics
 
 ## JSDoc Comments
 - Add JSDoc descriptions to exported functions and types
