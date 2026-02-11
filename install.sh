@@ -33,6 +33,16 @@ setup_symlinks() {
     create_symlinks_from_dir "$DOTFILES/config" "$HOME/.config"
 }
 
+# Configure git hooks for the dotfiles repo itself
+setup_git_hooks() {
+    title "Setting up git hooks"
+
+    if [ -d "$DOTFILES/hooks" ]; then
+        git -C "$DOTFILES" config core.hooksPath "$DOTFILES/hooks"
+        success "Git hooks configured (prevents work-related content)"
+    fi
+}
+
 # Merge VS Code and Cursor settings template into existing config
 setup_vscode_settings() {
     title "Setting up VS Code and Cursor settings"
@@ -217,6 +227,7 @@ main() {
         link)
             setup_symlinks
             setup_vscode_settings
+            setup_git_hooks
             ;;
         link-dir)
             setup_directory "$2"
@@ -233,6 +244,7 @@ main() {
         all)
             setup_symlinks
             setup_vscode_settings
+            setup_git_hooks
             setup_brew
             setup_shell
             setup_macos
