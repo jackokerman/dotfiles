@@ -1,10 +1,3 @@
-# Exit early if COMPOSER_NO_INTERACTION is set. This is needed to allow Cursor
-# to run terminal commands without hanging, as prompt customizations can cause
-# issues in non-interactive shells.
-if [[ -n "$COMPOSER_NO_INTERACTION" ]]; then
-  return 0
-fi
-
 # Source system-managed ~/.zshrc if present (e.g., Chef-managed on work machines).
 # Only source if it's a real file (not a symlink to our config). The guard variable
 # prevents infinite recursion when ~/.zshrc tries to source our old path.
