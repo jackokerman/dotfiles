@@ -12,6 +12,7 @@ if OS.mac?
   cask "logi-options+"              # software for Logitech mouse
   cask "obsidian"                   # knowledge base with markdown files
   cask "1password"                  # password manager
+  cask "visual-studio-code"         # code editor
 end
 
 # Packages
