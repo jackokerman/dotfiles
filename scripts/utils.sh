@@ -7,6 +7,9 @@
 UTILS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$UTILS_SCRIPT_DIR/logging.sh"
 
+_SKIP_COUNT=0
+_LINK_DEPTH=0
+
 # Improved symlink helper - updates symlinks if source changed
 # This enables the overlay pattern: run personal first, then overlay (overlay wins)
 create_symlink() {
@@ -16,7 +19,10 @@ create_symlink() {
     if [ -L "$target" ]; then
         local current_source=$(readlink "$target")
         if [ "$current_source" = "$source" ]; then
-            info "~${target#$HOME} already linked... Skipping."
+            _SKIP_COUNT=$((_SKIP_COUNT + 1))
+            if [[ "${DOTTY_VERBOSE:-false}" == "true" ]]; then
+                info "~${target#$HOME} already linked... Skipping."
+            fi
             return 0
         else
             info "Updating symlink: ~${target#$HOME}"
@@ -83,6 +89,12 @@ create_symlinks_from_dir() {
         return 0  # Not an error, just nothing to do
     fi
 
+    _LINK_DEPTH=$((_LINK_DEPTH + 1))
+    # Reset skip counter at the top-level call
+    if [[ $_LINK_DEPTH -eq 1 ]]; then
+        _SKIP_COUNT=0
+    fi
+
     mkdir -p "$target_dir"
 
     # Define patterns to exclude (version control files and install scripts)
@@ -98,7 +110,10 @@ create_symlinks_from_dir() {
                 # Target is a symlink - check if it points to the right place
                 local current_source=$(readlink "$target_item")
                 if [ "$current_source" = "$item" ]; then
-                    info "~${target_item#$HOME} already linked... Skipping."
+                    _SKIP_COUNT=$((_SKIP_COUNT + 1))
+                    if [[ "${DOTTY_VERBOSE:-false}" == "true" ]]; then
+                        info "~${target_item#$HOME} already linked... Skipping."
+                    fi
                 else
                     info "Updating symlink: ~${target_item#$HOME}"
                     rm "$target_item"
@@ -114,4 +129,11 @@ create_symlinks_from_dir() {
             create_symlink "$item" "$target_item"
         fi
     done
+
+    _LINK_DEPTH=$((_LINK_DEPTH - 1))
+    # Print summary when returning to top level
+    if [[ $_LINK_DEPTH -eq 0 && $_SKIP_COUNT -gt 0 ]]; then
+        info "$_SKIP_COUNT files already linked"
+        _SKIP_COUNT=0
+    fi
 }
