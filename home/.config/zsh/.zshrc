@@ -20,6 +20,7 @@ source $ZDOTDIR/.zfetch.zsh
 zfetch "romkatv/powerlevel10k" "powerlevel10k.zsh-theme"
 
 # completions (zfetch completions adds zsh-completions to fpath)
+[[ -d "$HOME/.dotty/completions" ]] && fpath=("$HOME/.dotty/completions" $fpath)
 zfetch completions
 if ! (( $+functions[_complete] )); then
   # Only run compinit if not already initialized. Calling compinit twice

@@ -32,6 +32,7 @@ skip_global_compinit=1
 export PATH="$HOME/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/.dotty/bin" ]] && export PATH="$HOME/.dotty/bin:$PATH"
 
 # Source local environment overrides if they exist (e.g., work-specific config)
 [[ -f ~/.zshenv.local ]] && source ~/.zshenv.local
