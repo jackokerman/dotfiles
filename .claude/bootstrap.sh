@@ -10,14 +10,12 @@ PERSONAL_CLAUDE="$SCRIPT_DIR"
 OVERLAY_CLAUDE="${1:-}"
 TARGET="$HOME/.claude"
 
-# Source shared utilities (derive from SCRIPT_DIR so it works regardless of repo location)
 source "$(dirname "$SCRIPT_DIR")/scripts/utils.sh"
 
 title "Bootstrapping Claude config"
 info "Personal: $PERSONAL_CLAUDE"
 [[ -n "$OVERLAY_CLAUDE" ]] && info "Overlay:  $OVERLAY_CLAUDE"
 
-# Ensure target directories exist
 mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/rules"
 
@@ -42,7 +40,6 @@ elif [[ -n "$OVERLAY_CLAUDE" ]] && [[ -f "$OVERLAY_CLAUDE/CLAUDE.md" ]]; then
     success "CLAUDE.md copied (from overlay)"
 fi
 
-# Clean up deprecated files
 rm -f "$TARGET/settings.local.json" "$TARGET/settings.local.json.backup"
 
 # Prime Claude FIRST to let it create default settings files

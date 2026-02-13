@@ -3,7 +3,6 @@
 # Shared logging utilities for dotfiles scripts
 # Source this file with: source "$(dirname "$0")/logging.sh"
 
-# Colors for logging output
 COLOR_BLUE="\033[34m"
 COLOR_GREEN="\033[32m"
 COLOR_RED="\033[31m"
@@ -11,7 +10,6 @@ COLOR_PURPLE="\033[35m"
 COLOR_YELLOW="\033[33m"
 COLOR_NONE="\033[0m"
 
-# Logging functions
 title() {
     echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
 }

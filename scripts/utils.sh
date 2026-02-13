@@ -3,14 +3,12 @@
 # Shared utilities for dotfiles scripts
 # Source this file with: source "$(dirname "$0")/utils.sh"
 
-# Source logging utilities
 UTILS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$UTILS_SCRIPT_DIR/logging.sh"
 
 _SKIP_COUNT=0
 _LINK_DEPTH=0
 
-# Improved symlink helper - updates symlinks if source changed
 # This enables the overlay pattern: run personal first, then overlay (overlay wins)
 create_symlink() {
     local source="$1"
@@ -42,7 +40,6 @@ create_symlink() {
     fi
 }
 
-# Merge JSON settings files
 # Source values win on conflicts, but permissions.allow arrays are unioned
 merge_json_settings() {
     local source="$1"
@@ -79,7 +76,6 @@ merge_json_settings() {
     fi
 }
 
-# Generic function to create symlinks from a source directory
 # Overlay behavior: run personal first, then overlay (overlay wins due to updated create_symlink)
 create_symlinks_from_dir() {
     local source_dir="$1"
@@ -97,7 +93,6 @@ create_symlinks_from_dir() {
 
     mkdir -p "$target_dir"
 
-    # Define patterns to exclude (version control files and install scripts)
     local exclude_patterns="-name .git -o -name .gitignore -o -name .gitmodules -o -name README.md -o -name install.sh"
 
     local items=$(find "$source_dir" -mindepth 1 -maxdepth 1 \( $exclude_patterns \) -prune -o -print 2>/dev/null)
