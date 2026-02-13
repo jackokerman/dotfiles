@@ -32,3 +32,9 @@ info() {
 success() {
     echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
+
+verbose_info() {
+    if [[ "${DOTTY_VERBOSE:-false}" == "true" ]]; then
+        info "$1"
+    fi
+}
