@@ -1,16 +1,17 @@
 # Dotfiles
 
-My personal dotfiles. Includes cross-platform shell configurations and macOS-specific system settings.
+My personal dotfiles. Managed by [dotty](https://github.com/jackokerman/dotty), a bash dotfiles manager with overlay semantics. Includes cross-platform shell configurations and macOS-specific system settings.
 
 ## Installation
 
-1. Clone this repository to your home directory:
+1. Clone this repository and run the install script:
 
 ```bash
-cd ~
-git clone https://github.com/jackokerman/dotfiles.git
-cd dotfiles
+git clone https://github.com/jackokerman/dotfiles.git ~/dotfiles
+cd ~/dotfiles && ./install.sh
 ```
+
+This installs [dotty](https://github.com/jackokerman/dotty) if needed, then creates symlinks and runs setup hooks (shell tools, Homebrew packages, macOS preferences, etc.).
 
 2. Download MonoLisa font (installed automatically by the setup script):
    - Visit the [MonoLisa orders page](https://www.monolisa.dev/orders) and log in with your email and order number (check your purchase confirmation email)
@@ -18,24 +19,19 @@ cd dotfiles
    - The install script will extract and install it automatically
    - **Note**: [Symbols Nerd Font](https://github.com/ryanoasis/nerd-fonts) (for terminal icons) is downloaded automatically during setup.
 
-3. Run the install script:
+## Updating
 
 ```bash
-# Run all setup steps (recommended)
-./install.sh all
-
-# Or run individual steps:
-./install.sh link   # Create symlinks for config files
-./install.sh shell  # Set up shell tools (fzf, bat)
-./install.sh brew   # Install Homebrew packages
-./install.sh macos  # Configure macOS system preferences
+dotty update
 ```
 
-## Post-Installation Setup
+This pulls the latest changes and re-runs symlinks and setup hooks.
 
-### Accessibility Permissions
+## Post-installation setup
 
-After running `./install.sh all`, launch and grant accessibility permissions when prompted:
+### Accessibility permissions
+
+After installation, launch and grant accessibility permissions when prompted:
 
 1. Karabiner-Elements
 2. AeroSpace
@@ -43,7 +39,7 @@ After running `./install.sh all`, launch and grant accessibility permissions whe
 
 All applications are configured to start automatically on subsequent logins.
 
-### Raycast Configuration
+### Raycast configuration
 
 Raycast is installed but requires manual setup:
 
@@ -51,22 +47,16 @@ Raycast is installed but requires manual setup:
 2. Disable Spotlight: System Settings > Keyboard > Keyboard Shortcuts > Spotlight > uncheck "Show Spotlight search"
 3. (Optional) Enable Settings Sync in Raycast preferences for personal machines to sync extensions and configurations
 
-#### Raycast Script Commands
-
-Custom script commands are included in `home/.raycast-scripts/`.
-
-After running `./install.sh link`, add the script directory to Raycast:
-1. Raycast Preferences → Extensions → Script Commands
+Custom script commands are included in `home/.raycast-scripts/`. After installation, add the script directory to Raycast:
+1. Raycast Preferences > Extensions > Script Commands
 2. Add Directory: `~/.raycast-scripts`
 
-## Git Configuration
+## Git configuration
 
 - Shared settings: `~/.config/git/config` (symlinked from dotfiles)
 - Machine-specific settings: `~/.gitconfig.local` (not in version control)
 
 Edit `~/.gitconfig.local` to add machine-specific settings like email, name, or editor preferences.
-
-### Convenience Commands
 
 ```bash
 # Edit local machine-specific settings
@@ -76,34 +66,13 @@ git config-local user.email "your-email@example.com"
 git config-shared alias.st "status"
 ```
 
-## Zsh Configuration
+## Zsh configuration
 
 - Shared settings: `~/.zshrc` and `~/.zshenv` (symlinked from dotfiles)
 - Machine-specific settings: `~/.zshrc.local` and `~/.zshenv.local` (not in version control)
 
 Use `.zshenv.local` for environment variables (PATH, exports) and `.zshrc.local` for interactive shell settings (aliases, functions).
 
-## Directory Configuration
+## Layering with other repos
 
-Add additional configuration files from a custom directory:
-
-```bash
-./install.sh link-dir /path/to/config/directory
-```
-
-This creates a "dotfiles overlay" by symlinking files to your home directory. Existing files are never overwritten (skipped with a warning), and directories are merged recursively.
-
-Example overlay structure:
-
-```
-work-dotfiles/
-└── home/
-    ├── .gitconfig.local              # Work email and signing key
-    ├── .zshenv.local                 # Work-specific PATH and env vars
-    ├── .zshrc.local                  # Work-specific aliases and functions
-    └── .config/
-        └── hammerspoon/
-            └── init.local.lua        # Work-specific key bindings
-```
-
-Files are symlinked to `$HOME`, so `home/.gitconfig.local` becomes `~/.gitconfig.local`.
+This repo is designed as a base layer. Work or machine-specific dotfiles can extend it using dotty's overlay system. See the [dotty README](https://github.com/jackokerman/dotty) for details on multi-repo chains and the extend pattern.
