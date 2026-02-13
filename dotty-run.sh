@@ -5,6 +5,7 @@
 # DOTTY_COMMAND (install/update) are exported by dotty.
 
 DOTFILES="$DOTTY_REPO_DIR"
+source "$DOTTY_LIB"
 source "$DOTFILES/scripts/utils.sh"
 
 # --- Git hooks
@@ -41,7 +42,7 @@ setup_vscode_settings() {
                 success "$editor_name settings merged successfully"
             else
                 rm -f "$target_file.tmp"
-                error "Failed to merge $editor_name settings"
+                die "Failed to merge $editor_name settings"
             fi
         else
             info "Creating new $editor_name settings from template"
@@ -134,7 +135,7 @@ setup_brew() {
                 export PATH="/usr/local/bin:$PATH"
             fi
         else
-            error "Failed to install Homebrew"
+            die "Failed to install Homebrew"
         fi
     else
         info "Homebrew already installed... Skipping installation."
@@ -171,10 +172,10 @@ setup_macos() {
         if "$DOTFILES/scripts/macos.sh"; then
             success "macOS configuration completed"
         else
-            error "Failed to configure macOS settings"
+            die "Failed to configure macOS settings"
         fi
     else
-        error "macOS configuration script not found at $DOTFILES/scripts/macos.sh"
+        die "macOS configuration script not found at $DOTFILES/scripts/macos.sh"
     fi
 
     if [ -f "$DOTFILES/scripts/karabiner-config.ts" ]; then

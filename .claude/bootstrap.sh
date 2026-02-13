@@ -10,6 +10,7 @@ PERSONAL_CLAUDE="$SCRIPT_DIR"
 OVERLAY_CLAUDE="${1:-}"
 TARGET="$HOME/.claude"
 
+source "$DOTTY_LIB"
 source "$(dirname "$SCRIPT_DIR")/scripts/utils.sh"
 
 title "Bootstrapping Claude config"

@@ -4,9 +4,7 @@
 # This modifies /etc/pam.d/sudo_local to allow Touch ID authentication for sudo
 # Requires macOS Sonoma (14.0+) for the sudo_local method that persists across updates
 
-# Source logging utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/logging.sh"
+source "$DOTTY_LIB"
 
 # Check macOS version
 MACOS_VERSION=$(sw_vers -productVersion | cut -d. -f1)
@@ -62,5 +60,5 @@ if grep -q "^auth.*sufficient.*pam_tid\.so" "$SUDO_LOCAL"; then
     success "Touch ID for sudo has been enabled successfully!"
     info "You can now use Touch ID instead of typing your password for sudo commands"
 else
-    error "Failed to enable Touch ID for sudo"
+    die "Failed to enable Touch ID for sudo"
 fi
