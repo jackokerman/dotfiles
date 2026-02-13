@@ -4,6 +4,7 @@
 # Usage:
 #   zfetch "owner/repo"                    - Install and source a plugin
 #   zfetch "owner/repo" "file.zsh"         - Install and source a specific file
+#   zfetch fpath <dir>                     - Add a directory to fpath (for non-plugin completions)
 #   zfetch update                          - Update all plugins
 #   zfetch ls                              - List installed plugins
 
@@ -35,6 +36,11 @@ zfetch() {
       fi
 
       fpath=($dest/src $fpath)
+      ;;
+    fpath)
+      # Add an arbitrary directory to fpath (for non-plugin completions like dotty, custom tools)
+      local dir="$2"
+      [[ -d "$dir" ]] && fpath=("$dir" $fpath)
       ;;
     *)
       local repo="$1"
