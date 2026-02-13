@@ -2,8 +2,7 @@
 
 # ~/.macos — https://mths.be/macos
 
-# Source logging utilities
-source "$(dirname "$0")/logging.sh"
+source "$DOTTY_LIB"
 
 title "Configuring macOS system preferences"
 

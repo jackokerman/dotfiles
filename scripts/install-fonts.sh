@@ -4,8 +4,7 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/logging.sh"
+source "$DOTTY_LIB"
 
 FONTS_DIR="$HOME/Library/Fonts"
 DOWNLOADS_DIR="$HOME/Downloads"
@@ -28,7 +27,7 @@ install_symbols_nerd_font() {
         success "Symbols Nerd Font Mono installed"
         rm -rf "$tmp_dir"
     else
-        error "Failed to download Symbols Nerd Font"
+        die "Failed to download Symbols Nerd Font"
         rm -rf "$tmp_dir"
         return 1
     fi
@@ -65,7 +64,7 @@ install_monolisa() {
         cp "$ttf_dir"/*.ttf "$FONTS_DIR/"
         success "MonoLisa Variable installed"
     else
-        error "Could not find ttf directory in ZIP"
+        die "Could not find ttf directory in ZIP"
         rm -rf "$tmp_dir"
         return 1
     fi
