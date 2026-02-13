@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# dotty install hook for personal dotfiles.
-# Runs after symlinks are created. DOTTY_REPO_DIR and DOTTY_ENV are exported.
+# dotty hook for personal dotfiles.
+# Runs after symlinks are created. DOTTY_REPO_DIR, DOTTY_ENV, and
+# DOTTY_COMMAND (install/update) are exported by dotty.
 
 DOTFILES="$DOTTY_REPO_DIR"
 source "$DOTFILES/scripts/utils.sh"
@@ -217,5 +218,11 @@ setup_shell
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
     setup_brew
-    setup_macos
+
+    # macOS system preferences, fonts, and Karabiner only need to run on
+    # first install. They're slow and require user interaction (sudo prompts,
+    # accessibility permissions, etc.).
+    if [[ "${DOTTY_COMMAND:-}" == "install" ]]; then
+        setup_macos
+    fi
 fi
