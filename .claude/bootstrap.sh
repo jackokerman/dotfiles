@@ -10,8 +10,8 @@ PERSONAL_CLAUDE="$SCRIPT_DIR"
 OVERLAY_CLAUDE="${1:-}"
 TARGET="$HOME/.claude"
 
-# Source shared utilities
-source "$HOME/dotfiles/scripts/utils.sh"
+# Source shared utilities (derive from SCRIPT_DIR so it works regardless of repo location)
+source "$(dirname "$SCRIPT_DIR")/scripts/utils.sh"
 
 title "Bootstrapping Claude config"
 info "Personal: $PERSONAL_CLAUDE"
