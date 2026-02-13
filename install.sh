@@ -1,8 +1,42 @@
 #!/usr/bin/env bash
 
 # Originally adapted from Nick Nisi's dotfiles
+#
+# If dotty is available, delegates to it. Otherwise falls back to legacy
+# install logic. Running without arguments installs dotty and uses it.
 
-DOTFILES="$(pwd)"
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ---------------------------------------------------------------------------
+# dotty path: preferred (./install.sh with no args, or dotty already present)
+# ---------------------------------------------------------------------------
+
+_use_dotty() {
+    if command -v dotty >/dev/null 2>&1 || [[ -x "$HOME/.dotty/bin/dotty" ]]; then
+        export PATH="$HOME/.dotty/bin:$PATH"
+        dotty install "$DOTFILES"
+        exit 0
+    fi
+
+    # Auto-install dotty, then delegate
+    if curl -fsSL https://raw.githubusercontent.com/jackokerman/dotty/main/install.sh | bash; then
+        export PATH="$HOME/.dotty/bin:$PATH"
+        dotty install "$DOTFILES"
+        exit 0
+    fi
+
+    echo "Warning: could not install dotty, falling back to legacy install" >&2
+}
+
+# Use dotty when run without arguments (fresh machine bootstrap)
+if [[ "${BASH_SOURCE[0]}" == "${0}" && $# -eq 0 ]]; then
+    _use_dotty
+fi
+
+# ---------------------------------------------------------------------------
+# Legacy path: individual setup_* functions (used by dotty-install.sh hook
+# and as fallback when dotty can't be installed)
+# ---------------------------------------------------------------------------
 
 # Source shared utilities (includes logging and symlink/merge functions)
 source "$DOTFILES/scripts/utils.sh"
@@ -279,6 +313,7 @@ main() {
             setup_macos
             ;;
         all)
+            _use_dotty  # try dotty first, falls through on failure
             setup_symlinks
             setup_vscode_settings
             setup_vscode_theme
@@ -288,13 +323,14 @@ main() {
             setup_macos
             ;;
         *)
-            echo -e "\nUsage: $(basename "$0") {link|link-dir|shell|brew|macos|all}\n"
+            echo -e "\nUsage: $(basename "$0") [link|link-dir|shell|brew|macos|all]\n"
+            echo "  (no args)  - Install via dotty (recommended)"
             echo "  link       - Create symlinks for dotfiles (home/ → ~/)"
             echo "  link-dir   - Create symlinks for directory configs (usage: link-dir <directory>)"
             echo "  shell      - Set up shell tools (fzf, bat)"
             echo "  brew       - Install applications and packages from Brewfile"
             echo "  macos      - Configure macOS system preferences (includes fonts)"
-            echo "  all        - Run all setup steps (link, shell, brew, macos)"
+            echo "  all        - Run all setup steps (legacy, prefers dotty)"
             echo
             exit 1
             ;;
