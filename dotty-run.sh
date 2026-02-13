@@ -200,6 +200,14 @@ setup_macos() {
 # --- Run
 
 setup_git_hooks
+
+# Bootstrap Claude config (personal only, no overlay).
+# When a work overlay repo runs after this, it re-runs bootstrap with its
+# overlay, so personal-only results are temporary in a chained install.
+if [[ -x "$DOTFILES/.claude/bootstrap.sh" ]]; then
+    "$DOTFILES/.claude/bootstrap.sh"
+fi
+
 setup_vscode_settings
 setup_vscode_theme
 setup_shell
