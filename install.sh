@@ -28,9 +28,14 @@ setup_symlinks() {
         fi
     fi
 
-    # Symlink dotfiles: home/ → ~/, config/ → ~/.config/
+    # Symlink dotfiles: home/ → ~/
+    # (.config/ now lives inside home/ so it's handled recursively)
     create_symlinks_from_dir "$DOTFILES/home" "$HOME"
-    create_symlinks_from_dir "$DOTFILES/config" "$HOME/.config"
+
+    # Legacy: support old config/ layout during migration
+    if [[ -d "$DOTFILES/config" ]] && ls "$DOTFILES/config"/* >/dev/null 2>&1; then
+        create_symlinks_from_dir "$DOTFILES/config" "$HOME/.config"
+    fi
 }
 
 # Configure git hooks for the dotfiles repo itself
@@ -298,4 +303,7 @@ main() {
     success "Done."
 }
 
-main "$@"
+# Only run main when executed directly (not when sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
