@@ -357,15 +357,6 @@ defaults write com.apple.dock wvous-br-corner -int 0
 defaults write com.apple.dock wvous-br-modifier -int 0
 
 ###############################################################################
-# Terminal & iTerm 2                                                          #
-###############################################################################
-
-info "Configuring Terminal & iTerm 2 settings"
-
-# Don't display the annoying prompt when quitting iTerm
-defaults write com.googlecode.iterm2 PromptOnQuit -bool false
-
-###############################################################################
 # Time Machine                                                                #
 ###############################################################################
 
