@@ -21,8 +21,8 @@ setup_git_hooks() {
 
 # --- VS Code / Cursor
 
-setup_vscode_settings() {
-    title "Setting up VS Code and Cursor settings"
+setup_vscode() {
+    title "Setting up VS Code and Cursor"
 
     local vscode_user_dir="$HOME/Library/Application Support/Code/User"
     local cursor_user_dir="$HOME/Library/Application Support/Cursor/User"
@@ -53,10 +53,8 @@ setup_vscode_settings() {
 
     merge_settings "$vscode_user_dir/settings.json" "VS Code"
     merge_settings "$cursor_user_dir/settings.json" "Cursor"
-}
 
-setup_vscode_theme() {
-    title "Setting up Nightfly VS Code theme"
+    info "Setting up Nightfly VS Code theme"
 
     local theme_repo="https://github.com/jackokerman/nightfly-vscode.git"
     local theme_dir="$HOME/nightfly-vscode"
@@ -209,8 +207,7 @@ if [[ -x "$DOTFILES/.claude/bootstrap.sh" ]]; then
     "$DOTFILES/.claude/bootstrap.sh"
 fi
 
-setup_vscode_settings
-setup_vscode_theme
+setup_vscode
 setup_shell
 
 if [[ "$(uname -s)" == "Darwin" ]]; then

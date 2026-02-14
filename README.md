@@ -68,7 +68,7 @@ git config-shared alias.st "status"
 
 ## Zsh configuration
 
-- Shared settings: `~/.zshrc` and `~/.zshenv` (symlinked from dotfiles)
+- Shared settings: `~/.config/zsh/.zshrc` (via `ZDOTDIR`, set in `~/.zshenv`) and `~/.zshenv` (symlinked from dotfiles)
 - Machine-specific settings: `~/.zshrc.local` and `~/.zshenv.local` (not in version control)
 
 Use `.zshenv.local` for environment variables (PATH, exports) and `.zshrc.local` for interactive shell settings (aliases, functions).

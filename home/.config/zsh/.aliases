@@ -1,7 +1,7 @@
 # Editing
-alias zshrc='eval $EDITOR $HOME/.zshrc'
+alias zshrc='eval $EDITOR $ZDOTDIR/.zshrc'
 alias zshrc-local='eval $EDITOR $HOME/.zshrc.local'
-alias aliases='eval $EDITOR $HOME/.aliases'
+alias aliases='eval $EDITOR $ZDOTDIR/.aliases'
 alias dotfiles='cd ~/dotfiles'
 
 # Git
