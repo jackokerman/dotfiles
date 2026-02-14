@@ -7,14 +7,13 @@
 DOTFILES="$DOTTY_REPO_DIR"
 source "$DOTTY_LIB"
 
-# --- Git hooks
+# --- Guard
 
-setup_git_hooks() {
-    title "Setting up git hooks"
+setup_guard() {
+    title "Setting up commit guard"
 
-    if [ -d "$DOTFILES/hooks" ]; then
-        git -C "$DOTFILES" config core.hooksPath "$DOTFILES/hooks"
-        success "Git hooks configured (prevents work-related content)"
+    if command -v dotty >/dev/null 2>&1; then
+        dotty guard "$DOTFILES"
     fi
 }
 
@@ -171,7 +170,7 @@ setup_macos() {
 
 # --- Run
 
-setup_git_hooks
+setup_guard
 setup_vscode
 setup_shell
 
