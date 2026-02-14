@@ -6,7 +6,6 @@
 
 DOTFILES="$DOTTY_REPO_DIR"
 source "$DOTTY_LIB"
-source "$DOTFILES/scripts/utils.sh"
 
 # --- Git hooks
 
@@ -31,28 +30,8 @@ setup_vscode() {
     mkdir -p "$vscode_user_dir"
     mkdir -p "$cursor_user_dir"
 
-    merge_settings() {
-        local target_file="$1"
-        local editor_name="$2"
-
-        if [ -f "$target_file" ]; then
-            info "Merging template settings into existing $editor_name configuration"
-            if jq -s '.[0] * .[1]' "$target_file" "$template_settings" > "$target_file.tmp"; then
-                mv "$target_file.tmp" "$target_file"
-                success "$editor_name settings merged successfully"
-            else
-                rm -f "$target_file.tmp"
-                die "Failed to merge $editor_name settings"
-            fi
-        else
-            info "Creating new $editor_name settings from template"
-            cp "$template_settings" "$target_file"
-            success "$editor_name settings created from template"
-        fi
-    }
-
-    merge_settings "$vscode_user_dir/settings.json" "VS Code"
-    merge_settings "$cursor_user_dir/settings.json" "Cursor"
+    merge_json "$template_settings" "$vscode_user_dir/settings.json"
+    merge_json "$template_settings" "$cursor_user_dir/settings.json"
 
     info "Setting up Nightfly VS Code theme"
 
@@ -193,14 +172,6 @@ setup_macos() {
 # --- Run
 
 setup_git_hooks
-
-# Bootstrap Claude config (personal only, no overlay).
-# When a work overlay repo runs after this, it re-runs bootstrap with its
-# overlay, so personal-only results are temporary in a chained install.
-if [[ -x "$DOTFILES/.claude/bootstrap.sh" ]]; then
-    "$DOTFILES/.claude/bootstrap.sh"
-fi
-
 setup_vscode
 setup_shell
 
