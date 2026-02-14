@@ -7,9 +7,8 @@
 # @raycast.icon 🪟
 # @raycast.packageName Window Manager
 
-# Arrange windows to their designated workspaces based on config files
-# Sources ~/.aerospace-arrangement (base config)
-# Sources ~/.aerospace-arrangement.local if exists (machine-specific override)
+# Arrange windows to their designated workspaces based on the
+# $AEROSPACE_ARRANGEMENTS env var (comma-separated entries).
 #
 # Configuration format: "APP_NAME|FILTER|WORKSPACE"
 #   APP_NAME: Application name as shown in aerospace (e.g., "Google Chrome", "Slack")
@@ -29,21 +28,17 @@
 #   (Chrome shows profile name in window title, e.g., "Gmail - Personal" or "Jira - Jack (stripe.com)")
 
 do shell script "
-# Source base arrangement config (always exists)
-if [ -f ~/.aerospace-arrangement ]; then
-    source ~/.aerospace-arrangement
+if [ -z \"$AEROSPACE_ARRANGEMENTS\" ]; then
+    exit 0
 fi
 
-# Source local arrangement config if it exists (overrides base)
-if [ -f ~/.aerospace-arrangement.local ]; then
-    source ~/.aerospace-arrangement.local
-fi
+IFS=',' read -ra arrangements <<< \"$AEROSPACE_ARRANGEMENTS\"
 
 # Get all windows as JSON
 windows=$(aerospace list-windows --all --json)
 
 # Process each arrangement rule
-for arrangement in \"${AEROSPACE_ARRANGEMENTS[@]}\"; do
+for arrangement in \"${arrangements[@]}\"; do
     # Parse the pipe-delimited format: APP|FILTER|WORKSPACE
     IFS='|' read -r app_name filter workspace <<< \"$arrangement\"
 
