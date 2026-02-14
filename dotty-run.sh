@@ -2,7 +2,7 @@
 #
 # dotty hook for personal dotfiles.
 # Runs after symlinks are created. DOTTY_REPO_DIR, DOTTY_ENV, and
-# DOTTY_COMMAND (install/update) are exported by dotty.
+# DOTTY_COMMAND (install/update/sync) are exported by dotty.
 
 DOTFILES="$DOTTY_REPO_DIR"
 source "$DOTTY_LIB"
@@ -204,13 +204,16 @@ fi
 setup_vscode
 setup_shell
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    setup_brew
-
-    # macOS system preferences, fonts, and Karabiner only need to run on
-    # first install. They're slow and require user interaction (sudo prompts,
-    # accessibility permissions, etc.).
-    if [[ "${DOTTY_COMMAND:-}" == "install" ]]; then
-        setup_macos
-    fi
-fi
+case "$DOTTY_COMMAND" in
+    install)
+        if [[ "$(uname -s)" == "Darwin" ]]; then
+            setup_brew
+            setup_macos
+        fi
+        ;;
+    update)
+        if [[ "$(uname -s)" == "Darwin" ]]; then
+            setup_brew
+        fi
+        ;;
+esac
