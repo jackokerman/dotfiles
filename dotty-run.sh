@@ -86,12 +86,6 @@ setup_vscode() {
 setup_shell() {
     title "Setting up shell"
 
-    # fzf
-    if command -v brew >/dev/null && [[ -f "$(brew --prefix)/opt/fzf/install" ]]; then
-        info "Setting up fzf"
-        "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
-    fi
-
     # bat (symlink from batcat on Linux)
     if command -v batcat >/dev/null 2>&1 && ! command -v bat >/dev/null 2>&1; then
         info "Creating bat symlink from batcat"

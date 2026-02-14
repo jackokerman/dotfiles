@@ -58,11 +58,11 @@ source $ZDOTDIR/.aliases
 # Setup fzf
 if command -v fzf >/dev/null 2>&1; then
     if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
-        # APT installation
+        # APT installation (Linux devboxes)
         source /usr/share/doc/fzf/examples/key-bindings.zsh
         source /usr/share/doc/fzf/examples/completion.zsh
-    elif [ -f ~/.fzf.zsh ]; then
-        # Homebrew installation
-        source ~/.fzf.zsh
+    else
+        # Homebrew or other installation
+        source <(fzf --zsh)
     fi
 fi
