@@ -34,5 +34,15 @@ export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 [[ -d "$HOME/.dotty/bin" ]] && export PATH="$HOME/.dotty/bin:$PATH"
 
+# Aerospace window arrangement: "APP_NAME|FILTER|WORKSPACE" comma-separated
+export AEROSPACE_ARRANGEMENTS="\
+Google Chrome||B,\
+Arc||B,\
+Calendar||C,\
+Messages||M,\
+Obsidian||N,\
+Godspeed||T,\
+Discord||D"
+
 # Source local environment overrides if they exist (e.g., work-specific config)
 [[ -f ~/.zshenv.local ]] && source ~/.zshenv.local
