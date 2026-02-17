@@ -2,7 +2,7 @@
 #
 # dotty hook for personal dotfiles.
 # Runs after symlinks are created. DOTTY_REPO_DIR, DOTTY_ENV, and
-# DOTTY_COMMAND (install/update/sync) are exported by dotty.
+# DOTTY_COMMAND (install/update) are exported by dotty.
 
 DOTFILES="$DOTTY_REPO_DIR"
 source "$DOTTY_LIB"
@@ -72,8 +72,8 @@ setup_shell() {
         export PATH="$HOME/.local/bin:$PATH"
     fi
 
-    # bat cache (for custom theme — skip during sync since themes rarely change)
-    if [[ "$DOTTY_COMMAND" != "sync" ]] && command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
+    # bat cache (for custom theme)
+    if command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
         info "Setting up bat"
         bat cache --build
     fi
