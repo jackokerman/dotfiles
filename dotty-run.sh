@@ -181,9 +181,4 @@ case "$DOTTY_COMMAND" in
             setup_macos
         fi
         ;;
-    update)
-        if [[ "$(uname -s)" == "Darwin" ]]; then
-            setup_brew
-        fi
-        ;;
 esac
