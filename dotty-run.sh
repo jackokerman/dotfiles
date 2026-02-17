@@ -170,12 +170,12 @@ setup_macos() {
 
 # --- Run
 
-setup_guard
 setup_vscode
 setup_shell
 
 case "$DOTTY_COMMAND" in
     install)
+        setup_guard
         if [[ "$(uname -s)" == "Darwin" ]]; then
             setup_brew
             setup_macos
