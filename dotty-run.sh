@@ -72,8 +72,8 @@ setup_shell() {
         export PATH="$HOME/.local/bin:$PATH"
     fi
 
-    # bat cache (for custom theme)
-    if command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
+    # bat cache (for custom theme — skip during sync since themes rarely change)
+    if [[ "$DOTTY_COMMAND" != "sync" ]] && command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
         info "Setting up bat"
         bat cache --build
     fi
