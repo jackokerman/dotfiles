@@ -1,4 +1,4 @@
-#!/usr/bin/osascript
+#!/bin/zsh
 
 # Required parameters:
 # @raycast.schemaVersion 1
@@ -27,37 +27,22 @@
 #   "Google Chrome|Personal|P"          - Personal profile windows go to P
 #   (Chrome shows profile name in window title, e.g., "Gmail - Personal" or "Jira - Jack (stripe.com)")
 
-do shell script "
-if [ -z \"$AEROSPACE_ARRANGEMENTS\" ]; then
-    exit 0
-fi
+[[ -z "$AEROSPACE_ARRANGEMENTS" ]] && exit 0
 
-IFS=',' read -ra arrangements <<< \"$AEROSPACE_ARRANGEMENTS\"
+IFS=',' read -rA arrangements <<< "$AEROSPACE_ARRANGEMENTS"
 
-# Get all windows as JSON
 windows=$(aerospace list-windows --all --json)
 
-# Process each arrangement rule
-for arrangement in \"${arrangements[@]}\"; do
-    # Parse the pipe-delimited format: APP|FILTER|WORKSPACE
-    IFS='|' read -r app_name filter workspace <<< \"$arrangement\"
+for arrangement in "${arrangements[@]}"; do
+    IFS='|' read -r app_name filter workspace <<< "$arrangement"
 
-    # Build jq filter based on whether we have a title filter
-    if [ -z \"$filter\" ]; then
-        # No filter: match all windows from this app
-        jq_filter=\".[] | select(.[\\\"app-name\\\"] == \\\"$app_name\\\") | .[\\\"window-id\\\"]\"
+    if [[ -z "$filter" ]]; then
+        jq_filter=".[] | select(.[\"app-name\"] == \"$app_name\") | .[\"window-id\"]"
     else
-        # With filter: match windows with filter text in title
-        jq_filter=\".[] | select(.[\\\"app-name\\\"] == \\\"$app_name\\\" and (.[\\\"window-title\\\"] | contains(\\\"$filter\\\"))) | .[\\\"window-id\\\"]\"
+        jq_filter=".[] | select(.[\"app-name\"] == \"$app_name\" and (.[\"window-title\"] | contains(\"$filter\"))) | .[\"window-id\"]"
     fi
 
-    # Move matching windows to workspace
-    echo \"$windows\" | jq -r \"$jq_filter\" | while read -r window_id; do
-        if [ -n \"$window_id\" ]; then
-            aerospace move-node-to-workspace \"$workspace\" --window-id \"$window_id\" 2>/dev/null || true
-        fi
+    echo "$windows" | jq -r "$jq_filter" | while read -r window_id; do
+        [[ -n "$window_id" ]] && aerospace move-node-to-workspace "$workspace" --window-id "$window_id" 2>/dev/null || true
     done
 done
-"
-
-return
