@@ -7,6 +7,29 @@
 DOTFILES="$DOTTY_REPO_DIR"
 source "$DOTTY_LIB"
 
+# --- Claude
+
+_merge_claude_settings() {
+    local source="$1" target="$2"
+    [[ -f "$source" ]] || return 0
+    command -v jq &>/dev/null || { warning "jq not found, skipping settings merge"; return 0; }
+    if [[ -f "$target" ]]; then
+        jq -s '
+            .[0] as $base | .[1] as $override |
+            $base * $override |
+            .permissions.allow = ([$base.permissions.allow, $override.permissions.allow] | add | unique)
+        ' "$target" "$source" > "$target.tmp" && mv "$target.tmp" "$target"
+    else
+        cp "$source" "$target"
+    fi
+}
+
+setup_claude() {
+    title "Setting up Claude config"
+    _merge_claude_settings "$DOTFILES/claude-settings.json" "$HOME/.claude/settings.json"
+    success "Claude settings merged"
+}
+
 # --- Guard
 
 setup_guard() {
@@ -172,6 +195,7 @@ setup_macos() {
 
 setup_vscode
 setup_shell
+setup_claude
 
 case "$DOTTY_COMMAND" in
     install)
