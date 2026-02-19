@@ -1,4 +1,9 @@
 {
+  "alwaysThinkingEnabled": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Edit(/Users/jackokerman/dotfiles/**)",
