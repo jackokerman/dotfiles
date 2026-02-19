@@ -64,14 +64,6 @@ setup_vscode() {
 setup_shell() {
     title "Setting up shell"
 
-    # bat (symlink from batcat on Linux)
-    if command -v batcat >/dev/null 2>&1 && ! command -v bat >/dev/null 2>&1; then
-        info "Creating bat symlink from batcat"
-        mkdir -p "$HOME/.local/bin"
-        ln -sf "$(command -v batcat)" "$HOME/.local/bin/bat"
-        export PATH="$HOME/.local/bin:$PATH"
-    fi
-
     # bat cache (for custom theme)
     if command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
         info "Setting up bat"
