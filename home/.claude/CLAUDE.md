@@ -64,6 +64,7 @@ dotfiles/
     ├── .zshenv
     ├── .claude/
     │   ├── CLAUDE.md       # This file
+    │   ├── settings.json   # Claude Code settings
     │   └── rules/          # Claude Code rules
     ├── .config/
     │   ├── aerospace/      # Window manager
