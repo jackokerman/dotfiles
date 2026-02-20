@@ -64,8 +64,10 @@ setup_vscode() {
 setup_shell() {
     title "Setting up shell"
 
-    # bat cache (for custom theme)
-    if command -v bat >/dev/null 2>&1 && [ -d "$(bat --config-dir)/themes" ]; then
+    # bat cache (for custom theme) — only on install since themes rarely change
+    if command -v bat >/dev/null 2>&1 \
+        && [ -d "$(bat --config-dir)/themes" ] \
+        && [ "$DOTTY_COMMAND" = "install" ]; then
         info "Setting up bat"
         bat cache --build
     fi
@@ -164,6 +166,14 @@ setup_macos() {
 
 setup_vscode
 setup_shell
+
+# Claude settings: copy (not symlink) so overlays can replace without
+# writing through a symlink into this repo's source tree.
+local_settings_src="$DOTFILES/home/.claude/settings.json"
+if [[ -f "$local_settings_src" ]]; then
+    mkdir -p "$HOME/.claude"
+    cp "$local_settings_src" "$HOME/.claude/settings.json"
+fi
 
 case "$DOTTY_COMMAND" in
     install)
