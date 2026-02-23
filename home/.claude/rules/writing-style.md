@@ -22,10 +22,12 @@ Be informal but not too casual. Avoid stiff or overly formal phrasing, but don't
 
 ## Sentence structure
 
-Write complete sentences with subjects and verbs. The tone can be informal, but don't omit grammatical subjects.
+Write complete sentences with subjects and verbs. The tone can be informal, but don't omit grammatical subjects. When making suggestions (e.g., in PR reviews), prefer "we" over "you" for a more collaborative tone.
 
 - Good: "The service failed to connect. It retried three times before timing out."
 - Bad: "Failed to connect. Retried three times before timing out."
+- Good: "We could drop the `state` property here."
+- Bad: "Could drop the `state` property here."
 
 ## Punctuation
 
