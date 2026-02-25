@@ -29,8 +29,16 @@ setup_vscode() {
     mkdir -p "$vscode_user_dir"
     mkdir -p "$cursor_user_dir"
 
-    merge_json "$template_settings" "$vscode_user_dir/settings.json"
-    merge_json "$template_settings" "$cursor_user_dir/settings.json"
+    for target in "$vscode_user_dir/settings.json" "$cursor_user_dir/settings.json"; do
+        if ! command -v jq &>/dev/null; then
+            warning "jq not found, copying settings instead of merging"
+            cp "$template_settings" "$target"
+        elif [[ -f "$target" ]]; then
+            jq -s '.[0] * .[1]' "$target" "$template_settings" > "$target.tmp" && mv "$target.tmp" "$target"
+        else
+            cp "$template_settings" "$target"
+        fi
+    done
 
     info "Setting up Nightfly VS Code theme"
 

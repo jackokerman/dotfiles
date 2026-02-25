@@ -31,7 +31,7 @@ Repos can define `DOTTY_ENVIRONMENTS` and `DOTTY_ENV_DETECT` in their `dotty.con
 
 ## `dotty-run.sh` hooks
 
-Each repo can include a `dotty-run.sh` script that runs after symlinks are created during `install` or `update`. The hook receives environment variables like `DOTTY_REPO_DIR`, `DOTTY_ENV`, `DOTTY_COMMAND`, and `DOTTY_LIB` (a utility library with helpers for logging, symlinks, and JSON merging).
+Each repo can include a `dotty-run.sh` script that runs after symlinks are created during `install` or `update`. The hook receives environment variables like `DOTTY_REPO_DIR`, `DOTTY_ENV`, `DOTTY_COMMAND`, and `DOTTY_LIB` (a utility library with helpers for logging and symlinks).
 
 ## Guard system
 
