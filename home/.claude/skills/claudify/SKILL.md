@@ -67,6 +67,8 @@ Ask for confirmation before proceeding.
 
 ### 6. Apply and commit
 
+**IMPORTANT: Every change to a dotfiles repo MUST be committed and pushed before the task is considered done. Never leave changes uncommitted or unpushed.**
+
 1. Make the change
-2. Commit with a message like: "Add preference for early returns in TypeScript"
-3. Push to the repo's main branch
+2. Stage and commit in the target dotfiles repo (not the current working directory) with a descriptive message, e.g.: "Add preference for early returns in TypeScript"
+3. Push to the repo's remote main branch
