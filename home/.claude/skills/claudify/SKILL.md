@@ -1,12 +1,26 @@
 ---
 name: claudify
-description: Add or update a Claude Code preference, convention, or pattern in the appropriate dotfiles repo
-disable-model-invocation: true
+description: >-
+  Persist a preference, convention, or pattern to Claude Code configuration.
+  Use when the user corrects Claude's approach, expresses a preference,
+  or asks Claude to remember something ("always do X", "never do Y",
+  "I prefer X", "why did you do it that way", "can we do X instead",
+  "from now on", "remember this").
 ---
 
 # Claudify
 
 Save a preference, convention, or pattern to Claude Code configuration so it persists across sessions.
+
+## Auto-invocation gating
+
+When you auto-invoke this skill (the user didn't type `/claudify`), propose saving the preference rather than silently doing it:
+
+> That sounds like a preference worth saving for future sessions. Want me to persist it?
+
+Only proceed if the user confirms. This prevents casual one-off corrections from becoming permanent rules.
+
+When the user explicitly invokes `/claudify`, skip this check and proceed directly.
 
 ## Workflow
 
@@ -16,6 +30,10 @@ The user will describe something they want Claude to remember, like:
 - A coding convention ("always use early returns")
 - A tool preference ("use pnpm instead of npm")
 - A workflow pattern ("run tests before committing")
+- A writing style ("don't use em dashes")
+- A tool permission ("always allow web search")
+
+**Is it actually a persistent preference?** Not every correction is one. "Use a different variable name here" or "fix the typo on line 12" are local edits, not preferences. Look for language that implies generality: "always", "never", "I prefer", "from now on", or corrections to Claude's default behavior that would apply across sessions.
 
 If the description is vague, ask a clarifying question.
 
@@ -48,15 +66,32 @@ If `$DOTTY_GUARD_PATTERNS` is unset, route everything to the base repo.
 
 ### 4. Determine placement
 
-Decide whether to add to an existing file or create a new one:
+Pick the configuration surface that best fits the preference:
 
-**Add to existing rule or skill** when the preference fits naturally within an existing file's scope. Read the candidate file first to confirm it's a good fit.
+**`settings.json`** for tool permissions or model configuration. Examples: "always allow web search", "use sonnet for quick tasks", "turn on extended thinking". These are key-value settings, not prose.
 
-**Create a new skill** when the preference represents a distinct workflow or domain that doesn't fit existing files. Use `user-invocable: false` for style/convention preferences, `disable-model-invocation: true` for explicit workflows.
+**`CLAUDE.md`** for small additions that fit an existing section. Read the current `CLAUDE.md` first. If there's already a relevant section (e.g., "Communication style"), append there. This is the most common target for simple preferences.
 
-**Create a new rule** only for small, always-applicable preferences (like writing style) that should load into every conversation.
+**`rules/`** for small, always-applicable preferences that deserve their own file. Good for things like writing style, commit conventions, or formatting rules that don't fit an existing `CLAUDE.md` section and would clutter it.
 
-### 5. Show proposed change
+**`skills/`** for two cases:
+- `user-invocable: false` for language/framework style guides or convention sets that should load contextually (e.g., when editing `.ts` files)
+- Full skills (user-invocable or auto-invocable) for distinct workflows
+
+**Project-level `.claude/`** when the preference is specific to a single project rather than global. Place in the project's `.claude/CLAUDE.md`, `.claude/rules/`, or `.claude/settings.json` as appropriate.
+
+When deciding, be pragmatic. A one-line preference belongs in `CLAUDE.md`, not a new rule file. A set of five related conventions might warrant a rule file. A complex workflow with multiple steps is a skill. Don't create new files when appending to an existing one works.
+
+### 5. Compose the directive
+
+When writing the preference content:
+
+- Frame positively: "use early returns" rather than "don't nest deeply"
+- Include brief motivation when it's not obvious (e.g., "declarations are hoisted, so main components can go at the top of the file")
+- Keep individual directives to one or two sentences
+- Be mindful of file size for always-loaded files (`CLAUDE.md`, rules). If a file is getting long, suggest extracting to a skill instead
+
+### 6. Show proposed change
 
 Display the exact change you plan to make:
 - Which file (full path)
@@ -65,7 +100,7 @@ Display the exact change you plan to make:
 
 Ask for confirmation before proceeding.
 
-### 6. Apply and commit
+### 7. Apply and commit
 
 **IMPORTANT: Every change to a dotfiles repo MUST be committed and pushed before the task is considered done. Never leave changes uncommitted or unpushed.**
 
