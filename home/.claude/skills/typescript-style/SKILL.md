@@ -1,6 +1,12 @@
-# TypeScript Style
+---
+name: typescript-style
+description: Style guide for writing TypeScript and TSX code. Invoke when creating or editing .ts, .tsx, .mts, .cts files.
+user-invocable: false
+---
 
-## General Principles
+# TypeScript style
+
+## General principles
 - Prefer functional patterns over classes
 - Use early returns to reduce nesting
 - Keep functions small and focused
@@ -50,13 +56,13 @@
   function createWidget(id: string, label: string, category: string) { ... }
   ```
 
-## Syntax Preferences
+## Syntax preferences
 - Use `const` by default, `let` only when reassignment is needed
 - Prefer named exports over default exports
 - Use template literals over string concatenation
 - Prefer optional chaining (`?.`) and nullish coalescing (`??`)
 
-## Type Safety
+## Type safety
 - Enable TypeScript strict mode
 - Prefer `type` over `interface`
 - Prefer type inference where obvious, explicit types for function signatures
@@ -78,7 +84,7 @@ Common situations where `any` seems tempting but isn't needed:
 - Third-party libs without types → write declaration files or use `@types/*`
 - Callback parameters → use proper function signatures with generics
 
-## JSDoc Comments
+## JSDoc comments
 - Add JSDoc descriptions to exported functions and types
 - Skip `@param` and `@returns` tags - TypeScript types handle that
 - Prefer multi-line format for readability:
@@ -115,7 +121,7 @@ Common situations where `any` seems tempting but isn't needed:
   ```
 - Focus documentation on exported items; internal code only if complex
 
-## File Organization
+## File organization
 - Start implementing in a single file; don't preemptively create files
 - Extract only when: file gets too large, or code needs reuse elsewhere
 - Avoid hasty abstractions - duplication is cheaper than wrong abstraction
@@ -125,7 +131,7 @@ Common situations where `any` seems tempting but isn't needed:
 - PascalCase for types and classes
 - SCREAMING_SNAKE_CASE for constants
 
-## Error Handling
+## Error handling
 - Prefer explicit error handling over try/catch where possible
 - Use Result/Either patterns for expected failures
 - Reserve exceptions for unexpected errors

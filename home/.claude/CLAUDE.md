@@ -65,7 +65,8 @@ dotfiles/
     ├── .claude/
     │   ├── CLAUDE.md       # This file
     │   ├── settings.json   # Claude Code settings
-    │   └── rules/          # Claude Code rules
+    │   ├── rules/          # Claude Code rules (always-on)
+    │   └── skills/         # Claude Code skills (contextual)
     ├── .config/
     │   ├── aerospace/      # Window manager
     │   ├── bat/            # Syntax highlighter
@@ -81,4 +82,4 @@ dotfiles/
 - Test changes with `dotty update` before considering them done.
 - Never commit secrets or credentials to this repo (it's public).
 - The `home/` → `$HOME` mapping is the core mental model. If you want a file at `~/.config/foo/bar`, put it at `home/.config/foo/bar`.
-- Overlay repos can add their own `home/.claude/rules/` and `home/.claude/commands/` files, which get merged into the same `~/.claude/` directory.
+- Overlay repos can add their own `home/.claude/rules/`, `home/.claude/skills/`, and `home/.claude/commands/` files, which get merged into the same `~/.claude/` directory.

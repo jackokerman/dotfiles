@@ -1,3 +1,9 @@
+---
+name: bash-style
+description: Style guide for writing bash, shell, and zsh scripts. Invoke when creating or editing .sh, .bash, .zsh files or any shell script.
+user-invocable: false
+---
+
 # Bash scripting style
 
 ## General principles
