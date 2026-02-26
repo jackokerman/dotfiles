@@ -7,7 +7,7 @@
 DOTFILES="$DOTTY_REPO_DIR"
 source "$DOTTY_LIB"
 
-# --- Guard
+# Guard
 
 setup_guard() {
     title "Setting up commit guard"
@@ -17,7 +17,7 @@ setup_guard() {
     fi
 }
 
-# --- VS Code / Cursor
+# VS Code / Cursor
 
 setup_vscode() {
     title "Setting up VS Code and Cursor"
@@ -67,7 +67,7 @@ setup_vscode() {
     create_symlink "$theme_dir" "$cursor_ext_dir"
 }
 
-# --- Shell tools
+# Shell tools
 
 setup_shell() {
     title "Setting up shell"
@@ -88,7 +88,7 @@ setup_shell() {
     fi
 }
 
-# --- Homebrew
+# Homebrew
 
 setup_brew() {
     title "Installing Homebrew packages"
@@ -121,7 +121,7 @@ setup_brew() {
     fi
 }
 
-# --- macOS
+# macOS
 
 setup_macos() {
     if [ "$(uname -s)" != "Darwin" ]; then
@@ -170,7 +170,7 @@ setup_macos() {
     fi
 }
 
-# --- Run
+# Run
 
 setup_vscode
 setup_shell
