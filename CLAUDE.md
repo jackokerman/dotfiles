@@ -8,7 +8,7 @@ Dotty symlinks everything under a repo's `home/` directory into `$HOME`. Directo
 
 Key commands:
 
-- `dotty install <path-or-url>` resolves the dependency chain, clones any missing repos, creates symlinks, and runs `dotty-run.sh` hooks.
+- `dotty install <path-or-url>` resolves the dependency chain, clones any missing repos, creates symlinks, and runs hooks.
 - `dotty update [name]` pulls all repos in the chain, re-creates symlinks, and re-runs hooks.
 - `dotty link [name]` re-creates symlinks only (skips pulls and hooks).
 - `dotty status` shows registered repos, chain order, and detected environment.
@@ -16,7 +16,7 @@ Key commands:
 
 ## Chain and overlay system
 
-The `dotty.conf` at the root of each repo defines its identity and dependencies:
+The `.dotty/config` in each repo defines its identity and dependencies:
 
 ```bash
 DOTTY_NAME="dotfiles"
@@ -27,11 +27,11 @@ This is the base repo with no dependencies. Overlay repos reference their parent
 
 ## Environment detection
 
-Repos can define `DOTTY_ENVIRONMENTS` and `DOTTY_ENV_DETECT` in their `dotty.conf`. When environments are configured, dotty evaluates the detection expression and symlinks files from the matching environment directory (e.g., `laptop/` or `remote/`) after the base `home/` files.
+Repos can define `DOTTY_ENVIRONMENTS` and `DOTTY_ENV_DETECT` in their `.dotty/config`. When environments are configured, dotty evaluates the detection expression and symlinks files from the matching environment directory (e.g., `laptop/` or `remote/`) after the base `home/` files.
 
-## `dotty-run.sh` hooks
+## Hooks
 
-Each repo can include a `dotty-run.sh` script that runs after symlinks are created during `install` or `update`. The hook receives environment variables like `DOTTY_REPO_DIR`, `DOTTY_ENV`, `DOTTY_COMMAND`, and `DOTTY_LIB` (a utility library with helpers for logging and symlinks).
+Each repo can include a `.dotty/run.sh` script that runs after symlinks are created during `install` or `update`. The hook receives environment variables like `DOTTY_REPO_DIR`, `DOTTY_ENV`, `DOTTY_COMMAND`, and `DOTTY_LIB` (a utility library with helpers for logging and symlinks).
 
 ## Guard system
 
@@ -47,8 +47,9 @@ Files ending in `.local` (like `.zshrc.local`, `.gitconfig.local`) are provided 
 
 ```
 dotfiles/
-├── dotty.conf              # Repo identity and chain config
-├── dotty-run.sh            # Post-symlink hook
+├── .dotty/
+│   ├── config              # Repo identity and chain config
+│   └── run.sh              # Post-symlink hook
 ├── install.sh              # Bootstrap script
 ├── Brewfile                # Homebrew packages
 ├── CLAUDE.md               # This file (repo-scoped instructions)

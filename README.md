@@ -11,7 +11,7 @@ git clone https://github.com/jackokerman/dotfiles.git ~/dotfiles
 cd ~/dotfiles && ./install.sh
 ```
 
-This installs [dotty](https://github.com/jackokerman/dotty) if needed, then creates symlinks and runs setup hooks (shell tools, Homebrew packages, macOS preferences, etc.).
+This installs [dotty](https://github.com/jackokerman/dotty) if needed, then creates symlinks and runs hooks (shell tools, Homebrew packages, macOS preferences, etc.).
 
 2. Download MonoLisa font (installed automatically by the setup script):
    - Visit the [MonoLisa orders page](https://www.monolisa.dev/orders) and log in with your email and order number (check your purchase confirmation email)
