@@ -12,21 +12,27 @@ description: >-
 
 Save a preference, convention, or pattern to Claude Code configuration so it persists across sessions.
 
-## Auto-invocation gating
+## Arguments
 
-When you auto-invoke this skill (the user didn't type `/claudify`), propose saving the preference rather than silently doing it:
+The user can pass a description directly: `/claudify "prefer simple bash headers"`. When arguments are provided, use them as the preference description instead of asking.
+
+## Confirming intent
+
+Always confirm what you're about to save before making changes, regardless of how the skill was invoked. Don't infer preferences from conversation context. Ask the user what they want to persist, or if they passed arguments, confirm your interpretation.
+
+When auto-invoked (the user didn't type `/claudify`), propose saving the preference first:
 
 > That sounds like a preference worth saving for future sessions. Want me to persist it?
 
-Only proceed if the user confirms. This prevents casual one-off corrections from becoming permanent rules.
-
-When the user explicitly invokes `/claudify`, skip this check and proceed directly.
+Only proceed if the user confirms.
 
 ## Workflow
 
 ### 1. Understand the preference
 
-The user will describe something they want Claude to remember, like:
+The user will describe something they want to remember. If they passed arguments, use those. Otherwise ask what they'd like to save.
+
+Examples of persistent preferences:
 - A coding convention ("always use early returns")
 - A tool preference ("use pnpm instead of npm")
 - A workflow pattern ("run tests before committing")

@@ -16,7 +16,7 @@ user-invocable: false
 ## Comments
 
 - Comment on why, not what. Don't restate what the code already says.
-- No block-style section headers (`# ====`, `# ----`). Use a single `# --- Section name` line to divide major sections.
+- No decorated section headers (`# ====`, `# ----`, `# --- name ---`). Use a plain comment with blank lines above and below to mark sections.
 - Keep file headers to 1-2 lines describing the script's purpose. Skip author/date/license boilerplate.
 - Don't add comments to self-explanatory functions. A good function name eliminates the need for a doc comment.
 
