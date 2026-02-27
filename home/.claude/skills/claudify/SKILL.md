@@ -76,9 +76,9 @@ Pick the configuration surface that best fits the preference:
 
 **`settings.json`** for tool permissions or model configuration. Examples: "always allow web search", "use sonnet for quick tasks", "turn on extended thinking". These are key-value settings, not prose.
 
-**`CLAUDE.md`** for small additions that fit an existing section. Read the current `CLAUDE.md` first. If there's already a relevant section (e.g., "Communication style"), append there. This is the most common target for simple preferences.
+**`CLAUDE.md`** for small additions that fit an existing section. Read the current `CLAUDE.md` first. If there's already a relevant section (e.g., "Communication style"), append there.
 
-**`rules/`** for small, always-applicable preferences that deserve their own file. Good for things like writing style, commit conventions, or formatting rules that don't fit an existing `CLAUDE.md` section and would clutter it.
+**`rules/`** for small, always-applicable preferences. Before deciding between `CLAUDE.md` and a new rule file, **scan existing `rules/` files** in the target repo. If an existing rule file covers the same topic (e.g., a workflow preference fits `stripe-workflow.md`), append to that file rather than `CLAUDE.md` or creating a new one. Only create a new rule file when no existing file is a good fit and the preference doesn't belong in `CLAUDE.md`.
 
 **`skills/`** for two cases:
 - `user-invocable: false` for language/framework style guides or convention sets that should load contextually (e.g., when editing `.ts` files)
