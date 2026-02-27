@@ -8,6 +8,7 @@
 
 ## Code style
 - Use strict equality (`!== undefined`) instead of loose null checks (`!= null`) for optional fields.
+- Prefer `type` over `interface` unless the type is used for inheritance (e.g., `extends`).
 
 ## Workflow
 - When creating or updating pull requests, always use the `/ship` skill instead of running `gh pr create` directly.
