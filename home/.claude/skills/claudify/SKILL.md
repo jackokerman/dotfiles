@@ -72,6 +72,8 @@ If `$DOTTY_GUARD_PATTERNS` is unset, route everything to the base repo.
 
 ### 4. Determine placement
 
+**Before choosing a placement**, scan existing skills, rules, and CLAUDE.md files in the target repo for content that overlaps with the new preference. Use Glob and Read to check `skills/*/SKILL.md` and `rules/*.md`. If an existing file already covers the topic (e.g., a `typescript-style` skill already has type conventions), update that file rather than creating a new entry elsewhere. This prevents duplicates and keeps related preferences co-located.
+
 Pick the configuration surface that best fits the preference:
 
 **`settings.json`** for tool permissions or model configuration. Examples: "always allow web search", "use sonnet for quick tasks", "turn on extended thinking". These are key-value settings, not prose.
