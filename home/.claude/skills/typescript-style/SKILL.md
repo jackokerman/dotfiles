@@ -111,7 +111,6 @@ Common situations where `any` seems tempting but isn't needed:
      * Use localhost in development.
      */
     baseUrl: string;
-
     /**
      * Retry attempts before failing.
      * Defaults to 3.
