@@ -8,3 +8,6 @@
 
 ## Code style
 - Use strict equality (`!== undefined`) instead of loose null checks (`!= null`) for optional fields.
+
+## Workflow
+- When creating or updating pull requests, always use the `/ship` skill instead of running `gh pr create` directly.
