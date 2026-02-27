@@ -64,7 +64,7 @@ user-invocable: false
 
 ## Type safety
 - Enable TypeScript strict mode
-- Prefer `type` over `interface`
+- Prefer `type` over `interface` unless the type is used for inheritance (e.g., `extends`)
 - Prefer type inference where obvious, explicit types for function signatures
 
 ### The `any` type is forbidden
