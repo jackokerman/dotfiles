@@ -72,7 +72,9 @@ If `$DOTTY_GUARD_PATTERNS` is unset, route everything to the base repo.
 
 ### 4. Determine placement
 
-**Before choosing a placement**, scan existing skills, rules, and CLAUDE.md files in the target repo for content that overlaps with the new preference. Use Glob and Read to check `skills/*/SKILL.md` and `rules/*.md`. If an existing file already covers the topic (e.g., a `typescript-style` skill already has type conventions), update that file rather than creating a new entry elsewhere. This prevents duplicates and keeps related preferences co-located.
+**Before choosing a placement**, scan existing skills, rules, and CLAUDE.md files in the target repo for content that overlaps with the new preference. Use Glob and Read to check `skills/*/SKILL.md`, `rules/*.md`, and `CLAUDE.md`. If an existing file already covers the topic (e.g., a `typescript-style` skill already has type conventions), update that file rather than creating a new entry elsewhere.
+
+Also evaluate whether existing preferences are in the right place. If the scan reveals content that would be better located elsewhere (e.g., a coding convention in `CLAUDE.md` that belongs in a contextual skill, or scattered related preferences that should be consolidated), propose the reorganization alongside the new preference. Don't reinforce a bad structure by appending to it.
 
 Pick the configuration surface that best fits the preference:
 
