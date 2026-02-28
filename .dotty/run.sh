@@ -40,31 +40,6 @@ setup_vscode() {
         fi
     done
 
-    info "Setting up Nightfly VS Code theme"
-
-    local theme_repo="https://github.com/jackokerman/nightfly-vscode.git"
-    local theme_dir="$HOME/nightfly-vscode"
-    local vscode_ext_dir="$HOME/.vscode/extensions/nightfly-vscode"
-    local cursor_ext_dir="$HOME/.cursor/extensions/nightfly-vscode"
-
-    if [ -d "$theme_dir" ]; then
-        info "nightfly-vscode already cloned... Pulling latest."
-        git -C "$theme_dir" pull --ff-only 2>/dev/null || warning "Could not pull latest (offline or auth issue)"
-    else
-        info "Cloning nightfly-vscode theme"
-        if git clone "$theme_repo" "$theme_dir"; then
-            success "Theme cloned to $theme_dir"
-        else
-            warning "Could not clone nightfly-vscode (offline or auth issue). Skipping theme setup."
-            return 0
-        fi
-    fi
-
-    mkdir -p "$(dirname "$vscode_ext_dir")"
-    create_symlink "$theme_dir" "$vscode_ext_dir"
-
-    mkdir -p "$(dirname "$cursor_ext_dir")"
-    create_symlink "$theme_dir" "$cursor_ext_dir"
 }
 
 # Shell tools
