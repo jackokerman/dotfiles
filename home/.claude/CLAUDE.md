@@ -12,3 +12,4 @@
 
 ## Workflow
 - When creating or updating pull requests, always use the `/ship` skill instead of running `gh pr create` directly.
+- When working in dotfiles or dotty repos, commit and push changes directly to main after making them, without asking for confirmation first.
