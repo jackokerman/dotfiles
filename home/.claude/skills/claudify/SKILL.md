@@ -72,7 +72,9 @@ If `$DOTTY_GUARD_PATTERNS` is unset, route everything to the base repo.
 
 ### 4. Determine placement
 
-**Before choosing a placement**, scan existing skills, rules, and CLAUDE.md files in the target repo for content that overlaps with the new preference. Use Glob and Read to check `skills/*/SKILL.md`, `rules/*.md`, and `CLAUDE.md`. If an existing file already covers the topic (e.g., a `typescript-style` skill already has type conventions), update that file rather than creating a new entry elsewhere.
+**Before choosing a placement**, understand the full configuration landscape. Not all preferences belong in Claude configuration — some belong in the dotfiles infrastructure itself (setup scripts, hook scripts, environment config). Read READMEs and setup/hook scripts in the target repo to understand what's already automated. If the preference relates to environment setup (MCP servers, CLI tools, shell plugins), it likely belongs in the dotfiles' own setup automation rather than a Claude skill or rule.
+
+Then scan existing skills, rules, and CLAUDE.md files in the target repo for content that overlaps with the new preference. Use Glob and Read to check `skills/*/SKILL.md`, `rules/*.md`, `CLAUDE.md`, and any setup scripts. If an existing file already covers the topic (e.g., a `typescript-style` skill already has type conventions, or a setup script already manages MCP servers), update that file rather than creating a new entry elsewhere.
 
 Also evaluate whether existing preferences are in the right place. If the scan reveals content that would be better located elsewhere (e.g., a coding convention in `CLAUDE.md` that belongs in a contextual skill, or scattered related preferences that should be consolidated), propose the reorganization alongside the new preference. Don't reinforce a bad structure by appending to it.
 
