@@ -78,21 +78,33 @@ Then scan existing skills, rules, and CLAUDE.md files in the target repo for con
 
 Also evaluate whether existing preferences are in the right place. If the scan reveals content that would be better located elsewhere (e.g., a coding convention in `CLAUDE.md` that belongs in a contextual skill, or scattered related preferences that should be consolidated), propose the reorganization alongside the new preference. Don't reinforce a bad structure by appending to it.
 
-Pick the configuration surface that best fits the preference:
+Pick the configuration surface that best fits the preference. An important distinction: `CLAUDE.md`, rules, and skills are **advisory context** that Claude reads but may not follow strictly. `settings.json` permissions and hooks are **enforced** at runtime. If a preference keeps getting ignored in prose form, consider whether it can be expressed as a permission or hook instead.
 
-**`settings.json`** for tool permissions or model configuration. Examples: "always allow web search", "use sonnet for quick tasks", "turn on extended thinking". These are key-value settings, not prose.
+**`settings.json`** for tool permissions, model configuration, or anything that must be enforced rather than suggested. Examples: "always allow web search", "use sonnet for quick tasks", "turn on extended thinking". These are key-value settings, not prose.
 
-**`CLAUDE.md`** for small additions that fit an existing section. Read the current `CLAUDE.md` first. If there's already a relevant section (e.g., "Communication style"), append there.
+**`CLAUDE.md`** for small additions that fit an existing section. Read the current `CLAUDE.md` first. If there's already a relevant section (e.g., "Communication style"), append there. Keep in mind that `CLAUDE.md` and unconditional rules are loaded into context every session, so they should stay concise. If the file is growing long, preferences start competing for attention.
 
-**`rules/`** for small, always-applicable preferences. Before deciding between `CLAUDE.md` and a new rule file, **scan existing `rules/` files** in the target repo. If an existing rule file covers the same topic (e.g., a workflow preference fits `stripe-workflow.md`), append to that file rather than `CLAUDE.md` or creating a new one. Only create a new rule file when no existing file is a good fit and the preference doesn't belong in `CLAUDE.md`.
+**`rules/`** for modular, topic-scoped preferences. Before deciding between `CLAUDE.md` and a new rule file, **scan existing `rules/` files** in the target repo. If an existing rule file covers the same topic (e.g., a workflow preference fits `stripe-workflow.md`), append to that file rather than `CLAUDE.md` or creating a new one. Rules without frontmatter are always loaded (like `CLAUDE.md`). Rules with `paths` frontmatter are conditionally loaded only when Claude reads files matching those patterns, which is ideal for language-specific or directory-specific conventions:
+
+```yaml
+---
+paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+---
+# TypeScript conventions
+Use explicit return types on exported functions.
+```
+
+Only create a new rule file when no existing file is a good fit and the preference doesn't belong in `CLAUDE.md`.
 
 **`skills/`** for two cases:
-- `user-invocable: false` for language/framework style guides or convention sets that should load contextually (e.g., when editing `.ts` files)
+- `user-invocable: false` for language/framework style guides or convention sets that should load contextually (e.g., when editing `.ts` files). Note: skills without `user-invocable: false` have their descriptions loaded every session so Claude knows when to auto-invoke them; the full content loads only on invocation.
 - Full skills (user-invocable or auto-invocable) for distinct workflows
 
 **Project-level `.claude/`** when the preference is specific to a single project rather than global. Place in the project's `.claude/CLAUDE.md`, `.claude/rules/`, or `.claude/settings.json` as appropriate.
 
-When deciding, be pragmatic. A one-line preference belongs in `CLAUDE.md`, not a new rule file. A set of five related conventions might warrant a rule file. A complex workflow with multiple steps is a skill. Don't create new files when appending to an existing one works.
+When deciding, be pragmatic. A one-line preference belongs in `CLAUDE.md`, not a new rule file. A set of five related conventions might warrant a rule file or a path-scoped rule. A complex workflow with multiple steps is a skill. Don't create new files when appending to an existing one works.
 
 ### 5. Compose the directive
 
@@ -102,6 +114,7 @@ When writing the preference content:
 - Include brief motivation when it's not obvious (e.g., "declarations are hoisted, so main components can go at the top of the file")
 - Keep individual directives to one or two sentences
 - Be mindful of file size for always-loaded files (`CLAUDE.md`, rules). If a file is getting long, suggest extracting to a skill instead
+- For behavioral preferences (things Claude should do or stop doing), be explicit about the desired behavior change, not just the workflow. "Commit and push without asking for confirmation first" is a clear behavioral directive; "commit directly to main without PR review" describes the workflow but doesn't tell Claude to skip its default confirmation step. The difference matters because Claude's default cautious behaviors (asking before destructive actions, pausing before commits) won't change unless explicitly overridden.
 
 ### 6. Show proposed change
 
