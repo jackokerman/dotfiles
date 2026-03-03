@@ -46,5 +46,9 @@
 [advice]
     skippedCherryPicks = false
 
+[rerere]
+    enabled = true
+    autoUpdate = true
+
 [branch]
 	autoSetupMerge = simple
