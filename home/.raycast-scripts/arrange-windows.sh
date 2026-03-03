@@ -18,14 +18,14 @@
 #
 # Examples:
 #   "Google Chrome||B"                  - Move ALL Chrome windows to workspace B
-#   "Google Chrome|stripe.com|B"        - Move only Chrome windows with "stripe.com" in title to B
+#   "Google Chrome|work.example.com|B"  - Move only Chrome windows with "work.example.com" in title to B
 #   "Google Chrome|Personal|P"          - Move only Chrome windows with "Personal" in title to P
 #   "Slack||S"                          - Move ALL Slack windows to workspace S
 #
 # Use case: Separating Chrome profiles
-#   "Google Chrome|stripe.com|B"        - Work profile windows go to B
+#   "Google Chrome|Work|B"              - Work profile windows go to B
 #   "Google Chrome|Personal|P"          - Personal profile windows go to P
-#   (Chrome shows profile name in window title, e.g., "Gmail - Personal" or "Jira - Jack (stripe.com)")
+#   (Chrome shows profile name in window title, e.g., "Gmail - Personal" or "Jira - Work")
 
 [[ -z "$AEROSPACE_ARRANGEMENTS" ]] && exit 0
 

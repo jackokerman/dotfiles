@@ -84,7 +84,7 @@ Pick the configuration surface that best fits the preference. An important disti
 
 **`CLAUDE.md`** for small additions that fit an existing section. Read the current `CLAUDE.md` first. If there's already a relevant section (e.g., "Communication style"), append there. Keep in mind that `CLAUDE.md` and unconditional rules are loaded into context every session, so they should stay concise. If the file is growing long, preferences start competing for attention.
 
-**`rules/`** for modular, topic-scoped preferences. Before deciding between `CLAUDE.md` and a new rule file, **scan existing `rules/` files** in the target repo. If an existing rule file covers the same topic (e.g., a workflow preference fits `stripe-workflow.md`), append to that file rather than `CLAUDE.md` or creating a new one. Rules without frontmatter are always loaded (like `CLAUDE.md`). Rules with `paths` frontmatter are conditionally loaded only when Claude reads files matching those patterns, which is ideal for language-specific or directory-specific conventions:
+**`rules/`** for modular, topic-scoped preferences. Before deciding between `CLAUDE.md` and a new rule file, **scan existing `rules/` files** in the target repo. If an existing rule file covers the same topic (e.g., a workflow preference fits `git-workflow.md`), append to that file rather than `CLAUDE.md` or creating a new one. Rules without frontmatter are always loaded (like `CLAUDE.md`). Rules with `paths` frontmatter are conditionally loaded only when Claude reads files matching those patterns, which is ideal for language-specific or directory-specific conventions:
 
 ```yaml
 ---
