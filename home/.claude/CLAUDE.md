@@ -7,8 +7,9 @@
 - Show code examples rather than lengthy explanations.
 - Always write complete sentences with grammatical subjects, including when drafting comments, PR reviews, and other text on behalf of the user. Never drop subjects for brevity.
 
-## Code style
-- Use strict equality (`!== undefined`) instead of loose null checks (`!= null`) for optional fields.
+## Dotfiles routing
+
+Preferences are split across two dotty repos: this base repo (personal, public) and a work overlay. Personal preferences like communication style and general workflow go here. Work-specific items like coding conventions, tooling configuration, and team workflow belong in the overlay. When saving or reorganizing preferences, route to the correct repo based on this split.
 
 ## Workflow
 - When creating or updating pull requests, always use the `/ship` skill instead of running `gh pr create` directly.
