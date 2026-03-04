@@ -61,6 +61,7 @@ user-invocable: false
 - Prefer named exports over default exports
 - Use template literals over string concatenation
 - Prefer optional chaining (`?.`) and nullish coalescing (`??`)
+- Use strict equality (`!== undefined`) instead of loose null checks (`!= null`) for optional fields
 
 ## Type safety
 - Enable TypeScript strict mode
