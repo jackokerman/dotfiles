@@ -52,10 +52,25 @@ source $ZDOTDIR/.aliases
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
-# Background sync: pull repos and re-link without blocking shell startup
-if command -v dotty >/dev/null 2>&1; then
-    (dotty update &>/dev/null &)
-fi
+# Background sync: run dotty update once after first prompt appears
+__dotty_sync_done=0
+
+__dotty_background_sync() {
+    if (( __dotty_sync_done )); then
+        return
+    fi
+    __dotty_sync_done=1
+
+    if command -v dotty >/dev/null 2>&1; then
+        (dotty update &>/dev/null &)
+    fi
+
+    # Remove this function from precmd after first run
+    add-zsh-hook -d precmd __dotty_background_sync
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd __dotty_background_sync
 
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
