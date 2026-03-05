@@ -29,6 +29,10 @@ Write complete sentences with subjects and verbs. The tone can be informal, but 
 - Good: "We could drop the `state` property here."
 - Bad: "Could drop the `state` property here."
 
+## Vocabulary
+
+Use "landed" for individual PRs or small changes. Reserve "shipped" for larger features or launches.
+
 ## Punctuation
 
 Avoid em dashes and en dashes. Use commas, parentheses, or separate sentences instead.
