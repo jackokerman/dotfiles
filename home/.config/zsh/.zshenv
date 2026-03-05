@@ -25,6 +25,10 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
   --color spinner:#21c7a8
 "
 
+# Enable true color detection for tools like bat, delta, and Claude Code.
+# Ghostty supports true color natively but some tools check this variable.
+export COLORTERM="truecolor"
+
 # Skip the global compinit which conflicts with setup on linux machines.
 skip_global_compinit=1
 

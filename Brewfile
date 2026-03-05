@@ -26,4 +26,5 @@ brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
+brew "tmux"                          # terminal multiplexer
 brew "zoxide"                       # smarter cd command (z/zi)
