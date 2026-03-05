@@ -52,6 +52,11 @@ source $ZDOTDIR/.aliases
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
+# Background sync: pull repos and re-link without blocking shell startup
+if command -v dotty >/dev/null 2>&1; then
+    (dotty update &>/dev/null &)
+fi
+
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
