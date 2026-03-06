@@ -78,6 +78,14 @@ Then scan existing skills, rules, and CLAUDE.md files in the target repo for con
 
 Also evaluate whether existing preferences are in the right place. If the scan reveals content that would be better located elsewhere (e.g., a coding convention in `CLAUDE.md` that belongs in a contextual skill, or scattered related preferences that should be consolidated), propose the reorganization alongside the new preference. Don't reinforce a bad structure by appending to it.
 
+**When a preference already exists but wasn't followed:** If a rule or preference already exists in the configuration but Claude failed to follow it, do not dismiss the request with "this rule already exists." A violation means the current control surface isn't strong enough. Investigate why and propose escalating to a stronger mechanism:
+
+- Advisory rules (`CLAUDE.md`, `rules/`) → enforced hooks (`PreToolUse`, `PostToolUse`)
+- Broad rules → more specific, contextual rules (path-scoped, tool-scoped)
+- Prose instructions → `settings.json` enforcement or hooks
+
+The goal is continuous improvement. If a preference is being violated, the configuration needs to change.
+
 Pick the configuration surface that best fits the preference. An important distinction: `CLAUDE.md`, rules, and skills are **advisory context** that Claude reads but may not follow strictly. `settings.json` permissions and hooks are **enforced** at runtime. If a preference keeps getting ignored in prose form, consider whether it can be expressed as a permission or hook instead.
 
 **`settings.json`** for tool permissions, model configuration, or anything that must be enforced rather than suggested. Examples: "always allow web search", "use sonnet for quick tasks", "turn on extended thinking". These are key-value settings, not prose.
