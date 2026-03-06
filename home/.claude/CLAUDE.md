@@ -14,3 +14,4 @@ Preferences are split across two dotty repos: this base repo (personal, public) 
 ## Workflow
 - When creating or updating pull requests, always use the `/ship` skill instead of running `gh pr create` directly.
 - When working in personal repos (dotfiles, dev tools, side projects), commit and push changes directly to main after making them, without asking for confirmation first. Individual project CLAUDE.md files may also state this explicitly.
+- After making changes that affect a personal repo's commands, architecture, or public interface, check that README.md and CLAUDE.md (if present) still reflect the current state and update them in the same commit.
