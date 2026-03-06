@@ -52,51 +52,16 @@ source $ZDOTDIR/.aliases
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
-# Staleness check: remind once per session if dotfiles haven't been synced recently
-__dotty_stale_check_done=0
-
-__dotty_stale_check() {
-    if (( __dotty_stale_check_done )); then
-        return
-    fi
-    __dotty_stale_check_done=1
-    add-zsh-hook -d precmd __dotty_stale_check
-
-    local registry="$HOME/.dotty/registry"
-    [[ -f "$registry" ]] || return
-
-    local -A seen
-    local max_age=0
-    local threshold=$((86400))  # 1 day in seconds
-    local now=$(date +%s)
-
-    while IFS='=' read -r _ repo_path; do
-        [[ -z "$repo_path" ]] && continue
-        [[ -n "${seen[$repo_path]}" ]] && continue
-        seen[$repo_path]=1
-
-        local fetch_head="$repo_path/.git/FETCH_HEAD"
-        [[ -f "$fetch_head" ]] || continue
-
-        local mtime
-        if [[ "$OSTYPE" == darwin* ]]; then
-            mtime=$(stat -f %m "$fetch_head" 2>/dev/null) || continue
-        else
-            mtime=$(stat -c %Y "$fetch_head" 2>/dev/null) || continue
-        fi
-
-        local age=$(( now - mtime ))
-        (( age > max_age )) && max_age=$age
-    done < "$registry"
-
-    if (( max_age > threshold )); then
-        local days=$(( max_age / 86400 ))
-        print -P "%F{yellow}dotfiles haven't been synced in ${days} days. Run 'dotty update' to refresh.%f"
-    fi
+# Remind once per session if dotfiles are stale
+__dotty_check_done=0
+__dotty_check() {
+    (( __dotty_check_done )) && return
+    __dotty_check_done=1
+    add-zsh-hook -d precmd __dotty_check
+    command -v dotty >/dev/null 2>&1 && dotty check
 }
-
 autoload -Uz add-zsh-hook
-add-zsh-hook precmd __dotty_stale_check
+add-zsh-hook precmd __dotty_check
 
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
