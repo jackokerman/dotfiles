@@ -43,3 +43,5 @@ Avoid em dashes and en dashes. Use commas, parentheses, or separate sentences in
 
 - Good: "Addressed your comments and responded to questions"
 - Bad: "Addressed your comments - responded to questions"
+
+End list items with periods when they are complete sentences.
