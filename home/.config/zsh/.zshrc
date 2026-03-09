@@ -6,6 +6,10 @@ if [[ -z "$_DOTFILES_ZSHRC_LOADED" && -f ~/.zshrc && ! -L ~/.zshrc ]]; then
   source ~/.zshrc 2>/dev/null || true
 fi
 
+# Remind once per session if dotfiles are stale.
+# Runs above instant prompt to avoid p10k's console output warning.
+command -v dotty >/dev/null 2>&1 && dotty check
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -51,17 +55,6 @@ source $ZDOTDIR/.aliases
 
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
-
-# Remind once per session if dotfiles are stale
-__dotty_check_done=0
-__dotty_check() {
-    (( __dotty_check_done )) && return
-    __dotty_check_done=1
-    add-zsh-hook -d precmd __dotty_check
-    command -v dotty >/dev/null 2>&1 && dotty check
-}
-autoload -Uz add-zsh-hook
-add-zsh-hook precmd __dotty_check
 
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
