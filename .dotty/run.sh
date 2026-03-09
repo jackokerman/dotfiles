@@ -126,16 +126,16 @@ setup_macos() {
     fi
 
     if [ -f "$DOTFILES/scripts/karabiner-config.ts" ]; then
-        if command -v deno >/dev/null 2>&1; then
+        if command -v bun >/dev/null 2>&1; then
             info "Generating Karabiner-Elements configuration"
-            if deno run --allow-env --allow-read --allow-write "$DOTFILES/scripts/karabiner-config.ts"; then
+            if bun run "$DOTFILES/scripts/karabiner-config.ts"; then
                 success "Karabiner-Elements configuration generated"
             else
                 warning "Failed to generate Karabiner-Elements configuration"
             fi
         else
-            warning "Deno not found. Skipping Karabiner-Elements configuration generation."
-            info "Install Deno with: brew install deno"
+            warning "Bun not found. Skipping Karabiner-Elements configuration generation."
+            info "Install Bun with: brew install oven-sh/bun/bun"
         fi
     fi
 

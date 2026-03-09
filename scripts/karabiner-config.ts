@@ -1,3 +1,5 @@
+import { homedir } from "node:os";
+import { mkdir } from "node:fs/promises";
 import {
   arrowKeyCodes,
   controlOrSymbolKeyCodes,
@@ -13,7 +15,7 @@ import {
   withCondition,
   withMapper,
   writeToProfile,
-} from "https://deno.land/x/karabinerts@1.30.0/deno.ts";
+} from "karabiner.ts";
 
 const PROFILE_NAME = "Default profile";
 const appleMagicKeyboardWithTouchId: DeviceIdentifier = { product_id: 666 };
@@ -23,16 +25,13 @@ const appleMagicKeyboardWithTouchId: DeviceIdentifier = { product_id: 666 };
  * except Touch ID. Creates a default profile and config directory if they don't
  * exist.
  *
- * Run with: deno run --allow-env --allow-read --allow-write karabiner-config.ts
+ * Run with: bun run karabiner-config.ts
  */
 async function main() {
-  const configPath = `${Deno.env.get("HOME")}/.config/karabiner/karabiner.json`;
+  const configPath = `${homedir()}/.config/karabiner/karabiner.json`;
 
   // Ensure karabiner config exists with a default profile
-  try {
-    await Deno.stat(configPath);
-  } catch {
-    // File doesn't exist, create minimal config with default profile
+  if (!(await Bun.file(configPath).exists())) {
     const minimalConfig = {
       global: {
         show_in_menu_bar: true,
@@ -55,10 +54,8 @@ async function main() {
       ],
     };
 
-    await Deno.mkdir(`${Deno.env.get("HOME")}/.config/karabiner`, {
-      recursive: true,
-    });
-    await Deno.writeTextFile(configPath, JSON.stringify(minimalConfig, null, 2));
+    await mkdir(`${homedir()}/.config/karabiner`, { recursive: true });
+    await Bun.write(configPath, JSON.stringify(minimalConfig, null, 2));
     console.log(`✓ Created initial Karabiner config at ${configPath}`);
   }
 
