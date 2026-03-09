@@ -22,7 +22,7 @@ Be informal but not too casual. Avoid stiff or overly formal phrasing, but don't
 
 ## Sentence structure
 
-Write complete sentences with subjects and verbs. The tone can be informal, but don't omit grammatical subjects, even in casual drafting like Slack messages. When making suggestions (e.g., in PR reviews), prefer "we" over "you" for a more collaborative tone.
+Write complete sentences with subjects and verbs. The tone can be informal, but don't omit grammatical subjects, even in casual drafting like Slack messages, PR review comments, or short status updates. When making suggestions (e.g., in PR reviews), prefer "we" over "you" for a more collaborative tone.
 
 - Good: "The service failed to connect. It retried three times before timing out."
 - Bad: "Failed to connect. Retried three times before timing out."
@@ -32,6 +32,12 @@ Write complete sentences with subjects and verbs. The tone can be informal, but 
 - Bad: "Feels like we'd benefit from a shared approach."
 - Good: "We could drop the `state` property here."
 - Bad: "Could drop the `state` property here."
+- Good: "It looks like there are some merge conflicts."
+- Bad: "Looks like there are some merge conflicts."
+- Good: "I left a couple of comments below."
+- Bad: "Left a couple of comments below."
+- Good: "I found your past review comment."
+- Bad: "Found your past review comment."
 
 ## Vocabulary
 
