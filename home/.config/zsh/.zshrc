@@ -25,6 +25,7 @@ zfetch "romkatv/powerlevel10k" "powerlevel10k.zsh-theme"
 
 # completions
 zfetch fpath "$HOME/.dotty/completions"
+zfetch fpath "$HOME/.local/share/zsh/site-functions"
 zfetch completions
 if ! (( $+functions[_complete] )); then
   # Only run compinit if not already initialized. Calling compinit twice
@@ -70,3 +71,6 @@ if command -v fzf >/dev/null 2>&1; then
         source <(fzf --zsh)
     fi
 fi
+
+# bun completions
+[ -s "/Users/jackokerman/.bun/_bun" ] && source "/Users/jackokerman/.bun/_bun"
