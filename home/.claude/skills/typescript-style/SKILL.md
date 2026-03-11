@@ -44,6 +44,7 @@ user-invocable: false
     ...
   }
   ```
+- Extract React component props into a named type (e.g., `FooProps`) rather than inlining them in the function signature. Keeps signatures readable and makes the type reusable and documentable with JSDoc.
 - Prefer object parameters over positional arguments when there are more than 1-2 params
   - Makes adding optional parameters easy without updating all call sites
   - Pairs well with typed objects that have JSDoc descriptions
@@ -62,6 +63,7 @@ user-invocable: false
 - Use template literals over string concatenation
 - Prefer optional chaining (`?.`) and nullish coalescing (`??`)
 - Use strict equality (`!== undefined`) instead of loose null checks (`!= null`) for optional fields
+- Always use braces for conditional bodies, even single-line ones
 
 ## Type safety
 - Enable TypeScript strict mode
@@ -84,6 +86,15 @@ Common situations where `any` seems tempting but isn't needed:
 - Complex unions → use discriminated unions or branded types
 - Third-party libs without types → write declaration files or use `@types/*`
 - Callback parameters → use proper function signatures with generics
+
+## ESLint disable comments
+- When disabling an ESLint rule inline, always include a comment explaining why the disable is necessary and why it's safe. The explanation should help a reviewer understand the decision without needing to look up the rule.
+  ```typescript
+  // structuredClone is available in all supported runtimes (Node 17+,
+  // modern browsers) but the lib typings lag behind.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const copy = structuredClone(original);
+  ```
 
 ## JSDoc comments
 - Add JSDoc descriptions to exported functions and types

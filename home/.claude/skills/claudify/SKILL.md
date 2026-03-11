@@ -86,6 +86,14 @@ Also evaluate whether existing preferences are in the right place. If the scan r
 
 The goal is continuous improvement. If a preference is being violated, the configuration needs to change.
 
+**Evaluate enforcement strength before choosing a surface.** When a preference emerges from a correction during a coding session, analyze why the desired behavior didn't happen:
+
+1. Was the preference missing entirely? Add it at the appropriate advisory level first.
+2. Was it present but in the wrong scope (e.g., always-loaded when it should be path-scoped)? Move it to a more targeted surface.
+3. Was it present and in scope but not followed? Escalate to a stronger mechanism (hooks, settings).
+
+For new preferences, consider whether advisory context is likely to be sufficient. Concrete, mechanical rules ("always use braces") work well as advisory. Behavioral rules that conflict with Claude's defaults ("don't ask before committing") may need enforcement. When in doubt, start advisory and note it as a candidate for escalation if it's violated in a future session.
+
 Pick the configuration surface that best fits the preference. An important distinction: `CLAUDE.md`, rules, and skills are **advisory context** that Claude reads but may not follow strictly. `settings.json` permissions and hooks are **enforced** at runtime. If a preference keeps getting ignored in prose form, consider whether it can be expressed as a permission or hook instead.
 
 **`settings.json`** for tool permissions, model configuration, or anything that must be enforced rather than suggested. Examples: "always allow web search", "use sonnet for quick tasks", "turn on extended thinking". These are key-value settings, not prose.
