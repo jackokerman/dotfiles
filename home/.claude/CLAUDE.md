@@ -15,3 +15,7 @@ Preferences are split across two dotty repos: this base repo (personal, public) 
 - When creating or updating pull requests, always use the `/ship` skill instead of running `gh pr create` directly.
 - When working in personal repos (dotfiles, dev tools, side projects), always commit and push to main immediately after making changes. Do not wait for the user to ask, do not ask for confirmation, and do not present a summary and stop. The task is not done until the commit is pushed. Individual project CLAUDE.md files may also state this explicitly.
 - After making changes that affect a personal repo's commands, architecture, or public interface, check that README.md and CLAUDE.md (if present) still reflect the current state and update them in the same commit.
+
+## Code style
+- Never add decorative section comments (e.g., `// ---- Section name ----`). Let the code structure speak for itself.
+- When multiple lines in a file need the same eslint-disable, use a single file-level `/* eslint-disable rule-name */` instead of repeating inline `eslint-disable-next-line` annotations.
