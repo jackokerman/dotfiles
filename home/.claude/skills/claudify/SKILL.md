@@ -74,6 +74,8 @@ If `$DOTTY_GUARD_PATTERNS` is unset, route everything to the base repo.
 
 **Before choosing a placement**, understand the full configuration landscape. Not all preferences belong in Claude configuration — some belong in the dotfiles infrastructure itself (setup scripts, hook scripts, environment config). Read READMEs and setup/hook scripts in the target repo to understand what's already automated. If the preference relates to environment setup (MCP servers, CLI tools, shell plugins), it likely belongs in the dotfiles' own setup automation rather than a Claude skill or rule.
 
+**When the preference involves Claude Code configuration mechanics** (skill metadata, hook behavior, context loading, enforcement), research how those features work before making recommendations. Use the `claude-code-guide` agent to look up relevant documentation rather than relying on assumptions. For example, understand the actual behavior of `disable-model-invocation`, `user-invocable`, skill description loading, and context budgets before proposing changes to them.
+
 Then scan existing skills, rules, and CLAUDE.md files in the target repo for content that overlaps with the new preference. Use Glob and Read to check `skills/*/SKILL.md`, `rules/*.md`, `CLAUDE.md`, and any setup scripts. If an existing file already covers the topic (e.g., a `typescript-style` skill already has type conventions, or a setup script already manages MCP servers), update that file rather than creating a new entry elsewhere.
 
 Also evaluate whether existing preferences are in the right place. If the scan reveals content that would be better located elsewhere (e.g., a coding convention in `CLAUDE.md` that belongs in a contextual skill, or scattered related preferences that should be consolidated), propose the reorganization alongside the new preference. Don't reinforce a bad structure by appending to it.
@@ -83,6 +85,14 @@ Also evaluate whether existing preferences are in the right place. If the scan r
 - Advisory rules (`CLAUDE.md`, `rules/`) → enforced hooks (`PreToolUse`, `PostToolUse`)
 - Broad rules → more specific, contextual rules (path-scoped, tool-scoped)
 - Prose instructions → `settings.json` enforcement or hooks
+
+**When the desired behavior maps to a skill that wasn't invoked:** Check whether a relevant skill already exists but wasn't used. Common causes:
+
+- `disable-model-invocation: true` prevents auto-invocation — if the skill has adequate safeguards (draft-before-posting, user approval), consider removing this flag rather than duplicating the skill's logic into a rule
+- The skill description doesn't match the user's natural phrasing — update the description to cover broader trigger phrases
+- The skill was invisible because its description wasn't loaded into context — this is what `disable-model-invocation: true` does
+
+Before proposing a new rule or skill, always check if an existing skill's metadata just needs adjustment. Duplicating skill logic into rules is a maintenance burden.
 
 The goal is continuous improvement. If a preference is being violated, the configuration needs to change.
 
