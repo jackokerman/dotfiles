@@ -21,13 +21,13 @@ fi
 source $ZDOTDIR/.zetch.zsh
 
 plugins=(
-  romkatv/powerlevel10k                # shell prompt with instant prompt
-  zsh-users/zsh-completions            # additional completion definitions
-  Aloxaf/fzf-tab                       # fzf-powered tab completion
-  zsh-users/zsh-autosuggestions        # fish-like inline suggestions
-  trystan2k/zsh-tab-title             # dynamic terminal tab titles
-  zsh-users/zsh-syntax-highlighting    # command syntax highlighting
-  zsh-users/zsh-history-substring-search  # history search with up/down arrows
+  romkatv/powerlevel10k                    # shell prompt with instant prompt
+  zsh-users/zsh-completions                # additional completion definitions
+  Aloxaf/fzf-tab                           # fzf-powered tab completion
+  zsh-users/zsh-autosuggestions            # fish-like inline suggestions
+  trystan2k/zsh-tab-title                  # dynamic terminal tab titles
+  zsh-users/zsh-syntax-highlighting        # command syntax highlighting
+  zsh-users/zsh-history-substring-search   # history search with up/down arrows
 )
 zetch-ensure $plugins
 
@@ -35,10 +35,14 @@ zetch-ensure $plugins
 # fzf-tab must load after compinit. syntax-highlighting before history-substring-search.
 zetch romkatv/powerlevel10k
 
-zetch-compinit \
-  $HOME/.local/share/zsh/site-functions \
-  /opt/homebrew/share/zsh/site-functions \
-  $ZPLUGINDIR/zsh-completions/src
+# Completions: each directory below provides _completion functions. Adding them
+# to fpath makes them discoverable, then compinit compiles and registers them.
+fpath_dirs=(
+  $HOME/.local/share/zsh/site-functions    # XDG location (dotty, devvy, etc.)
+  /opt/homebrew/share/zsh/site-functions   # Homebrew-installed completions
+  $ZPLUGINDIR/zsh-completions/src          # zsh-users/zsh-completions plugin
+)
+zetch-compinit $fpath_dirs
 
 zetch Aloxaf/fzf-tab
 zetch zsh-users/zsh-autosuggestions
