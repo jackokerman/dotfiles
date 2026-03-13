@@ -1,8 +1,8 @@
 # Writing style
 
-## Technical terms in commits and PRs
+## Technical terms
 
-Wrap technical identifiers in backticks for clarity:
+Wrap technical identifiers in backticks for clarity. Always use the full identifier, never abbreviate or use informal shorthand (e.g., write `MY_APP_SKIP_COMPINIT`, not "SKIP_COMPINIT"):
 - Feature flag names: `enable_dark_mode`
 - File paths: `src/config/features.yaml`
 - Function/class names: `ConfigParser`
