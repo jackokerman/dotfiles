@@ -19,75 +19,76 @@
 ZPLUGINDIR="${ZPLUGINDIR:-${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins}"
 [[ -d "$ZPLUGINDIR" ]] || mkdir -p "$ZPLUGINDIR"
 
-_zetch_install() {
-  local repo dest missing=()
-  for repo in "$@"; do
-    dest="$ZPLUGINDIR/${repo##*/}"
-    [[ -d "$dest" ]] || missing+=("$repo")
-  done
-  (( ${#missing} == 0 )) && return
-  for repo in "${missing[@]}"; do
-    dest="$ZPLUGINDIR/${repo##*/}"
-    echo "Installing ${repo}..."
-    git clone --quiet --depth 1 "https://github.com/$repo" "$dest" &
-  done
-  wait
-}
-
-_zetch_load() {
-  local repo="$1"
-  local name="${repo##*/}"
-  local dest="$ZPLUGINDIR/$name"
-
-  if [[ ! -d "$dest" ]]; then
-    echo "Installing ${repo}..."
-    git clone --quiet --depth 1 "https://github.com/$repo" "$dest"
-  fi
-
-  local canonical="$dest/$name.plugin.zsh"
-  if [[ -L "$canonical" || -f "$canonical" ]]; then
-    source "$canonical"
-    return
-  fi
-
-  local initfile
-  for initfile in \
-    "$dest"/*.plugin.zsh(N[1]) \
-    "$dest"/*.zsh-theme(N[1]) \
-    "$dest"/*.zsh(N[1]) \
-    "$dest"/*.sh(N[1]); do
-    ln -sf "$initfile" "$canonical"
-    source "$canonical"
-    return
-  done
-}
-
-_zetch_compinit() {
-  local dir
-  for dir in "$@"; do
-    [[ -d "$dir" ]] && fpath=("$dir" $fpath)
-  done
-  if ! (( $+functions[_complete] )); then
-    autoload -Uz compinit && compinit
-  fi
-}
-
-_zetch_update() {
-  local gitdir
-  for gitdir in "$ZPLUGINDIR"/*/.git(/N); do
-    local dir="${gitdir:h}"
-    echo "Updating ${dir:t}..."
-    (cd "$dir" && git pull --quiet)
-  done
-}
-
 zetch() {
   case "$1" in
-    install)  shift; _zetch_install "$@" ;;
-    compinit) shift; _zetch_compinit "$@" ;;
-    update)   _zetch_update ;;
-    */*)      _zetch_load "$1" ;;
-    *)        echo "zetch: unknown command '$1'" >&2; return 1 ;;
+    install)
+      shift
+      local repo dest missing=()
+      for repo in "$@"; do
+        dest="$ZPLUGINDIR/${repo##*/}"
+        [[ -d "$dest" ]] || missing+=("$repo")
+      done
+      (( ${#missing} == 0 )) && return
+      for repo in "${missing[@]}"; do
+        dest="$ZPLUGINDIR/${repo##*/}"
+        echo "Installing ${repo}..."
+        git clone --quiet --depth 1 "https://github.com/$repo" "$dest" &
+      done
+      wait
+      ;;
+
+    compinit)
+      shift
+      local dir
+      for dir in "$@"; do
+        [[ -d "$dir" ]] && fpath=("$dir" $fpath)
+      done
+      if ! (( $+functions[_complete] )); then
+        autoload -Uz compinit && compinit
+      fi
+      ;;
+
+    update)
+      local gitdir
+      for gitdir in "$ZPLUGINDIR"/*/.git(/N); do
+        local dir="${gitdir:h}"
+        echo "Updating ${dir:t}..."
+        (cd "$dir" && git pull --quiet)
+      done
+      ;;
+
+    */*)
+      local repo="$1"
+      local name="${repo##*/}"
+      local dest="$ZPLUGINDIR/$name"
+
+      if [[ ! -d "$dest" ]]; then
+        echo "Installing ${repo}..."
+        git clone --quiet --depth 1 "https://github.com/$repo" "$dest"
+      fi
+
+      local canonical="$dest/$name.plugin.zsh"
+      if [[ -L "$canonical" || -f "$canonical" ]]; then
+        source "$canonical"
+        return
+      fi
+
+      local initfile
+      for initfile in \
+        "$dest"/*.plugin.zsh(N[1]) \
+        "$dest"/*.zsh-theme(N[1]) \
+        "$dest"/*.zsh(N[1]) \
+        "$dest"/*.sh(N[1]); do
+        ln -sf "$initfile" "$canonical"
+        source "$canonical"
+        return
+      done
+      ;;
+
+    *)
+      echo "zetch: unknown command '$1'" >&2
+      return 1
+      ;;
   esac
 }
 
