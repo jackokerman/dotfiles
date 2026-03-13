@@ -17,27 +17,24 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Plugins
 source $ZDOTDIR/.zetch.zsh
 
-plugins=(
-  romkatv/powerlevel10k
-  zsh-users/zsh-completions
-  Aloxaf/fzf-tab
-  zsh-users/zsh-autosuggestions
-  trystan2k/zsh-tab-title
-  zsh-users/zsh-syntax-highlighting
+zetch-ensure \
+  romkatv/powerlevel10k \
+  zsh-users/zsh-completions \
+  Aloxaf/fzf-tab \
+  zsh-users/zsh-autosuggestions \
+  trystan2k/zsh-tab-title \
+  zsh-users/zsh-syntax-highlighting \
   zsh-users/zsh-history-substring-search
-)
-zetch-ensure $plugins
 
 zetch romkatv/powerlevel10k
 
-fpath_dirs=(
-  $HOME/.local/share/zsh/site-functions
-  /opt/homebrew/share/zsh/site-functions
+zetch-compinit \
+  $HOME/.local/share/zsh/site-functions \
+  /opt/homebrew/share/zsh/site-functions \
   $ZPLUGINDIR/zsh-completions/src
-)
-zetch-compinit $fpath_dirs
 
 zetch Aloxaf/fzf-tab
 zetch zsh-users/zsh-autosuggestions
@@ -71,7 +68,7 @@ if command -v fzf >/dev/null 2>&1; then
     fi
 fi
 
-# bun completions
-[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
-
-true
+# bun completions (sourced, not fpath-based — bun uses dynamic compdef)
+if [[ -s "$HOME/.bun/_bun" ]]; then
+  source "$HOME/.bun/_bun"
+fi
