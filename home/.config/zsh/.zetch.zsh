@@ -1,10 +1,10 @@
 # zetch - Minimal zsh plugin manager with parallel installs
 #
 # Usage:
-#   zetch install <plugins...>           Clone missing plugins in parallel
-#   zetch <owner/repo>                  Source a plugin (auto-detects init file)
-#   zetch compinit <fpath-dirs...>      Prepend dirs to fpath and run compinit
-#   zetch update                        Pull all installed plugins
+#   zetch install <plugins...>        Clone missing plugins in parallel
+#   zetch <owner/repo>               Source a plugin (auto-detects init file)
+#   zetch compinit <fpath-dirs...>   Prepend dirs to fpath and run compinit
+#   zetch update                     Pull all installed plugins
 #
 # Example (.zshrc):
 #   source $ZDOTDIR/.zetch.zsh
