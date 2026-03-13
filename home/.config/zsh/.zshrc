@@ -29,7 +29,7 @@ plugins=(
   zsh-users/zsh-syntax-highlighting        # command syntax highlighting
   zsh-users/zsh-history-substring-search   # history search with up/down arrows
 )
-zetch-ensure $plugins
+zetch ensure $plugins
 
 # Source plugins in order: prompt first, then compinit, then everything else.
 # fzf-tab must load after compinit. syntax-highlighting before history-substring-search.
@@ -42,7 +42,7 @@ fpath_dirs=(
   /opt/homebrew/share/zsh/site-functions   # Homebrew-installed completions
   $ZPLUGINDIR/zsh-completions/src          # zsh-users/zsh-completions plugin
 )
-zetch-compinit $fpath_dirs
+zetch compinit $fpath_dirs
 
 zetch Aloxaf/fzf-tab
 zetch zsh-users/zsh-autosuggestions
