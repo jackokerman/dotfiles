@@ -14,7 +14,9 @@ Examples:
 
 ## Formatting
 
-Prefer conversational prose over heavy list/dash formatting. Avoid structuring everything as bullet points or numbered lists. Write naturally and use formatting sparingly, only when it genuinely aids clarity (like code blocks for code examples). When lists are used, don't bold the first phrase as a label or header.
+Prefer conversational prose over heavy list/dash formatting. Write naturally and use formatting sparingly, only when it genuinely aids clarity (like code blocks for code examples).
+
+Use proper markdown headings for sections. Never use bold text as a pseudo-heading (e.g., `**Step 1:**` should be `#### Step 1:`). When lists are necessary, don't bold the first phrase as a label or header.
 
 ## Tone
 
