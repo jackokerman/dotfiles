@@ -29,7 +29,7 @@ plugins=(
   zsh-users/zsh-syntax-highlighting        # command syntax highlighting
   zsh-users/zsh-history-substring-search   # history search with up/down arrows
 )
-zetch ensure $plugins
+zetch install $plugins
 
 # Source plugins in order: prompt first, then compinit, then everything else.
 # fzf-tab must load after compinit. syntax-highlighting before history-substring-search.

@@ -1,7 +1,7 @@
 # zetch - Minimal zsh plugin manager with parallel installs
 #
 # Usage:
-#   zetch ensure <plugins...>           Clone missing plugins in parallel
+#   zetch install <plugins...>           Clone missing plugins in parallel
 #   zetch <owner/repo>                  Source a plugin (auto-detects init file)
 #   zetch compinit <fpath-dirs...>      Prepend dirs to fpath and run compinit
 #   zetch update                        Pull all installed plugins
@@ -10,7 +10,7 @@
 #   source $ZDOTDIR/.zetch.zsh
 #
 #   plugins=(romkatv/powerlevel10k zsh-users/zsh-completions Aloxaf/fzf-tab)
-#   zetch ensure $plugins
+#   zetch install $plugins
 #
 #   zetch romkatv/powerlevel10k
 #   zetch compinit $HOME/.local/share/zsh/site-functions $ZPLUGINDIR/zsh-completions/src
