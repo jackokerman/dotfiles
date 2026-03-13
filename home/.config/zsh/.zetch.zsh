@@ -22,7 +22,7 @@ ZPLUGINDIR="${ZPLUGINDIR:-${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins}"
 zetch() {
   local cmd="$1"
   case "$cmd" in
-    ensure)
+    install)
       shift
       local repo dest missing=()
       for repo in "$@"; do
@@ -92,3 +92,14 @@ zetch() {
       ;;
   esac
 }
+
+_zetch() {
+  if (( CURRENT == 2 )); then
+    _describe 'command' '(
+      install:Clone\ missing\ plugins\ in\ parallel
+      compinit:Prepend\ dirs\ to\ fpath\ and\ run\ compinit
+      update:Pull\ all\ installed\ plugins
+    )'
+  fi
+}
+compdef _zetch zetch
