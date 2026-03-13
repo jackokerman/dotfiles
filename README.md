@@ -73,6 +73,18 @@ git config-shared alias.st "status"
 
 Use `.zshenv.local` for environment variables (PATH, exports) and `.zshrc.local` for interactive shell settings (aliases, functions).
 
+### Plugin management
+
+Plugins are managed by zetch, a minimal plugin manager defined in `.config/zsh/.zetch.zsh`. It clones plugins from GitHub on first run (in parallel for fast setup) and sources them in the right order.
+
+To add a plugin, add the `owner/repo` to the `plugins` array in `.zshrc` and add a `zetch owner/repo` call in the appropriate position. To remove one, delete both lines.
+
+To update all plugins:
+
+```zsh
+zetch-update
+```
+
 ## Layering with other repos
 
 This repo is designed as a base layer. Work or machine-specific dotfiles can extend it using dotty's overlay system. See the [dotty README](https://github.com/jackokerman/dotty) for details on multi-repo chains and the extend pattern.

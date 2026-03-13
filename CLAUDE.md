@@ -43,6 +43,17 @@ Guard patterns are set as a newline-separated list of regexes in your shell envi
 
 Files ending in `.local` (like `.zshrc.local`, `.gitconfig.local`) are provided by overlay repos rather than the base. The base repo's files source the `.local` variants when they exist, so overlays can inject environment-specific configuration without modifying base files.
 
+## Plugin management (zetch)
+
+Zetch is a minimal zsh plugin manager defined in `home/.config/zsh/.zetch.zsh`. It exposes four functions:
+
+- `zetch-ensure` clones missing plugins in parallel (backgrounds each `git clone` and `wait`s). This makes fresh installs on new machines fast. It's a no-op when everything is already installed.
+- `zetch` sources a single plugin by auto-detecting its init file. It caches the detection result as a symlink so subsequent shells skip the glob.
+- `zetch-compinit` prepends directories to `fpath` and runs `compinit` with a double-init guard.
+- `zetch-update` pulls all plugins by globbing `$ZPLUGINDIR/*/.git`.
+
+The ordering in `.zshrc` matters. Powerlevel10k must load first (instant prompt). fpath directories and `compinit` must run before fzf-tab. fzf-tab must load before widget-wrapping plugins (autosuggestions, tab-title). `zsh-syntax-highlighting` must come before `zsh-history-substring-search` per upstream docs.
+
 ## Repo structure
 
 ```
@@ -67,7 +78,7 @@ dotfiles/
     │   ├── ghostty/        # Terminal
     │   ├── git/            # Git config
     │   ├── hammerspoon/    # Desktop automation
-    │   └── zsh/            # Zsh config
+    │   └── zsh/            # Zsh config (.zetch.zsh, .zshrc, .aliases, etc.)
     └── .raycast-scripts/   # Raycast commands
 ```
 

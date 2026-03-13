@@ -17,35 +17,33 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Start of plugin manager
+source $ZDOTDIR/.zetch.zsh
 
-source $ZDOTDIR/.zfetch.zsh
+plugins=(
+  romkatv/powerlevel10k
+  zsh-users/zsh-completions
+  Aloxaf/fzf-tab
+  zsh-users/zsh-autosuggestions
+  trystan2k/zsh-tab-title
+  zsh-users/zsh-syntax-highlighting
+  zsh-users/zsh-history-substring-search
+)
+zetch-ensure $plugins
 
-zfetch "romkatv/powerlevel10k" "powerlevel10k.zsh-theme"
+zetch romkatv/powerlevel10k
 
-# completions
-zfetch fpath "$HOME/.dotty/completions"
-zfetch fpath "$HOME/.local/share/zsh/site-functions"
-zfetch fpath "/opt/homebrew/share/zsh/site-functions"
-zfetch completions
-if ! (( $+functions[_complete] )); then
-  # Only run compinit if not already initialized. Calling compinit twice
-  # resets completion registrations.
-  autoload -Uz compinit
-  compinit
-fi
+fpath_dirs=(
+  $HOME/.local/share/zsh/site-functions
+  /opt/homebrew/share/zsh/site-functions
+  $ZPLUGINDIR/zsh-completions/src
+)
+zetch-compinit $fpath_dirs
 
-# fzf-tab needs to be loaded after compinit, before other plugins that use completion.
-zfetch "Aloxaf/fzf-tab"
-
-# plugins
-zfetch "zsh-users/zsh-syntax-highlighting"
-zfetch "zsh-users/zsh-history-substring-search"
-zfetch "zsh-users/zsh-autosuggestions"
-zfetch "wintermi/zsh-brew"
-zfetch "trystan2k/zsh-tab-title"
-
-# End of plugin manager
+zetch Aloxaf/fzf-tab
+zetch zsh-users/zsh-autosuggestions
+zetch trystan2k/zsh-tab-title
+zetch zsh-users/zsh-syntax-highlighting
+zetch zsh-users/zsh-history-substring-search
 
 # initialize zoxide for smarter directory jumping (if available)
 if command -v zoxide >/dev/null 2>&1; then
