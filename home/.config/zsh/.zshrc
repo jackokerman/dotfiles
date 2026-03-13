@@ -17,18 +17,22 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Plugins
+# Plugins (clones missing plugins in parallel, then sources in order)
 source $ZDOTDIR/.zetch.zsh
 
-zetch-ensure \
-  romkatv/powerlevel10k \
-  zsh-users/zsh-completions \
-  Aloxaf/fzf-tab \
-  zsh-users/zsh-autosuggestions \
-  trystan2k/zsh-tab-title \
-  zsh-users/zsh-syntax-highlighting \
-  zsh-users/zsh-history-substring-search
+plugins=(
+  romkatv/powerlevel10k                # shell prompt with instant prompt
+  zsh-users/zsh-completions            # additional completion definitions
+  Aloxaf/fzf-tab                       # fzf-powered tab completion
+  zsh-users/zsh-autosuggestions        # fish-like inline suggestions
+  trystan2k/zsh-tab-title             # dynamic terminal tab titles
+  zsh-users/zsh-syntax-highlighting    # command syntax highlighting
+  zsh-users/zsh-history-substring-search  # history search with up/down arrows
+)
+zetch-ensure $plugins
 
+# Source plugins in order: prompt first, then compinit, then everything else.
+# fzf-tab must load after compinit. syntax-highlighting before history-substring-search.
 zetch romkatv/powerlevel10k
 
 zetch-compinit \
