@@ -72,4 +72,6 @@ if command -v fzf >/dev/null 2>&1; then
 fi
 
 # bun completions
-[ -s "/Users/jackokerman/.bun/_bun" ] && source "/Users/jackokerman/.bun/_bun"
+[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
+
+true
