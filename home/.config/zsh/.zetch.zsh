@@ -31,7 +31,6 @@ zetch() {
       (( ${#missing} == 0 )) && return
       for repo in "${missing[@]}"; do
         dest="$ZPLUGINDIR/${repo##*/}"
-        echo "Installing ${repo}..."
         git clone --quiet --depth 1 "https://github.com/$repo" "$dest" &
       done
       wait
@@ -46,6 +45,7 @@ zetch() {
       if ! (( $+functions[_complete] )); then
         autoload -Uz compinit && compinit
       fi
+      compdef _zetch zetch
       ;;
 
     update)
@@ -63,7 +63,6 @@ zetch() {
       local dest="$ZPLUGINDIR/$name"
 
       if [[ ! -d "$dest" ]]; then
-        echo "Installing ${repo}..."
         git clone --quiet --depth 1 "https://github.com/$repo" "$dest"
       fi
 
@@ -101,4 +100,3 @@ _zetch() {
     )'
   fi
 }
-compdef _zetch zetch
