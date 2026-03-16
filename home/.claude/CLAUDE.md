@@ -19,3 +19,4 @@ Preferences are split across two dotty repos: this base repo (personal, public) 
 ## Code style
 - Never add decorative section comments (e.g., `// ---- Section name ----`). Let the code structure speak for itself.
 - When multiple lines in a file need the same eslint-disable, use a single file-level `/* eslint-disable rule-name */` instead of repeating inline `eslint-disable-next-line` annotations.
+- Always use braces for `if` statements, even for single-line early returns. Write `if (!x) { return; }` on multiple lines, not `if (!x) return;`.
