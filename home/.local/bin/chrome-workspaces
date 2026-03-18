@@ -100,10 +100,17 @@ cmd_restore() {
     die "No Chrome windows found"
   fi
 
+  # Load saved state into arrays (single jq call instead of per-iteration)
   local saved_at
   saved_at=$(jq -r '.saved_at' "${STATE_FILE}")
-  local -i saved_count
-  saved_count=$(jq '.windows | length' "${STATE_FILE}")
+  local -a sav_workspaces sav_titles sav_profiles
+  local line
+  while IFS=$'\t' read -r ws title prof; do
+    sav_workspaces+=("${ws}")
+    sav_titles+=("${title}")
+    sav_profiles+=("${prof}")
+  done < <(jq -r '.windows[] | [.workspace, .title, .profile] | @tsv' "${STATE_FILE}")
+  local -i saved_count=${#sav_workspaces}
 
   local -i moved=0 already=0 unmatched_saved=0
 
@@ -115,62 +122,51 @@ cmd_restore() {
     cur_titles+=("${title}")
   done <<< "${current_windows}"
 
-  # Track which current windows have been matched
-  local -A matched_current
-  local saved_title saved_workspace saved_profile saved_tab_title cur_profile cur_tab_title
-  local -i i j was_matched best_j best_overlap overlap
+  local -A matched_current matched_saved
+  local cur_profile cur_tab_title saved_tab_title
+  local -i i j best_j best_overlap overlap
+
+  _move_or_count() {
+    local -i ci=$1
+    local target_ws="$2"
+    matched_current[${ci}]=1
+    if [[ "${cur_workspaces[${ci}]}" == "${target_ws}" ]]; then
+      (( ++already ))
+    else
+      aerospace move-node-to-workspace "${target_ws}" --window-id "${cur_ids[${ci}]}" 2>/dev/null || true
+      (( ++moved ))
+    fi
+  }
 
   # Pass 1: exact title match
-  for (( i = 0; i < saved_count; i++ )); do
-    saved_title=$(jq -r ".windows[${i}].title" "${STATE_FILE}")
-    saved_workspace=$(jq -r ".windows[${i}].workspace" "${STATE_FILE}")
-
+  for (( i = 1; i <= saved_count; i++ )); do
     for (( j = 1; j <= ${#cur_ids}; j++ )); do
-      if [[ -z "${matched_current[${j}]:-}" && "${cur_titles[${j}]}" == "${saved_title}" ]]; then
-        matched_current[${j}]=1
-        if [[ "${cur_workspaces[${j}]}" == "${saved_workspace}" ]]; then
-          (( ++already ))
-        else
-          aerospace move-node-to-workspace "${saved_workspace}" --window-id "${cur_ids[${j}]}" 2>/dev/null || true
-          (( ++moved ))
-        fi
-        continue 2
+      if [[ -z "${matched_current[${j}]:-}" && "${cur_titles[${j}]}" == "${sav_titles[${i}]}" ]]; then
+        matched_saved[${i}]=1
+        _move_or_count "${j}" "${sav_workspaces[${i}]}"
+        break
       fi
     done
   done
 
-  # Pass 2: profile + word overlap for unmatched saved windows
-  for (( i = 0; i < saved_count; i++ )); do
-    saved_title=$(jq -r ".windows[${i}].title" "${STATE_FILE}")
-    saved_workspace=$(jq -r ".windows[${i}].workspace" "${STATE_FILE}")
-    saved_profile=$(jq -r ".windows[${i}].profile" "${STATE_FILE}")
-
-    # Skip if already matched in pass 1
-    was_matched=0
-    for (( j = 1; j <= ${#cur_ids}; j++ )); do
-      if [[ -n "${matched_current[${j}]:-}" && "${cur_titles[${j}]}" == "${saved_title}" ]]; then
-        was_matched=1
-        break
-      fi
-    done
-    if (( was_matched )); then
+  # Pass 2: same-profile word overlap for unmatched windows
+  for (( i = 1; i <= saved_count; i++ )); do
+    if [[ -n "${matched_saved[${i}]:-}" ]]; then
       continue
     fi
 
-    saved_tab_title=$(_extract_tab_title "${saved_title}")
-
+    saved_tab_title=$(_extract_tab_title "${sav_titles[${i}]}")
     best_j=0
     best_overlap=0
+
     for (( j = 1; j <= ${#cur_ids}; j++ )); do
       if [[ -n "${matched_current[${j}]:-}" ]]; then
         continue
       fi
-
       cur_profile=$(_extract_profile "${cur_titles[${j}]}")
-      if [[ "${cur_profile}" != "${saved_profile}" ]]; then
+      if [[ "${cur_profile}" != "${sav_profiles[${i}]}" ]]; then
         continue
       fi
-
       cur_tab_title=$(_extract_tab_title "${cur_titles[${j}]}")
       overlap=$(_word_overlap "${saved_tab_title}" "${cur_tab_title}")
       if (( overlap > best_overlap )); then
@@ -180,14 +176,28 @@ cmd_restore() {
     done
 
     if (( best_j > 0 )); then
-      matched_current[${best_j}]=1
-      if [[ "${cur_workspaces[${best_j}]}" == "${saved_workspace}" ]]; then
-        (( ++already ))
-      else
-        aerospace move-node-to-workspace "${saved_workspace}" --window-id "${cur_ids[${best_j}]}" 2>/dev/null || true
-        (( ++moved ))
+      matched_saved[${i}]=1
+      _move_or_count "${best_j}" "${sav_workspaces[${i}]}"
+    fi
+  done
+
+  # Pass 3: pair remaining unmatched windows by profile
+  for (( i = 1; i <= saved_count; i++ )); do
+    if [[ -n "${matched_saved[${i}]:-}" ]]; then
+      continue
+    fi
+    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+      if [[ -n "${matched_current[${j}]:-}" ]]; then
+        continue
       fi
-    else
+      cur_profile=$(_extract_profile "${cur_titles[${j}]}")
+      if [[ "${cur_profile}" == "${sav_profiles[${i}]}" ]]; then
+        matched_saved[${i}]=1
+        _move_or_count "${j}" "${sav_workspaces[${i}]}"
+        break
+      fi
+    done
+    if [[ -z "${matched_saved[${i}]:-}" ]]; then
       (( ++unmatched_saved ))
     fi
   done
