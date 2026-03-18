@@ -1,0 +1,206 @@
+#!/bin/zsh
+# Save and restore Chrome window workspace assignments across restarts.
+set -euo pipefail
+
+readonly STATE_DIR="$HOME/.local/state/chrome-workspaces"
+readonly STATE_FILE="${STATE_DIR}/state.json"
+
+die() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+_get_chrome_windows() {
+  aerospace list-windows --all --format '%{window-id}|%{app-name}|%{workspace}|%{window-title}' \
+    | while IFS='|' read -r wid app_name workspace title; do
+        if [[ "${app_name}" == "Google Chrome" ]]; then
+          printf '%s|%s|%s\n' "${wid}" "${workspace}" "${title}"
+        fi
+      done
+}
+
+_extract_profile() {
+  local title="$1"
+  if [[ "${title}" == *" - Google Chrome - "* ]]; then
+    printf '%s' "${title##* - Google Chrome - }"
+  else
+    printf ''
+  fi
+}
+
+_extract_tab_title() {
+  local title="$1"
+  if [[ "${title}" == *" - Google Chrome"* ]]; then
+    printf '%s' "${title%% - Google Chrome*}"
+  else
+    printf '%s' "${title}"
+  fi
+}
+
+_word_overlap() {
+  local a="$1" b="$2"
+  local -i count=0
+  local word
+  for word in ${(z)a}; do
+    if [[ "${b}" == *"${word}"* && ${#word} -gt 2 ]]; then
+      (( ++count ))
+    fi
+  done
+  printf '%d' "${count}"
+}
+
+cmd_save() {
+  local windows
+  windows=$(_get_chrome_windows)
+
+  if [[ -z "${windows}" ]]; then
+    die "No Chrome windows found"
+  fi
+
+  mkdir -p "${STATE_DIR}"
+
+  local json_windows=()
+  local -i count=0
+  local -A workspaces_seen
+  local profile
+
+  while IFS='|' read -r wid workspace title; do
+    profile=$(_extract_profile "${title}")
+    json_windows+=("$(jq -n \
+      --arg ws "${workspace}" \
+      --arg t "${title}" \
+      --arg p "${profile}" \
+      '{workspace: $ws, title: $t, profile: $p}')")
+    workspaces_seen[${workspace}]=1
+    (( ++count ))
+  done <<< "${windows}"
+
+  local joined
+  joined=$(printf '%s\n' "${json_windows[@]}" | jq -s '.')
+
+  jq -n \
+    --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    --argjson wins "${joined}" \
+    '{saved_at: $ts, windows: $wins}' > "${STATE_FILE}"
+
+  local ws_list
+  ws_list=$(printf '%s\n' "${(k)workspaces_seen[@]}" | sort | tr '\n' ' ')
+  printf 'Saved %d Chrome windows across workspaces: %s\n' "${count}" "${ws_list% }"
+}
+
+cmd_restore() {
+  if [[ ! -f "${STATE_FILE}" ]]; then
+    die "No saved state found. Run 'chrome-workspaces save' first."
+  fi
+
+  local current_windows
+  current_windows=$(_get_chrome_windows)
+
+  if [[ -z "${current_windows}" ]]; then
+    die "No Chrome windows found"
+  fi
+
+  local saved_at
+  saved_at=$(jq -r '.saved_at' "${STATE_FILE}")
+  local -i saved_count
+  saved_count=$(jq '.windows | length' "${STATE_FILE}")
+
+  local -i moved=0 already=0 unmatched_saved=0
+
+  # Build arrays from current windows
+  local -a cur_ids cur_workspaces cur_titles
+  while IFS='|' read -r wid workspace title; do
+    cur_ids+=("${wid}")
+    cur_workspaces+=("${workspace}")
+    cur_titles+=("${title}")
+  done <<< "${current_windows}"
+
+  # Track which current windows have been matched
+  local -A matched_current
+  local saved_title saved_workspace saved_profile saved_tab_title cur_profile cur_tab_title
+  local -i i j was_matched best_j best_overlap overlap
+
+  # Pass 1: exact title match
+  for (( i = 0; i < saved_count; i++ )); do
+    saved_title=$(jq -r ".windows[${i}].title" "${STATE_FILE}")
+    saved_workspace=$(jq -r ".windows[${i}].workspace" "${STATE_FILE}")
+
+    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+      if [[ -z "${matched_current[${j}]:-}" && "${cur_titles[${j}]}" == "${saved_title}" ]]; then
+        matched_current[${j}]=1
+        if [[ "${cur_workspaces[${j}]}" == "${saved_workspace}" ]]; then
+          (( ++already ))
+        else
+          aerospace move-node-to-workspace "${saved_workspace}" --window-id "${cur_ids[${j}]}" 2>/dev/null || true
+          (( ++moved ))
+        fi
+        continue 2
+      fi
+    done
+  done
+
+  # Pass 2: profile + word overlap for unmatched saved windows
+  for (( i = 0; i < saved_count; i++ )); do
+    saved_title=$(jq -r ".windows[${i}].title" "${STATE_FILE}")
+    saved_workspace=$(jq -r ".windows[${i}].workspace" "${STATE_FILE}")
+    saved_profile=$(jq -r ".windows[${i}].profile" "${STATE_FILE}")
+
+    # Skip if already matched in pass 1
+    was_matched=0
+    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+      if [[ -n "${matched_current[${j}]:-}" && "${cur_titles[${j}]}" == "${saved_title}" ]]; then
+        was_matched=1
+        break
+      fi
+    done
+    if (( was_matched )); then
+      continue
+    fi
+
+    saved_tab_title=$(_extract_tab_title "${saved_title}")
+
+    best_j=0
+    best_overlap=0
+    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+      if [[ -n "${matched_current[${j}]:-}" ]]; then
+        continue
+      fi
+
+      cur_profile=$(_extract_profile "${cur_titles[${j}]}")
+      if [[ "${cur_profile}" != "${saved_profile}" ]]; then
+        continue
+      fi
+
+      cur_tab_title=$(_extract_tab_title "${cur_titles[${j}]}")
+      overlap=$(_word_overlap "${saved_tab_title}" "${cur_tab_title}")
+      if (( overlap > best_overlap )); then
+        best_overlap=${overlap}
+        best_j=${j}
+      fi
+    done
+
+    if (( best_j > 0 )); then
+      matched_current[${best_j}]=1
+      if [[ "${cur_workspaces[${best_j}]}" == "${saved_workspace}" ]]; then
+        (( ++already ))
+      else
+        aerospace move-node-to-workspace "${saved_workspace}" --window-id "${cur_ids[${best_j}]}" 2>/dev/null || true
+        (( ++moved ))
+      fi
+    else
+      (( ++unmatched_saved ))
+    fi
+  done
+
+  printf 'Restored from %s: %d moved, %d already correct' "${saved_at}" "${moved}" "${already}"
+  if (( unmatched_saved > 0 )); then
+    printf ', %d unmatched' "${unmatched_saved}"
+  fi
+  printf '\n'
+}
+
+case "${1:-}" in
+  save) cmd_save ;;
+  restore) cmd_restore ;;
+  *) die "Usage: chrome-workspaces {save|restore}" ;;
+esac

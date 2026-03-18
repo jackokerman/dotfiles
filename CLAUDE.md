@@ -79,6 +79,7 @@ dotfiles/
     │   ├── git/            # Git config
     │   ├── hammerspoon/    # Desktop automation
     │   └── zsh/            # Zsh config (.zetch.zsh, .zshrc, .aliases, etc.)
+    ├── .local/bin/          # User scripts on PATH
     └── .raycast-scripts/   # Raycast commands
 ```
 
