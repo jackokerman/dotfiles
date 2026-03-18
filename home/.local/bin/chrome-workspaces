@@ -30,12 +30,11 @@ _get_chrome_windows() {
     chrome_apps["${name}"]=1
   done < <(_get_chrome_app_names)
 
-  aerospace list-windows --all --format '%{window-id}|%{app-name}|%{workspace}|%{window-title}' \
-    | while IFS='|' read -r wid app_name workspace title; do
-        if [[ -n "${chrome_apps[${app_name}]:-}" ]]; then
-          printf '%s|%s|%s|%s\n' "${wid}" "${workspace}" "${app_name}" "${title}"
-        fi
-      done
+  while IFS='|' read -r wid app_name workspace title; do
+    if [[ -n "${chrome_apps[${app_name}]:-}" ]]; then
+      printf '%s|%s|%s|%s\n' "${wid}" "${workspace}" "${app_name}" "${title}"
+    fi
+  done < <(aerospace list-windows --all --format '%{window-id}|%{app-name}|%{workspace}|%{window-title}')
 }
 
 _extract_profile() {
