@@ -36,6 +36,7 @@ skip_global_compinit=1
 export PATH="$HOME/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/go/bin" ]] && export PATH="$HOME/go/bin:$PATH"
 [[ -d "$HOME/.dotty/bin" ]] && export PATH="$HOME/.dotty/bin:$PATH"
 
 # Aerospace window arrangement: "APP_NAME|FILTER|WORKSPACE" comma-separated
