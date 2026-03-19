@@ -158,11 +158,6 @@ setup_claude() {
     local claude_dir="$HOME/.claude"
     local src_dir="$DOTFILES/home/.claude"
 
-    # If ~/.claude is a directory symlink from a previous dotty run, replace
-    # it with a real directory so runtime files stay out of the repo.
-    if [[ -L "$claude_dir" ]]; then
-        rm "$claude_dir"
-    fi
     mkdir -p "$claude_dir"
 
     # Symlink tracked config files
