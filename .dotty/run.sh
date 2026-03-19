@@ -181,6 +181,16 @@ setup_claude() {
     if [[ -f "$src_dir/settings.json" ]]; then
         cp "$src_dir/settings.json" "$claude_dir/settings.json"
     fi
+
+    # Set personal preferences in ~/.claude.json (runtime state file).
+    # Only poke specific keys; don't overwrite Claude's own state.
+    local claude_json="$HOME/.claude.json"
+    if command -v jq &>/dev/null && [[ -f "$claude_json" ]]; then
+        jq '.hasCompletedOnboarding = true | .bypassPermissionsModeAccepted = true' \
+            "$claude_json" > "$claude_json.tmp" && mv "$claude_json.tmp" "$claude_json"
+    elif command -v jq &>/dev/null; then
+        echo '{"hasCompletedOnboarding": true, "bypassPermissionsModeAccepted": true}' > "$claude_json"
+    fi
 }
 
 setup_claude
