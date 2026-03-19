@@ -166,11 +166,7 @@ setup_claude() {
     mkdir -p "$claude_dir"
 
     # Symlink tracked config files
-    for item in CLAUDE.md; do
-        if [[ -e "$src_dir/$item" ]]; then
-            ln -sfn "$src_dir/$item" "$claude_dir/$item"
-        fi
-    done
+    create_symlink "$src_dir/CLAUDE.md" "$claude_dir/CLAUDE.md"
 
     # Symlink tracked config directories as individual files so overlay
     # repos can add their own entries alongside without dotty needing
@@ -180,7 +176,7 @@ setup_claude() {
             mkdir -p "$claude_dir/$dir"
             for file in "$src_dir/$dir"/*; do
                 [[ -e "$file" ]] || continue
-                ln -sfn "$file" "$claude_dir/$dir/$(basename "$file")"
+                create_symlink "$file" "$claude_dir/$dir/$(basename "$file")"
             done
         fi
     done
