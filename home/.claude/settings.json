@@ -1,19 +1,73 @@
 {
+  "model": "opus[1m]",
   "alwaysThinkingEnabled": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/validate-conventional-commits.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "skipDangerousModePermissionPrompt": true,
   "attribution": {
     "commit": "",
     "pr": ""
   },
   "permissions": {
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": [
+      "/Users/jackokerman/.claude",
+      "/Users/jackokerman/dotfiles"
+    ],
     "allow": [
+      "Read(/Users/jackokerman/**)",
+      "Read(/tmp/**)",
+      "Write(/tmp/**)",
+
       "Edit(/Users/jackokerman/dotfiles/**)",
+      "Edit(/Users/jackokerman/.claude/**)",
       "Write(/Users/jackokerman/dotfiles/**)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push)",
-      "Bash(git pull:*)",
-      "Bash(git stash:*)",
-      "Bash(git checkout:*)",
+      "Write(/Users/jackokerman/.claude/**)",
+
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(dotty:*)",
+
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(test:*)",
+      "Bash(tree:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(diff:*)",
+      "Bash(readlink:*)",
+      "Bash(realpath:*)",
+      "Bash(dirname:*)",
+      "Bash(basename:*)",
+      "Bash(which:*)",
+      "Bash(stat:*)",
+      "Bash(file:*)",
+      "Bash(xargs:*)",
+      "Bash(pwd:*)",
+      "Bash(shellcheck:*)",
+      "Bash(zsh -n:*)",
+
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:github.com)",
       "WebSearch"
     ]
   }
