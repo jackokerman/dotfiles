@@ -150,13 +150,49 @@ setup_macos() {
 setup_vscode
 setup_shell
 
-# Claude settings: copy (not symlink) so overlays can replace without
-# writing through a symlink into this repo's source tree.
-local_settings_src="$DOTFILES/home/.claude/settings.json"
-if [[ -f "$local_settings_src" ]]; then
-    mkdir -p "$HOME/.claude"
-    cp "$local_settings_src" "$HOME/.claude/settings.json"
-fi
+# Claude: create ~/.claude as a real directory and symlink tracked config.
+# The entire .claude directory is in DOTTY_LINK_IGNORE so dotty won't
+# create a directory symlink (which would cause Claude runtime files like
+# projects/, statsig/, todos/ to land in the repo working tree).
+setup_claude() {
+    local claude_dir="$HOME/.claude"
+    local src_dir="$DOTFILES/home/.claude"
+
+    # If ~/.claude is a directory symlink from a previous dotty run, replace
+    # it with a real directory so runtime files stay out of the repo.
+    if [[ -L "$claude_dir" ]]; then
+        rm "$claude_dir"
+    fi
+    mkdir -p "$claude_dir"
+
+    # Symlink tracked config files
+    for item in CLAUDE.md; do
+        if [[ -e "$src_dir/$item" ]]; then
+            ln -sfn "$src_dir/$item" "$claude_dir/$item"
+        fi
+    done
+
+    # Symlink tracked config directories as individual files so overlay
+    # repos can add their own entries alongside without dotty needing
+    # to explode a directory symlink.
+    for dir in hooks rules skills; do
+        if [[ -d "$src_dir/$dir" ]]; then
+            mkdir -p "$claude_dir/$dir"
+            for file in "$src_dir/$dir"/*; do
+                [[ -e "$file" ]] || continue
+                ln -sfn "$file" "$claude_dir/$dir/$(basename "$file")"
+            done
+        fi
+    done
+
+    # Copy settings (not symlink) so overlays can modify without
+    # writing through into this repo's source tree.
+    if [[ -f "$src_dir/settings.json" ]]; then
+        cp "$src_dir/settings.json" "$claude_dir/settings.json"
+    fi
+}
+
+setup_claude
 
 case "$DOTTY_COMMAND" in
     install)
