@@ -283,8 +283,8 @@ cmd_restart() {
       break
     fi
     printf '  %d/%d windows...\n' "${current}" "${expected}"
-    sleep 2
-    (( elapsed += 2 ))
+    sleep 1
+    (( ++elapsed ))
   done
 
   if (( elapsed >= timeout )); then
@@ -296,7 +296,7 @@ cmd_restart() {
   # Wait for window titles to stabilize (Chrome loads tabs progressively)
   local prev_titles="" cur_titles=""
   local -i stable=0
-  while (( elapsed < timeout && stable < 3 )); do
+  while (( elapsed < timeout && stable < 2 )); do
     cur_titles=$(_get_chrome_windows | cut -d'|' -f3- | sort)
     if [[ "${cur_titles}" == "${prev_titles}" ]]; then
       (( ++stable ))
