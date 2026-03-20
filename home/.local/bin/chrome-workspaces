@@ -253,25 +253,30 @@ cmd_restart() {
     die "No Chrome windows found"
   fi
 
+  # Capture old window IDs so we can detect when they're gone
+  local old_ids
+  old_ids=$(_get_chrome_windows | cut -d'|' -f1 | sort)
+
   cmd_save
 
   printf 'Restarting Chrome...\n'
   osascript -e 'tell application "Google Chrome" to open location "chrome://restart"'
 
-  # Wait for Chrome to fully quit
-  while pgrep -x "Google Chrome" > /dev/null 2>&1; do
+  # Wait for old windows to disappear (chrome://restart may not kill the process)
+  local -i timeout=90 elapsed=0
+  while (( elapsed < timeout )); do
+    local cur_ids
+    cur_ids=$(_get_chrome_windows | cut -d'|' -f1 | sort)
+    if [[ "${cur_ids}" != "${old_ids}" ]]; then
+      break
+    fi
     sleep 0.5
+    (( ++elapsed ))
   done
-  printf 'Chrome quit, waiting for relaunch...\n'
+  printf 'Old windows gone, waiting for new windows...\n'
 
-  # Wait for Chrome to relaunch
-  while ! pgrep -x "Google Chrome" > /dev/null 2>&1; do
-    sleep 0.5
-  done
-  printf 'Chrome relaunched, waiting for %d windows...\n' "${expected}"
-
-  # Wait for all windows to reappear in aerospace
-  local -i timeout=90 elapsed=0 current=0
+  # Wait for expected number of windows to reappear
+  local -i current=0
   while (( elapsed < timeout )); do
     current=$(_get_chrome_windows | wc -l)
     if (( current >= expected )); then
