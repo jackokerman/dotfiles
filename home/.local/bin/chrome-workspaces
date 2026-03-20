@@ -255,6 +255,7 @@ cmd_restart() {
 
   cmd_save
 
+  printf 'Restarting Chrome...\n'
   osascript -e 'tell application "Google Chrome" to open location "chrome://restart"'
 
   # Wait for Chrome to fully quit
@@ -267,24 +268,41 @@ cmd_restart() {
   while ! pgrep -x "Google Chrome" > /dev/null 2>&1; do
     sleep 0.5
   done
+  printf 'Chrome relaunched, waiting for %d windows...\n' "${expected}"
 
   # Wait for all windows to reappear in aerospace
-  local -i timeout=60 elapsed=0 current
+  local -i timeout=90 elapsed=0 current=0
   while (( elapsed < timeout )); do
     current=$(_get_chrome_windows | wc -l)
     if (( current >= expected )); then
       break
     fi
-    sleep 1
-    (( ++elapsed ))
+    printf '  %d/%d windows...\n' "${current}" "${expected}"
+    sleep 2
+    (( elapsed += 2 ))
   done
 
   if (( elapsed >= timeout )); then
     printf 'Timed out waiting for windows (got %d of %d), restoring anyway\n' "${current}" "${expected}" >&2
+  else
+    printf 'All %d windows found, waiting for titles to load...\n' "${current}"
   fi
 
-  # Brief extra settle time for aerospace to register window titles
-  sleep 2
+  # Wait for window titles to stabilize (Chrome loads tabs progressively)
+  local prev_titles="" cur_titles=""
+  local -i stable=0
+  while (( elapsed < timeout && stable < 3 )); do
+    cur_titles=$(_get_chrome_windows | cut -d'|' -f3- | sort)
+    if [[ "${cur_titles}" == "${prev_titles}" ]]; then
+      (( ++stable ))
+    else
+      stable=0
+    fi
+    prev_titles="${cur_titles}"
+    sleep 1
+    (( ++elapsed ))
+  done
+  printf 'Titles stable, restoring workspaces...\n'
 
   cmd_restore
 }
