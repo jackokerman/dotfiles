@@ -246,8 +246,52 @@ cmd_restore() {
   printf '\n'
 }
 
+cmd_restart() {
+  local -i expected
+  expected=$(_get_chrome_windows | wc -l)
+  if (( expected == 0 )); then
+    die "No Chrome windows found"
+  fi
+
+  cmd_save
+
+  osascript -e 'tell application "Google Chrome" to open location "chrome://restart"'
+
+  # Wait for Chrome to fully quit
+  while pgrep -x "Google Chrome" > /dev/null 2>&1; do
+    sleep 0.5
+  done
+  printf 'Chrome quit, waiting for relaunch...\n'
+
+  # Wait for Chrome to relaunch
+  while ! pgrep -x "Google Chrome" > /dev/null 2>&1; do
+    sleep 0.5
+  done
+
+  # Wait for all windows to reappear in aerospace
+  local -i timeout=60 elapsed=0 current
+  while (( elapsed < timeout )); do
+    current=$(_get_chrome_windows | wc -l)
+    if (( current >= expected )); then
+      break
+    fi
+    sleep 1
+    (( ++elapsed ))
+  done
+
+  if (( elapsed >= timeout )); then
+    printf 'Timed out waiting for windows (got %d of %d), restoring anyway\n' "${current}" "${expected}" >&2
+  fi
+
+  # Brief extra settle time for aerospace to register window titles
+  sleep 2
+
+  cmd_restore
+}
+
 case "${1:-}" in
   save) cmd_save ;;
   restore) cmd_restore ;;
-  *) die "Usage: chrome-workspaces {save|restore}" ;;
+  restart) cmd_restart ;;
+  *) die "Usage: chrome-workspaces {save|restore|restart}" ;;
 esac
