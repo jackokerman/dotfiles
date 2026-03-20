@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 # Save and restore Chrome window workspace assignments across restarts.
 set -euo pipefail
 
@@ -15,12 +15,14 @@ _get_chrome_app_names() {
   names["Google Chrome"]=1
   local app_dir="$HOME/Applications/Chrome Apps.localized"
   if [[ -d "${app_dir}" ]]; then
-    local app
-    for app in "${app_dir}"/*.app(N); do
-      names["${${app:t}%.app}"]=1
+    local app app_basename
+    for app in "${app_dir}"/*.app; do
+      [[ -e "${app}" ]] || continue
+      app_basename="$(basename "${app}" .app)"
+      names["${app_basename}"]=1
     done
   fi
-  printf '%s\n' "${(k)names[@]}"
+  printf '%s\n' "${!names[@]}"
 }
 
 _get_chrome_windows() {
@@ -31,7 +33,7 @@ _get_chrome_windows() {
   done < <(_get_chrome_app_names)
 
   while IFS='|' read -r wid app_name workspace title; do
-    if [[ -n "${chrome_apps[${app_name}]:-}" ]]; then
+    if [[ -n "${chrome_apps["${app_name}"]:-}" ]]; then
       printf '%s|%s|%s|%s\n' "${wid}" "${workspace}" "${app_name}" "${title}"
     fi
   done < <(aerospace list-windows --all --format '%{window-id}|%{app-name}|%{workspace}|%{window-title}')
@@ -59,7 +61,7 @@ _word_overlap() {
   local a="$1" b="$2"
   local -i count=0
   local word
-  for word in ${(z)a}; do
+  for word in ${a}; do
     if [[ "${b}" == *"${word}"* && ${#word} -gt 2 ]]; then
       (( ++count ))
     fi
@@ -90,7 +92,7 @@ cmd_save() {
       --arg t "${title}" \
       --arg p "${profile}" \
       '{workspace: $ws, app_name: $an, title: $t, profile: $p}')")
-    workspaces_seen[${workspace}]=1
+    workspaces_seen["${workspace}"]=1
     (( ++count ))
   done <<< "${windows}"
 
@@ -103,7 +105,7 @@ cmd_save() {
     '{saved_at: $ts, windows: $wins}' > "${STATE_FILE}"
 
   local ws_list
-  ws_list=$(printf '%s\n' "${(k)workspaces_seen[@]}" | sort | tr '\n' ' ')
+  ws_list=$(printf '%s\n' "${!workspaces_seen[@]}" | sort | tr '\n' ' ')
   printf 'Saved %d Chrome windows across workspaces: %s\n' "${count}" "${ws_list% }"
 }
 
@@ -119,23 +121,20 @@ cmd_restore() {
     die "No Chrome windows found"
   fi
 
-  # Load saved state into arrays (single jq call instead of per-iteration)
   local saved_at
   saved_at=$(jq -r '.saved_at' "${STATE_FILE}")
-  local -a sav_workspaces sav_app_names sav_titles sav_profiles
-  local line
+  local -a sav_workspaces=() sav_app_names=() sav_titles=() sav_profiles=()
   while IFS=$'\t' read -r ws an title prof; do
     sav_workspaces+=("${ws}")
     sav_app_names+=("${an}")
     sav_titles+=("${title}")
     sav_profiles+=("${prof}")
   done < <(jq -r '.windows[] | [.workspace, (.app_name // "Google Chrome"), .title, .profile] | @tsv' "${STATE_FILE}")
-  local -i saved_count=${#sav_workspaces}
+  local -i saved_count=${#sav_workspaces[@]}
 
   local -i moved=0 already=0 unmatched_saved=0
 
-  # Build arrays from current windows
-  local -a cur_ids cur_workspaces cur_app_names cur_titles
+  local -a cur_ids=() cur_workspaces=() cur_app_names=() cur_titles=()
   while IFS='|' read -r wid workspace app_name title; do
     cur_ids+=("${wid}")
     cur_workspaces+=("${workspace}")
@@ -160,11 +159,11 @@ cmd_restore() {
   }
 
   # PWA pass: match non-Chrome apps by exact app_name
-  for (( i = 1; i <= saved_count; i++ )); do
+  for (( i = 0; i < saved_count; i++ )); do
     if [[ "${sav_app_names[${i}]}" == "Google Chrome" ]]; then
       continue
     fi
-    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+    for (( j = 0; j < ${#cur_ids[@]}; j++ )); do
       if [[ -z "${matched_current[${j}]:-}" && "${cur_app_names[${j}]}" == "${sav_app_names[${i}]}" ]]; then
         matched_saved[${i}]=1
         _move_or_count "${j}" "${sav_workspaces[${i}]}"
@@ -174,11 +173,11 @@ cmd_restore() {
   done
 
   # Pass 1: exact title match (Chrome browser windows only)
-  for (( i = 1; i <= saved_count; i++ )); do
+  for (( i = 0; i < saved_count; i++ )); do
     if [[ -n "${matched_saved[${i}]:-}" ]]; then
       continue
     fi
-    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+    for (( j = 0; j < ${#cur_ids[@]}; j++ )); do
       if [[ -z "${matched_current[${j}]:-}" && "${cur_app_names[${j}]}" == "Google Chrome" && "${cur_titles[${j}]}" == "${sav_titles[${i}]}" ]]; then
         matched_saved[${i}]=1
         _move_or_count "${j}" "${sav_workspaces[${i}]}"
@@ -188,16 +187,16 @@ cmd_restore() {
   done
 
   # Pass 2: same-profile word overlap for unmatched Chrome windows
-  for (( i = 1; i <= saved_count; i++ )); do
+  for (( i = 0; i < saved_count; i++ )); do
     if [[ -n "${matched_saved[${i}]:-}" ]]; then
       continue
     fi
 
     saved_tab_title=$(_extract_tab_title "${sav_titles[${i}]}")
-    best_j=0
+    best_j=-1
     best_overlap=0
 
-    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+    for (( j = 0; j < ${#cur_ids[@]}; j++ )); do
       if [[ -n "${matched_current[${j}]:-}" || "${cur_app_names[${j}]}" != "Google Chrome" ]]; then
         continue
       fi
@@ -213,18 +212,18 @@ cmd_restore() {
       fi
     done
 
-    if (( best_j > 0 )); then
+    if (( best_j >= 0 )); then
       matched_saved[${i}]=1
       _move_or_count "${best_j}" "${sav_workspaces[${i}]}"
     fi
   done
 
   # Pass 3: pair remaining unmatched Chrome windows by profile
-  for (( i = 1; i <= saved_count; i++ )); do
+  for (( i = 0; i < saved_count; i++ )); do
     if [[ -n "${matched_saved[${i}]:-}" ]]; then
       continue
     fi
-    for (( j = 1; j <= ${#cur_ids}; j++ )); do
+    for (( j = 0; j < ${#cur_ids[@]}; j++ )); do
       if [[ -n "${matched_current[${j}]:-}" || "${cur_app_names[${j}]}" != "Google Chrome" ]]; then
         continue
       fi
