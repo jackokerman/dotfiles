@@ -6,6 +6,10 @@ user-invocable: false
 
 # Bash scripting style
 
+## Shell choice
+
+Write shell scripts in bash (`#!/usr/bin/env bash`), not zsh. Zsh is the interactive shell but bash is preferred for scripting due to wider familiarity and fewer footguns (e.g., associative array subscript quoting). Use `#!/usr/bin/env bash` to pick up the Homebrew bash 5+ on macOS.
+
 ## General principles
 
 - Always start scripts with `set -euo pipefail`
