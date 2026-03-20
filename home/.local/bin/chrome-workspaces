@@ -247,6 +247,9 @@ cmd_restore() {
 }
 
 cmd_restart() {
+  local original_workspace
+  original_workspace=$(aerospace list-workspaces --focused)
+
   local -i expected
   expected=$(_get_chrome_windows | wc -l)
   if (( expected == 0 )); then
@@ -310,6 +313,8 @@ cmd_restart() {
   printf 'Titles stable, restoring workspaces...\n'
 
   cmd_restore
+
+  aerospace workspace "${original_workspace}" 2>/dev/null || true
 }
 
 case "${1:-}" in
