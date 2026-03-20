@@ -65,6 +65,10 @@ user-invocable: false
 - Use strict equality (`!== undefined`) instead of loose null checks (`!= null`) for optional fields
 - Always use braces for conditional bodies, even single-line ones
 
+## CSS-in-JS
+- Write styles inline on the element. Don't extract single-use CSS into module-level constants.
+- When styles need to be shared across elements, prefer the framework's compositional APIs (e.g., Sail's `createView` with variants, `createViewConfig`) over standalone `css()` constants.
+
 ## Type safety
 - Enable TypeScript strict mode
 - Prefer `type` over `interface` unless the type is used for inheritance (e.g., `extends`)
