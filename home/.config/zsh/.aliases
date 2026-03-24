@@ -66,6 +66,9 @@ alias lal='ls -la'
 alias lla='ls -la'
 alias lt='ls --tree'
 
+# Sesh
+alias sesh-rebuild='just -f ~/sesh/justfile build && rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob'
+
 # Misc
 alias reload='exec $SHELL -l'
 alias c='clear'
