@@ -17,6 +17,3 @@ setw -g window-status-format " #I  #W #[fg=#ff5874]#{?window_flags,#{window_flag
 
 # Set status bar components and style.
 set -g status-left "#[fg=#f78c6c]⠶ #[fg=#82aaff]#S "
-if-shell '[[ $(uname) = Darwin ]]' \
-    'set -g status-right "%a %d %b  #[fg=#82aaff]%I:%M%p"' \
-    'set -g status-right "%a %d %b  #[fg=#82aaff]%I:%M%P"' \
