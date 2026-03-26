@@ -16,6 +16,16 @@ if [[ -x "${_remote_sync}" ]]; then
   fi
 fi
 
+_render_session() {
+  local name="$1" state="$2"
+  case "${state}" in
+    done)    output="${output}${sep}#[fg=#21c7a8] ${name}#[fg=default]" ;;
+    waiting) output="${output}${sep}#[fg=#e3d18a] ${name}#[fg=default]" ;;
+    *)       output="${output}${sep}#[fg=#82aaff] ${name}#[fg=default]" ;;
+  esac
+  sep="  "
+}
+
 output=""
 sep=""
 
@@ -36,13 +46,18 @@ while IFS= read -r session; do
     state=$(<"${STATE_DIR}/${session}")
   fi
 
-  case "${state}" in
-    done)    output="${output}${sep}#[fg=#21c7a8] ${session}#[fg=default]" ;;
-    waiting) output="${output}${sep}#[fg=#e3d18a] ${session}#[fg=default]" ;;
-    *)       output="${output}${sep}#[fg=#82aaff] ${session}#[fg=default]" ;;
-  esac
-  sep="  "
+  _render_session "${session}" "${state}"
 done < <(tmux list-sessions -F '#{session_name}' 2>/dev/null)
+
+# Remove state files for sessions that no longer exist in tmux.
+if [[ -d "${STATE_DIR}" ]]; then
+  for state_file in "${STATE_DIR}"/*; do
+    [[ -f "${state_file}" ]] || continue
+    basename=$(basename "${state_file}")
+    [[ "${basename}" != ".remote-sync-ts" ]] || continue
+    tmux has-session -t "${basename}" 2>/dev/null || rm -f "${state_file}"
+  done
+fi
 
 # Append remote devbox sessions from cache.
 if [[ -d "${STATE_DIR}/remote" ]]; then
@@ -50,12 +65,7 @@ if [[ -d "${STATE_DIR}/remote" ]]; then
     [[ -f "${state_file}" ]] || continue
     session=$(basename "${state_file}")
     state=$(<"${state_file}")
-    case "${state}" in
-      done)    output="${output}${sep}#[fg=#21c7a8] ${session}#[fg=default]" ;;
-      waiting) output="${output}${sep}#[fg=#e3d18a] ${session}#[fg=default]" ;;
-      *)       output="${output}${sep}#[fg=#82aaff] ${session}#[fg=default]" ;;
-    esac
-    sep="  "
+    _render_session "${session}" "${state}"
   done
 fi
 
