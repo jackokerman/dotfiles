@@ -26,9 +26,9 @@ while IFS= read -r session; do
   fi
 
   case "${state}" in
-    done)    output="${output}${sep}#[fg=#21c7a8] ${session}#[fg=default]" ;;
-    waiting) output="${output}${sep}#[fg=#e3d18a] ${session}#[fg=default]" ;;
-    *)       output="${output}${sep}#[fg=#82aaff] ${session}#[fg=default]" ;;
+    done)    output="${output}${sep}#[fg=#21c7a8] ${session}#[fg=default]" ;;
+    waiting) output="${output}${sep}#[fg=#e3d18a] ${session}#[fg=default]" ;;
+    *)       output="${output}${sep}#[fg=#82aaff] ${session}#[fg=default]" ;;
   esac
   sep="  "
 done < <(tmux list-sessions -F '#{session_name}' 2>/dev/null)
