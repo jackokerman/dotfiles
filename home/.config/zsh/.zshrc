@@ -76,6 +76,9 @@ if command -v fzf >/dev/null 2>&1; then
     fi
 fi
 
+# Sesh session picker (Alt+S keybinding)
+[[ -f $ZDOTDIR/sesh.zsh ]] && source $ZDOTDIR/sesh.zsh
+
 # bun completions (sourced, not fpath-based — bun uses dynamic compdef)
 if [[ -s "$HOME/.bun/_bun" ]]; then
   source "$HOME/.bun/_bun"

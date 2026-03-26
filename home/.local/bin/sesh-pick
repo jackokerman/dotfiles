@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Extensible sesh session picker.
+# Extension points:
+#   ~/.cache/sesh-extra-entries     — extra fzf entries (one per line)
+#   ~/.config/sesh/hooks/connect.d/ — selection routing hooks (exit 0 = handled)
+
+set -euo pipefail
+
+EXTRA="${XDG_CACHE_HOME:-$HOME/.cache}/sesh-extra-entries"
+HOOKS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/connect.d"
+
+# Build header and extra binds based on available extensions
+header="  ^a all ^t tmux ^g configs ^x zoxide ^d kill ^f find"
+extra_binds=()
+if [[ -s "$EXTRA" ]]; then
+  header="  ^a all ^t tmux ^g configs ^x zoxide ^b extra ^d kill ^f find"
+  extra_binds=(--bind "ctrl-b:change-prompt(📦  )+reload(cat $EXTRA 2>/dev/null)")
+fi
+
+session=$({ sesh list -i; cat "$EXTRA" 2>/dev/null; } | grep -v '^$' | fzf \
+  --no-sort --ansi \
+  --border-label=" sesh " --prompt="⚡  " \
+  --header="$header" \
+  --bind "tab:down,btab:up" \
+  --bind "ctrl-a:change-prompt(⚡  )+reload({ sesh list -i; cat $EXTRA 2>/dev/null; })" \
+  --bind "ctrl-t:change-prompt(🪟  )+reload(sesh list -it)" \
+  --bind "ctrl-g:change-prompt(⚙️  )+reload(sesh list -ic)" \
+  --bind "ctrl-x:change-prompt(📁  )+reload(sesh list -iz)" \
+  --bind "ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .git -E node_modules)" \
+  --bind "ctrl-d:execute-silent(tmux kill-session -t {2..}; rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob)+change-prompt(⚡  )+reload(sesh list -i)" \
+  "${extra_binds[@]}" || true)
+
+[[ -z "$session" ]] && exit 0
+
+# Try connect hooks
+if [[ -d "$HOOKS_DIR" ]]; then
+  for hook in "$HOOKS_DIR"/*; do
+    if [[ -x "$hook" ]] && "$hook" "$session"; then
+      exit 0
+    fi
+  done
+fi
+
+# Default: sesh connect
+sesh connect "$session"
