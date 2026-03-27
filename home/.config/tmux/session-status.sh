@@ -28,6 +28,7 @@ _render_session() {
 
 output=""
 sep=""
+declare -A rendered_local=()
 
 while IFS= read -r session; do
   [[ "${session}" != "${current}" ]] || continue
@@ -46,6 +47,7 @@ while IFS= read -r session; do
     state=$(<"${STATE_DIR}/${session}")
   fi
 
+  rendered_local["${session}"]=1
   _render_session "${session}" "${state}"
 done < <(tmux list-sessions -F '#{session_name}' 2>/dev/null)
 
@@ -59,15 +61,13 @@ if [[ -d "${STATE_DIR}" ]]; then
   done
 fi
 
-# Append remote devbox sessions from cache, skipping any that already have a
-# local tmux session (those are already shown in the local section above).
+# Append remote devbox sessions from cache, skipping any already rendered in
+# the local section (avoids duplicates when a local session runs Claude directly).
 if [[ -d "${STATE_DIR}/remote" ]]; then
   for state_file in "${STATE_DIR}/remote"/*; do
     [[ -f "${state_file}" ]] || continue
     session=$(basename "${state_file}")
-    if tmux has-session -t "${session}" 2>/dev/null; then
-      continue
-    fi
+    [[ -z "${rendered_local[${session}]+x}" ]] || continue
     state=$(<"${state_file}")
     _render_session "${session}" "${state}"
   done
