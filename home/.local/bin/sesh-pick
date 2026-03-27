@@ -30,11 +30,12 @@ if [[ "${1:-}" == "--all" ]]; then _all; exit 0; fi
 if [[ "${1:-}" == "--extra" ]]; then _extra_entries; exit 0; fi
 
 # Build header and extra binds based on available extensions
-header="  ^a all ^t tmux ^g configs ^x zoxide ^d kill ^f find"
 extra_binds=()
 if [[ -s "$EXTRA" ]]; then
-  header="  ^a all ^t tmux ^g configs ^x zoxide ^b remote ^d kill ^f find"
-  extra_binds=(--bind "ctrl-b:change-prompt(📦  )+reload($0 --extra)")
+  header="  ^a all ^t tmux ^x remote ^d kill ^f find"
+  extra_binds=(--bind "ctrl-x:change-prompt(📦  )+reload($0 --extra)")
+else
+  header="  ^a all ^t tmux ^d kill ^f find"
 fi
 
 session=$(_all | grep -v '^$' | fzf \
@@ -44,8 +45,6 @@ session=$(_all | grep -v '^$' | fzf \
   --bind "tab:down,btab:up" \
   --bind "ctrl-a:change-prompt(⚡  )+reload($0 --all)" \
   --bind "ctrl-t:change-prompt(🪟  )+reload(sesh list -it)" \
-  --bind "ctrl-g:change-prompt(⚙️  )+reload(sesh list -ic)" \
-  --bind "ctrl-x:change-prompt(📁  )+reload(sesh list -iz)" \
   --bind "ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .git -E node_modules)" \
   --bind "ctrl-d:execute-silent(tmux kill-session -t {2..}; rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob)+change-prompt(⚡  )+reload($0 --all)" \
   "${extra_binds[@]}" || true)
