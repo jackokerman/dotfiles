@@ -52,6 +52,16 @@
           }
         ]
       }
+    ],
+    "ElicitationResult": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/claude-status-hook.sh working"
+          }
+        ]
+      }
     ]
   },
   "enableAllProjectMcpServers": true,
