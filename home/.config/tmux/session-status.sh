@@ -59,11 +59,15 @@ if [[ -d "${STATE_DIR}" ]]; then
   done
 fi
 
-# Append remote devbox sessions from cache.
+# Append remote devbox sessions from cache, skipping any that already have a
+# local tmux session (those are already shown in the local section above).
 if [[ -d "${STATE_DIR}/remote" ]]; then
   for state_file in "${STATE_DIR}/remote"/*; do
     [[ -f "${state_file}" ]] || continue
     session=$(basename "${state_file}")
+    if tmux has-session -t "${session}" 2>/dev/null; then
+      continue
+    fi
     state=$(<"${state_file}")
     _render_session "${session}" "${state}"
   done
