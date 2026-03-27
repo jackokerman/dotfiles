@@ -3,8 +3,6 @@
 set -euo pipefail
 
 STATE_DIR="/tmp/tmux-claude-$(id -u)"
-current=$(tmux display-message -p '#{session_name}' 2>/dev/null) || exit 0
-
 # Trigger remote devbox sync if the overlay script exists.
 _remote_sync="${HOME}/.config/tmux/remote-claude-sync.sh"
 _sync_ts="${STATE_DIR}/.remote-sync-ts"
@@ -31,8 +29,6 @@ sep=""
 declare -A rendered_local=()
 
 while IFS= read -r session; do
-  [[ "${session}" != "${current}" ]] || continue
-
   is_claude=false
   while IFS= read -r cmd; do
     if [[ "${cmd}" == "claude" ]]; then
