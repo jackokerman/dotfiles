@@ -65,6 +65,7 @@ if [[ -d "${STATE_DIR}/remote" ]]; then
   for state_file in "${STATE_DIR}/remote"/*; do
     [[ -f "${state_file}" ]] || continue
     session=$(basename "${state_file}")
+    [[ "${session}" != "${current}" ]] || continue
     [[ -z "${rendered_local[${session}]+x}" ]] || continue
     state=$(<"${state_file}")
     _render_session "${session}" "${state}"
