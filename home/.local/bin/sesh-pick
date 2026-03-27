@@ -10,7 +10,7 @@ EXTRA="${XDG_CACHE_HOME:-$HOME/.cache}/sesh-extra-entries"
 HOOKS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/connect.d"
 
 # Filter extra entries that already have a tmux session (avoids duplicates).
-# Each extra entry is "emoji name" — we strip the prefix and check tmux.
+# Each extra entry is "icon name" — we strip the prefix and check tmux.
 _extra_entries() {
   [[ -s "$EXTRA" ]] || return 0
   local tmux_sessions
@@ -23,7 +23,7 @@ _extra_entries() {
   done < "$EXTRA"
 }
 
-_all() { sesh list -i; _extra_entries; }
+_all() { sesh list -it; _extra_entries; sesh list -ic; sesh list -iz; }
 
 # Sub-commands for fzf reload (fzf can't call bash functions directly)
 if [[ "${1:-}" == "--all" ]]; then _all; exit 0; fi
@@ -33,7 +33,7 @@ if [[ "${1:-}" == "--extra" ]]; then _extra_entries; exit 0; fi
 header="  ^a all ^t tmux ^g configs ^x zoxide ^d kill ^f find"
 extra_binds=()
 if [[ -s "$EXTRA" ]]; then
-  header="  ^a all ^t tmux ^g configs ^x zoxide ^b extra ^d kill ^f find"
+  header="  ^a all ^t tmux ^g configs ^x zoxide ^b remote ^d kill ^f find"
   extra_binds=(--bind "ctrl-b:change-prompt(📦  )+reload($0 --extra)")
 fi
 
