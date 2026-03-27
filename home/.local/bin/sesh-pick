@@ -9,25 +9,45 @@ set -euo pipefail
 EXTRA="${XDG_CACHE_HOME:-$HOME/.cache}/sesh-extra-entries"
 HOOKS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/connect.d"
 
+# Filter extra entries that already have a tmux session (avoids duplicates).
+# Each extra entry is "emoji name" — we strip the prefix and check tmux.
+_extra_entries() {
+  [[ -s "$EXTRA" ]] || return 0
+  local tmux_sessions
+  tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
+  while IFS= read -r line; do
+    local name="${line#* }"
+    if ! echo "$tmux_sessions" | grep -qxF "$name"; then
+      echo "$line"
+    fi
+  done < "$EXTRA"
+}
+
+_all() { sesh list -i; _extra_entries; }
+
+# Sub-commands for fzf reload (fzf can't call bash functions directly)
+if [[ "${1:-}" == "--all" ]]; then _all; exit 0; fi
+if [[ "${1:-}" == "--extra" ]]; then _extra_entries; exit 0; fi
+
 # Build header and extra binds based on available extensions
 header="  ^a all ^t tmux ^g configs ^x zoxide ^d kill ^f find"
 extra_binds=()
 if [[ -s "$EXTRA" ]]; then
   header="  ^a all ^t tmux ^g configs ^x zoxide ^b extra ^d kill ^f find"
-  extra_binds=(--bind "ctrl-b:change-prompt(📦  )+reload(cat $EXTRA 2>/dev/null)")
+  extra_binds=(--bind "ctrl-b:change-prompt(📦  )+reload($0 --extra)")
 fi
 
-session=$({ sesh list -i; cat "$EXTRA" 2>/dev/null; } | grep -v '^$' | fzf \
+session=$(_all | grep -v '^$' | fzf \
   --no-sort --ansi \
   --border-label=" sesh " --prompt="⚡  " \
   --header="$header" \
   --bind "tab:down,btab:up" \
-  --bind "ctrl-a:change-prompt(⚡  )+reload({ sesh list -i; cat $EXTRA 2>/dev/null; })" \
+  --bind "ctrl-a:change-prompt(⚡  )+reload($0 --all)" \
   --bind "ctrl-t:change-prompt(🪟  )+reload(sesh list -it)" \
   --bind "ctrl-g:change-prompt(⚙️  )+reload(sesh list -ic)" \
   --bind "ctrl-x:change-prompt(📁  )+reload(sesh list -iz)" \
   --bind "ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .git -E node_modules)" \
-  --bind "ctrl-d:execute-silent(tmux kill-session -t {2..}; rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob)+change-prompt(⚡  )+reload(sesh list -i)" \
+  --bind "ctrl-d:execute-silent(tmux kill-session -t {2..}; rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob)+change-prompt(⚡  )+reload($0 --all)" \
   "${extra_binds[@]}" || true)
 
 [[ -z "$session" ]] && exit 0
