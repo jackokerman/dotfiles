@@ -102,6 +102,7 @@ Common situations where `any` seems tempting but isn't needed:
 
 ## JSDoc comments
 - Add JSDoc descriptions to exported functions and types
+- When describing any function (including file-local helpers), use JSDoc format (`/** ... */`) rather than `//` line comments
 - Skip `@param` and `@returns` tags - TypeScript types handle that
 - Prefer multi-line format for readability:
   ```typescript
