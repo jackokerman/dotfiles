@@ -2,12 +2,22 @@
 # Extensible sesh session picker.
 # Extension points:
 #   ~/.cache/sesh-extra-entries     — extra fzf entries (one per line)
+#   ~/.config/sesh/hooks/refresh.d/ — background cache refresh scripts (run each open)
 #   ~/.config/sesh/hooks/connect.d/ — selection routing hooks (exit 0 = handled)
 
 set -euo pipefail
 
 EXTRA="${XDG_CACHE_HOME:-$HOME/.cache}/sesh-extra-entries"
 HOOKS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/connect.d"
+REFRESH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/refresh.d"
+
+# Kick off background refresh hooks (SWR: show stale entries, revalidate for next open)
+if [[ -d "$REFRESH_DIR" ]]; then
+  for hook in "$REFRESH_DIR"/*; do
+    [[ -x "$hook" ]] && "$hook" &
+  done
+  disown 2>/dev/null
+fi
 
 # Filter extra entries that already have a tmux session (avoids duplicates).
 # Each extra entry is "icon name" — we strip the prefix and check tmux.
