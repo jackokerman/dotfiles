@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude-status-hook.sh working"
+            "command": "~/.config/tmux/agent-status-hook.sh working"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude-status-hook.sh working"
+            "command": "~/.config/tmux/agent-status-hook.sh working"
           }
         ]
       }
@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude-status-hook.sh done"
+            "command": "~/.config/tmux/agent-status-hook.sh done"
           }
         ]
       }
@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude-status-hook.sh waiting"
+            "command": "~/.config/tmux/agent-status-hook.sh waiting"
           }
         ]
       }
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude-status-hook.sh working"
+            "command": "~/.config/tmux/agent-status-hook.sh working"
           }
         ]
       }

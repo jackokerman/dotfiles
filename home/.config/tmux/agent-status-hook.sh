@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Write Claude Code session state for tmux status bar display.
+# Write coding agent session state for tmux status bar display.
 set -euo pipefail
 
-STATE_DIR="/tmp/tmux-claude-$(id -u)"
+STATE_DIR="/tmp/tmux-agent-$(id -u)"
 mkdir -p "${STATE_DIR}"
 
 session=$(tmux display-message -p '#{session_name}' 2>/dev/null) || exit 0

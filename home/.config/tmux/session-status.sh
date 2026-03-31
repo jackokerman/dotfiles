@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Show Claude session status for other tmux sessions in the status bar.
+# Show coding agent session status for other tmux sessions in the status bar.
 set -euo pipefail
 
-STATE_DIR="/tmp/tmux-claude-$(id -u)"
+STATE_DIR="/tmp/tmux-agent-$(id -u)"
 current=$(tmux display-message -p '#{session_name}')
 # Trigger remote devbox sync if the overlay script exists.
-_remote_sync="${HOME}/.config/tmux/remote-claude-sync.sh"
+_remote_sync="${HOME}/.config/tmux/remote-agent-sync.sh"
 _sync_ts="${STATE_DIR}/.remote-sync-ts"
 if [[ -x "${_remote_sync}" ]]; then
   _now=$(date +%s)
