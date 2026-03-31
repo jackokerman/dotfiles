@@ -55,6 +55,11 @@ if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi
 
+# initialize dotty shell wrapper (auto-reloads after update)
+if command -v dotty >/dev/null 2>&1; then
+  eval "$(dotty shell-init)"
+fi
+
 # Aliases
 source $ZDOTDIR/.aliases
 
