@@ -11,12 +11,12 @@ EXTRA="${XDG_CACHE_HOME:-$HOME/.cache}/sesh-extra-entries"
 HOOKS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/connect.d"
 REFRESH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/refresh.d"
 
-# Kick off background refresh hooks (SWR: show stale entries, revalidate for next open)
+# Kick off background refresh hooks (SWR: show stale entries, revalidate for next open).
+# setsid detaches hooks from this process group so they survive tmux popup closure.
 if [[ -d "$REFRESH_DIR" ]]; then
   for hook in "$REFRESH_DIR"/*; do
-    [[ -x "$hook" ]] && "$hook" &
+    [[ -x "$hook" ]] && setsid "$hook" </dev/null &>/dev/null &
   done
-  disown 2>/dev/null
 fi
 
 # Filter extra entries that already have a tmux session (avoids duplicates).
