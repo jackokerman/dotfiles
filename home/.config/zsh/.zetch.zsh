@@ -67,7 +67,9 @@ zetch() {
       fi
 
       local canonical="$dest/$name.plugin.zsh"
-      if [[ -L "$canonical" || -f "$canonical" ]]; then
+      if [[ -L "$canonical" && ! -e "$canonical" ]]; then
+        rm "$canonical"
+      elif [[ -L "$canonical" || -f "$canonical" ]]; then
         source "$canonical"
         return
       fi
