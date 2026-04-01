@@ -29,7 +29,7 @@ brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
-brew "oven-sh/bun/bun"             # JavaScript runtime
+brew "oven-sh/bun/bun"              # JavaScript runtime
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
 brew "zoxide"                       # smarter cd command (z/zi)
