@@ -14,6 +14,7 @@ if OS.mac?
   cask "obsidian"                   # knowledge base with markdown files
   cask "1password"                  # password manager
   cask "visual-studio-code"         # code editor
+  cask "handy"                      # window snapping and management
 end
 
 # Packages
