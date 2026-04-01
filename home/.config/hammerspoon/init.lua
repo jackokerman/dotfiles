@@ -80,6 +80,22 @@ local chromeTabToggle = hs.hotkey.new({"cmd"}, "s", toggleChromeVerticalTabs)
 chromeFilter:subscribe(hs.window.filter.windowFocused, function() chromeTabToggle:enable() end)
 chromeFilter:subscribe(hs.window.filter.windowUnfocused, function() chromeTabToggle:disable() end)
 
+-- Trigger Handy dictation without switching Aerospace workspaces.
+-- Handy's recording UI is an AXDialog that Aerospace ignores, but any standard
+-- window (like Settings) causes Aerospace to switch workspaces on activation.
+-- We close non-dialog windows before sending the hotkey to prevent the switch.
+-- Handy's built-in hotkey should be set to Hyper+Space (Ctrl+Shift+Cmd+Alt+Space).
+hs.hotkey.bind({"alt"}, "space", function()
+    local handy = hs.application.get("com.pais.handy")
+    if handy then
+        for _, win in ipairs(handy:allWindows()) do
+            if win:subrole() ~= "AXDialog" then
+                win:close()
+            end
+        end
+    end
+    hs.eventtap.keyStroke({"ctrl", "shift", "cmd", "alt"}, "space")
+end)
 
 -- Load local config if present (machine-specific initialization)
 local localInit = hs.configdir .. "/init.local.lua"
