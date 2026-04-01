@@ -80,6 +80,34 @@ local chromeTabToggle = hs.hotkey.new({"cmd"}, "s", toggleChromeVerticalTabs)
 chromeFilter:subscribe(hs.window.filter.windowFocused, function() chromeTabToggle:enable() end)
 chromeFilter:subscribe(hs.window.filter.windowUnfocused, function() chromeTabToggle:disable() end)
 
+-- Summon Handy to the current Aerospace workspace before activating it.
+-- Works around the lack of sticky window support in Aerospace (issue #2).
+-- Intercepts Option+Space, moves Handy's window, then re-emits the keystroke.
+local handyHotkey
+handyHotkey = hs.hotkey.bind({"alt"}, "space", function()
+    local current = hs.execute("/opt/homebrew/bin/aerospace list-workspaces --focused", true)
+    if current then
+        current = current:gsub("%s+", "")
+        local windowId = hs.execute(
+            "/opt/homebrew/bin/aerospace list-windows --app-id com.pais.handy --format '%{window-id}'", true
+        )
+        if windowId then
+            windowId = windowId:gsub("%s+", "")
+            if windowId ~= "" then
+                hs.execute(
+                    "/opt/homebrew/bin/aerospace move-node-to-workspace --window-id " .. windowId .. " " .. current,
+                    true
+                )
+            end
+        end
+    end
+    handyHotkey:disable()
+    hs.eventtap.keyStroke({"alt"}, "space", 0)
+    hs.timer.doAfter(0.15, function()
+        handyHotkey:enable()
+    end)
+end)
+
 -- Load local config if present (machine-specific initialization)
 local localInit = hs.configdir .. "/init.local.lua"
 if hs.fs.attributes(localInit) then
