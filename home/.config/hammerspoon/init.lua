@@ -82,9 +82,10 @@ chromeFilter:subscribe(hs.window.filter.windowUnfocused, function() chromeTabTog
 
 -- Summon Handy to the current Aerospace workspace before activating it.
 -- Works around the lack of sticky window support in Aerospace (issue #2).
--- Intercepts Option+Space, moves Handy's window, then re-emits the keystroke.
-local handyHotkey
-handyHotkey = hs.hotkey.bind({"alt"}, "space", function()
+-- Option+Space moves Handy's window then sends Hyper+H to toggle dictation.
+-- Handy's built-in hotkey should be set to Hyper+H (Ctrl+Shift+Cmd+Alt+H).
+local hyper = {"ctrl", "shift", "cmd", "alt"}
+hs.hotkey.bind({"alt"}, "space", function()
     local current = hs.execute("/opt/homebrew/bin/aerospace list-workspaces --focused", true)
     if current then
         current = current:gsub("%s+", "")
@@ -101,11 +102,7 @@ handyHotkey = hs.hotkey.bind({"alt"}, "space", function()
             end
         end
     end
-    handyHotkey:disable()
-    hs.eventtap.keyStroke({"alt"}, "space", 0)
-    hs.timer.doAfter(0.15, function()
-        handyHotkey:enable()
-    end)
+    hs.eventtap.keyStroke(hyper, "h")
 end)
 
 -- Load local config if present (machine-specific initialization)
