@@ -80,29 +80,14 @@ local chromeTabToggle = hs.hotkey.new({"cmd"}, "s", toggleChromeVerticalTabs)
 chromeFilter:subscribe(hs.window.filter.windowFocused, function() chromeTabToggle:enable() end)
 chromeFilter:subscribe(hs.window.filter.windowUnfocused, function() chromeTabToggle:disable() end)
 
--- Summon Handy to the current Aerospace workspace before activating it.
--- Works around the lack of sticky window support in Aerospace (issue #2).
--- Option+Space moves Handy's window then sends Hyper+H to toggle dictation.
--- Handy's built-in hotkey should be set to Hyper+H (Ctrl+Shift+Cmd+Alt+H).
-local hyper = {"ctrl", "shift", "cmd", "alt"}
+-- Trigger Handy dictation without switching Aerospace workspaces.
+-- Aerospace can't see Handy's window (it's an AXDialog), so activating Handy
+-- directly causes macOS to switch to the workspace where it was opened.
+-- Instead, Hammerspoon intercepts Option+Space and sends Hyper+Space as a
+-- global keystroke, which Handy picks up without app activation.
+-- Handy's built-in hotkey should be set to Hyper+Space (Ctrl+Shift+Cmd+Alt+Space).
 hs.hotkey.bind({"alt"}, "space", function()
-    local current = hs.execute("/opt/homebrew/bin/aerospace list-workspaces --focused", true)
-    if current then
-        current = current:gsub("%s+", "")
-        local windowId = hs.execute(
-            "/opt/homebrew/bin/aerospace list-windows --app-id com.pais.handy --format '%{window-id}'", true
-        )
-        if windowId then
-            windowId = windowId:gsub("%s+", "")
-            if windowId ~= "" then
-                hs.execute(
-                    "/opt/homebrew/bin/aerospace move-node-to-workspace --window-id " .. windowId .. " " .. current,
-                    true
-                )
-            end
-        end
-    end
-    hs.eventtap.keyStroke(hyper, "h")
+    hs.eventtap.keyStroke({"ctrl", "shift", "cmd", "alt"}, "space")
 end)
 
 -- Load local config if present (machine-specific initialization)
