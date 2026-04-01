@@ -80,26 +80,6 @@ local chromeTabToggle = hs.hotkey.new({"cmd"}, "s", toggleChromeVerticalTabs)
 chromeFilter:subscribe(hs.window.filter.windowFocused, function() chromeTabToggle:enable() end)
 chromeFilter:subscribe(hs.window.filter.windowUnfocused, function() chromeTabToggle:disable() end)
 
--- Trigger Handy dictation without leaving the current Aerospace workspace.
--- Handy activates itself when its hotkey fires, which causes Aerospace to
--- switch to the workspace where Handy's window lives. We work around this
--- by recording the current workspace, sending the hotkey, then using an
--- application watcher to switch back as soon as Handy activates.
--- Handy's built-in hotkey should be set to Hyper+Space (Ctrl+Shift+Cmd+Alt+Space).
-local handyReturnWorkspace = nil
-
-hs.hotkey.bind({"alt"}, "space", function()
-    handyReturnWorkspace = hs.execute("/opt/homebrew/bin/aerospace list-workspaces --focused", true):gsub("%s+", "")
-    hs.eventtap.keyStroke({"ctrl", "shift", "cmd", "alt"}, "space")
-end)
-
-hs.application.watcher.new(function(appName, eventType)
-    if appName == "Handy" and eventType == hs.application.watcher.activated and handyReturnWorkspace then
-        local ws = handyReturnWorkspace
-        handyReturnWorkspace = nil
-        hs.execute("/opt/homebrew/bin/aerospace workspace " .. ws, true)
-    end
-end):start()
 
 -- Load local config if present (machine-specific initialization)
 local localInit = hs.configdir .. "/init.local.lua"
