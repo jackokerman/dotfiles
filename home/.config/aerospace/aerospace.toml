@@ -226,5 +226,5 @@ automatically-unhide-macos-hidden-apps = false
     run = 'layout floating'
 
 [[on-window-detected]]
-    if.app-id = 'com.superduper.superwhisper'
+    if.app-id = 'com.pais.handy'
     run = 'layout floating'
