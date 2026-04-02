@@ -195,6 +195,35 @@ setup_claude() {
 
 setup_claude
 
+# Codex: keep ~/.codex as a real directory so local runtime state remains
+# local, then generate the managed instruction and config files from tracked
+# source fragments.
+setup_codex() {
+    local codex_dir="$HOME/.codex"
+    local script="$DOTFILES/scripts/sync_codex.ts"
+    local agents_src="$DOTFILES/home/.codex/AGENTS.md"
+    local config_src="$DOTFILES/home/.codex/config.toml"
+
+    if ! command -v bun >/dev/null 2>&1; then
+        warning "Bun not found. Skipping Codex config sync."
+        return 0
+    fi
+
+    mkdir -p "$codex_dir"
+
+    if [[ -f "$agents_src" ]]; then
+        bun run "$script" agents \
+            --output "$codex_dir/AGENTS.md" \
+            --source "$agents_src"
+    fi
+
+    if [[ -f "$config_src" ]]; then
+        bun run "$script" config \
+            --output "$codex_dir/config.toml" \
+            --source "$config_src"
+    fi
+}
+
 case "$DOTTY_COMMAND" in
     install)
         setup_guard
@@ -204,3 +233,5 @@ case "$DOTTY_COMMAND" in
         fi
         ;;
 esac
+
+setup_codex

@@ -85,6 +85,13 @@ To update all plugins:
 zetch-update
 ```
 
+## Codex configuration
+
+- Tracked Codex source fragments live in `home/.codex/`.
+- The dotty hook keeps `~/.codex` as a real directory so Codex can continue writing local state there.
+- `~/.codex/AGENTS.md` and `~/.codex/config.toml` are generated from tracked fragments when you run `dotty update`.
+- The config merge only manages a small allowlist of keys; everything else in the live local file is preserved.
+
 ## Layering with other repos
 
 This repo is designed as a base layer. Work or machine-specific dotfiles can extend it using dotty's overlay system. See the [dotty README](https://github.com/jackokerman/dotty) for details on multi-repo chains and the extend pattern.
