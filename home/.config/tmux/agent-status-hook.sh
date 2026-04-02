@@ -16,8 +16,11 @@ fi
 state="${1:-}"
 [[ -n "${state}" ]] || exit 0
 
+agent="${2:-claude}"
+[[ -n "${agent}" ]] || exit 0
+
 safe="${session//\//%2F}"
-echo "${state}" > "${STATE_DIR}/${safe}"
+printf '%s\t%s\n' "${agent}" "${state}" > "${STATE_DIR}/${safe}"
 
 if [[ "${state}" == "done" || "${state}" == "waiting" ]]; then
   printf '\a' >/dev/tty 2>/dev/null || printf '\a'

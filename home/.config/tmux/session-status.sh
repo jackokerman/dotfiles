@@ -15,6 +15,26 @@ if [[ -x "${_remote_sync}" ]]; then
   fi
 fi
 
+_decode_session_name() {
+  local safe_name="$1"
+  printf '%s\n' "${safe_name//%2F/\/}"
+}
+
+_read_state_record() {
+  local state_file="$1" raw="" agent="" state=""
+  raw=$(<"${state_file}")
+  IFS=$'\t' read -r agent state <<< "${raw}"
+
+  # Backward compatibility with the legacy format: the file only contained
+  # the state string, e.g. "working".
+  if [[ -z "${state}" ]]; then
+    state="${agent}"
+    agent="claude"
+  fi
+
+  printf '%s\t%s\n' "${agent}" "${state}"
+}
+
 _render_session() {
   local name="$1" state="$2"
   case "${state}" in
@@ -43,7 +63,7 @@ while IFS= read -r session; do
   safe="${session//\//%2F}"
   state=""
   if [[ -f "${STATE_DIR}/${safe}" ]]; then
-    state=$(<"${STATE_DIR}/${safe}")
+    IFS=$'\t' read -r _agent state < <(_read_state_record "${STATE_DIR}/${safe}")
   fi
 
   rendered_local["${session}"]=1
@@ -66,10 +86,11 @@ fi
 if [[ -d "${STATE_DIR}/remote" ]]; then
   for state_file in "${STATE_DIR}/remote"/*; do
     [[ -f "${state_file}" ]] || continue
-    session=$(basename "${state_file}")
+    safe_name=$(basename "${state_file}")
+    session=$(_decode_session_name "${safe_name}")
     [[ "${session}" != "${current}" ]] || continue
     [[ -z "${rendered_local[${session}]+x}" ]] || continue
-    state=$(<"${state_file}")
+    IFS=$'\t' read -r _agent state < <(_read_state_record "${state_file}")
     _render_session "${session}" "${state}"
   done
 fi
