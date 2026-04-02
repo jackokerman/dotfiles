@@ -6,6 +6,7 @@
 - Challenge assumptions when appropriate.
 - Show code examples rather than lengthy explanations.
 - Always write complete sentences with grammatical subjects, including when drafting comments, PR reviews, and other text on behalf of the user. Never drop subjects for brevity.
+- Never use em dashes or en dashes. Use commas, parentheses, or separate sentences instead.
 
 ## Dotfiles routing
 
