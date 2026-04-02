@@ -40,9 +40,10 @@ while IFS= read -r session; do
   done < <(tmux list-panes -t "${session}" -F '#{pane_current_command}' 2>/dev/null)
   "${is_claude}" || continue
 
+  safe="${session//\//%2F}"
   state=""
-  if [[ -f "${STATE_DIR}/${session}" ]]; then
-    state=$(<"${STATE_DIR}/${session}")
+  if [[ -f "${STATE_DIR}/${safe}" ]]; then
+    state=$(<"${STATE_DIR}/${safe}")
   fi
 
   rendered_local["${session}"]=1
@@ -53,9 +54,10 @@ done < <(tmux list-sessions -F '#{session_name}' 2>/dev/null)
 if [[ -d "${STATE_DIR}" ]]; then
   for state_file in "${STATE_DIR}"/*; do
     [[ -f "${state_file}" ]] || continue
-    basename=$(basename "${state_file}")
-    [[ "${basename}" != ".remote-sync-ts" ]] || continue
-    tmux has-session -t "${basename}" 2>/dev/null || rm -f "${state_file}"
+    safe_name=$(basename "${state_file}")
+    [[ "${safe_name}" != ".remote-sync-ts" ]] || continue
+    real_name="${safe_name//%2F/\/}"
+    tmux has-session -t "${real_name}" 2>/dev/null || rm -f "${state_file}"
   done
 fi
 

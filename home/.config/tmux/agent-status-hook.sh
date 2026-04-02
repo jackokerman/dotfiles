@@ -11,7 +11,8 @@ session=$(tmux display-message -p '#{session_name}' 2>/dev/null) || exit 0
 state="${1:-}"
 [[ -n "${state}" ]] || exit 0
 
-echo "${state}" > "${STATE_DIR}/${session}"
+safe="${session//\//%2F}"
+echo "${state}" > "${STATE_DIR}/${safe}"
 
 if [[ "${state}" == "done" || "${state}" == "waiting" ]]; then
   printf '\a' >/dev/tty 2>/dev/null || printf '\a'
