@@ -5,7 +5,12 @@ set -euo pipefail
 STATE_DIR="/tmp/tmux-agent-$(id -u)"
 mkdir -p "${STATE_DIR}"
 
-session=$(tmux display-message -p '#{session_name}' 2>/dev/null) || exit 0
+# Get session from TMUX env var (set when running inside tmux), or ask tmux directly
+if [[ -n "${TMUX:-}" ]]; then
+  session="${TMUX##*/}"
+else
+  session=$(tmux display-message -p '#{session_name}' 2>/dev/null) || exit 0
+fi
 [[ -n "${session}" ]] || exit 0
 
 state="${1:-}"
