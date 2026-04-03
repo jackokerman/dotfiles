@@ -440,6 +440,8 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                 <string>markup.inserted</string>
                 <key>settings</key>
                 <dict>
+                    <key>background</key>
+                    <string>#011627</string>
                     <key>foreground</key>
                     <string>#a1cd5e</string>
                 </dict>
@@ -451,6 +453,8 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                 <string>markup.deleted</string>
                 <key>settings</key>
                 <dict>
+                    <key>background</key>
+                    <string>#011627</string>
                     <key>foreground</key>
                     <string>#fc514e</string>
                 </dict>
