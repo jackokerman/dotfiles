@@ -24,6 +24,7 @@ brew "fd"                           # find alternative
 brew "fzf"                          # a fuzzy finder
 brew "gh"                           # GitHub CLI
 brew "git"                          # git version control (latest)
+brew "git-delta"                    # syntax-highlighted git diff pager
 brew "jq"                           # parse and work with JSON
 brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever

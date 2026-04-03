@@ -55,6 +55,8 @@ Custom script commands are included in `home/.raycast-scripts/`. After installat
 
 - Shared settings: `~/.config/git/config` (symlinked from dotfiles)
 - Machine-specific settings: `~/.gitconfig.local` (not in version control)
+- Git diffs use `delta` as the shared pager for `git diff`, `git show`, and patch-style `git log` output.
+- `delta` theme selection is configured in git, not inherited from bat. This repo pins `delta.syntax-theme=fly16` to match the existing bat theme.
 
 Edit `~/.gitconfig.local` to add machine-specific settings like email, name, or editor preferences.
 
@@ -65,6 +67,8 @@ git config-local user.email "your-email@example.com"
 # Edit shared settings (in version control)
 git config-shared alias.st "status"
 ```
+
+After changing tracked git config, run `dotty update` so the live `~/.config/git/config` is regenerated before testing.
 
 ## Zsh configuration
 
