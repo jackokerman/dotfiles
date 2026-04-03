@@ -469,7 +469,7 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                     <key>background</key>
                     <string>#2c3043</string>
                     <key>foreground</key>
-                    <string>#c792ea</string>
+                    <string>#87bcff</string>
                 </dict>
             </dict>
             <dict>

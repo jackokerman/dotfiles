@@ -12,4 +12,4 @@ Open these files in Codex to check whether the `nightfly` theme is active and ba
 
 If the theme is loaded correctly, the overall background should stay deep navy, functions should read bright blue, classes should read green, strings should read warm amber, and keywords/operators should lean violet.
 
-For diffs, this theme now uses subtle Nightfly-style backgrounds: added lines use `#2a4e57`, removed lines use `#4e3030`, and changed regions use `#2c3043`. Those values are chosen to track Nightfly's own diff treatments more closely while staying readable in Codex.
+For diffs, this theme follows the upstream Vim Nightfly repo rather than the local VS Code experiment. Added lines use `#2a4e57` with Nightfly green text, removed lines use `#4e3030` with Nightfly red text from the upstream `nightfly-opencode` extra, and changed regions use the core Vim Nightfly blue family with a `#2c3043` background and `#87bcff` text.

@@ -15,9 +15,9 @@ What to check:
 - Class names should be green.
 - Strings should be amber.
 - In diffs, added and removed lines should have subtle Nightfly-tinted backgrounds rather than no background at all.
-- Added lines should read teal-green, removed lines should read muted red, and changed regions should lean slate blue.
+- Added lines should read teal-green, removed lines should read dark muted red, and changed regions should use Nightfly blue over a slate-blue background.
 
 Interpretation:
 
 - If `nightfly-demo.ts` looks right, the TextMate syntax theme is active.
-- If `nightfly-real.diff` shows those subtle backgrounds, Codex is honoring the TextMate diff scopes as intended.
+- If `nightfly-real.diff` shows those Nightfly add/remove backgrounds plus the blue changed-region treatment, Codex is honoring the TextMate diff scopes as intended.
