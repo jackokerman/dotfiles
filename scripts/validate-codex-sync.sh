@@ -4,7 +4,7 @@ set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-SYNC_SCRIPT="$SCRIPT_DIR/sync_codex.ts"
+SYNC_SCRIPT="$SCRIPT_DIR/sync-codex.ts"
 REGISTRY_PATH="${HOME}/.dotty/registry"
 
 log() {

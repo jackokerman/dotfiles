@@ -200,7 +200,7 @@ setup_claude
 # tracked source fragments.
 setup_codex() {
     local codex_dir="$HOME/.codex"
-    local script="$DOTFILES/scripts/sync_codex.ts"
+    local script="$DOTFILES/scripts/sync-codex.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"

@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { mergeWith } from "es-toolkit@1.45.1";
 import { parse, stringify } from "smol-toml@1.4.2";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -50,7 +51,7 @@ function parseArgs(argv: string[]) {
 
   if ((mode !== "agents" && mode !== "config" && mode !== "hooks") || (!output && !validateOnly)) {
     throw new Error(
-      "Usage: sync_codex.ts <agents|config|hooks> [--validate-only] --output <path> --source <path>...",
+      "Usage: sync-codex.ts <agents|config|hooks> [--validate-only] --output <path> --source <path>...",
     );
   }
 
@@ -88,24 +89,12 @@ function parseTomlDocument(text: string, context: string): TomlDocument {
   return value as TomlDocument;
 }
 
-function mergeToml(base: TomlDocument, overlay: TomlDocument): TomlDocument {
-  const merged = clone(base);
-
-  for (const [key, value] of Object.entries(overlay)) {
-    if (Array.isArray(value)) {
-      merged[key] = clone(value);
-      continue;
-    }
-
-    if (isObject(value) && isObject(merged[key])) {
-      merged[key] = mergeToml(merged[key] as TomlDocument, value as TomlDocument);
-      continue;
-    }
-
-    merged[key] = clone(value as TomlValue);
+function replaceArrays(_targetValue: unknown, sourceValue: unknown) {
+  if (Array.isArray(sourceValue)) {
+    return clone(sourceValue);
   }
 
-  return merged;
+  return undefined;
 }
 
 function loadJson(path: string): JsonObject {
@@ -165,7 +154,7 @@ function renderConfig(outputPath: string, sourcePaths: string[], validateOnly: b
   const sources = existingSources(sourcePaths);
 
   for (const source of sources) {
-    merged = mergeToml(merged, loadToml(source));
+    merged = mergeWith(merged, loadToml(source), replaceArrays) as TomlDocument;
   }
 
   const body = stringify(merged);
