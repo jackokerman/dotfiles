@@ -74,23 +74,23 @@ _session_agent_command() {
   return 1
 }
 
-_session_tail_state() {
+_session_live_state() {
   local session="$1" tail=""
 
   tail=$(tmux capture-pane -pt "${session}" -S -12 2>/dev/null || true)
 
   case "${tail}" in
+    *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"permission prompt"*|*"approval"*)
+      printf '%s\n' "waiting"
+      return 0
+      ;;
     *"• Working ("*|*"esc to interrupt"*)
       printf '%s\n' "working"
       return 0
       ;;
-    *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"permission prompt"*|*"approval"*)
-      printf '%s\n' "waiting"
-      return 0
-      ;;
   esac
 
-  printf '%s\n' "done"
+  printf '%s\n' ""
 }
 
 _render_session() {
@@ -125,13 +125,17 @@ while IFS= read -r session; do
         state="done"
       fi
     fi
-    if [[ "${state}" != "working" && "${state}" != "waiting" ]]; then
-      state=$(_session_tail_state "${session}")
+    live_state=$(_session_live_state "${session}")
+    if [[ -n "${live_state}" ]]; then
+      state="${live_state}"
+    elif [[ "${state}" == "working" || "${state}" == "waiting" ]]; then
+      state="done"
     fi
   elif ! _session_has_known_agent_pane "${session}"; then
     continue
   else
-    state=$(_session_tail_state "${session}")
+    state=$(_session_live_state "${session}")
+    [[ -n "${state}" ]] || state="done"
   fi
 
   rendered_local["${session}"]=1

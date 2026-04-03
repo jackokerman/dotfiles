@@ -5,9 +5,10 @@ set -euo pipefail
 STATE_DIR="/tmp/tmux-agent-$(id -u)"
 mkdir -p "${STATE_DIR}"
 
-# Get session from TMUX env var (set when running inside tmux), or ask tmux directly
-if [[ -n "${TMUX:-}" ]]; then
-  session="${TMUX##*/}"
+# Resolve the real session name from the current pane when possible. `$TMUX`
+# contains the socket path plus pane token, not the session name itself.
+if [[ -n "${TMUX_PANE:-}" ]]; then
+  session=$(tmux display-message -p -t "${TMUX_PANE}" '#{session_name}' 2>/dev/null) || exit 0
 else
   session=$(tmux display-message -p '#{session_name}' 2>/dev/null) || exit 0
 fi
