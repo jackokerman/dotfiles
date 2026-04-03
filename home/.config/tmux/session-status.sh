@@ -79,7 +79,7 @@ _render_session() {
   case "${state}" in
     waiting) output="${output}${sep}#[fg=#e3d18a] ${name}#[fg=default]" ;;
     working) output="${output}${sep}#[fg=#82aaff] ${name}#[fg=default]" ;;
-    *)       output="${output}${sep}#[fg=#a6da95] ${name}#[fg=default]" ;;
+    *)       output="${output}${sep}#[fg=#21c7a8] ${name}#[fg=default]" ;;
   esac
   sep="  "
 }
