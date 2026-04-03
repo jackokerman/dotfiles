@@ -215,17 +215,26 @@ setup_codex() {
 
     if [[ -f "$agents_src" ]]; then
         bun run "$script" agents \
+            --validate-only \
+            --source "$agents_src"
+        bun run "$script" agents \
             --output "$codex_dir/AGENTS.md" \
             --source "$agents_src"
     fi
 
     if [[ -f "$config_src" ]]; then
         bun run "$script" config \
+            --validate-only \
+            --source "$config_src"
+        bun run "$script" config \
             --output "$codex_dir/config.toml" \
             --source "$config_src"
     fi
 
     if [[ -f "$hooks_src" ]]; then
+        bun run "$script" hooks \
+            --validate-only \
+            --source "$hooks_src"
         bun run "$script" hooks \
             --output "$codex_dir/hooks.json" \
             --source "$hooks_src"

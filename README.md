@@ -95,11 +95,29 @@ zetch-update
 - The dotty hook keeps `~/.codex` as a real directory so Codex can continue writing local state there.
 - `~/.codex/AGENTS.md`, `~/.codex/config.toml`, and `~/.codex/hooks.json` are generated from tracked fragments when you run `dotty update`.
 - Tracked `config.toml` fragments are deep-merged over the live local file: tables merge recursively and arrays are replaced by later sources.
+- Tracked `hooks.json` fragments are composed by event name in source order. If multiple repos define hooks for the same event, earlier hooks run first and later hooks append.
 - Tracked Codex theme assets live in `home/.codex/themes/` and are symlinked into `~/.codex/themes/` when you run `dotty update`.
 - `tui.theme` selects the matching `.tmTheme` file by name, so `theme = "nightfly"` expects `~/.codex/themes/nightfly.tmTheme`.
 - Codex hooks are enabled in the managed config and the shared `hooks.json` writes tmux session state for Codex sessions.
 - The managed Codex defaults run with `approval_policy = "never"` and `sandbox_mode = "danger-full-access"`, so local Codex sessions do not stop for routine approval prompts.
 - Codex commit attribution is disabled in the managed config so agent-made commits do not add Codex trailers by default.
+- Codex fragments are validated during sync. Invalid JSON/TOML or malformed hook entries cause `dotty update` to fail before the live files are replaced.
+
+### Codex pre-commit validation
+
+Install the tracked repo-local pre-commit hook once per clone:
+
+```bash
+./scripts/install-git-hooks.sh
+```
+
+The hook runs Codex fragment validation before commit. It preserves any existing repo-local pre-commit hook by moving it to `.git/hooks/pre-commit.local` and chaining to it first.
+
+Temporary bypass:
+
+```bash
+SKIP_CODEX_SYNC_VALIDATE=1 git commit -m "..."
+```
 
 ## Layering with other repos
 
