@@ -77,8 +77,7 @@ _session_agent_command() {
 _render_session() {
   local name="$1" state="$2"
   case "${state}" in
-    done)    return ;;
-    waiting) output="${output}${sep}#[fg=#e3d18a] ${name}#[fg=default]" ;;
+    waiting|done|"") output="${output}${sep}#[fg=#e3d18a] ${name}#[fg=default]" ;;
     *)       output="${output}${sep}#[fg=#82aaff] ${name}#[fg=default]" ;;
   esac
   sep="  "
@@ -103,11 +102,13 @@ while IFS= read -r session; do
     IFS=$'\t' read -r _agent state < <(_read_state_record "${STATE_DIR}/${safe}")
     if active_agent=$(_session_agent_command "${session}" 2>/dev/null); then
       if [[ "${active_agent}" != "${_agent}" ]]; then
-        state=""
+        state="waiting"
       fi
     fi
   elif ! _session_has_known_agent_pane "${session}"; then
     continue
+  else
+    state="waiting"
   fi
 
   rendered_local["${session}"]=1
