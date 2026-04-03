@@ -1,0 +1,27 @@
+{
+  "theme": "nightfly",
+  "active": true,
+  "version": 1,
+  "contrast": 9.4,
+  "notes": [
+    "Background should stay deep navy.",
+    "Functions should read bright blue.",
+    "Classes should read green.",
+    "Strings should read warm amber."
+  ],
+  "promptBar": {
+    "status": "needs-review",
+    "looksTooLight": true,
+    "targetTint": "slightly darker blue",
+    "exampleHex": "#092236"
+  },
+  "tokens": {
+    "keyword": "#c792ea",
+    "function": "#87bcff",
+    "class": "#21c7a8",
+    "string": "#ecc48d",
+    "comment": "#7c8f8f",
+    "selection": "#1d3b53"
+  },
+  "optional": null
+}
