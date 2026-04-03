@@ -4,5 +4,8 @@ sandbox_mode = "workspace-write"
 approval_policy = "never"
 commit_attribution = ""
 
+[features]
+codex_hooks = true
+
 [tui]
 theme = "nightfly"

@@ -93,10 +93,11 @@ zetch-update
 
 - Tracked Codex source fragments live in `home/.codex/`.
 - The dotty hook keeps `~/.codex` as a real directory so Codex can continue writing local state there.
-- `~/.codex/AGENTS.md` and `~/.codex/config.toml` are generated from tracked fragments when you run `dotty update`.
+- `~/.codex/AGENTS.md`, `~/.codex/config.toml`, and `~/.codex/hooks.json` are generated from tracked fragments when you run `dotty update`.
+- Tracked `config.toml` fragments are deep-merged over the live local file: tables merge recursively and arrays are replaced by later sources.
 - Tracked Codex theme assets live in `home/.codex/themes/` and are symlinked into `~/.codex/themes/` when you run `dotty update`.
 - `tui.theme` selects the matching `.tmTheme` file by name, so `theme = "nightfly"` expects `~/.codex/themes/nightfly.tmTheme`.
-- The config merge only manages a small allowlist of keys; everything else in the live local file is preserved.
+- Codex hooks are enabled in the managed config and the shared `hooks.json` writes tmux session state for Codex sessions.
 - Codex commit attribution is disabled in the managed config so agent-made commits do not add Codex trailers by default.
 
 ## Layering with other repos

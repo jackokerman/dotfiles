@@ -196,13 +196,14 @@ setup_claude() {
 setup_claude
 
 # Codex: keep ~/.codex as a real directory so local runtime state remains
-# local, then generate the managed instruction and config files from tracked
-# source fragments.
+# local, then generate the managed instruction, config, and hook files from
+# tracked source fragments.
 setup_codex() {
     local codex_dir="$HOME/.codex"
     local script="$DOTFILES/scripts/sync_codex.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local config_src="$DOTFILES/home/.codex/config.toml"
+    local hooks_src="$DOTFILES/home/.codex/hooks.json"
     local themes_src_dir="$DOTFILES/home/.codex/themes"
 
     if ! command -v bun >/dev/null 2>&1; then
@@ -222,6 +223,12 @@ setup_codex() {
         bun run "$script" config \
             --output "$codex_dir/config.toml" \
             --source "$config_src"
+    fi
+
+    if [[ -f "$hooks_src" ]]; then
+        bun run "$script" hooks \
+            --output "$codex_dir/hooks.json" \
+            --source "$hooks_src"
     fi
 
     if [[ -d "$themes_src_dir" ]]; then

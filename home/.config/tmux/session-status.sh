@@ -3,6 +3,7 @@
 set -euo pipefail
 
 STATE_DIR="/tmp/tmux-agent-$(id -u)"
+KNOWN_AGENT_COMMANDS=(claude codex)
 current=$(tmux display-message -p '#{session_name}')
 # Trigger remote devbox sync if the overlay script exists.
 _remote_sync="${HOME}/.config/tmux/remote-agent-sync.sh"
@@ -35,6 +36,20 @@ _read_state_record() {
   printf '%s\t%s\n' "${agent}" "${state}"
 }
 
+_session_has_known_agent_pane() {
+  local session="$1" cmd known_cmd
+
+  while IFS= read -r cmd; do
+    for known_cmd in "${KNOWN_AGENT_COMMANDS[@]}"; do
+      if [[ "${cmd}" == "${known_cmd}" ]]; then
+        return 0
+      fi
+    done
+  done < <(tmux list-panes -t "${session}" -F '#{pane_current_command}' 2>/dev/null)
+
+  return 1
+}
+
 _render_session() {
   local name="$1" state="$2"
   case "${state}" in
@@ -51,19 +66,13 @@ declare -A rendered_local=()
 
 while IFS= read -r session; do
   [[ "${session}" != "${current}" ]] || continue
-  is_claude=false
-  while IFS= read -r cmd; do
-    if [[ "${cmd}" == "claude" ]]; then
-      is_claude=true
-      break
-    fi
-  done < <(tmux list-panes -t "${session}" -F '#{pane_current_command}' 2>/dev/null)
-  "${is_claude}" || continue
 
   safe="${session//\//%2F}"
   state=""
   if [[ -f "${STATE_DIR}/${safe}" ]]; then
     IFS=$'\t' read -r _agent state < <(_read_state_record "${STATE_DIR}/${safe}")
+  elif ! _session_has_known_agent_pane "${session}"; then
+    continue
   fi
 
   rendered_local["${session}"]=1
@@ -75,14 +84,14 @@ if [[ -d "${STATE_DIR}" ]]; then
   for state_file in "${STATE_DIR}"/*; do
     [[ -f "${state_file}" ]] || continue
     safe_name=$(basename "${state_file}")
-    [[ "${safe_name}" != ".remote-sync-ts" ]] || continue
+    [[ "${safe_name}" == ".remote-sync-ts" ]] && continue
     real_name="${safe_name//%2F/\/}"
     tmux has-session -t "${real_name}" 2>/dev/null || rm -f "${state_file}"
   done
 fi
 
 # Append remote devbox sessions from cache, skipping any already rendered in
-# the local section (avoids duplicates when a local session runs Claude directly).
+# the local section (avoids duplicates when a local session runs an agent directly).
 if [[ -d "${STATE_DIR}/remote" ]]; then
   for state_file in "${STATE_DIR}/remote"/*; do
     [[ -f "${state_file}" ]] || continue
