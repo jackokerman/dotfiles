@@ -9,6 +9,7 @@ const MANAGED_KEYS = [
   "personality",
   "sandbox_mode",
   "approval_policy",
+  "commit_attribution",
   "tui.theme",
   "features.codex_hooks",
 ] as const;

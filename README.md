@@ -91,6 +91,7 @@ zetch-update
 - The dotty hook keeps `~/.codex` as a real directory so Codex can continue writing local state there.
 - `~/.codex/AGENTS.md` and `~/.codex/config.toml` are generated from tracked fragments when you run `dotty update`.
 - The config merge only manages a small allowlist of keys; everything else in the live local file is preserved.
+- Codex commit attribution is disabled in the managed config so agent-made commits do not add Codex trailers by default.
 
 ## Layering with other repos
 
