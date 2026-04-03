@@ -31,7 +31,7 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                     <key>lineHighlight</key>
                     <string>#092236</string>
                     <key>selection</key>
-                    <string>#1d3b53</string>
+                    <string>#092236</string>
                     <key>gutter</key>
                     <string>#011627</string>
                     <key>gutterForeground</key>
