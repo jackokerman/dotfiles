@@ -14,9 +14,10 @@ What to check:
 - Functions should be bright blue.
 - Class names should be green.
 - Strings should be amber.
-- In diffs, added and removed lines should be easy to distinguish, but the full-line background should not feel loud or fluorescent.
+- In diffs, added and removed lines should have subtle Nightfly-tinted backgrounds rather than no background at all.
+- Added lines should read teal-green, removed lines should read muted red, and changed regions should lean slate blue.
 
 Interpretation:
 
 - If `nightfly-demo.ts` looks right, the TextMate syntax theme is active.
-- If `nightfly-real.diff` still has a strong green block background, Codex is probably applying its own diff UI colors on top of the syntax theme.
+- If `nightfly-real.diff` shows those subtle backgrounds, Codex is honoring the TextMate diff scopes as intended.

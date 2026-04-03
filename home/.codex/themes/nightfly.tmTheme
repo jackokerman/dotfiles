@@ -441,7 +441,7 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                 <key>settings</key>
                 <dict>
                     <key>background</key>
-                    <string>#011627</string>
+                    <string>#2a4e57</string>
                     <key>foreground</key>
                     <string>#a1cd5e</string>
                 </dict>
@@ -454,7 +454,7 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                 <key>settings</key>
                 <dict>
                     <key>background</key>
-                    <string>#011627</string>
+                    <string>#4e3030</string>
                     <key>foreground</key>
                     <string>#fc514e</string>
                 </dict>
@@ -466,6 +466,8 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                 <string>markup.changed</string>
                 <key>settings</key>
                 <dict>
+                    <key>background</key>
+                    <string>#2c3043</string>
                     <key>foreground</key>
                     <string>#c792ea</string>
                 </dict>

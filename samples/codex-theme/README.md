@@ -12,4 +12,4 @@ Open these files in Codex to check whether the `nightfly` theme is active and ba
 
 If the theme is loaded correctly, the overall background should stay deep navy, functions should read bright blue, classes should read green, strings should read warm amber, and keywords/operators should lean violet.
 
-For diffs, this theme now explicitly sets `markup.inserted` and `markup.deleted` backgrounds to the base Nightfly background. If added or removed lines still show a tinted block background in Codex, that tint is likely coming from Codex's diff UI rather than the TextMate file.
+For diffs, this theme now uses subtle Nightfly-style backgrounds: added lines use `#2a4e57`, removed lines use `#4e3030`, and changed regions use `#2c3043`. Those values are chosen to track Nightfly's own diff treatments more closely while staying readable in Codex.
