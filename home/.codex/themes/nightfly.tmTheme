@@ -21,7 +21,7 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                 <key>settings</key>
                 <dict>
                     <key>background</key>
-                    <string>#092236</string>
+                    <string>#011627</string>
                     <key>caret</key>
                     <string>#9ca1aa</string>
                     <key>foreground</key>
@@ -29,11 +29,11 @@ After editing, run `dotty update` to refresh ~/.codex/themes/nightfly.tmTheme.
                     <key>invisibles</key>
                     <string>#4b6479</string>
                     <key>lineHighlight</key>
-                    <string>#1d3b53</string>
-                    <key>selection</key>
-                    <string>#1d3b53</string>
-                    <key>gutter</key>
                     <string>#092236</string>
+                    <key>selection</key>
+                    <string>#092236</string>
+                    <key>gutter</key>
+                    <string>#011627</string>
                     <key>gutterForeground</key>
                     <string>#4b6479</string>
                 </dict>
