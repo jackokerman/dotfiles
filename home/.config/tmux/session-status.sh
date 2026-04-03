@@ -4,6 +4,7 @@ set -euo pipefail
 
 STATE_DIR="/tmp/tmux-agent-$(id -u)"
 KNOWN_AGENT_COMMANDS=(claude codex)
+REMOTE_TRANSPORT_COMMANDS=(pty-cli)
 current=$(tmux display-message -p '#{session_name}')
 # Trigger remote devbox sync if the overlay script exists.
 _remote_sync="${HOME}/.config/tmux/remote-agent-sync.sh"
@@ -36,12 +37,35 @@ _read_state_record() {
   printf '%s\t%s\n' "${agent}" "${state}"
 }
 
+_session_has_pane_command() {
+  local session="$1" cmd wanted
+
+  while IFS= read -r cmd; do
+    for wanted in "${@:2}"; do
+      if [[ "${cmd}" == "${wanted}" ]]; then
+        return 0
+      fi
+    done
+  done < <(tmux list-panes -t "${session}" -F '#{pane_current_command}' 2>/dev/null)
+
+  return 1
+}
+
 _session_has_known_agent_pane() {
+  _session_has_pane_command "$1" "${KNOWN_AGENT_COMMANDS[@]}"
+}
+
+_session_has_remote_transport_pane() {
+  _session_has_pane_command "$1" "${REMOTE_TRANSPORT_COMMANDS[@]}"
+}
+
+_session_agent_command() {
   local session="$1" cmd known_cmd
 
   while IFS= read -r cmd; do
     for known_cmd in "${KNOWN_AGENT_COMMANDS[@]}"; do
       if [[ "${cmd}" == "${known_cmd}" ]]; then
+        printf '%s\n' "${known_cmd}"
         return 0
       fi
     done
@@ -70,7 +94,16 @@ while IFS= read -r session; do
   safe="${session//\//%2F}"
   state=""
   if [[ -f "${STATE_DIR}/${safe}" ]]; then
+    if ! _session_has_known_agent_pane "${session}" && ! _session_has_remote_transport_pane "${session}"; then
+      rm -f "${STATE_DIR}/${safe}"
+      continue
+    fi
     IFS=$'\t' read -r _agent state < <(_read_state_record "${STATE_DIR}/${safe}")
+    if active_agent=$(_session_agent_command "${session}" 2>/dev/null); then
+      if [[ "${active_agent}" != "${_agent}" ]]; then
+        state=""
+      fi
+    fi
   elif ! _session_has_known_agent_pane "${session}"; then
     continue
   fi
