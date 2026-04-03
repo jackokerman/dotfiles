@@ -77,7 +77,7 @@ _session_agent_command() {
 _session_live_state() {
   local session="$1" tail=""
 
-  tail=$(tmux capture-pane -pt "${session}" -S -12 2>/dev/null || true)
+  tail=$(tmux capture-pane -pt "${session}" 2>/dev/null | tail -n 12 || true)
 
   case "${tail}" in
     *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"permission prompt"*|*"approval"*)
@@ -128,8 +128,6 @@ while IFS= read -r session; do
     live_state=$(_session_live_state "${session}")
     if [[ -n "${live_state}" ]]; then
       state="${live_state}"
-    elif [[ "${state}" == "working" || "${state}" == "waiting" ]]; then
-      state="done"
     fi
   elif ! _session_has_known_agent_pane "${session}"; then
     continue
