@@ -98,6 +98,7 @@ zetch-update
 - Tracked Codex theme assets live in `home/.codex/themes/` and are symlinked into `~/.codex/themes/` when you run `dotty update`.
 - `tui.theme` selects the matching `.tmTheme` file by name, so `theme = "nightfly"` expects `~/.codex/themes/nightfly.tmTheme`.
 - Codex hooks are enabled in the managed config and the shared `hooks.json` writes tmux session state for Codex sessions.
+- The managed Codex defaults run with `approval_policy = "never"` and `sandbox_mode = "danger-full-access"`, so local Codex sessions do not stop for routine approval prompts.
 - Codex commit attribution is disabled in the managed config so agent-made commits do not add Codex trailers by default.
 
 ## Layering with other repos
