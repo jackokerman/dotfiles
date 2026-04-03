@@ -19,6 +19,16 @@ What is still not ideal:
 - That fallback is intentionally narrow, but it is still more brittle than a
   pure hook/state-file model.
 
+Claude is already in a better state than Codex here:
+
+- Claude explicitly writes `working` via `UserPromptSubmit` and `PreToolUse`.
+- Claude explicitly writes `waiting` via `Notification` for
+  `permission_prompt|elicitation_dialog`.
+- Claude explicitly writes `done` via `Stop`.
+
+Because of that, Claude should not need much inference at all. Any remaining
+fallback logic should ideally be isolated to Codex only.
+
 ## Why this should be simplified
 
 The repo below is the right reference model:
@@ -64,6 +74,9 @@ Only render from explicit state values:
    `session-status.sh`.
 5. Keep remote logic limited to syncing remote tmux state files and pruning dead
    sessions.
+6. Split the renderer behavior by agent if needed:
+   - Claude path should be effectively state-file-only.
+   - Codex path can keep temporary fallback logic until hooks are complete.
 6. Re-test these transitions once the hook model is in place:
    - local Codex: `working -> waiting -> done`
    - remote Claude: `working -> done`
