@@ -203,6 +203,7 @@ setup_codex() {
     local script="$DOTFILES/scripts/sync_codex.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local config_src="$DOTFILES/home/.codex/config.toml"
+    local themes_src_dir="$DOTFILES/home/.codex/themes"
 
     if ! command -v bun >/dev/null 2>&1; then
         warning "Bun not found. Skipping Codex config sync."
@@ -221,6 +222,18 @@ setup_codex() {
         bun run "$script" config \
             --output "$codex_dir/config.toml" \
             --source "$config_src"
+    fi
+
+    if [[ -d "$themes_src_dir" ]]; then
+        local codex_themes_dir="$codex_dir/themes"
+        local theme_file
+
+        mkdir -p "$codex_themes_dir"
+
+        for theme_file in "$themes_src_dir"/*.tmTheme; do
+            [[ -e "$theme_file" ]] || continue
+            create_symlink "$theme_file" "$codex_themes_dir/$(basename "$theme_file")"
+        done
     fi
 }
 

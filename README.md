@@ -90,6 +90,8 @@ zetch-update
 - Tracked Codex source fragments live in `home/.codex/`.
 - The dotty hook keeps `~/.codex` as a real directory so Codex can continue writing local state there.
 - `~/.codex/AGENTS.md` and `~/.codex/config.toml` are generated from tracked fragments when you run `dotty update`.
+- Tracked Codex theme assets live in `home/.codex/themes/` and are symlinked into `~/.codex/themes/` when you run `dotty update`.
+- `tui.theme` selects the matching `.tmTheme` file by name, so `theme = "nightfly"` expects `~/.codex/themes/nightfly.tmTheme`.
 - The config merge only manages a small allowlist of keys; everything else in the live local file is preserved.
 - Codex commit attribution is disabled in the managed config so agent-made commits do not add Codex trailers by default.
 
