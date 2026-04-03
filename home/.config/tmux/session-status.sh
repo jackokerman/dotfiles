@@ -77,7 +77,7 @@ _session_agent_command() {
 _render_session() {
   local name="$1" state="$2"
   case "${state}" in
-    done)    output="${output}${sep}#[fg=#21c7a8] ${name}#[fg=default]" ;;
+    done)    return ;;
     waiting) output="${output}${sep}#[fg=#e3d18a] ${name}#[fg=default]" ;;
     *)       output="${output}${sep}#[fg=#82aaff] ${name}#[fg=default]" ;;
   esac
@@ -93,8 +93,10 @@ while IFS= read -r session; do
 
   safe="${session//\//%2F}"
   state=""
-  if [[ -f "${STATE_DIR}/${safe}" ]]; then
-    if ! _session_has_known_agent_pane "${session}" && ! _session_has_remote_transport_pane "${session}"; then
+  if _session_has_remote_transport_pane "${session}"; then
+    continue
+  elif [[ -f "${STATE_DIR}/${safe}" ]]; then
+    if ! _session_has_known_agent_pane "${session}"; then
       rm -f "${STATE_DIR}/${safe}"
       continue
     fi
