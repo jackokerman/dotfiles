@@ -3,6 +3,7 @@ personality = "pragmatic"
 sandbox_mode = "danger-full-access"
 approval_policy = "never"
 commit_attribution = ""
+suppress_unstable_features_warning = true
 
 [features]
 codex_hooks = true
