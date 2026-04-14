@@ -202,8 +202,10 @@ setup_codex() {
     local codex_dir="$HOME/.codex"
     local script="$DOTFILES/scripts/sync-codex.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
+    local custom_agents_src_dir="$DOTFILES/home/.codex/agents"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"
+    local skills_src_dir="$DOTFILES/home/.codex/skills"
     local themes_src_dir="$DOTFILES/home/.codex/themes"
 
     if ! command -v bun >/dev/null 2>&1; then
@@ -238,6 +240,35 @@ setup_codex() {
         bun run "$script" hooks \
             --output "$codex_dir/hooks.json" \
             --source "$hooks_src"
+    fi
+
+    if [[ -d "$skills_src_dir" ]]; then
+        bun run "$script" skills \
+            --validate-only \
+            --source "$skills_src_dir"
+        bun run "$script" skills \
+            --output "$codex_dir/skills" \
+            --source "$skills_src_dir"
+    fi
+
+    if [[ -d "$custom_agents_src_dir" ]]; then
+        local -a custom_agent_args=(
+            --source "$custom_agents_src_dir"
+        )
+
+        if [[ -d "$skills_src_dir" ]]; then
+            custom_agent_args+=(
+                --skill-source "$skills_src_dir"
+            )
+        fi
+
+        bun run "$script" custom-agents \
+            --validate-only \
+            "${custom_agent_args[@]}"
+        bun run "$script" custom-agents \
+            --output "$codex_dir/agents" \
+            --skills-output "$codex_dir/skills" \
+            "${custom_agent_args[@]}"
     fi
 
     if [[ -d "$themes_src_dir" ]]; then

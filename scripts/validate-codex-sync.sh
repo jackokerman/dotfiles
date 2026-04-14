@@ -37,27 +37,32 @@ repo_in_registry() {
 
 collect_sources() {
     local kind="$1"
-    local file_name="$2"
+    local relative_path="$2"
     local env_name="$3"
+    local predicate="$4"
     local -a sources=()
 
     if repo_in_registry "$PROJECT_ROOT"; then
         while IFS='=' read -r _name repo_path; do
             [[ -n "$_name" && -d "$repo_path" ]] || continue
-            local candidate="$repo_path/home/.codex/$file_name"
-            [[ -f "$candidate" ]] && sources+=("$candidate")
-        done < "$REGISTRY_PATH"
+            local candidate="$repo_path/home/.codex/$relative_path"
+            local env_candidate="$repo_path/$env_name/home/.codex/$relative_path"
 
-        local env_candidate="$PROJECT_ROOT/$env_name/home/.codex/$file_name"
-        [[ -f "$env_candidate" ]] && sources+=("$env_candidate")
+            [[ "$predicate" == "file" && -f "$candidate" ]] && sources+=("$candidate")
+            [[ "$predicate" == "dir" && -d "$candidate" ]] && sources+=("$candidate")
+            [[ "$predicate" == "file" && -f "$env_candidate" ]] && sources+=("$env_candidate")
+            [[ "$predicate" == "dir" && -d "$env_candidate" ]] && sources+=("$env_candidate")
+        done < "$REGISTRY_PATH"
 
         log "Validating $kind across the current dotty chain"
     else
-        local local_candidate="$PROJECT_ROOT/home/.codex/$file_name"
-        local env_candidate="$PROJECT_ROOT/$env_name/home/.codex/$file_name"
+        local local_candidate="$PROJECT_ROOT/home/.codex/$relative_path"
+        local env_candidate="$PROJECT_ROOT/$env_name/home/.codex/$relative_path"
 
-        [[ -f "$local_candidate" ]] && sources+=("$local_candidate")
-        [[ -f "$env_candidate" ]] && sources+=("$env_candidate")
+        [[ "$predicate" == "file" && -f "$local_candidate" ]] && sources+=("$local_candidate")
+        [[ "$predicate" == "dir" && -d "$local_candidate" ]] && sources+=("$local_candidate")
+        [[ "$predicate" == "file" && -f "$env_candidate" ]] && sources+=("$env_candidate")
+        [[ "$predicate" == "dir" && -d "$env_candidate" ]] && sources+=("$env_candidate")
 
         log "Validating $kind in the current repo only"
     fi
@@ -67,23 +72,56 @@ collect_sources() {
 
 validate_kind() {
     local kind="$1"
-    local file_name="$2"
-    local env_name="$3"
+    local mode="$2"
+    local relative_path="$3"
+    local env_name="$4"
+    local predicate="$5"
     local -a sources=()
     local source
 
     while IFS= read -r source; do
         [[ -n "$source" ]] || continue
         sources+=("$source")
-    done < <(collect_sources "$kind" "$file_name" "$env_name")
+    done < <(collect_sources "$kind" "$relative_path" "$env_name" "$predicate")
 
     if [[ ${#sources[@]} -eq 0 ]]; then
         return 0
     fi
 
-    local -a args=("$kind" "--validate-only")
+    local -a args=("$mode" "--validate-only")
     for source in "${sources[@]}"; do
         args+=("--source" "$source")
+    done
+
+    bun run "$SYNC_SCRIPT" "${args[@]}"
+}
+
+validate_custom_agents() {
+    local env_name="$1"
+    local -a agent_sources=()
+    local -a skill_sources=()
+    local source
+
+    while IFS= read -r source; do
+        [[ -n "$source" ]] || continue
+        agent_sources+=("$source")
+    done < <(collect_sources "custom agents" "agents" "$env_name" "dir")
+
+    if [[ ${#agent_sources[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    while IFS= read -r source; do
+        [[ -n "$source" ]] || continue
+        skill_sources+=("$source")
+    done < <(collect_sources "skills" "skills" "$env_name" "dir")
+
+    local -a args=("custom-agents" "--validate-only")
+    for source in "${agent_sources[@]}"; do
+        args+=("--source" "$source")
+    done
+    for source in "${skill_sources[@]}"; do
+        args+=("--skill-source" "$source")
     done
 
     bun run "$SYNC_SCRIPT" "${args[@]}"
@@ -98,9 +136,11 @@ main() {
     local env_name
     env_name="$(detect_env)"
 
-    validate_kind agents AGENTS.md "$env_name"
-    validate_kind config config.toml "$env_name"
-    validate_kind hooks hooks.json "$env_name"
+    validate_kind "instruction fragments" agents AGENTS.md "$env_name" file
+    validate_kind config config config.toml "$env_name" file
+    validate_kind hooks hooks hooks.json "$env_name" file
+    validate_kind skills skills skills "$env_name" dir
+    validate_custom_agents "$env_name"
 }
 
 main "$@"

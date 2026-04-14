@@ -102,7 +102,9 @@ zetch-update
 - Tracked Codex source inputs live in `home/.codex/`.
 - The dotty hook keeps `~/.codex` as a real directory so Codex can continue writing local state there.
 - `~/.codex/AGENTS.md`, `~/.codex/config.toml`, and `~/.codex/hooks.json` are generated from tracked fragments when you run `dotty update`.
-- Tracked reference docs can live under `home/.codex/references/`. In the current minimal setup, `AGENTS.md` routes into those repo files directly; they stay in the repo source tree and are not copied into `~/.codex`.
+- Tracked native Codex skills under `home/.codex/skills/` are copied into `~/.codex/skills/` when you run `dotty update`.
+- Tracked native Codex agents under `home/.codex/agents/` are synced into `~/.codex/agents/`. Agent TOMLs can reference tracked skills with `skill://<name>`, and the sync rewrites those entries to the live absolute `~/.codex/skills/<name>/SKILL.md` path.
+- Do not edit generated runtime outputs under `~/.codex`; update the tracked sources in this repo and rerun `dotty update`.
 - Tracked `config.toml` fragments are deep-merged over the live local file: tables merge recursively and arrays are replaced by later sources.
 - Tracked `hooks.json` fragments are composed by event name in source order. If multiple repos define hooks for the same event, earlier hooks run first and later hooks append.
 - Tracked Codex theme assets live in `home/.codex/themes/` and are symlinked into `~/.codex/themes/` when you run `dotty update`.

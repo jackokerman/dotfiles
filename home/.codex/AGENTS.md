@@ -16,8 +16,8 @@
 - If a change is generic enough to help on personal machines, keep it out of the private overlay.
 
 ## Frontend Workflow
-- For clearly React or frontend work, consult the tracked reference at `$HOME/dotfiles/home/.codex/references/react-patterns.md` before substantial edits.
-- That reference is source-only on purpose. It stays in the tracked repo and is not copied into the generated `~/.codex` directory. If the repo is cloned elsewhere, locate `dotfiles/home/.codex/references/react-patterns.md` and use that copy.
+- For clearly React or frontend work, use the native `react-patterns` skill before substantial edits.
+- Keep reusable frontend guidance in tracked Codex skills under `home/.codex/skills/`, not in `AGENTS.md`.
 - Do not apply this React guidance to non-frontend tasks.
 
 ## Dotfiles Workflow
