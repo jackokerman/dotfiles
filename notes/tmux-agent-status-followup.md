@@ -1,93 +1,86 @@
-# tmux agent status follow-up
+# tmux agent status roadmap
 
-## Current status
-
-The current tmux status implementation is in a better place than before, but it is
-not fully hook-based yet.
+## Current state
 
 What is solid now:
 
-- Explicit local and remote state files are the primary source of truth.
-- The local tmux hook now resolves the real session via `TMUX_PANE`.
-- Remote sync now prefers explicit remote tmux hook state over remote process
-  existence.
+- Explicit tmux state files are the primary source of truth for local sessions.
+- Remote devbox sessions are mirrored through explicit local-to-remote mappings
+  instead of transient `pty-cli` client logs.
+- Remote `done` sessions are already suppressed once the mapped remote tmux
+  session no longer owns a live `codex` or `claude` process.
 
 What is still not ideal:
 
-- Local Codex still uses a small visible-pane fallback to distinguish `working`
-  and `waiting` from `done`.
-- That fallback is intentionally narrow, but it is still more brittle than a
-  pure hook/state-file model.
+- Local `done` sessions can linger when the pane has returned to a plain shell.
+- Multiple local labels can point at the same remote tmux session, which creates
+  duplicate status entries.
+- Remote Devvy/Codex sessions can still lose their explicit remote state file
+  even while the agent process is alive.
+- Codex still has no explicit hook for “waiting for user input” or “the agent
+  process tree fully exited,” so bounded liveness checks remain necessary.
 
-Claude is already in a better state than Codex here:
+## This reliability pass
 
-- Claude explicitly writes `working` via `UserPromptSubmit` and `PreToolUse`.
-- Claude explicitly writes `waiting` via `Notification` for
-  `permission_prompt|elicitation_dialog`.
-- Claude explicitly writes `done` via `Stop`.
+This step is intentionally narrow. It is not the picker.
 
-Because of that, Claude should not need much inference at all. Any remaining
-fallback logic should ideally be isolated to Codex only.
+The goals are:
 
-## Why this should be simplified
+1. Canonicalize remote session identity.
+   - The devbox-named local tmux session is the canonical label for mirrored
+     remote agent work.
+   - Wrapper aliases like `devvy` should never surface as separate status rows.
+2. Hide local stale `done` sessions immediately.
+   - If a local `codex` or `claude` session has explicit `done` state but no
+     live agent process remains, remove it from the status bar even if the tmux
+     pane is still an open shell.
+3. Keep remote cleanup hook-plus-liveness based.
+   - Explicit remote state still drives status.
+   - Liveness checks decide whether a `done` remote session should remain
+     visible or be suppressed.
 
-The repo below is the right reference model:
+Acceptance criteria for this pass:
 
-- `https://github.com/samleeney/tmux-agent-status`
+- `Documents`-style local sessions disappear once the agent exits and the pane
+  returns to `zsh`.
+- Duplicate labels for the same remote `devvy-agent` session collapse to one
+  canonical devbox-named entry.
+- Remote `done` sessions with no live agent process disappear.
+- No picker work lands in this pass.
 
-The important design principle from that repo is:
+## Next foundation step
 
-- Hooks write explicit state.
-- Renderer stays dumb.
-- Process checks are only for session existence, not status inference.
+Once the current status behavior is reliable, the next internal milestone is a
+shared collector/cache layer.
 
-## Recommended next step
+The collector should normalize one session-level row per canonical session with:
 
-Refactor the current setup to match that model more directly instead of carrying
-local fallback logic.
+- session name
+- agent name
+- state
+- source (`local_hook`, `remote_mirror`, `local_fallback`, etc.)
+- last-updated timestamp
+- last-live-agent-seen timestamp
+- attention class
 
-### Goal
+That collector should merge:
 
-Only render from explicit state values:
+- explicit local state files
+- explicit mirrored remote state files
+- bounded liveness checks for `codex` and `claude`
+- local Codex fallback inference for `working` and `waiting` only
 
-- `working`
-- `waiting`
-- `done`
+The status bar should ultimately consume that cache instead of making its own
+reconciliation decisions inline.
 
-### Desired architecture
+## After that
 
-1. Hooks are the only source of status transitions.
-2. Renderer only reads status files and displays them.
-3. Remote sync only mirrors explicit remote state files.
-4. No process-based override should replace explicit `done`.
-5. Any local visible-pane fallback should be removed once Codex hooks cover the
-   missing states.
+Only after the collector is stable should a picker land.
 
-## Concrete follow-up tasks
+The first picker should be session-first, not pane-first, and ranked by:
 
-1. Deep-dive `samleeney/tmux-agent-status` and copy the hook/state model, not
-   just the display semantics.
-2. Update local Codex hooks to mirror the fuller state transitions used there.
-3. Specifically check whether Codex can explicitly emit `waiting` for approval
-   or user-input pauses in this environment.
-4. If Codex supports that cleanly, remove the local visible-pane fallback from
-   `session-status.sh`.
-5. Keep remote logic limited to syncing remote tmux state files and pruning dead
-   sessions.
-6. Split the renderer behavior by agent if needed:
-   - Claude path should be effectively state-file-only.
-   - Codex path can keep temporary fallback logic until hooks are complete.
-6. Re-test these transitions once the hook model is in place:
-   - local Codex: `working -> waiting -> done`
-   - remote Claude: `working -> done`
-   - session close: session disappears cleanly
+1. `waiting`
+2. recently `done`
+3. `working`
 
-## Practical stopping point
-
-If the fuller Codex hook model works, the final renderer should be almost dumb:
-
-- read status file
-- map `working/waiting/done` to colors/icons
-- skip missing/dead sessions
-
-That is the version to aim for.
+The picker is a consumer of the collector. It is not part of the current pass.

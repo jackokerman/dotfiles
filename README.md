@@ -101,8 +101,8 @@ zetch-update
 
 - The tmux status renderer reads explicit session state files from `/tmp/tmux-agent-$(id -u)`.
 - Agents integrate by writing `agent<TAB>state` through `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`.
-- Known local `codex` and `claude` sessions still use a small pane-tail fallback to refine `working` and `waiting`, but explicit state files remain the source of truth.
-- Overlay repos can mirror remote state into `/tmp/tmux-agent-$(id -u)/remote/` without teaching the renderer about new agent process names.
+- Known local `codex` and `claude` sessions still use a small pane-tail fallback to refine `working` and `waiting`, but explicit state files remain the source of truth and finished shell-only sessions are hidden once no live agent process remains.
+- Overlay repos can mirror remote state into `/tmp/tmux-agent-$(id -u)/remote/` and canonicalize mirrored sessions to the devbox-named local tmux session so wrapper aliases do not surface separately.
 
 ## Codex configuration
 

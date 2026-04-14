@@ -66,6 +66,48 @@ _session_has_remote_transport_pane() {
   _session_has_pane_command "$1" "${REMOTE_TRANSPORT_COMMANDS[@]}"
 }
 
+_session_has_live_agent_process() {
+  local session="$1" agent="${2:-}" pane_pids="" line="" pid="" comm="" current_pid="" parent_pid=""
+  local -a target_agents=()
+
+  pane_pids=$(tmux list-panes -t "${session}" -F '#{pane_pid}' 2>/dev/null || true)
+  [[ -n "${pane_pids//[[:space:]]/}" ]] || return 1
+
+  case "${agent}" in
+    claude|codex)
+      target_agents=("${agent}")
+      ;;
+    *)
+      target_agents=("${KNOWN_AGENT_COMMANDS[@]}")
+      ;;
+  esac
+
+  while IFS= read -r line; do
+    [[ -n "${line}" ]] || continue
+    read -r pid _ppid comm <<< "${line}"
+    [[ "${pid}" =~ ^[0-9]+$ ]] || continue
+
+    case " ${target_agents[*]} " in
+      *" ${comm} "*) ;;
+      *) continue ;;
+    esac
+
+    current_pid="${pid}"
+    while [[ -n "${current_pid}" && "${current_pid}" != "1" ]]; do
+      if printf '%s\n' "${pane_pids}" | grep -qx "${current_pid}"; then
+        return 0
+      fi
+
+      parent_pid=$(ps -o ppid= -p "${current_pid}" 2>/dev/null | tr -d '[:space:]')
+      [[ "${parent_pid}" =~ ^[0-9]+$ ]] || break
+      [[ "${parent_pid}" != "${current_pid}" ]] || break
+      current_pid="${parent_pid}"
+    done
+  done < <(ps -eo pid=,ppid=,comm= 2>/dev/null || true)
+
+  return 1
+}
+
 _session_agent_command() {
   local session="$1" cmd known_cmd
 
@@ -138,6 +180,12 @@ while IFS= read -r session; do
   active_agent=""
   if [[ -f "${STATE_DIR}/${safe}" ]]; then
     IFS=$'\t' read -r _agent state < <(_read_state_record "${STATE_DIR}/${safe}")
+
+    if [[ "${state}" == "done" ]] && [[ " ${KNOWN_AGENT_COMMANDS[*]} " == *" ${_agent} "* ]] && \
+       ! _session_has_live_agent_process "${session}" "${_agent}"; then
+      rm -f "${STATE_DIR}/${safe}"
+      continue
+    fi
 
     if _session_has_known_agent_pane "${session}"; then
       active_agent=$(_session_agent_command "${session}" 2>/dev/null || true)
