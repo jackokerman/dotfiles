@@ -136,28 +136,31 @@ while IFS= read -r session; do
   safe="${session//\//%2F}"
   state=""
   active_agent=""
-  if _session_has_remote_transport_pane "${session}"; then
-    continue
-  elif [[ -f "${STATE_DIR}/${safe}" ]]; then
-    if ! _session_has_known_agent_pane "${session}"; then
-      rm -f "${STATE_DIR}/${safe}"
-      continue
-    fi
+  if [[ -f "${STATE_DIR}/${safe}" ]]; then
     IFS=$'\t' read -r _agent state < <(_read_state_record "${STATE_DIR}/${safe}")
-    active_agent=$(_session_agent_command "${session}" 2>/dev/null || true)
-    if [[ -n "${active_agent}" ]]; then
-      if [[ "${active_agent}" != "${_agent}" ]]; then
+
+    if _session_has_known_agent_pane "${session}"; then
+      active_agent=$(_session_agent_command "${session}" 2>/dev/null || true)
+      if [[ -n "${active_agent}" ]]; then
+        if [[ "${active_agent}" != "${_agent}" ]]; then
+          state="done"
+        fi
+      fi
+      live_state=$(_session_live_state "${session}" "${active_agent:-${_agent}}")
+      if [[ -n "${live_state}" ]]; then
+        state="${live_state}"
+      elif [[ "${state}" == "working" ]] && _state_file_has_stale_working "${STATE_DIR}/${safe}"; then
+        # Hooks give us fast transitions into working, but without a matching
+        # live signal that state should not stick forever.
         state="done"
       fi
-    fi
-    live_state=$(_session_live_state "${session}" "${active_agent:-${_agent}}")
-    if [[ -n "${live_state}" ]]; then
-      state="${live_state}"
     elif [[ "${state}" == "working" ]] && _state_file_has_stale_working "${STATE_DIR}/${safe}"; then
-      # Hooks give us fast transitions into working, but without a matching
-      # live signal that state should not stick forever.
+      # For shell-wrapped or remote-mirrored agents, trust the explicit state
+      # file but keep the same stale-working guard as known local agents.
       state="done"
     fi
+  elif _session_has_remote_transport_pane "${session}"; then
+    continue
   elif ! _session_has_known_agent_pane "${session}"; then
     continue
   else

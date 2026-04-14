@@ -97,6 +97,13 @@ zetch-update
 - Run `tmux-link-test` inside `tmux` to print both an OSC 8 hyperlink and a plain URL for quick verification.
 - If `tmux-link-test` works but an agent-produced link does not, the agent printed plain text rather than an OSC 8 hyperlink.
 
+## tmux agent status
+
+- The tmux status renderer reads explicit session state files from `/tmp/tmux-agent-$(id -u)`.
+- Agents integrate by writing `agent<TAB>state` through `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`.
+- Known local `codex` and `claude` sessions still use a small pane-tail fallback to refine `working` and `waiting`, but explicit state files remain the source of truth.
+- Overlay repos can mirror remote state into `/tmp/tmux-agent-$(id -u)/remote/` without teaching the renderer about new agent process names.
+
 ## Codex configuration
 
 - Tracked Codex source inputs live in `home/.codex/`.
