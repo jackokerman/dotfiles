@@ -105,6 +105,17 @@ _session_live_state() {
   printf '%s\n' ""
 }
 
+_state_file_has_stale_working() {
+  local state_file="$1"
+
+  if declare -F tmux_agent_state_is_stale_working >/dev/null 2>&1; then
+    tmux_agent_state_is_stale_working "${state_file}"
+    return $?
+  fi
+
+  return 1
+}
+
 _render_session() {
   local name="$1" state="$2"
   case "${state}" in
@@ -142,6 +153,10 @@ while IFS= read -r session; do
     live_state=$(_session_live_state "${session}" "${active_agent:-${_agent}}")
     if [[ -n "${live_state}" ]]; then
       state="${live_state}"
+    elif [[ "${state}" == "working" ]] && _state_file_has_stale_working "${STATE_DIR}/${safe}"; then
+      # Hooks give us fast transitions into working, but without a matching
+      # live signal that state should not stick forever.
+      state="done"
     fi
   elif ! _session_has_known_agent_pane "${session}"; then
     continue
