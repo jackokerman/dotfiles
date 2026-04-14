@@ -5,6 +5,13 @@ set -euo pipefail
 STATE_DIR="/tmp/tmux-agent-$(id -u)"
 KNOWN_AGENT_COMMANDS=(claude codex)
 REMOTE_TRANSPORT_COMMANDS=(pty-cli)
+_agent_pane_state_lib="${HOME}/.config/tmux/agent-pane-state.sh"
+
+if [[ -r "${_agent_pane_state_lib}" ]]; then
+  # shellcheck source=/dev/null
+  source "${_agent_pane_state_lib}"
+fi
+
 current=$(tmux display-message -p '#{session_name}')
 # Trigger remote devbox sync if the overlay script exists.
 _remote_sync="${HOME}/.config/tmux/remote-agent-sync.sh"
@@ -75,7 +82,12 @@ _session_agent_command() {
 }
 
 _session_live_state() {
-  local session="$1" tail=""
+  local session="$1" agent="${2:-}" tail=""
+
+  if declare -F tmux_agent_session_live_state >/dev/null 2>&1; then
+    tmux_agent_session_live_state "${session}" "${agent}"
+    return 0
+  fi
 
   tail=$(tmux capture-pane -pt "${session}" 2>/dev/null | tail -n 12 || true)
 
@@ -112,6 +124,7 @@ while IFS= read -r session; do
 
   safe="${session//\//%2F}"
   state=""
+  active_agent=""
   if _session_has_remote_transport_pane "${session}"; then
     continue
   elif [[ -f "${STATE_DIR}/${safe}" ]]; then
@@ -120,19 +133,21 @@ while IFS= read -r session; do
       continue
     fi
     IFS=$'\t' read -r _agent state < <(_read_state_record "${STATE_DIR}/${safe}")
-    if active_agent=$(_session_agent_command "${session}" 2>/dev/null); then
+    active_agent=$(_session_agent_command "${session}" 2>/dev/null || true)
+    if [[ -n "${active_agent}" ]]; then
       if [[ "${active_agent}" != "${_agent}" ]]; then
         state="done"
       fi
     fi
-    live_state=$(_session_live_state "${session}")
+    live_state=$(_session_live_state "${session}" "${active_agent:-${_agent}}")
     if [[ -n "${live_state}" ]]; then
       state="${live_state}"
     fi
   elif ! _session_has_known_agent_pane "${session}"; then
     continue
   else
-    state=$(_session_live_state "${session}")
+    active_agent=$(_session_agent_command "${session}" 2>/dev/null || true)
+    state=$(_session_live_state "${session}" "${active_agent}")
     [[ -n "${state}" ]] || state="done"
   fi
 
