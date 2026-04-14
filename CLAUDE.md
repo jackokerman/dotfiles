@@ -92,6 +92,8 @@ dotfiles/
 - Test changes with `dotty update` before considering them done.
 - Never commit secrets or credentials to this repo (it's public).
 - The `home/` → `$HOME` mapping is the core mental model. If you want a file at `~/.config/foo/bar`, put it at `home/.config/foo/bar`.
+- Ghostty link opening through `tmux` relies on the tracked `home/.config/tmux/tmux.conf` line `set -ga terminal-features 'xterm*:hyperlinks'`. Use `Cmd+Click`, not plain click.
+- `tmux-link-test` is the quick verification path inside `tmux`: it prints one OSC 8 hyperlink and one plain URL so link handling is easy to distinguish from application output.
 - Shared git diffs are rendered through `delta`. Keep `home/.config/git/config` as the source of truth for pager behavior and `delta` theme selection.
 - `delta` does not inherit `bat`'s config automatically. If bat theme changes, update `delta.syntax-theme` explicitly to keep git diffs visually aligned.
 - Overlay repos can add their own `home/.claude/rules/`, `home/.claude/skills/`, and `home/.claude/commands/` files, which get merged into the same `~/.claude/` directory.

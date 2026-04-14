@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+url="${1:-https://example.com}"
+label="${2:-Ghostty tmux hyperlink test}"
+
+printf 'OSC 8 hyperlink: \e]8;;%s\a%s\e]8;;\a\n' "$url" "$label"
+printf 'Plain URL: %s\n' "$url"
+printf '\nUse Cmd+Click in Ghostty. Plain click is still handled by tmux mouse mode.\n'
+printf 'If the OSC 8 line opens but an agent link does not, that program emitted plain text instead of a hyperlink.\n'

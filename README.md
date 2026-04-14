@@ -89,6 +89,14 @@ To update all plugins:
 zetch-update
 ```
 
+## tmux and Ghostty
+
+- `tmux` is configured with `terminal-features 'xterm*:hyperlinks'`, so OSC 8 hyperlinks survive through `tmux` into Ghostty.
+- In Ghostty, use `Cmd+Click` to open links. Plain click still belongs to `tmux` mouse handling for pane selection and resizing.
+- Reload a running `tmux` server after config changes with `tmux source-file ~/.config/tmux/tmux.conf` or the existing `prefix + r` binding.
+- Run `tmux-link-test` inside `tmux` to print both an OSC 8 hyperlink and a plain URL for quick verification.
+- If `tmux-link-test` works but an agent-produced link does not, the agent printed plain text rather than an OSC 8 hyperlink.
+
 ## Codex configuration
 
 - Tracked Codex source fragments live in `home/.codex/`.
