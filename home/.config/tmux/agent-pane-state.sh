@@ -9,6 +9,18 @@ tmux_agent_reverse_lines() {
   awk '{ lines[NR] = $0 } END { for (i = NR; i >= 1; i--) print lines[i] }'
 }
 
+tmux_agent_tail_has_marker() {
+  local tail="$1" matcher="$2" line=""
+
+  while IFS= read -r line; do
+    if "${matcher}" "${line}"; then
+      return 0
+    fi
+  done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
+
+  return 1
+}
+
 tmux_agent_line_is_waiting() {
   local line="$1"
 
@@ -19,6 +31,16 @@ tmux_agent_line_is_waiting() {
   esac
 
   [[ "${line}" == *"Question "* && "${line}" == *"unanswered"* ]]
+}
+
+tmux_codex_line_is_waiting() {
+  local line="$1"
+
+  if tmux_agent_line_is_waiting "${line}"; then
+    return 0
+  fi
+
+  [[ "${line}" == "› "* ]]
 }
 
 tmux_agent_line_is_working() {
@@ -57,19 +79,17 @@ tmux_agent_state_is_stale_working() {
 }
 
 tmux_codex_infer_state_from_tail() {
-  local tail="$1" line=""
+  local tail="$1"
 
-  while IFS= read -r line; do
-    if tmux_agent_line_is_working "${line}"; then
-      printf '%s\n' "working"
-      return 0
-    fi
+  if tmux_agent_tail_has_marker "${tail}" tmux_codex_line_is_waiting; then
+    printf '%s\n' "waiting"
+    return 0
+  fi
 
-    if tmux_agent_line_is_waiting "${line}"; then
-      printf '%s\n' "waiting"
-      return 0
-    fi
-  done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
+  if tmux_agent_tail_has_marker "${tail}" tmux_agent_line_is_working; then
+    printf '%s\n' "working"
+    return 0
+  fi
 
   printf '%s\n' ""
 }
