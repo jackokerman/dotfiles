@@ -124,7 +124,7 @@ _session_agent_command() {
 }
 
 _session_live_state() {
-  local session="$1" agent="${2:-}" tail=""
+  local session="$1" agent="${2:-}" tail="" line=""
 
   if declare -F tmux_agent_session_live_state >/dev/null 2>&1; then
     tmux_agent_session_live_state "${session}" "${agent}"
@@ -133,16 +133,18 @@ _session_live_state() {
 
   tail=$(tmux capture-pane -pt "${session}" 2>/dev/null | tail -n 12 || true)
 
-  case "${tail}" in
-    *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"permission prompt"*|*"approval"*)
-      printf '%s\n' "waiting"
-      return 0
-      ;;
-    *"• Working ("*|*"esc to interrupt"*)
-      printf '%s\n' "working"
-      return 0
-      ;;
-  esac
+  while IFS= read -r line; do
+    case "${line}" in
+      *"• Working ("*|*"esc to interrupt"*)
+        printf '%s\n' "working"
+        return 0
+        ;;
+      *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"permission prompt"*|*"approval"*)
+        printf '%s\n' "waiting"
+        return 0
+        ;;
+    esac
+  done < <(printf '%s\n' "${tail}" | awk '{ lines[NR] = $0 } END { for (i = NR; i >= 1; i--) print lines[i] }')
 
   printf '%s\n' ""
 }
