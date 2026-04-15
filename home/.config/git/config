@@ -54,6 +54,9 @@
     inline-hint-style = "#4b6479"
 
     # Delta-specific emphasis and whitespace errors.
+    # Keep intraline edits on the same add/remove backgrounds to match upstream
+    # Nightfly OpenCode highlight semantics. If they ever feel too subtle,
+    # trial a Nightfly blue emphasis background before adding more green/red.
     plus-emph-style = bold "#21c7a8" "#2a4e57"
     minus-emph-style = bold "#ff5874" "#4e3030"
     whitespace-error-style = bold "#ff5874" "#4e3030"
