@@ -36,11 +36,7 @@ tmux_agent_line_is_waiting() {
 tmux_codex_line_is_waiting() {
   local line="$1"
 
-  if tmux_agent_line_is_waiting "${line}"; then
-    return 0
-  fi
-
-  [[ "${line}" == "› "* ]]
+  tmux_agent_line_is_waiting "${line}"
 }
 
 tmux_agent_line_is_working() {
