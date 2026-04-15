@@ -17,6 +17,7 @@ Use this skill for clearly React or frontend work. These are opinionated default
 ## Components And APIs
 
 - Prefer function components and named function declarations for exported components and hooks.
+- Prefer named function declarations over function expressions for module-level helpers when the surrounding API allows it.
 - Destructure props at the boundary. Use inline defaults when they clarify the contract.
 - Treat high prop count as a design smell. Pass one typed domain object when several values travel together, but do not hide unrelated values in a generic options bag.
 - Keep leaf components boring. Parents decide what to render; children render resolved props.
@@ -69,6 +70,7 @@ export function useSession() {
 
 - Avoid nested ternaries. Use early returns, named variables, or split components when conditional rendering stops being obvious.
 - Avoid accidental `0` or empty-string rendering. When the left side of `&&` is not already boolean, coerce it or use a ternary.
+- In component files, prefer the main exported component before hoisted helper functions.
 - Prefer stable local adapters around third-party components when you want to normalize APIs, centralize styling, or keep swap cost low.
 - Group larger apps by route, feature, or domain rather than `components`, `containers`, and `utils` buckets.
 - Create shared UI or common modules only for true cross-cutting primitives.
