@@ -7,5 +7,6 @@ label="${2:-Ghostty tmux hyperlink test}"
 
 printf 'OSC 8 hyperlink: \e]8;;%s\a%s\e]8;;\a\n' "$url" "$label"
 printf 'Plain URL: %s\n' "$url"
-printf '\nUse Cmd+Click in Ghostty. Plain click is still handled by tmux mouse mode.\n'
-printf 'If the OSC 8 line opens but an agent link does not, that program emitted plain text instead of a hyperlink.\n'
+printf '\nUse Shift+Cmd+Click on the OSC 8 line in Ghostty inside tmux on macOS.\n'
+printf 'Plain click is still handled by tmux mouse mode; older Cmd+Click guidance was wrong for this setup.\n'
+printf 'If the OSC 8 line opens, tmux hyperlink passthrough is working. If an agent link still does not, investigate that program output.\n'

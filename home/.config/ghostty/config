@@ -10,6 +10,8 @@ font-thicken = true
 cursor-style = block
 cursor-style-blink = false
 shell-integration-features = false
+# Keep Shift+Cmd+Click available for links when tmux mouse mode is on.
+mouse-shift-capture = false
 mouse-hide-while-typing = true
 
 # Theme

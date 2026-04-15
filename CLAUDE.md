@@ -96,7 +96,7 @@ dotfiles/
 - Test changes with `dotty update` before considering them done.
 - Never commit secrets or credentials to this repo (it's public).
 - The `home/` → `$HOME` mapping is the core mental model. If you want a file at `~/.config/foo/bar`, put it at `home/.config/foo/bar`.
-- Ghostty link opening through `tmux` relies on the tracked `home/.config/tmux/tmux.conf` line `set -ga terminal-features 'xterm*:hyperlinks'`. Use `Cmd+Click`, not plain click.
+- Ghostty link opening through `tmux` relies on the tracked `home/.config/tmux/tmux.conf` line `set -ga terminal-features 'xterm*:hyperlinks'`. In Ghostty inside `tmux` on macOS, use `Shift+Cmd+Click`, not plain click.
 - `tmux-link-test` is the quick verification path inside `tmux`: it prints one OSC 8 hyperlink and one plain URL so link handling is easy to distinguish from application output.
 - Tmux agent status is state-file driven. Prefer integrations that write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh`, keep pane/process inference limited to fallback behavior for known local agents, and hide finished shell-only sessions once no live agent remains.
 - Shared git diffs prefer `delta` through the tracked `git-pager-delta` helpers. Keep `home/.config/git/config` and the matching scripts under `home/.local/bin/` as the source of truth for pager behavior and `delta` theme selection.

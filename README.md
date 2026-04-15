@@ -92,10 +92,11 @@ zetch-update
 ## tmux and Ghostty
 
 - `tmux` is configured with `terminal-features 'xterm*:hyperlinks'`, so OSC 8 hyperlinks survive through `tmux` into Ghostty.
-- In Ghostty, use `Cmd+Click` to open links. Plain click still belongs to `tmux` mouse handling for pane selection and resizing.
+- In Ghostty inside `tmux` on macOS, use `Shift+Cmd+Click` to open links. Plain click still belongs to `tmux` mouse handling for pane selection and resizing.
+- `home/.config/ghostty/config` explicitly sets `mouse-shift-capture = false` so this interaction stays predictable with `tmux` mouse enabled.
 - Reload a running `tmux` server after config changes with `tmux source-file ~/.config/tmux/tmux.conf` or the existing `prefix + r` binding.
 - Run `tmux-link-test` inside `tmux` to print both an OSC 8 hyperlink and a plain URL for quick verification.
-- If `tmux-link-test` works but an agent-produced link does not, the agent printed plain text rather than an OSC 8 hyperlink.
+- If the OSC 8 line from `tmux-link-test` opens, `tmux` passthrough is working. If an agent-produced link still does not, the issue is specific to that application's output or link formatting.
 
 ## tmux agent status
 
