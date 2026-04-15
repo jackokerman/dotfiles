@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+
+log() {
+    printf '[check] %s\n' "$*"
+}
+
+fail() {
+    printf '[check] %s\n' "$*" >&2
+    exit 1
+}
+
+run_bash_syntax() {
+    local -a files=(
+        ".dotty/run.sh"
+        ".githooks/pre-commit"
+        "home/.config/tmux/agent-pane-state.sh"
+        "home/.config/tmux/agent-status-hook.sh"
+        "home/.config/tmux/session-status.sh"
+        "home/.local/bin/git-delta-diff-filter"
+        "home/.local/bin/git-pager-delta"
+        "home/.local/bin/sesh-pick"
+        "home/.local/bin/tmux-link-test"
+        "home/.raycast-scripts/arrange-windows.sh"
+        "install.sh"
+        "scripts/enable-touchid-sudo.sh"
+        "scripts/check"
+        "scripts/install-fonts.sh"
+        "scripts/install-git-hooks.sh"
+        "scripts/macos.sh"
+        "scripts/validate-codex-sync.sh"
+    )
+
+    log "Checking bash syntax"
+    (cd "$PROJECT_ROOT" && bash -n "${files[@]}")
+}
+
+run_zsh_syntax() {
+    local -a files=(
+        "home/.config/zsh/.aliases"
+        "home/.config/zsh/.p10k.zsh"
+        "home/.config/zsh/.zetch.zsh"
+        "home/.config/zsh/.zshenv"
+        "home/.config/zsh/.zshrc"
+        "home/.config/zsh/sesh.zsh"
+        "home/.zshenv"
+    )
+
+    log "Checking zsh syntax"
+    (cd "$PROJECT_ROOT" && zsh -n "${files[@]}")
+}
+
+assert_zsh_runtime_inputs_removed() {
+    local path
+
+    log "Checking zsh source/runtime boundary"
+    for path in \
+        "home/.config/zsh/.zcompcache" \
+        "home/.config/zsh/.zcompdump" \
+        "home/.config/zsh/.zsh_history" \
+        "home/.config/zsh/.zsh_sessions"; do
+        [[ ! -e "$PROJECT_ROOT/$path" ]] || fail "unexpected zsh runtime path in repo: $path"
+    done
+}
+
+main() {
+    run_bash_syntax
+    run_zsh_syntax
+    assert_zsh_runtime_inputs_removed
+
+    log "Validating Codex sync inputs"
+    "$PROJECT_ROOT/scripts/validate-codex-sync.sh"
+}
+
+main "$@"

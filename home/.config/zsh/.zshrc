@@ -6,6 +6,9 @@ if [[ -z "$_DOTFILES_ZSHRC_LOADED" && -f ~/.zshrc && ! -L ~/.zshrc ]]; then
   source ~/.zshrc 2>/dev/null || true
 fi
 
+# /etc/zshrc resets HISTFILE after .zshenv runs, so restore the repo-managed path here.
+export HISTFILE="$ZSH_STATE_DIR/history"
+
 # Remind once per session if dotfiles are stale.
 # Runs above instant prompt to avoid p10k's console output warning.
 command -v dotty >/dev/null 2>&1 && dotty check
@@ -42,6 +45,8 @@ fpath_dirs=(
   /opt/homebrew/share/zsh/site-functions   # Homebrew-installed completions
   $ZPLUGINDIR/zsh-completions/src          # zsh-users/zsh-completions plugin
 )
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$ZSH_COMPCACHE_DIR"
 zetch compinit $fpath_dirs
 
 zetch Aloxaf/fzf-tab

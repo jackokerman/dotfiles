@@ -1,5 +1,20 @@
 # Environment Variables
 
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+
+# Keep mutable zsh state out of the repo-backed config tree.
+export ZSH_CACHE_DIR="${ZSH_CACHE_DIR:-$XDG_CACHE_HOME/zsh}"
+export ZSH_STATE_DIR="${ZSH_STATE_DIR:-$XDG_STATE_HOME/zsh}"
+mkdir -p "$ZSH_CACHE_DIR/.zcompcache" "$ZSH_STATE_DIR"
+
+export HISTFILE="$ZSH_STATE_DIR/history"
+export ZSH_COMPDUMP="$ZSH_CACHE_DIR/.zcompdump"
+export ZSH_COMPCACHE_DIR="$ZSH_CACHE_DIR/.zcompcache"
+
+# Disable macOS Terminal shell session files in ~/.zsh_sessions.
+export SHELL_SESSIONS_DISABLE=1
+
 # Set `EDITOR` to VS Code if it's installed, otherwise Cursor, otherwise use default
 if command -v code >/dev/null; then
   export EDITOR="code --wait --new-window"

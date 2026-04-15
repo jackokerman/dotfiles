@@ -43,7 +43,8 @@ zetch() {
         [[ -d "$dir" ]] && fpath=("$dir" $fpath)
       done
       if ! (( $+functions[_complete] )); then
-        autoload -Uz compinit && compinit
+        local dumpfile="${ZSH_COMPDUMP:-$ZDOTDIR/.zcompdump}"
+        autoload -Uz compinit && compinit -d "$dumpfile"
       fi
       compdef _zetch zetch
       ;;
