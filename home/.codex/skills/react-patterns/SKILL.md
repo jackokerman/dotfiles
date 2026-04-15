@@ -72,6 +72,7 @@ export function useSession() {
 - Avoid nested ternaries. Use early returns, named variables, or split components when conditional rendering stops being obvious.
 - Avoid accidental `0` or empty-string rendering. When the left side of `&&` is not already boolean, coerce it or use a ternary.
 - In component files, prefer the main exported component before hoisted helper functions.
+- Below the main component, prefer top-down ordering from higher-level local hooks to the lower-level helpers they call.
 - Prefer stable local adapters around third-party components when you want to normalize APIs, centralize styling, or keep swap cost low.
 - Group larger apps by route, feature, or domain rather than `components`, `containers`, and `utils` buckets.
 - Create shared UI or common modules only for true cross-cutting primitives.
