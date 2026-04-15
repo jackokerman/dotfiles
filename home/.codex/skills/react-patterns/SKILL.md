@@ -28,6 +28,7 @@ Use this skill for clearly React or frontend work. These are opinionated default
 ## Hooks, State, And Encapsulation
 
 - Once a concern has related state, handlers, derived values, and effects, encapsulate it in a custom hook.
+- A concern does not need local state to justify a hook. If a component gathers related external hooks, derived values, and handlers for one responsibility, extract a small local hook when that makes the component read more like orchestration.
 - Custom hooks should expose a small intentional API. Return the operations the UI needs, not an implementation dump.
 - Component bodies should read like orchestration: get data, call domain hooks, render UI.
 - Resolve defaults and fallback chains at the boundary instead of scattering them through the tree.
