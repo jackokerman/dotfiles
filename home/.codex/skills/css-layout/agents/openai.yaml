@@ -1,0 +1,4 @@
+interface:
+  display_name: "CSS Layout"
+  short_description: "Generic frontend layout, sizing, spacing, and stacking guidance."
+  default_prompt: "Use this skill for CSS, layout, stacking, spacing, sizing, overflow, and positioning work that is not framework-specific."

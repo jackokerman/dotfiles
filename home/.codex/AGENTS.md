@@ -17,6 +17,7 @@
 
 ## Frontend Workflow
 - For clearly React or frontend work, use the native `react-patterns` skill before substantial edits.
+- For clearly CSS, layout, spacing, sizing, overflow, positioning, or stacking work, use the native `css-layout` skill before substantial edits.
 - Keep reusable frontend guidance in tracked Codex skills under `home/.codex/skills/`, not in `AGENTS.md`.
 - Do not apply this React guidance to non-frontend tasks.
 
