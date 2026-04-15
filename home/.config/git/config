@@ -17,10 +17,10 @@
     autoSetupRemote = true
 
 [core]
-    pager = delta
+    pager = git-pager-delta
 
 [interactive]
-    diffFilter = delta --color-only
+    diffFilter = git-delta-diff-filter
 
 [merge]
     conflictStyle = zdiff3

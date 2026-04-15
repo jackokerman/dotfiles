@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if command -v delta >/dev/null 2>&1; then
+  exec delta "$@"
+fi
+
+if [[ -t 1 ]] && command -v less >/dev/null 2>&1; then
+  exec less -FRX
+fi
+
+exec cat
