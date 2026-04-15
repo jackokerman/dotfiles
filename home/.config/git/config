@@ -26,11 +26,37 @@
     conflictStyle = zdiff3
 
 [delta]
+    # Palette derived from bluz71/vim-nightfly-colors OpenCode diff colors.
     dark = true
     navigate = true
     side-by-side = true
     line-numbers = true
     syntax-theme = fly16
+
+    # Diff surfaces.
+    plus-style = syntax "#2a4e57"
+    plus-non-emph-style = syntax "#2a4e57"
+    plus-empty-line-marker-style = normal "#2a4e57"
+    minus-style = syntax "#4e3030"
+    minus-non-emph-style = syntax "#4e3030"
+    minus-empty-line-marker-style = normal "#4e3030"
+
+    # Headers and line numbers.
+    file-style = bold "#82aaff"
+    hunk-header-style = file line-number syntax "#092236"
+    hunk-header-file-style = bold "#82aaff"
+    hunk-header-line-number-style = "#7c8f8f"
+    line-numbers-left-style = "#4b6479"
+    line-numbers-right-style = "#4b6479"
+    line-numbers-zero-style = "#4b6479"
+    line-numbers-plus-style = "#21c7a8" "#2a4e57"
+    line-numbers-minus-style = "#ff5874" "#4e3030"
+    inline-hint-style = "#4b6479"
+
+    # Delta-specific emphasis and whitespace errors.
+    plus-emph-style = bold "#21c7a8" "#2a4e57"
+    minus-emph-style = bold "#ff5874" "#4e3030"
+    whitespace-error-style = bold "#ff5874" "#4e3030"
 
 [alias]
     # Convenience aliases for editing config files
