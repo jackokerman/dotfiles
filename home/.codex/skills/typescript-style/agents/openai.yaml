@@ -1,4 +1,4 @@
 interface:
   display_name: "TypeScript Style"
-  short_description: "Generic TypeScript and TSX API shape, typing, and lint-safe conventions."
-  default_prompt: "Use $typescript-style for TypeScript or TSX work that needs guidance on API shape, typing strictness, exports, and safe escape hatches."
+  short_description: "Generic TypeScript and TSX API shape, contract docs, typing, and lint-safe conventions."
+  default_prompt: "Use $typescript-style for TypeScript or TSX work that needs guidance on API shape, JSDoc on exported contracts, typing strictness, exports, and safe escape hatches."
