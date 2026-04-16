@@ -51,7 +51,10 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 ## Where To Change Things
 
 - Shell: `home/.zshenv` and `home/.config/zsh/`
-- Git, tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
+- Git shared defaults: `home/.config/git/config` via `git config-shared`
+- Git local overrides: `~/.gitconfig.local` via `git config-local`
+- Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
+- tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 

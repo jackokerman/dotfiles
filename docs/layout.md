@@ -36,10 +36,13 @@ Tracked shared config should stay generic. Machine- or environment-specific valu
 
 Current conventions:
 
+- shared Git defaults in `~/.config/git/config`
 - `~/.gitconfig.local` for machine-specific git config
 - `~/.zshenv.local` for env vars and path tweaks
 - `~/.zshrc.local` for interactive shell overrides
 - overlay repos for work-specific or machine-family-specific behavior
+
+For Git config changes in this setup, use `git config-shared`, `git config-local`, or explicit `git config --file ...`. Avoid `git config --global`, which writes unmanaged `~/.gitconfig`.
 
 ## Source vs Runtime State
 

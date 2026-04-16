@@ -15,6 +15,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Run `./scripts/check` before commit. It includes tmux agent status regression tests. Install the repo-local pre-commit hook with `./scripts/install-git-hooks.sh`.
 - The shared Codex validation path also checks tracked skill UI metadata and overlay frontend workflow manifests when they are present in the dotty chain.
 - If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.
+- For Git config changes in this setup, use `git config-shared`, `git config-local`, or `git config --file ...`, not `git config --global`.
 
 ## Mental Model
 

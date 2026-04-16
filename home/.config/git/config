@@ -1,3 +1,7 @@
+# Keep shared Git defaults in this tracked file.
+# Use `git config-shared` or `git config --file ~/.config/git/config`.
+# Avoid `git config --global` in this setup because it writes unmanaged ~/.gitconfig.
+
 [init]
     defaultBranch = main
 
@@ -13,6 +17,10 @@
 [pull]
     rebase = true
 
+[rebase]
+    autosquash = true
+    updateRefs = true
+
 [push]
     autoSetupRemote = true
 
@@ -24,6 +32,11 @@
 
 [merge]
     conflictStyle = zdiff3
+
+[diff]
+    algorithm = histogram
+    colorMoved = default
+    colorMovedWS = allow-indentation-change
 
 [delta]
     # Palette derived from bluz71/vim-nightfly-colors OpenCode diff colors.
@@ -62,7 +75,7 @@
     whitespace-error-style = bold "#ff5874" "#4e3030"
 
 [alias]
-    # Convenience aliases for editing config files
+    # Convenience aliases for editing the supported Git config layers
     config-shared = "!git config --file ~/.config/git/config"
     config-local = "!git config --file ~/.gitconfig.local"
     
@@ -96,4 +109,5 @@
     autoUpdate = true
 
 [branch]
-	autoSetupMerge = simple
+    autoSetupMerge = simple
+    sort = -committerdate
