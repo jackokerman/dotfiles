@@ -123,30 +123,106 @@ _session_agent_command() {
   return 1
 }
 
+_fallback_agent_line_is_waiting() {
+  local line="$1"
+
+  case "${line}" in
+    *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"permission prompt"*|*"approval"*|*"tab to add notes"*|*"enter to submit answer"*|*"Implement this plan?"*|*"Yes, implement this plan"*|*"No, stay in Plan mode"*)
+      return 0
+      ;;
+  esac
+
+  [[ "${line}" == *"Question "* && "${line}" == *"unanswered"* ]]
+}
+
+_fallback_codex_line_is_waiting() {
+  local line="$1"
+
+  if _fallback_agent_line_is_waiting "${line}"; then
+    return 0
+  fi
+
+  case "${line}" in
+    *"←/→ to navigate questions"*)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
+_fallback_agent_line_is_working() {
+  local line="$1"
+
+  case "${line}" in
+    *"• Working ("*)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
+_fallback_classify_line() {
+  local line="$1"
+
+  if _fallback_agent_line_is_waiting "${line}"; then
+    printf '%s\n' "waiting"
+    return 0
+  fi
+
+  if _fallback_agent_line_is_working "${line}"; then
+    printf '%s\n' "working"
+    return 0
+  fi
+
+  printf '%s\n' ""
+}
+
+_fallback_codex_classify_line() {
+  local line="$1"
+
+  if _fallback_codex_line_is_waiting "${line}"; then
+    printf '%s\n' "waiting"
+    return 0
+  fi
+
+  if _fallback_agent_line_is_working "${line}"; then
+    printf '%s\n' "working"
+    return 0
+  fi
+
+  printf '%s\n' ""
+}
+
+_fallback_infer_state_from_tail() {
+  local agent="$1" tail="$2" line="" state="" classifier="_fallback_classify_line"
+
+  if [[ "${agent}" == "codex" ]]; then
+    classifier="_fallback_codex_classify_line"
+  fi
+
+  while IFS= read -r line; do
+    state=$("${classifier}" "${line}")
+    if [[ -n "${state}" ]]; then
+      printf '%s\n' "${state}"
+      return 0
+    fi
+  done < <(printf '%s\n' "${tail}" | awk '{ lines[NR] = $0 } END { for (i = NR; i >= 1; i--) print lines[i] }')
+
+  printf '%s\n' ""
+}
+
 _session_live_state() {
-  local session="$1" agent="${2:-}" tail="" line=""
+  local session="$1" agent="${2:-}" tail=""
 
   if declare -F tmux_agent_session_live_state >/dev/null 2>&1; then
     tmux_agent_session_live_state "${session}" "${agent}"
     return 0
   fi
 
-  tail=$(tmux capture-pane -pt "${session}" 2>/dev/null | tail -n 12 || true)
-
-  while IFS= read -r line; do
-    case "${line}" in
-      *"• Working ("*|*"esc to interrupt"*)
-        printf '%s\n' "working"
-        return 0
-        ;;
-      *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"permission prompt"*|*"approval"*)
-        printf '%s\n' "waiting"
-        return 0
-        ;;
-    esac
-  done < <(printf '%s\n' "${tail}" | awk '{ lines[NR] = $0 } END { for (i = NR; i >= 1; i--) print lines[i] }')
-
-  printf '%s\n' ""
+  tail=$(tmux capture-pane -pt "${session}" 2>/dev/null | tail -n 40 || true)
+  _fallback_infer_state_from_tail "${agent}" "${tail}"
 }
 
 _state_file_has_stale_working() {

@@ -6,7 +6,7 @@ Public base dotfiles repo for generic personal setup. Keep work-only behavior in
 
 - Commit and push directly to `main` with conventional commits.
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
-- Run `./scripts/check` before commit. Install the repo-local pre-commit hook with `./scripts/install-git-hooks.sh`.
+- Run `./scripts/check` before commit. It includes tmux agent status regression tests. Install the repo-local pre-commit hook with `./scripts/install-git-hooks.sh`.
 
 ## Mental Model
 

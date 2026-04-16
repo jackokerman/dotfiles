@@ -9,18 +9,6 @@ tmux_agent_reverse_lines() {
   awk '{ lines[NR] = $0 } END { for (i = NR; i >= 1; i--) print lines[i] }'
 }
 
-tmux_agent_tail_has_marker() {
-  local tail="$1" matcher="$2" line=""
-
-  while IFS= read -r line; do
-    if "${matcher}" "${line}"; then
-      return 0
-    fi
-  done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
-
-  return 1
-}
-
 tmux_agent_line_is_waiting() {
   local line="$1"
 
@@ -36,19 +24,77 @@ tmux_agent_line_is_waiting() {
 tmux_codex_line_is_waiting() {
   local line="$1"
 
-  tmux_agent_line_is_waiting "${line}"
+  if tmux_agent_line_is_waiting "${line}"; then
+    return 0
+  fi
+
+  case "${line}" in
+    *"←/→ to navigate questions"*)
+      return 0
+      ;;
+  esac
+
+  return 1
 }
 
 tmux_agent_line_is_working() {
   local line="$1"
 
   case "${line}" in
-    *"• Working ("*|*"esc to interrupt"*)
+    *"• Working ("*)
       return 0
       ;;
   esac
 
   return 1
+}
+
+tmux_agent_classify_line() {
+  local line="$1"
+
+  if tmux_agent_line_is_waiting "${line}"; then
+    printf '%s\n' "waiting"
+    return 0
+  fi
+
+  if tmux_agent_line_is_working "${line}"; then
+    printf '%s\n' "working"
+    return 0
+  fi
+
+  printf '%s\n' ""
+}
+
+tmux_codex_classify_line() {
+  local line="$1"
+
+  # Codex prompt footers carry the freshest state, so waiting cues should win
+  # before we fall back to generic working markers.
+  if tmux_codex_line_is_waiting "${line}"; then
+    printf '%s\n' "waiting"
+    return 0
+  fi
+
+  if tmux_agent_line_is_working "${line}"; then
+    printf '%s\n' "working"
+    return 0
+  fi
+
+  printf '%s\n' ""
+}
+
+tmux_agent_infer_state_from_tail_with_classifier() {
+  local tail="$1" classifier="$2" line="" state=""
+
+  while IFS= read -r line; do
+    state=$("${classifier}" "${line}")
+    if [[ -n "${state}" ]]; then
+      printf '%s\n' "${state}"
+      return 0
+    fi
+  done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
+
+  printf '%s\n' ""
 }
 
 tmux_agent_state_file_mtime() {
@@ -75,21 +121,9 @@ tmux_agent_state_is_stale_working() {
 }
 
 tmux_codex_infer_state_from_tail() {
-  local tail="$1" line=""
+  local tail="$1"
 
-  while IFS= read -r line; do
-    if tmux_agent_line_is_working "${line}"; then
-      printf '%s\n' "working"
-      return 0
-    fi
-
-    if tmux_codex_line_is_waiting "${line}"; then
-      printf '%s\n' "waiting"
-      return 0
-    fi
-  done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
-
-  printf '%s\n' ""
+  tmux_agent_infer_state_from_tail_with_classifier "${tail}" tmux_codex_classify_line
 }
 
 tmux_agent_infer_state_from_tail() {
@@ -100,19 +134,7 @@ tmux_agent_infer_state_from_tail() {
       tmux_codex_infer_state_from_tail "${tail}"
       ;;
     claude)
-      while IFS= read -r line; do
-        if tmux_agent_line_is_working "${line}"; then
-          printf '%s\n' "working"
-          return 0
-        fi
-
-        if tmux_agent_line_is_waiting "${line}"; then
-          printf '%s\n' "waiting"
-          return 0
-        fi
-      done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
-
-      printf '%s\n' ""
+      tmux_agent_infer_state_from_tail_with_classifier "${tail}" tmux_agent_classify_line
       ;;
     *)
       printf '%s\n' ""

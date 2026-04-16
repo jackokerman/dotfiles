@@ -22,7 +22,7 @@ dotty update
 ```
 
 - `dotty update` refreshes symlinks and reruns setup hooks.
-- `./scripts/check` runs the fast local validation path for this repo.
+- `./scripts/check` runs the fast local validation path for this repo, including tmux agent status regression tests.
 - `./scripts/install-git-hooks.sh` installs the repo-local pre-commit hook.
 - After changing tracked config, run `dotty update` before testing the live setup.
 

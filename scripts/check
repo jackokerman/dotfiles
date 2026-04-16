@@ -31,6 +31,7 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos.sh"
+        "scripts/test-tmux-agent-pane-state.sh"
         "scripts/validate-codex-sync.sh"
     )
 
@@ -66,10 +67,16 @@ assert_zsh_runtime_inputs_removed() {
     done
 }
 
+run_tmux_agent_status_tests() {
+    log "Running tmux agent status regression tests"
+    "$PROJECT_ROOT/scripts/test-tmux-agent-pane-state.sh"
+}
+
 main() {
     run_bash_syntax
     run_zsh_syntax
     assert_zsh_runtime_inputs_removed
+    run_tmux_agent_status_tests
 
     log "Validating Codex sync inputs"
     "$PROJECT_ROOT/scripts/validate-codex-sync.sh"

@@ -12,6 +12,8 @@
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
 - Known local `codex` and `claude` sessions still use a small pane-tail fallback to refine `working` and `waiting`
+- Codex does not currently expose a dedicated public hook for "waiting for user input", so tmux infers that state from prompt text
+- When a Codex prompt line includes both waiting cues and `esc to interrupt`, tmux treats it as `waiting` rather than `working`
 - Finished shell-only sessions are hidden once no live agent process remains
 
 ## Claude
@@ -49,6 +51,7 @@ Use `./scripts/check` as the fast local validation path. It currently:
 
 - runs shell syntax checks for tracked bash and zsh files
 - asserts that zsh runtime artifacts are not present in `home/.config/zsh`
+- runs tmux agent status regression tests
 - runs Codex sync validation
 
 To install the repo-local pre-commit hook:
