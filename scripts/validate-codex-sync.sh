@@ -5,6 +5,7 @@ set -euo pipefail
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 SYNC_SCRIPT="$SCRIPT_DIR/sync-codex.ts"
+FRONTEND_WORKFLOW_SCRIPT="$SCRIPT_DIR/validate-codex-frontend-workflow.ts"
 REGISTRY_PATH="${HOME}/.dotty/registry"
 
 log() {
@@ -40,6 +41,7 @@ collect_sources() {
     local relative_path="$2"
     local env_name="$3"
     local predicate="$4"
+    local quiet="${5:-}"
     local -a sources=()
 
     if repo_in_registry "$PROJECT_ROOT"; then
@@ -54,7 +56,9 @@ collect_sources() {
             [[ "$predicate" == "dir" && -d "$env_candidate" ]] && sources+=("$env_candidate")
         done < "$REGISTRY_PATH"
 
-        log "Validating $kind across the current dotty chain"
+        if [[ "$quiet" != "quiet" ]]; then
+            log "Validating $kind across the current dotty chain"
+        fi
     else
         local local_candidate="$PROJECT_ROOT/home/.codex/$relative_path"
         local env_candidate="$PROJECT_ROOT/$env_name/home/.codex/$relative_path"
@@ -64,7 +68,9 @@ collect_sources() {
         [[ "$predicate" == "file" && -f "$env_candidate" ]] && sources+=("$env_candidate")
         [[ "$predicate" == "dir" && -d "$env_candidate" ]] && sources+=("$env_candidate")
 
-        log "Validating $kind in the current repo only"
+        if [[ "$quiet" != "quiet" ]]; then
+            log "Validating $kind in the current repo only"
+        fi
     fi
 
     printf '%s\n' "${sources[@]}"
@@ -114,7 +120,7 @@ validate_custom_agents() {
     while IFS= read -r source; do
         [[ -n "$source" ]] || continue
         skill_sources+=("$source")
-    done < <(collect_sources "skills" "skills" "$env_name" "dir")
+    done < <(collect_sources "skills" "skills" "$env_name" "dir" "quiet")
 
     local -a args=("custom-agents" "--validate-only")
     for source in "${agent_sources[@]}"; do
@@ -125,6 +131,46 @@ validate_custom_agents() {
     done
 
     bun run "$SYNC_SCRIPT" "${args[@]}"
+}
+
+validate_frontend_workflow() {
+    local env_name="$1"
+    local -a manifest_sources=()
+    local -a agent_sources=()
+    local -a skill_sources=()
+    local source
+
+    while IFS= read -r source; do
+        [[ -n "$source" ]] || continue
+        manifest_sources+=("$source")
+    done < <(collect_sources "frontend workflow manifests" "frontend-workflow.toml" "$env_name" "file")
+
+    while IFS= read -r source; do
+        [[ -n "$source" ]] || continue
+        agent_sources+=("$source")
+    done < <(collect_sources "custom agents" "agents" "$env_name" "dir" "quiet")
+
+    while IFS= read -r source; do
+        [[ -n "$source" ]] || continue
+        skill_sources+=("$source")
+    done < <(collect_sources "skills" "skills" "$env_name" "dir" "quiet")
+
+    if [[ ${#skill_sources[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    local -a args=()
+    for source in "${manifest_sources[@]}"; do
+        args+=("--manifest-source" "$source")
+    done
+    for source in "${agent_sources[@]}"; do
+        args+=("--agent-source" "$source")
+    done
+    for source in "${skill_sources[@]}"; do
+        args+=("--skill-source" "$source")
+    done
+
+    bun run "$FRONTEND_WORKFLOW_SCRIPT" "${args[@]}"
 }
 
 main() {
@@ -141,6 +187,7 @@ main() {
     validate_kind hooks hooks hooks.json "$env_name" file
     validate_kind skills skills skills "$env_name" dir
     validate_custom_agents "$env_name"
+    validate_frontend_workflow "$env_name"
 }
 
 main "$@"

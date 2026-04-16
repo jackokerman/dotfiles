@@ -1,4 +1,4 @@
 interface:
   display_name: "TypeScript Style"
   short_description: "Generic TypeScript and TSX API shape, typing, and lint-safe conventions."
-  default_prompt: "Use this skill for TypeScript or TSX work that needs guidance on API shape, typing strictness, exports, and safe escape hatches."
+  default_prompt: "Use $typescript-style for TypeScript or TSX work that needs guidance on API shape, typing strictness, exports, and safe escape hatches."

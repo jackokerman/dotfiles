@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Patterns"
+  short_description: "Generic React component, hooks, and testing guidance."
+  default_prompt: "Use $react-patterns for React work that needs help with component boundaries, hooks, rendering, context, effects, or testing."

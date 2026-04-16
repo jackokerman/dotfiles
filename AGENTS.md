@@ -13,6 +13,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Use `./scripts/sync-machine` when catching a machine up to the repo state, especially if `Brewfile` changed.
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
 - Run `./scripts/check` before commit. It includes tmux agent status regression tests. Install the repo-local pre-commit hook with `./scripts/install-git-hooks.sh`.
+- The shared Codex validation path also checks tracked skill UI metadata and overlay frontend workflow manifests when they are present in the dotty chain.
 - If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.
 
 ## Mental Model
@@ -21,6 +22,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
 - Keep reusable generic Codex frontend guidance in `home/.codex/skills/`, split by concern (`react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
+- Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across overlays.
 
 Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree.
 

@@ -53,7 +53,7 @@ Use `./scripts/check` as the fast local validation path. It currently:
 - runs shell syntax checks for tracked bash and zsh files
 - asserts that zsh runtime artifacts are not present in `home/.config/zsh`
 - runs tmux agent status regression tests
-- runs Codex sync validation
+- runs Codex sync validation, including tracked skill UI metadata and overlay frontend workflow manifest checks when present
 
 To install the repo-local pre-commit hook:
 
