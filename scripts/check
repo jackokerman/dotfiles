@@ -31,6 +31,7 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos.sh"
+        "scripts/sync-machine"
         "scripts/test-tmux-agent-pane-state.sh"
         "scripts/validate-codex-sync.sh"
     )

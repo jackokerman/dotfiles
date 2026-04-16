@@ -11,17 +11,22 @@ cd ~/dotfiles && ./install.sh
 
 `./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook.
 
+Once the repo is cloned, `./scripts/sync-machine` is the higher-level catch-up command. It falls back to `./install.sh` on a fresh machine and, on an existing machine, also applies `Brewfile` changes that plain `dotty update` skips.
+
 If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after install. `scripts/install-fonts.sh` will install it the next time the hook runs. Symbols Nerd Font is downloaded automatically.
 
 ## Daily Use
 
 ```bash
+./scripts/sync-machine
 dotty update
 ./scripts/check
 ./scripts/install-git-hooks.sh
 ```
 
+- `./scripts/sync-machine` installs or updates the dotty chain and applies `Brewfile` changes. Use this on a fresh machine after cloning the repo or when an existing machine has fallen behind.
 - `dotty update` refreshes symlinks and reruns setup hooks.
+- `dotty update` intentionally does not install new `Brewfile` packages unless you opt in via `./scripts/sync-machine`.
 - `./scripts/check` runs the fast local validation path for this repo, including tmux agent status regression tests.
 - `./scripts/install-git-hooks.sh` installs the repo-local pre-commit hook.
 - After changing tracked config, run `dotty update` before testing the live setup.

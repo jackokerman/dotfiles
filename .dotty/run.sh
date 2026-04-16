@@ -96,6 +96,20 @@ setup_brew() {
     fi
 }
 
+should_run_brew() {
+    if [[ "$DOTTY_COMMAND" == "install" ]]; then
+        return 0
+    fi
+
+    case "${DOTFILES_RUN_BREW:-0}" in
+        1|true|yes|on)
+            return 0
+            ;;
+    esac
+
+    return 1
+}
+
 # macOS
 
 setup_macos() {
@@ -285,11 +299,19 @@ setup_codex() {
 }
 
 case "$DOTTY_COMMAND" in
-    install)
-        setup_guard
+    install|update)
+        if [[ "$DOTTY_COMMAND" == "install" ]]; then
+            setup_guard
+        fi
+
         if [[ "$(uname -s)" == "Darwin" ]]; then
-            setup_brew
-            setup_macos
+            if should_run_brew; then
+                setup_brew
+            fi
+
+            if [[ "$DOTTY_COMMAND" == "install" ]]; then
+                setup_macos
+            fi
         fi
         ;;
 esac
