@@ -17,8 +17,6 @@ Use this skill for clearly React or frontend work. These are opinionated default
 ## Components And APIs
 
 - Prefer function components and named function declarations for exported components and hooks.
-- Prefer named function declarations over function expressions for module-level helpers when the surrounding API allows it.
-- Destructure props at the boundary. Use inline defaults when they clarify the contract.
 - Treat high prop count as a design smell. Pass one typed domain object when several values travel together, but do not hide unrelated values in a generic options bag.
 - Keep leaf components boring. Parents decide what to render; children render resolved props.
 - Prefer composition over mode flags. If branches represent different workflows or shapes, split components.

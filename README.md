@@ -49,6 +49,8 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 
+Reusable generic Codex frontend guidance belongs under `home/.codex/skills/` and stays split by concern: `react-patterns`, `typescript-style`, and `css-layout`.
+
 Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories.
 
 ## Post-Install Notes

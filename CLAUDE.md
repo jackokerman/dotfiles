@@ -13,6 +13,7 @@ Public base dotfiles repo for generic personal setup. Keep work-only behavior in
 - `home/` is tracked source that dotty links into `$HOME`.
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
+- Keep reusable generic Codex frontend guidance in `home/.codex/skills/`, split by concern (`react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 
 Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree.
 
