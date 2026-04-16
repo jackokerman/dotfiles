@@ -56,6 +56,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
 - tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
 - Codex and Claude: `home/.codex/` and `home/.claude/`
+- Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 
 Reusable generic Codex frontend guidance belongs under `home/.codex/skills/` and stays split by concern: `react-patterns`, `typescript-style`, and `css-layout`. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks overlay frontend workflow manifests when they are present in the dotty chain.
