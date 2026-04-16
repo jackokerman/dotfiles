@@ -12,6 +12,7 @@ Use this skill for generic styling and layout work. Keep framework-specific rend
 - Prefer DOM structure, flow layout, and alignment primitives before reaching for absolute positioning.
 - Prefer content-driven sizing and min/max constraints over fixed `width` and `height`.
 - Use fixed dimensions only for explicit hit targets, icon frames, media crops, or externally specified sizes.
+- When fixed sizing is needed, start with the smallest plausible set of properties. Do not add matching `min*`, `max*`, or flex constraints unless they are individually necessary for the observed behavior.
 - Prefer gap, padding, and alignment primitives over margin choreography when the surrounding system supports them.
 - Check narrow widths before freezing a layout around desktop assumptions.
 
@@ -31,5 +32,7 @@ Use this skill for generic styling and layout work. Keep framework-specific rend
 ## Workflow
 
 - Read the local component and neighboring styles first; existing layout conventions win.
+- Preserve existing base styles when possible and layer targeted overrides on top. Prefer changing only the few properties that affect the behavior over rewriting or forking a large style object.
+- Add layout properties incrementally and reason about what each one changes. Avoid a shotgun bundle of likely fixes; keep only the properties that prove necessary.
 - Prefer the smallest structural change that removes the need for a layer hack.
 - Keep generic styling rules here rather than piling them into framework-specific skills.
