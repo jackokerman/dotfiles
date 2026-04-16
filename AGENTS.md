@@ -1,8 +1,31 @@
 # dotfiles
 
-This repo owns generic personal dotfiles and reusable Codex defaults.
+This repo is the public base layer for generic personal dotfiles and reusable Codex defaults. Repo-root `AGENTS.md` is the canonical repo-specific instruction file, and repo-root `CLAUDE.md` is a compatibility symlink to it.
+
+## Routing
 
 - Keep work-only behavior out of this repo. Route company-specific Codex rules, permissions, and tooling to the private overlay repo.
 - Keep changes concrete and incremental so the generated `~/.codex` state remains easy to understand.
+
+## Workflow
+
 - In this repo, changes are not done until they are committed and pushed to `main` with a conventional commit.
-- If a change affects setup, commands, or configuration architecture, update `README.md` and `CLAUDE.md` in the same change.
+- Use `./scripts/sync-machine` when catching a machine up to the repo state, especially if `Brewfile` changed.
+- Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
+- Run `./scripts/check` before commit. It includes tmux agent status regression tests. Install the repo-local pre-commit hook with `./scripts/install-git-hooks.sh`.
+- If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.
+
+## Mental Model
+
+- `home/` is tracked source that dotty links into `$HOME`.
+- `.dotty/run.sh` is the post-link hook for repo-managed setup work.
+- `scripts/` contains setup, sync, and validation helpers.
+- Keep reusable generic Codex frontend guidance in `home/.codex/skills/`, split by concern (`react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
+
+Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree.
+
+## Reference Docs
+
+- [README.md](README.md) for install, daily commands, and the public repo map
+- [docs/layout.md](docs/layout.md) for overlays, local overrides, and source/runtime boundaries
+- [docs/agent-tooling.md](docs/agent-tooling.md) for tmux, Codex, and Claude operational details

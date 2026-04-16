@@ -41,6 +41,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 
 ## Repo Map
 
+- `AGENTS.md`: canonical repo-specific agent instructions for this repo (`CLAUDE.md` is a compatibility symlink)
 - `home/`: tracked source files that dotty links into `$HOME`
 - `.dotty/`: repo identity and post-link hook
 - `scripts/`: setup, sync, and validation helpers
