@@ -45,6 +45,7 @@ Run these before committing tmux status changes:
 
 ```bash
 ./scripts/test-tmux-agent-pane-state.sh
+./scripts/test-tmux-session-status-local.sh
 ./scripts/test-tmux-session-status.sh
 ./scripts/test-tmux-session-status-overlay.sh
 ./scripts/check
