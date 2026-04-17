@@ -28,8 +28,10 @@ dotty update
 - `dotty update` refreshes symlinks and reruns setup hooks.
 - `dotty update` intentionally does not install new `Brewfile` packages unless you opt in via `./scripts/sync-machine`.
 - `./scripts/check` runs the fast local validation path for this repo, including tmux agent status regression tests.
-- `./scripts/install-git-hooks.sh` installs the repo-local pre-commit hook.
+- `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
+
+The tracked `pre-push` hook is generic: it dispatches to installed overlay hook contracts discovered from `~/.dotty/registry`. Public `dotfiles` stays overlay-agnostic while still letting installed overlays attach extra push-time behavior.
 
 Temporary bypass for the repo-local pre-commit hook:
 

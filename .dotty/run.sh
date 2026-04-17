@@ -17,6 +17,22 @@ setup_guard() {
     fi
 }
 
+setup_git_hooks() {
+    title "Installing repo-local Git hooks"
+
+    local hook_installer="$DOTFILES/scripts/install-git-hooks.sh"
+    if [[ ! -x "$hook_installer" ]]; then
+        warning "Git hook installer not found at $hook_installer"
+        return 0
+    fi
+
+    if "$hook_installer"; then
+        success "Repo-local Git hooks installed"
+    else
+        warning "Failed to install repo-local Git hooks"
+    fi
+}
+
 # VS Code / Cursor
 
 setup_vscode() {
@@ -303,6 +319,8 @@ case "$DOTTY_COMMAND" in
         if [[ "$DOTTY_COMMAND" == "install" ]]; then
             setup_guard
         fi
+
+        setup_git_hooks
 
         if [[ "$(uname -s)" == "Darwin" ]]; then
             if should_run_brew; then
