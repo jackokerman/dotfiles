@@ -51,9 +51,23 @@ EOF
 )"
 
 run_case \
-    "codex idle prompt footer stays waiting" \
+    "plan confirmation prompt stays waiting" \
     "codex" \
     "waiting" \
+    "$(cat <<'EOF'
+  Implement this plan?
+
+› 1. Yes, implement this plan  Switch to Default and start coding.
+  2. No, stay in Plan mode     Continue planning with the model.
+
+  Press enter to confirm or esc to go back
+EOF
+)"
+
+run_case \
+    "codex idle prompt footer stays neutral" \
+    "codex" \
+    "" \
     "$(cat <<'EOF'
 
 
@@ -64,7 +78,23 @@ EOF
 )"
 
 run_case \
-    "codex working beats prompt footer" \
+    "completed transcript plus idle footer stays neutral" \
+    "codex" \
+    "" \
+    "$(cat <<'EOF'
+• Running Stop hook
+
+Stop hook (completed)
+
+
+› Audit this parser
+
+  gpt-5.4 xhigh · 78% left · ~/src/project
+EOF
+)"
+
+run_case \
+    "codex working beats idle prompt footer" \
     "codex" \
     "working" \
     "$(cat <<'EOF'

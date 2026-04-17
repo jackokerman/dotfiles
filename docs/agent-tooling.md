@@ -12,9 +12,10 @@
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
 - The status bar still polls every 2 seconds, but tmux also forces an immediate refresh on `client-session-changed` and `client-attached`
-- Known local `codex` and `claude` sessions still use a small pane-tail fallback to refine `working` and `waiting`
-- Codex does not currently expose a dedicated public hook for "waiting for user input", so tmux infers that state from prompt text
+- For Codex, `working` and `done` remain hook-driven; live pane parsing is only used to detect explicit waiting prompts
+- Codex does not currently expose a dedicated public hook for "waiting for user input", so tmux infers that state from a small allowlist of known prompt shapes
 - When a Codex prompt line includes both waiting cues and `esc to interrupt`, tmux treats it as `waiting` rather than `working`
+- Generic Codex footer text such as the model/path line is not treated as a waiting signal
 - Finished shell-only sessions are hidden once no live agent process remains
 
 ## Claude

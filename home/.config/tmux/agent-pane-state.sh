@@ -13,7 +13,7 @@ tmux_agent_line_is_waiting() {
   local line="$1"
 
   case "${line}" in
-    *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"permission prompt"*|*"tab to add notes"*|*"enter to submit answer"*|*"Implement this plan?"*|*"Yes, implement this plan"*|*"No, stay in Plan mode"*)
+    *"Do you want me to "*|*"Messages to be submitted after next tool call"*|*"Would you like to run the following command?"*|*"Press enter to confirm or esc to cancel"*|*"Press enter to confirm or esc to go back"*|*"permission prompt"*|*"tab to add notes"*|*"enter to submit answer"*|*"Implement this plan?"*|*"Yes, implement this plan"*|*"No, stay in Plan mode"*)
       return 0
       ;;
   esac
@@ -36,19 +36,6 @@ tmux_codex_line_is_waiting() {
 
   return 1
 }
-
-tmux_codex_line_is_prompt_footer() {
-  local line="$1"
-
-  case "${line}" in
-    *" left · /"*|*" left · ~/"*)
-      return 0
-      ;;
-  esac
-
-  return 1
-}
-
 tmux_agent_line_is_working() {
   local line="$1"
 
@@ -80,8 +67,8 @@ tmux_agent_classify_line() {
 tmux_codex_classify_line() {
   local line="$1"
 
-  # Codex prompt footers carry the freshest state, so waiting cues should win
-  # before we fall back to generic working markers.
+  # Waiting prompts need attention, so they take precedence over the generic
+  # in-progress marker when both appear in the same footer block.
   if tmux_codex_line_is_waiting "${line}"; then
     printf '%s\n' "waiting"
     return 0
@@ -133,27 +120,9 @@ tmux_agent_state_is_stale_working() {
 }
 
 tmux_codex_infer_state_from_tail() {
-  local tail="$1" line="" state="" saw_prompt_footer=0
+  local tail="$1"
 
-  while IFS= read -r line; do
-    if tmux_codex_line_is_prompt_footer "${line}"; then
-      saw_prompt_footer=1
-      continue
-    fi
-
-    state=$(tmux_codex_classify_line "${line}")
-    if [[ -n "${state}" ]]; then
-      printf '%s\n' "${state}"
-      return 0
-    fi
-  done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
-
-  if (( saw_prompt_footer )); then
-    printf '%s\n' "waiting"
-    return 0
-  fi
-
-  printf '%s\n' ""
+  tmux_agent_infer_state_from_tail_with_classifier "${tail}" tmux_codex_classify_line
 }
 
 tmux_agent_infer_state_from_tail() {

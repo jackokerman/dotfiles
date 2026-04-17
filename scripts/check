@@ -33,6 +33,7 @@ run_bash_syntax() {
         "scripts/macos.sh"
         "scripts/sync-machine"
         "scripts/test-tmux-agent-pane-state.sh"
+        "scripts/test-tmux-session-status.sh"
         "scripts/validate-codex-sync.sh"
     )
 
@@ -71,6 +72,7 @@ assert_zsh_runtime_inputs_removed() {
 run_tmux_agent_status_tests() {
     log "Running tmux agent status regression tests"
     "$PROJECT_ROOT/scripts/test-tmux-agent-pane-state.sh"
+    "$PROJECT_ROOT/scripts/test-tmux-session-status.sh"
 }
 
 main() {
