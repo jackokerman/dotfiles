@@ -12,6 +12,7 @@
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
 - `home/.config/tmux/session-status.sh` is the base tmux entrypoint and `home/.config/tmux/session-status-lib.sh` owns the generic local collector and renderer helpers
+- `home/.config/tmux/README.md` is the code-local change guide for the tmux agent-status stack
 - Overlay repos can extend the base collector through `~/.config/tmux/session-status-overlay.sh`
 - Overlay hooks are:
   - `tmux_agent_overlay_maybe_refresh`

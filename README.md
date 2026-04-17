@@ -47,6 +47,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - `scripts/`: setup, sync, and validation helpers
 - `docs/layout.md`: layout, overlays, and source/runtime boundaries
 - `docs/agent-tooling.md`: tmux, Codex, and Claude operational notes
+- `home/.config/tmux/README.md`: code-local tmux agent-status architecture and change guide
 
 ## Where To Change Things
 

@@ -17,6 +17,13 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.
 - For Git config changes in this setup, use `git config-shared`, `git config-local`, or `git config --file ...`, not `git config --global`.
 
+## tmux Agent Status
+
+- Read `home/.config/tmux/README.md` before making tmux agent-status changes.
+- Keep generic parser, collector, and renderer behavior in this repo; overlays should extend through `~/.config/tmux/session-status-overlay.sh`.
+- Changes to prompt heuristics, state reconciliation, duplicate suppression, or overlay contract must add or update tmux regression tests.
+- Do not change tmux agent-status behavior without running `./scripts/check`.
+
 ## Mental Model
 
 - `home/` is tracked source that dotty links into `$HOME`.
