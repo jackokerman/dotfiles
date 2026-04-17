@@ -34,8 +34,8 @@
     # os_icon               # os identifier
     # context               # user@hostname
     dir                     # current directory
-    # vcs                   # git status — disabled because it's slow on large repos
-    vcs_branch              # git branch — fast alternative to git status that only shows branch
+    vcs_branch              # git branch, tag, or detached commit
+    vcs_status              # spaceship-style git status outside disabled repo roots
     command_execution_time  # duration of the last command
     # =========================[ Line #2 ]=========================
     newline                 # \n
@@ -351,198 +351,16 @@
   # Branch icon. Set this parameter to '\UE0A0 ' for the popular Powerline branch icon.
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=' '
 
-  # Untracked files icon. It's really a question mark, your font isn't broken.
-  # Change the value of this parameter to show a different icon.
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
-
-  # Formatter for Git status.
-  #
-  # Example output: master wip ⇣42⇡42 *42 merge ~42 +42 !42 ?42.
-  #
-  # You can edit the function to customize how Git status looks.
-  #
-  # VCS_STATUS_* parameters are set by gitstatus plugin. See reference:
-  # https://github.com/romkatv/gitstatus/blob/master/gitstatus.plugin.zsh.
-  function my_git_formatter() {
-    emulate -L zsh
-
-    if [[ -n $P9K_CONTENT ]]; then
-      # If P9K_CONTENT is not empty, use it. It's either "loading" or from vcs_info (not from
-      # gitstatus plugin). VCS_STATUS_* parameters are not available in this case.
-      typeset -g my_git_format=$P9K_CONTENT
-      return
+  # Custom git status segments use the bundled gitstatus backend directly so they can skip work
+  # entirely in disabled repo roots such as large monorepos.
+  local dotfiles_gitstatus_plugin="${ZPLUGINDIR:-${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins}/powerlevel10k/gitstatus/gitstatus.plugin.zsh"
+  if [[ -r $dotfiles_gitstatus_plugin ]]; then
+    builtin source "$dotfiles_gitstatus_plugin" _dotfiles_prompt_ || true
+    if (( $+functions[gitstatus_start_dotfiles_prompt_] )); then
+      gitstatus_stop_dotfiles_prompt_ DOTFILES_P10K >/dev/null 2>&1 || true
+      gitstatus_start_dotfiles_prompt_ -s 1 -u 1 -c 1 -d 1 DOTFILES_P10K >/dev/null 2>&1 || true
     fi
-
-    if (( $1 )); then
-      # Styling for up-to-date Git status.
-      local   meta='%f'           # default foreground
-      local   clean='%2F'         # green foreground
-      local   modified='%3F'      # yellow foreground
-      local   untracked='%F{9}'   # blue foreground
-      local   conflicted='%1F'    # red foreground
-      local   state_color='%F{9}' # red foreground
-      local   branch_color='%13F' # bold purple branchname to match starship
-      local   tag_color='%F{10}'  # bold green tag name to match starship
-
-    else
-      # Styling for incomplete and stale Git status.
-      local   meta='%f'           # default foreground
-      local   clean='%f'          # default foreground
-      local   modified='%f'       # default foreground
-      local   untracked='%f'      # default foreground
-      local   conflicted='%f'     # default foreground
-      local   state_color='%f'    # default foreground
-      local   branch_color='%f'   # default foreground
-      local   tag_color='%f'      # default foreground
-    fi
-
-    local res
-
-    if [[ -n $VCS_STATUS_LOCAL_BRANCH ]]; then
-      local branch=${(V)VCS_STATUS_LOCAL_BRANCH}
-      # If local branch name is at most 32 characters long, show it in full.
-      # Otherwise show the first 12 … the last 12.
-      # Tip: To always show local branch name in full without truncation, delete the next line.
-      # (( $#branch > 32 )) && branch[13,-13]="…"  # <-- this line
-      res+="${branch_color}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${branch//\%/%%}"
-      # Original line below commented out to always make branch name a specific color.
-      # res+="${clean}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${branch//\%/%%}"
-    fi
-
-    if [[ -n $VCS_STATUS_TAG
-          # Show tag only if not on a branch.
-          # Tip: To always show tag, delete the next line.
-          && -z $VCS_STATUS_LOCAL_BRANCH  # <-- this line
-        ]]; then
-      local tag=${(V)VCS_STATUS_TAG}
-      # If tag name is at most 32 characters long, show it in full.
-      # Otherwise show the first 12 … the last 12.
-      # Tip: To always show tag name in full without truncation, delete the next line.
-      (( $#tag > 32 )) && tag[13,-13]="…"  # <-- this line
-      res+="${branch_color}#${branch_color}${tag//\%/%%}"
-    fi
-
-    # Display the current Git commit if there is no branch and no tag.
-    # Tip: To always display the current Git commit, delete the next line.
-    [[ -z $VCS_STATUS_LOCAL_BRANCH && -z $VCS_STATUS_TAG ]] &&  # <-- this line
-      res+="${tag_color}@${tag_color}${VCS_STATUS_COMMIT[1,8]}"
-
-    # Show tracking branch name if it differs from local branch.
-    if [[ -n ${VCS_STATUS_REMOTE_BRANCH:#$VCS_STATUS_LOCAL_BRANCH} ]]; then
-      res+="${branch_color}:${branch_color}${(V)VCS_STATUS_REMOTE_BRANCH//\%/%%}"
-    fi
-
-    # # Display "wip" if the latest commit's summary contains "wip" or "WIP".
-    # if [[ $VCS_STATUS_COMMIT_SUMMARY == (|*[^[:alnum:]])(wip|WIP)(|[^[:alnum:]]*) ]]; then
-    #   res+=" ${modified}wip"
-    # fi
-
-    # # ⇣42 if behind the remote.
-    # (( VCS_STATUS_COMMITS_BEHIND )) && res+=" ${clean}⇣${VCS_STATUS_COMMITS_BEHIND}"
-    # # ⇡42 if ahead of the remote; no leading space if also behind the remote: ⇣42⇡42.
-    # (( VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND )) && res+=" "
-    # (( VCS_STATUS_COMMITS_AHEAD  )) && res+="${clean}⇡${VCS_STATUS_COMMITS_AHEAD}"
-    # # ⇠42 if behind the push remote.
-    # (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" ${clean}⇠${VCS_STATUS_PUSH_COMMITS_BEHIND}"
-    # (( VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" "
-    # # ⇢42 if ahead of the push remote; no leading space if also behind: ⇠42⇢42.
-    # (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && res+="${clean}⇢${VCS_STATUS_PUSH_COMMITS_AHEAD}"
-    # # *42 if have stashes.
-    # (( VCS_STATUS_STASHES        )) && res+=" ${clean}*${VCS_STATUS_STASHES}"
-    # # 'merge' if the repo is in an unusual state.
-    # [[ -n $VCS_STATUS_ACTION     ]] && res+=" ${conflicted}${VCS_STATUS_ACTION}"
-    # # ~42 if have merge conflicts.
-    # (( VCS_STATUS_NUM_CONFLICTED )) && res+=" ${conflicted}~${VCS_STATUS_NUM_CONFLICTED}"
-    # # +42 if have staged changes.
-    # (( VCS_STATUS_NUM_STAGED     )) && res+=" ${modified}+${VCS_STATUS_NUM_STAGED}"
-    # # !42 if have unstaged changes.
-    # (( VCS_STATUS_NUM_UNSTAGED   )) && res+=" ${modified}!${VCS_STATUS_NUM_UNSTAGED}"
-    # # ?42 if have untracked files. It's really a question mark, your font isn't broken.
-    # # See POWERLEVEL9K_VCS_UNTRACKED_ICON above if you want to use a different icon.
-    # # Remove the next line if you don't want to see untracked files at all.
-    # (( VCS_STATUS_NUM_UNTRACKED  )) && res+=" ${untracked}${(g::)POWERLEVEL9K_VCS_UNTRACKED_ICON}${VCS_STATUS_NUM_UNTRACKED}"
-    # # "─" if the number of unstaged files is unknown. This can happen due to
-    # # POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY (see below) being set to a non-negative number lower
-    # # than the number of files in the Git index, or due to bash.showDirtyState being set to false
-    # # in the repository config. The number of staged and untracked files may also be unknown
-    # # in this case.
-    # (( VCS_STATUS_HAS_UNSTAGED == -1 )) && res+=" ${modified}─"
-
-    local vcs_status
-
-    # = if have merge conflicts.
-    (( VCS_STATUS_NUM_CONFLICTED )) && vcs_status+="="
-    # $ if have stashes.
-    (( VCS_STATUS_STASHES        )) && vcs_status+="$"
-    # ! if have unstaged changes.
-    (( VCS_STATUS_NUM_UNSTAGED   )) && vcs_status+="!"
-    # + if have staged changes.
-    (( VCS_STATUS_NUM_STAGED     )) && vcs_status+="+"
-    # ? if have untracked files.
-    (( VCS_STATUS_NUM_UNTRACKED  )) && vcs_status+="?"
-
-    (( VCS_STATUS_COMMITS_BEHIND || VCS_STATUS_COMMITS_AHEAD )) && {
-      [ ! -z "$vcs_status" ] && vcs_status+=" "
-      vcs_status+="$state_color"
-    }
-    # ⇣42 if behind the remote.
-    (( VCS_STATUS_COMMITS_BEHIND )) && vcs_status+="⇣$VCS_STATUS_COMMITS_BEHIND"
-    (( VCS_STATUS_COMMITS_AHEAD  )) && vcs_status+="⇡$VCS_STATUS_COMMITS_AHEAD"
-
-    # 'merge' if the repo is in an unusual state.
-    if [[ -n $VCS_STATUS_ACTION ]]; then
-      [ ! -z "$vcs_status" ] && vcs_status+=" "
-      vcs_status+="${state_color}${VCS_STATUS_ACTION}"
-    fi
-
-    if [ ! -z "$vcs_status" ]; then
-      res+=" ${state_color}[${vcs_status}${state_color}]"
-    fi
-
-    typeset -g my_git_format=$res
-  }
-  functions -M my_git_formatter 2>/dev/null
-
-  # Don't count the number of unstaged, untracked and conflicted files in Git repositories with
-  # more than this many files in the index. Negative value means infinity.
-  #
-  # If you are working in Git repositories with tens of millions of files and seeing performance
-  # sagging, try setting POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY to a number lower than the output
-  # of `git ls-files | wc -l`. Alternatively, add `bash.showDirtyState = false` to the repository's
-  # config: `git config bash.showDirtyState false`.
-  typeset -g POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY=-1
-
-  # Don't show Git status in prompt for repositories whose workdir matches this pattern.
-  # For example, if set to '~', the Git repository at $HOME/.git will be ignored.
-  # Multiple patterns can be combined with '|': '~(|/foo)|/bar/baz/*'.
-  typeset -g POWERLEVEL9K_VCS_DISABLED_WORKDIR_PATTERN='~'
-
-  # Disable the default Git status formatting.
-  typeset -g POWERLEVEL9K_VCS_DISABLE_GITSTATUS_FORMATTING=true
-  # Install our own Git status formatter.
-  typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='${$((my_git_formatter(1)))+${my_git_format}}'
-  typeset -g POWERLEVEL9K_VCS_LOADING_CONTENT_EXPANSION='${$((my_git_formatter(0)))+${my_git_format}}'
-  # Enable counters for staged, unstaged, etc.
-  typeset -g POWERLEVEL9K_VCS_{STAGED,UNSTAGED,UNTRACKED,CONFLICTED,COMMITS_AHEAD,COMMITS_BEHIND}_MAX_NUM=-1
-
-  # Icon color.
-  typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_COLOR=2
-  typeset -g POWERLEVEL9K_VCS_LOADING_VISUAL_IDENTIFIER_COLOR=
-  # Custom icon.
-  typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_EXPANSION=
-  # Custom prefix.
-  typeset -g POWERLEVEL9K_VCS_PREFIX='%fon '
-
-  # Show status of repositories of these types. You can add svn and/or hg if you are
-  # using them. If you do, your prompt may become slow even when your current directory
-  # isn't in an svn or hg repository.
-  typeset -g POWERLEVEL9K_VCS_BACKENDS=(git)
-
-  # These settings are used for repositories other than Git or when gitstatusd fails and
-  # Powerlevel10k has to fall back to using vcs_info.
-  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=2
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=2
-  typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=3
+  fi
 
   ##########################[ status: exit code of the last command ]###########################
   # Enable OK_PIPE, ERROR_PIPE and ERROR_SIGNAL status states to allow us to enable, disable and
@@ -1630,17 +1448,114 @@
     p10k segment -f 2 -i '⭐' -t 'hello, %n'
   }
 
+  # Repo roots where full git status is intentionally suppressed.
+  typeset -gaU DOTFILES_P10K_GIT_STATUS_DISABLED_REPO_ROOTS
+
+  function dotfiles_p10k_git_repo_root() {
+    emulate -L zsh
+    command git rev-parse --show-toplevel 2>/dev/null
+  }
+
+  function dotfiles_p10k_should_show_git_status() {
+    emulate -L zsh
+
+    local repo_root
+    repo_root=$(dotfiles_p10k_git_repo_root) || return 1
+    [[ -n $repo_root ]] || return 1
+    repo_root=${repo_root:A}
+
+    local disabled_root
+    for disabled_root in "${DOTFILES_P10K_GIT_STATUS_DISABLED_REPO_ROOTS[@]}"; do
+      [[ -z $disabled_root ]] && continue
+      [[ $repo_root == ${disabled_root:A} ]] && return 1
+    done
+
+    return 0
+  }
+
+  function dotfiles_p10k_git_ref() {
+    emulate -L zsh
+
+    local ref
+    ref=$(command git symbolic-ref --quiet --short HEAD 2>/dev/null) && {
+      print -r -- "branch:${ref}"
+      return 0
+    }
+
+    ref=$(command git describe --tags --exact-match 2>/dev/null) && {
+      print -r -- "tag:${ref}"
+      return 0
+    }
+
+    ref=$(command git rev-parse --short HEAD 2>/dev/null) && {
+      print -r -- "commit:${ref}"
+      return 0
+    }
+
+    return 1
+  }
+
   # Add "on  branch_name" to the prompt if we're in a git repo.
   function prompt_vcs_branch() {
-    local repo_root
-    repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+    emulate -L zsh
 
-    if [[ -n "$repo_root" ]]; then
-      local branch_name
-      branch_name=$(sed 's|^ref: refs/heads/||' "$repo_root/.git/HEAD")
-      # Start with default color for "on", then switch to purple for branch 
-      p10k segment -i '' -t "%fon %F{13}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${branch_name}%f"
+    local ref kind name display
+    ref=$(dotfiles_p10k_git_ref) || return
+
+    kind=${ref%%:*}
+    name=${ref#*:}
+    name=${name//\%/%%}
+
+    case $kind in
+      branch)
+        display="%F{13}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${name}%f"
+        ;;
+      tag)
+        display="%F{10}#${name}%f"
+        ;;
+      commit)
+        display="%F{10}@${name}%f"
+        ;;
+      *)
+        return
+        ;;
+    esac
+
+    p10k segment -i '' -t "%fon ${display}"
+  }
+
+  # Add compact spaceship-style Git status outside disabled repo roots.
+  function prompt_vcs_status() {
+    emulate -L zsh
+
+    dotfiles_p10k_should_show_git_status || return
+    (( $+functions[gitstatus_query_dotfiles_prompt_] )) || return
+
+    gitstatus_query_dotfiles_prompt_ -d "$PWD" DOTFILES_P10K || return
+    [[ $VCS_STATUS_RESULT == ok-sync ]] || return
+
+    local vcs_status=
+    if (( VCS_STATUS_COMMITS_AHEAD && VCS_STATUS_COMMITS_BEHIND )); then
+      vcs_status+='⇕'
+    elif (( VCS_STATUS_COMMITS_AHEAD )); then
+      vcs_status+='⇡'
+    elif (( VCS_STATUS_COMMITS_BEHIND )); then
+      vcs_status+='⇣'
     fi
+
+    (( VCS_STATUS_NUM_CONFLICTED )) && vcs_status+='='
+    (( VCS_STATUS_STASHES       )) && vcs_status+='$'
+    (( VCS_STATUS_HAS_UNSTAGED == 1 )) && vcs_status+='!'
+    (( VCS_STATUS_NUM_STAGED    )) && vcs_status+='+'
+    (( VCS_STATUS_HAS_UNTRACKED == 1 )) && vcs_status+='?'
+
+    if [[ -n $VCS_STATUS_ACTION ]]; then
+      [[ -n $vcs_status ]] && vcs_status+=' '
+      vcs_status+="${VCS_STATUS_ACTION//\%/%%}"
+    fi
+
+    [[ -n $vcs_status ]] || return
+    p10k segment -f 9 -i '' -t "[${vcs_status}]"
   }
 
   # User-defined prompt segments may optionally provide an instant_prompt_* function. Its job
