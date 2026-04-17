@@ -17,7 +17,6 @@ run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
         ".githooks/pre-commit"
-        ".githooks/pre-push"
         "home/.config/tmux/agent-pane-state.sh"
         "home/.config/tmux/agent-status-hook.sh"
         "home/.config/tmux/session-status.sh"
@@ -32,7 +31,6 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos.sh"
-        "scripts/run-overlay-git-hook.sh"
         "scripts/sync-machine"
         "scripts/test-tmux-agent-pane-state.sh"
         "scripts/validate-codex-sync.sh"

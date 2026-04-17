@@ -31,8 +31,6 @@ dotty update
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
 
-The tracked `pre-push` hook is generic: it dispatches to installed overlay hook contracts discovered from `~/.dotty/registry`. Public `dotfiles` stays overlay-agnostic while still letting installed overlays attach extra push-time behavior.
-
 Temporary bypass for the repo-local pre-commit hook:
 
 ```bash
