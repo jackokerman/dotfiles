@@ -73,6 +73,15 @@ EOF
 )"
 
 run_case \
+    "hyphenated approval check stays neutral" \
+    "codex" \
+    "" \
+    "$(cat <<'EOF'
+    *  codeowner-approval-v2                                   https://go/code-re...
+EOF
+)"
+
+run_case \
     "neutral tail stays empty" \
     "codex" \
     "" \
