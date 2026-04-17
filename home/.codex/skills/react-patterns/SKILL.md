@@ -10,6 +10,7 @@ Use this skill for clearly React or frontend work. These are opinionated default
 ## Workflow
 
 - Start by reading nearby components, hooks, tests, and package docs before applying generic guidance.
+- Prefer the repo's established import style. When path aliases or package entrypoints exist, use them instead of deep relative traversals, but do not churn unrelated imports just to normalize style.
 - Prefer refactors that reduce invalid states, branching, and incidental complexity over clever abstractions.
 - Name components, hooks, and helpers by domain intent. Prefer short, direct names and avoid `effective`, `resolved`, `computed`, and `final` unless they mark a real distinction.
 - Keep the code shape consistent inside a module. Do not mix unrelated styles without a reason.
@@ -17,11 +18,14 @@ Use this skill for clearly React or frontend work. These are opinionated default
 ## Components And APIs
 
 - Prefer function components and named function declarations for exported components and hooks.
+- Destructure props in the component signature unless keeping the object whole is materially clearer. Put default values in the signature when a default belongs to the component boundary; do not use `defaultProps` on function components.
 - Treat high prop count as a design smell. Pass one typed domain object when several values travel together, but do not hide unrelated values in a generic options bag.
-- Keep leaf components boring. Parents decide what to render; children render resolved props.
+- Keep leaf components boring and usually stateless. Parents decide what to render; children render resolved props and emit events.
 - Prefer composition over mode flags or internal branching. If branches represent different workflows or shapes, split components.
 - Move pure helpers outside the component. If extracted markup grows its own branches, mapping, or state, make it a named component or hook.
-- Extract repeated JSX into a named component when it clarifies structure, but do not add wrappers that only rename markup.
+- Use configuration data for repeated navigation, filters, menus, tabs, or other near-identical UI instead of hardcoding markup in multiple places.
+- Extract repeated JSX or complex list rendering into a named component when it clarifies structure. Keep a mapping inline only when rendering that list is the component's main responsibility, and do not add wrappers that only rename markup.
+- Split components by responsibility, not line count. If loops, branches, or auxiliary state make the main render path hard to scan, extract a named component, helper, or hook.
 - Keep public APIs narrow. Resolve impossible states at the boundary and let the rest of the tree trust the types instead of adding defensive handling deeper in the tree.
 
 ## Hooks, State, And Encapsulation
@@ -34,6 +38,7 @@ Use this skill for clearly React or frontend work. These are opinionated default
 - Resolve defaults and fallback chains at the boundary instead of scattering them through the tree.
 - Keep state minimal. Derive what you can during render.
 - Keep state close to where it is used. Lift it only when multiple consumers need the same source of truth.
+- Let the nearest responsible component own validation, mutation flow, and form orchestration. Reusable inputs, buttons, and other leaf primitives should stay dumb.
 - Use reducers when behavior is driven by explicit transitions or many related events.
 - Reach for external client-state libraries only when local state, context, and reducers no longer model the problem cleanly.
 - Treat encapsulation as a readability tool. Do not hide domain logic so aggressively that testing and reasoning get harder.
@@ -73,8 +78,10 @@ export function useSession() {
 - Avoid accidental `0` or empty-string rendering. When the left side of `&&` is not already boolean, coerce it or use a ternary.
 - Do not keep large conditional or derivation blocks above `return`. Simplify them or extract a pure helper, local hook, or component.
 - Do not park large JSX fragments in `const content = ...` style variables. Use early returns, a helper, or a named component instead.
+- Use a short JSX comment only when a branch or block encodes non-obvious product, domain, or accessibility constraints. Do not narrate straightforward markup.
 - In component files, prefer the main exported component before hoisted helper functions.
 - Below the main component, prefer top-down ordering from higher-level local hooks to the lower-level helpers they call.
+- Use error boundaries at route or independently useful widget seams when one failing surface should not blank the rest of the UI. Do not wrap every component mechanically.
 - Prefer stable local adapters around third-party components when you want to normalize APIs, centralize styling, or keep swap cost low.
 - Group larger apps by route, feature, or domain rather than `components`, `containers`, and `utils` buckets.
 - Create shared UI or common modules only for true cross-cutting primitives.
