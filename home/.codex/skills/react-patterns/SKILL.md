@@ -31,10 +31,13 @@ Use this skill for clearly React or frontend work. These are opinionated default
 ## Hooks, State, And Encapsulation
 
 - Once a concern has related state, handlers, derived values, and effects, encapsulate it in a custom hook.
+- Do not wait for reuse before extracting a hook. Single-use hooks are valid when they keep a component focused and make setup logic easier to scan.
 - A concern does not need local state to justify a hook. If a component gathers related external hooks, derived values, and handlers for one responsibility, extract a small local hook when that makes the component read more like orchestration.
+- Prefer a small colocated `useX` hook over letting one component accumulate a long setup section where everything is tied together. When setup wiring starts competing with the render path, split by concern.
 - Custom hooks should expose a small intentional API. Return the operations the UI needs, not an implementation dump.
 - Prefer plain helper functions for pure branching or data-shaping logic. Reach for a custom hook when the extraction composes hooks, state, refs, or effects.
 - Component bodies should read like orchestration: get data, call domain hooks, render UI.
+- Keep encapsulation local first. Start with a hook beside the component or in the same file, and only promote it to shared code when reuse or module boundaries justify it.
 - Resolve defaults and fallback chains at the boundary instead of scattering them through the tree.
 - Keep state minimal. Derive what you can during render.
 - Keep state close to where it is used. Lift it only when multiple consumers need the same source of truth.
