@@ -55,6 +55,8 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Git local overrides: `~/.gitconfig.local` via `git config-local`
 - Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
 - tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
+- tmux agent status core: `home/.config/tmux/agent-pane-state.sh`, `home/.config/tmux/session-status.sh`, and `home/.config/tmux/session-status-lib.sh`
+- tmux agent status overlays: `~/.config/tmux/session-status-overlay.sh` from an overlay repo when environment-specific collectors are needed
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`

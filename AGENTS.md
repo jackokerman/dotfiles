@@ -22,6 +22,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `home/` is tracked source that dotty links into `$HOME`.
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
+- The generic tmux agent-status collector and renderer live here; overlays may extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
 - Keep reusable generic Codex frontend guidance in `home/.codex/skills/`, split by concern (`react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across overlays.

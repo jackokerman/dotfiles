@@ -11,6 +11,12 @@
 
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
+- `home/.config/tmux/session-status.sh` is the base tmux entrypoint and `home/.config/tmux/session-status-lib.sh` owns the generic local collector and renderer helpers
+- Overlay repos can extend the base collector through `~/.config/tmux/session-status-overlay.sh`
+- Overlay hooks are:
+  - `tmux_agent_overlay_maybe_refresh`
+  - `tmux_agent_overlay_emit_records`
+- Overlay emitters should print tab-separated records in the form `session_label<TAB>agent<TAB>state<TAB>source<TAB>updated_at`
 - The status bar still polls every 2 seconds, but tmux also forces an immediate refresh on `client-session-changed` and `client-attached`
 - For Codex, `working` and `done` remain hook-driven; live pane parsing is only used to detect explicit waiting prompts
 - Codex does not currently expose a dedicated public hook for "waiting for user input", so tmux infers that state from a small allowlist of known prompt shapes
@@ -53,7 +59,7 @@ Use `./scripts/check` as the fast local validation path. It currently:
 
 - runs shell syntax checks for tracked bash and zsh files
 - asserts that zsh runtime artifacts are not present in `home/.config/zsh`
-- runs tmux agent status regression tests
+- runs tmux agent status regression tests, including the optional overlay contract path
 - runs Codex sync validation, including tracked skill UI metadata and overlay frontend workflow manifest checks when present
 
 To install the repo-local pre-commit hook:

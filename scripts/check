@@ -19,6 +19,7 @@ run_bash_syntax() {
         ".githooks/pre-commit"
         "home/.config/tmux/agent-pane-state.sh"
         "home/.config/tmux/agent-status-hook.sh"
+        "home/.config/tmux/session-status-lib.sh"
         "home/.config/tmux/session-status.sh"
         "home/.local/bin/git-delta-diff-filter"
         "home/.local/bin/git-pager-delta"
@@ -33,6 +34,7 @@ run_bash_syntax() {
         "scripts/macos.sh"
         "scripts/sync-machine"
         "scripts/test-tmux-agent-pane-state.sh"
+        "scripts/test-tmux-session-status-overlay.sh"
         "scripts/test-tmux-session-status.sh"
         "scripts/validate-codex-sync.sh"
     )
@@ -73,6 +75,7 @@ run_tmux_agent_status_tests() {
     log "Running tmux agent status regression tests"
     "$PROJECT_ROOT/scripts/test-tmux-agent-pane-state.sh"
     "$PROJECT_ROOT/scripts/test-tmux-session-status.sh"
+    "$PROJECT_ROOT/scripts/test-tmux-session-status-overlay.sh"
 }
 
 main() {
