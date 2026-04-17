@@ -51,6 +51,35 @@ EOF
 )"
 
 run_case \
+    "codex idle prompt footer stays waiting" \
+    "codex" \
+    "waiting" \
+    "$(cat <<'EOF'
+
+
+› Audit this parser
+
+  gpt-5.4 xhigh · 71% left · /workspace/project
+EOF
+)"
+
+run_case \
+    "codex working beats prompt footer" \
+    "codex" \
+    "working" \
+    "$(cat <<'EOF'
+• I’m updating the tests now to lock down the new behavior explicitly.
+
+• Working (2m 27s • esc to interrupt)
+
+
+› Audit this parser
+
+  gpt-5.4 xhigh · 78% left · ~/src/project
+EOF
+)"
+
+run_case \
     "approval prompt stays waiting" \
     "claude" \
     "waiting" \

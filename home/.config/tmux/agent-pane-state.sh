@@ -37,6 +37,18 @@ tmux_codex_line_is_waiting() {
   return 1
 }
 
+tmux_codex_line_is_prompt_footer() {
+  local line="$1"
+
+  case "${line}" in
+    *" left · /"*|*" left · ~/"*)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
 tmux_agent_line_is_working() {
   local line="$1"
 
@@ -121,9 +133,27 @@ tmux_agent_state_is_stale_working() {
 }
 
 tmux_codex_infer_state_from_tail() {
-  local tail="$1"
+  local tail="$1" line="" state="" saw_prompt_footer=0
 
-  tmux_agent_infer_state_from_tail_with_classifier "${tail}" tmux_codex_classify_line
+  while IFS= read -r line; do
+    if tmux_codex_line_is_prompt_footer "${line}"; then
+      saw_prompt_footer=1
+      continue
+    fi
+
+    state=$(tmux_codex_classify_line "${line}")
+    if [[ -n "${state}" ]]; then
+      printf '%s\n' "${state}"
+      return 0
+    fi
+  done < <(printf '%s\n' "${tail}" | tmux_agent_reverse_lines)
+
+  if (( saw_prompt_footer )); then
+    printf '%s\n' "waiting"
+    return 0
+  fi
+
+  printf '%s\n' ""
 }
 
 tmux_agent_infer_state_from_tail() {
