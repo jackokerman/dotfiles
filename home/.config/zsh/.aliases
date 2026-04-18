@@ -73,3 +73,11 @@ alias sesh-rebuild='just -f ~/sesh/justfile build && rm -f ${XDG_CACHE_HOME:-$HO
 alias reload='exec $SHELL -l'
 alias c='clear'
 alias cl='clear'
+
+reload-completions() {
+  local dumpfile="${ZSH_COMPDUMP:-$ZDOTDIR/.zcompdump}"
+  rm -f "$dumpfile"
+  autoload -Uz compinit
+  compinit -d "$dumpfile"
+  rehash
+}

@@ -31,6 +31,22 @@ dotty update
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
 
+## Shell Completions
+
+Tracked zsh config loads completions from these standard locations in interactive shells:
+
+- `~/.local/share/zsh/site-functions` for user-installed tools such as `dotty` or `devvy`
+- `/opt/homebrew/share/zsh/site-functions` for Homebrew-installed tools
+- the bundled `zsh-users/zsh-completions` plugin for extra upstream definitions
+
+If you install a new tool and completion is not available in the current shell yet, run:
+
+```bash
+reload-completions
+```
+
+That deletes the current `compinit` dump, rebuilds completion registration in-place, and rehashes commands.
+
 Temporary bypass for the repo-local pre-commit hook:
 
 ```bash
