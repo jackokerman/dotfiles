@@ -24,11 +24,16 @@ detect_env() {
 
 repo_in_registry() {
     local repo_path="$1"
+    local repo_path_canonical=""
+    local registry_path_canonical=""
     [[ -f "$REGISTRY_PATH" ]] || return 1
+
+    repo_path_canonical="$(cd "$repo_path" && pwd -P)"
 
     while IFS='=' read -r _name path; do
         [[ -n "$_name" && -n "$path" ]] || continue
-        if [[ "$path" == "$repo_path" ]]; then
+        registry_path_canonical="$(cd "$path" && pwd -P)"
+        if [[ "$path" == "$repo_path" || "$registry_path_canonical" == "$repo_path_canonical" ]]; then
             return 0
         fi
     done < "$REGISTRY_PATH"
