@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing Style"
+  short_description: "Drafting guidance for Slack, PRs, reviews, and prose."
+  default_prompt: "Use $writing-style for drafting or editing Slack messages, PR descriptions, review comments, Jira updates, or other prose where personal writing style matters."

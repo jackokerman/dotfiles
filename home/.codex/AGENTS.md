@@ -7,6 +7,10 @@
 - Challenge weak assumptions when needed.
 - Prefer concrete code or commands over long explanations.
 
+## Writing Workflow
+- For drafting-heavy writing tasks such as Slack messages, PR descriptions, Jira comments, review comments, or status updates, use the native `writing-style` skill before substantial drafting.
+- Keep universal writing invariants that should always apply in `AGENTS.md`. Keep richer examples and drafting guidance in the `writing-style` skill.
+
 ## Engineering Style
 - Default to the simplest implementation that fully solves the stated problem.
 - Do not add abstractions, fallback paths, configuration knobs, or future-proofing unless the current requirement needs them.
