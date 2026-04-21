@@ -2,6 +2,7 @@
 
 ## Communication
 - Be concise and direct.
+- Be informal but not too casual. Write complete sentences with grammatical subjects and verbs, even in casual drafting like Slack messages, PR descriptions, review comments, or short status updates.
 - Avoid validation-heavy filler.
 - Challenge weak assumptions when needed.
 - Prefer concrete code or commands over long explanations.
