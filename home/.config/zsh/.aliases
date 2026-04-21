@@ -81,3 +81,20 @@ reload-completions() {
   compinit -d "$dumpfile"
   rehash
 }
+
+git-prompt-help() {
+  local legend repo_root stash_count
+  legend=$'Powerlevel10k git prompt legend\n\n[⇕] ahead of and behind upstream\n[⇡] ahead of upstream\n[⇣] behind upstream\n[=] merge conflicts\n[$] stash entries exist\n[!] unstaged tracked changes\n[+] staged changes\n[?] untracked files\n[action] rebase, merge, cherry-pick, bisect, etc. in progress\n\nUseful checks\n  git status --short --branch\n  git diff\n  git diff --cached\n  git ls-files --others --exclude-standard\n  git stash list\n'
+  print -r -- "$legend"
+
+  repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || return 0
+  print -r -- "Current repo: $repo_root"
+  git status --short --branch
+
+  stash_count=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
+  if [[ $stash_count != 0 ]]; then
+    print
+    print -r -- "Recent stashes:"
+    git stash list --max-count=5
+  fi
+}

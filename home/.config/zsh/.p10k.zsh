@@ -1534,6 +1534,17 @@
     gitstatus_query_dotfiles_prompt_ -d "$PWD" DOTFILES_P10K || return
     [[ $VCS_STATUS_RESULT == ok-sync ]] || return
 
+    # Legend:
+    #   ⇕ ahead of and behind upstream
+    #   ⇡ ahead of upstream
+    #   ⇣ behind upstream
+    #   = merge conflicts
+    #   $ stash entries exist
+    #   ! unstaged tracked changes
+    #   + staged changes
+    #   ? untracked files
+    #   action text for rebase/merge/cherry-pick/etc.
+    # Run `git-prompt-help` for the full legend and useful cleanup commands.
     local vcs_status=
     if (( VCS_STATUS_COMMITS_AHEAD && VCS_STATUS_COMMITS_BEHIND )); then
       vcs_status+='⇕'

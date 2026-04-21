@@ -42,3 +42,4 @@ Tracked config belongs under `home/`. Mutable runtime state does not. Do not add
 - [README.md](README.md) for install, daily commands, and the public repo map
 - [docs/layout.md](docs/layout.md) for overlays, local overrides, and source/runtime boundaries
 - [docs/agent-tooling.md](docs/agent-tooling.md) for tmux, Codex, and Claude operational details
+- [docs/git-prompt-status.md](docs/git-prompt-status.md) for the Powerlevel10k git status legend and cleanup guidance

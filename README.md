@@ -63,11 +63,13 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - `scripts/`: setup, sync, and validation helpers
 - `docs/layout.md`: layout, overlays, and source/runtime boundaries
 - `docs/agent-tooling.md`: tmux, Codex, and Claude operational notes
+- `docs/git-prompt-status.md`: Powerlevel10k git prompt symbol legend and cleanup guidance
 - `home/.config/tmux/README.md`: code-local tmux agent-status architecture and change guide
 
 ## Where To Change Things
 
 - Shell: `home/.zshenv` and `home/.config/zsh/`
+- Git prompt legend in shell: run `git-prompt-help`
 - Git shared defaults: `home/.config/git/config` via `git config-shared`
 - Git local overrides: `~/.gitconfig.local` via `git config-local`
 - Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
@@ -100,3 +102,4 @@ Raycast still needs one-time manual setup:
 
 - [Layout and overlays](docs/layout.md)
 - [Agent tooling and managed config](docs/agent-tooling.md)
+- [Git prompt status legend](docs/git-prompt-status.md)
