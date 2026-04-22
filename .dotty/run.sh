@@ -83,6 +83,7 @@ setup_shell() {
 
 setup_brew() {
     title "Installing Homebrew packages"
+    local brewfile="$DOTFILES/Brewfile"
 
     if ! command -v brew >/dev/null 2>&1; then
         if [ "$(uname -s)" != "Darwin" ]; then
@@ -105,25 +106,18 @@ setup_brew() {
     fi
 
     info "Installing packages from Brewfile"
-    if brew bundle; then
+    if brew bundle --file "$brewfile"; then
         success "Homebrew packages installed successfully"
     else
         warning "Some Homebrew packages failed to install. Continuing with remaining setup..."
     fi
-}
 
-should_run_brew() {
-    if [[ "$DOTTY_COMMAND" == "install" ]]; then
-        return 0
+    info "Removing formulae and casks not present in Brewfile"
+    if brew bundle cleanup --file "$brewfile" --force --formula --cask; then
+        success "Homebrew cleanup completed"
+    else
+        warning "Some Homebrew cleanup steps failed. Continuing with remaining setup..."
     fi
-
-    case "${DOTFILES_RUN_BREW:-0}" in
-        1|true|yes|on)
-            return 0
-            ;;
-    esac
-
-    return 1
 }
 
 # macOS
@@ -323,9 +317,7 @@ case "$DOTTY_COMMAND" in
         setup_git_hooks
 
         if [[ "$(uname -s)" == "Darwin" ]]; then
-            if should_run_brew; then
-                setup_brew
-            fi
+            setup_brew
 
             if [[ "$DOTTY_COMMAND" == "install" ]]; then
                 setup_macos

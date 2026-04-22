@@ -15,6 +15,7 @@ if OS.mac?
   cask "1password"                  # password manager
   cask "visual-studio-code"         # code editor
   cask "codex"                      # OpenAI coding agent terminal CLI
+  cask "claude-code"                # Anthropic coding agent terminal CLI
   cask "handy"                      # window snapping and management
 end
 
