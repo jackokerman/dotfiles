@@ -10,7 +10,7 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 ## Code Shape And Defaults
 
 - Prefer plain functions and typed objects over classes unless the surrounding code already uses class-heavy patterns.
-- Prefer small focused functions and early returns to reduce nesting.
+- Prefer small focused functions. Use guard clauses and early returns to flatten control flow instead of nesting conditionals when a branch can exit early.
 - Prefer `const` by default and `let` only when reassignment is part of the logic.
 - Prefer template literals over string concatenation when dynamic values are involved.
 
