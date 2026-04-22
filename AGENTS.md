@@ -30,6 +30,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
 - `home/.config/zsh/.zshrc` owns interactive completion discovery; user-installed completions live under `~/.local/share/zsh/site-functions`, and Homebrew completions under `/opt/homebrew/share/zsh/site-functions`.
+- Keep generic NeoVim config in `home/.config/nvim/`; devbox-only NeoVim install logic belongs in the private overlay repo.
 - The generic tmux agent-status collector and renderer live here; overlays may extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
 - Keep reusable generic Codex skills in `home/.codex/skills/`, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.

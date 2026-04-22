@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "nightfly": {
+      "rev": "caaba387a4a50cf08791395acc4a5b7363367cff",
+      "src": "https://github.com/bluz71/vim-nightfly-colors"
+    }
+  }
+}

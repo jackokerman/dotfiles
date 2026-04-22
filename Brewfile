@@ -27,6 +27,7 @@ brew "gh"                           # GitHub CLI
 brew "git"                          # git version control (latest)
 brew "git-delta"                    # syntax-highlighted git diff pager
 brew "jq"                           # parse and work with JSON
+brew "neovim"                       # extensible modal editor
 brew "python"                       # python (latest)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)

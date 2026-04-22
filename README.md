@@ -69,6 +69,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 ## Where To Change Things
 
 - Shell: `home/.zshenv` and `home/.config/zsh/`
+- NeoVim: `home/.config/nvim/`
 - Git prompt legend in shell: run `git-prompt-help`
 - Git shared defaults: `home/.config/git/config` via `git config-shared`
 - Git local overrides: `~/.gitconfig.local` via `git config-local`
