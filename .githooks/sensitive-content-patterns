@@ -1,0 +1,15 @@
+# Default denylist for this public repo.
+# Each non-comment line is an extended regular expression.
+
+s[t]ripe
+c[o]rp\.s[t]ripe
+t[r]ailhead
+j[i]ra\.c[o]rp
+h[t]tps://go
+d[e]vbox(es)?
+r[e]motedevbox
+d[e]vvy
+o[v]erlay repos?
+p[r]ivate o[v]erlay repo
+w[o]rk-specific
+w[o]rk-only

@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This repo is the public, generic layer; work-specific behavior lives in overlay repos.
+Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This repo is the public, generic layer for shared personal defaults.
 
 ## Install
 
@@ -35,7 +35,7 @@ dotty update
 
 Tracked zsh config loads completions from these standard locations in interactive shells:
 
-- `~/.local/share/zsh/site-functions` for user-installed tools such as `dotty` or `devvy`
+- `~/.local/share/zsh/site-functions` for user-installed tools such as `dotty`
 - `/opt/homebrew/share/zsh/site-functions` for Homebrew-installed tools
 - the bundled `zsh-users/zsh-completions` plugin for extra upstream definitions
 
@@ -61,7 +61,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - `home/`: tracked source files that dotty links into `$HOME`
 - `.dotty/`: repo identity and post-link hook
 - `scripts/`: setup, sync, and validation helpers
-- `docs/layout.md`: layout, overlays, and source/runtime boundaries
+- `docs/layout.md`: layout, dotty chain, and source/runtime boundaries
 - `docs/agent-tooling.md`: tmux, Codex, and Claude operational notes
 - `docs/git-prompt-status.md`: Powerlevel10k git prompt symbol legend and cleanup guidance
 - `home/.config/tmux/README.md`: code-local tmux agent-status architecture and change guide
@@ -76,12 +76,12 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
 - tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
 - tmux agent status core: `home/.config/tmux/agent-pane-state.sh`, `home/.config/tmux/session-status.sh`, and `home/.config/tmux/session-status-lib.sh`
-- tmux agent status overlays: `~/.config/tmux/session-status-overlay.sh` from an overlay repo when environment-specific collectors are needed
+- tmux agent status extension hook: `~/.config/tmux/session-status-overlay.sh` when you need extra collectors outside the base repo
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 
-Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks overlay frontend workflow manifests when they are present in the dotty chain.
+Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
 
 Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories.
 
@@ -101,6 +101,6 @@ Raycast still needs one-time manual setup:
 
 ## More Detail
 
-- [Layout and overlays](docs/layout.md)
+- [Layout and dotty chain](docs/layout.md)
 - [Agent tooling and managed config](docs/agent-tooling.md)
 - [Git prompt status legend](docs/git-prompt-status.md)

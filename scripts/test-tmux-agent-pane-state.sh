@@ -136,7 +136,7 @@ run_case \
     "codex" \
     "" \
     "$(cat <<'EOF'
-    *  codeowner-approval-v2                                   https://go/code-re...
+    *  codeowner-approval-v2                                   https://example.com/code-re...
 EOF
 )"
 

@@ -193,7 +193,7 @@ setup_claude() {
     # Symlink tracked config files
     create_symlink "$src_dir/CLAUDE.md" "$claude_dir/CLAUDE.md"
 
-    # Symlink tracked config directories as individual files so overlay
+    # Symlink tracked config directories as individual files so later
     # repos can add their own entries alongside without dotty needing
     # to explode a directory symlink.
     for dir in hooks rules skills; do
@@ -206,7 +206,7 @@ setup_claude() {
         fi
     done
 
-    # Copy settings (not symlink) so overlays can modify without
+    # Copy settings (not symlink) so later repos can modify without
     # writing through into this repo's source tree.
     if [[ -f "$src_dir/settings.json" ]]; then
         cp "$src_dir/settings.json" "$claude_dir/settings.json"

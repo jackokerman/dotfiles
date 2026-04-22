@@ -1,4 +1,4 @@
-# Layout and Overlays
+# Layout and Dotty Chain
 
 ## Core Model
 
@@ -21,7 +21,7 @@ DOTTY_NAME="dotfiles"
 DOTTY_EXTENDS=()
 ```
 
-Overlay repos extend the base with their own `DOTTY_EXTENDS` entry. Dotty processes the chain base-first so later repos can add or override files without rewriting the base.
+Additional repos can extend the base with their own `DOTTY_EXTENDS` entry. Dotty processes the chain base-first so later repos can add or override files without rewriting the base.
 
 `dotty` commands you will actually use here:
 
@@ -32,7 +32,7 @@ Overlay repos extend the base with their own `DOTTY_EXTENDS` entry. Dotty proces
 
 ## Local Overrides
 
-Tracked shared config should stay generic. Machine- or environment-specific values belong in local override files or overlay repos.
+Tracked shared config should stay generic. Machine- or environment-specific values belong in local override files or later repos in the dotty chain.
 
 Current conventions:
 
@@ -40,7 +40,7 @@ Current conventions:
 - `~/.gitconfig.local` for machine-specific git config
 - `~/.zshenv.local` for env vars and path tweaks
 - `~/.zshrc.local` for interactive shell overrides
-- overlay repos for work-specific or machine-family-specific behavior
+- later repos in the dotty chain for machine-family-specific behavior
 
 For Git config changes in this setup, use `git config-shared`, `git config-local`, or explicit `git config --file ...`. Avoid `git config --global`, which writes unmanaged `~/.gitconfig`.
 

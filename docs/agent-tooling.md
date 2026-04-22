@@ -13,8 +13,8 @@
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
 - `home/.config/tmux/session-status.sh` is the base tmux entrypoint and `home/.config/tmux/session-status-lib.sh` owns the generic local collector and renderer helpers
 - `home/.config/tmux/README.md` is the code-local change guide for the tmux agent-status stack
-- Overlay repos can extend the base collector through `~/.config/tmux/session-status-overlay.sh`
-- Overlay hooks are:
+- Later repos in the dotty chain can extend the base collector through `~/.config/tmux/session-status-overlay.sh`
+- The extension hook names are:
   - `tmux_agent_overlay_maybe_refresh`
   - `tmux_agent_overlay_emit_records`
 - Overlay emitters should print tab-separated records in the form `session_label<TAB>agent<TAB>state<TAB>source<TAB>updated_at`
@@ -31,9 +31,9 @@ The repo hook keeps `~/.claude` as a real directory and manages tracked contents
 
 - `CLAUDE.md` is symlinked into place
 - tracked `hooks/`, `rules/`, and `skills/` entries are linked individually
-- `settings.json` is copied so overlays can extend it without writing through into this repo
+- `settings.json` is copied so later repos can extend it without writing through into this repo
 
-Overlay repos can add more entries to the same live `~/.claude/` directories.
+Later repos in the dotty chain can add more entries to the same live `~/.claude/` directories.
 
 ## Codex
 
@@ -60,8 +60,8 @@ Use `./scripts/check` as the fast local validation path. It currently:
 
 - runs shell syntax checks for tracked bash and zsh files
 - asserts that zsh runtime artifacts are not present in `home/.config/zsh`
-- runs tmux agent status regression tests, including the optional overlay contract path
-- runs Codex sync validation, including tracked skill UI metadata and overlay frontend workflow manifest checks when present
+- runs tmux agent status regression tests, including the optional extension contract path
+- runs Codex sync validation, including tracked skill UI metadata and extra frontend workflow manifest checks when present
 
 To install the repo-local pre-commit hook:
 

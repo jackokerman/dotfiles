@@ -7,4 +7,5 @@ if [[ "${SKIP_DOTFILES_CHECK:-0}" == "1" || "${SKIP_CODEX_SYNC_VALIDATE:-0}" == 
 fi
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+"$REPO_ROOT/scripts/check-sensitive-content.sh"
 exec "$REPO_ROOT/scripts/check"
