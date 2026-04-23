@@ -1,7 +1,7 @@
 local opt = vim.opt
 
 opt.number = true
-opt.relativenumber = true
+opt.relativenumber = false
 opt.termguicolors = true
 opt.clipboard = "unnamedplus"
 opt.mouse = "a"
