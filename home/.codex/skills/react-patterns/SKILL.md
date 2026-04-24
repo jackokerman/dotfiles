@@ -23,6 +23,7 @@ Use this skill for clearly React or frontend work. These are opinionated default
 - Keep leaf components boring and usually stateless. Parents decide what to render; children render resolved props and emit events.
 - Prefer composition over mode flags or internal branching. If branches represent different workflows or shapes, split components.
 - Move pure helpers outside the component. If extracted markup grows its own branches, mapping, or state, make it a named component or hook.
+- If a helper returns UI and is meant to be rendered, make it a real component with a capitalized name and render it with JSX instead of calling `getFoo()`-style functions from the parent render path.
 - Use configuration data for repeated navigation, filters, menus, tabs, or other near-identical UI instead of hardcoding markup in multiple places.
 - Extract repeated JSX or complex list rendering into a named component when it clarifies structure. Keep a mapping inline only when rendering that list is the component's main responsibility, and do not add wrappers that only rename markup.
 - Split components by responsibility, not line count. If loops, branches, or auxiliary state make the main render path hard to scan, extract a named component, helper, or hook.
@@ -41,6 +42,7 @@ Use this skill for clearly React or frontend work. These are opinionated default
 - Resolve defaults and fallback chains at the boundary instead of scattering them through the tree.
 - Keep state minimal. Derive what you can during render.
 - Keep state close to where it is used. Lift it only when multiple consumers need the same source of truth.
+- Do not pass raw state setter functions down the tree by default. Prefer intentful handlers such as `onClose`, `onSave`, or `onToggle` that keep state ownership and business rules at the boundary that owns them.
 - Let the nearest responsible component own validation, mutation flow, and form orchestration. Reusable inputs, buttons, and other leaf primitives should stay dumb.
 - Use reducers when behavior is driven by explicit transitions or many related events.
 - Reach for external client-state libraries only when local state, context, and reducers no longer model the problem cleanly.
@@ -104,6 +106,9 @@ export function useSession() {
 ## Testing
 
 - Test behavior and user outcomes, not implementation details.
+- Do not default to snapshots. Prefer assertions that explain the user-visible behavior.
 - Prefer a few meaningful tests over snapshot-heavy or mock-heavy coverage.
 - Cover default rendering, state transitions, events, edge cases, and failure paths when behavior changes.
 - Write integration tests for flows where the interaction between components is the real risk.
+- For async DOM appearance, prefer `findBy*` queries over wrapping `getBy*` calls in `waitFor`.
+- When `waitFor` is still needed, wait for one concrete assertion. Do not use empty callbacks or bundle multiple assertions into the same `waitFor`.

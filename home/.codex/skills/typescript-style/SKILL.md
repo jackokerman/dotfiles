@@ -20,6 +20,7 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 - Prefer named exports over default exports unless the local module pattern is already established.
 - When an API has more than one or two related inputs, prefer a typed options object over a long positional parameter list.
 - Keep shared types close to the module that owns them. Extract only when they are reused or part of a public contract.
+- For helpers, accept the smallest structural type that expresses what they need. Do not require a full generated object or a broad union when a narrower object shape is enough.
 - For React components, extract props into a named `FooProps` type instead of inlining a large object type in the component signature.
 
 ## Functions And Parameters
