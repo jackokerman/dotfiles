@@ -20,6 +20,16 @@ run_sync() {
         "${TARGET_SCRIPT}"
 }
 
+run_sync_with_fake_handy() {
+    local prompt_path="$1" settings_path="$2" fake_bin_dir="$3" state_dir="$4"
+
+    PATH="${fake_bin_dir}:$PATH" \
+        HANDY_PROMPT_SOURCE="${prompt_path}" \
+        HANDY_SETTINGS_PATH="${settings_path}" \
+        HANDY_TEST_STATE_DIR="${state_dir}" \
+        "${TARGET_SCRIPT}"
+}
+
 write_prompt_file() {
     local path="$1"
 
@@ -76,6 +86,41 @@ write_settings_with_managed_prompt() {
   }
 }
 EOF
+}
+
+write_fake_handy_commands() {
+    local fake_bin_dir="$1"
+
+    mkdir -p "${fake_bin_dir}"
+
+    cat >"${fake_bin_dir}/pgrep" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -f "${HANDY_TEST_STATE_DIR}/handy-running" ]]; then
+    exit 0
+fi
+
+exit 1
+EOF
+
+    cat >"${fake_bin_dir}/osascript" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+touch "${HANDY_TEST_STATE_DIR}/quit-called"
+rm -f "${HANDY_TEST_STATE_DIR}/handy-running"
+EOF
+
+    cat >"${fake_bin_dir}/open" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+touch "${HANDY_TEST_STATE_DIR}/open-called"
+touch "${HANDY_TEST_STATE_DIR}/handy-running"
+EOF
+
+    chmod +x "${fake_bin_dir}/pgrep" "${fake_bin_dir}/osascript" "${fake_bin_dir}/open"
 }
 
 assert_prompt_value() {
@@ -206,8 +251,75 @@ test_skips_when_already_in_sync() {
     rm -rf "${tmp_dir}"
 }
 
+test_restarts_handy_when_managed_prompt_changes() {
+    local tmp_dir="" prompt_path="" settings_path="" fake_bin_dir="" state_dir=""
+
+    tmp_dir="$(mktemp -d)"
+    prompt_path="${tmp_dir}/prompt.txt"
+    settings_path="${tmp_dir}/settings_store.json"
+    fake_bin_dir="${tmp_dir}/bin"
+    state_dir="${tmp_dir}/state"
+
+    mkdir -p "${state_dir}"
+    touch "${state_dir}/handy-running"
+
+    write_prompt_file "${prompt_path}"
+    write_settings_without_managed_prompt "${settings_path}"
+    write_fake_handy_commands "${fake_bin_dir}"
+
+    run_sync_with_fake_handy "${prompt_path}" "${settings_path}" "${fake_bin_dir}" "${state_dir}"
+
+    assert_equal \
+        "restart path selects the managed prompt" \
+        "${MANAGED_PROMPT_ID}" \
+        "$(jq -r '.settings.post_process_selected_prompt_id' "${settings_path}")"
+    assert_equal \
+        "restart path quits Handy before syncing" \
+        "true" \
+        "$([[ -f "${state_dir}/quit-called" ]] && echo true || echo false)"
+    assert_equal \
+        "restart path relaunches Handy after syncing" \
+        "true" \
+        "$([[ -f "${state_dir}/open-called" ]] && echo true || echo false)"
+
+    rm -rf "${tmp_dir}"
+}
+
+test_does_not_restart_handy_when_prompt_is_already_in_sync() {
+    local tmp_dir="" prompt_path="" settings_path="" fake_bin_dir="" state_dir=""
+
+    tmp_dir="$(mktemp -d)"
+    prompt_path="${tmp_dir}/prompt.txt"
+    settings_path="${tmp_dir}/settings_store.json"
+    fake_bin_dir="${tmp_dir}/bin"
+    state_dir="${tmp_dir}/state"
+
+    mkdir -p "${state_dir}"
+    touch "${state_dir}/handy-running"
+
+    write_prompt_file "${prompt_path}"
+    write_settings_with_managed_prompt "${settings_path}"
+    run_sync "${prompt_path}" "${settings_path}"
+    write_fake_handy_commands "${fake_bin_dir}"
+
+    run_sync_with_fake_handy "${prompt_path}" "${settings_path}" "${fake_bin_dir}" "${state_dir}"
+
+    assert_equal \
+        "already-synced prompt does not quit Handy" \
+        "false" \
+        "$([[ -f "${state_dir}/quit-called" ]] && echo true || echo false)"
+    assert_equal \
+        "already-synced prompt does not relaunch Handy" \
+        "false" \
+        "$([[ -f "${state_dir}/open-called" ]] && echo true || echo false)"
+
+    rm -rf "${tmp_dir}"
+}
+
 test_skips_when_settings_file_is_missing
 test_adds_managed_prompt_and_preserves_existing_state
 test_updates_existing_managed_prompt_without_duplication
 test_fails_for_invalid_settings_shape
 test_skips_when_already_in_sync
+test_restarts_handy_when_managed_prompt_changes
+test_does_not_restart_handy_when_prompt_is_already_in_sync
