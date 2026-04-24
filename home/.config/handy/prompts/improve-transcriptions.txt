@@ -1,6 +1,6 @@
 Clean this transcript.
 
-This is a mechanical cleanup task, not a rewrite. Preserve the original language, meaning, intent, and word order as much as possible. Do not paraphrase, summarize, translate, reorder clauses, or improve the writing style.
+This is a conservative cleanup task, not a rewrite. Preserve the original language, meaning, intent, certainty, scope, and word order as much as possible. Do not paraphrase, summarize, translate, reorder clauses, or improve the writing style.
 
 Apply these rules:
 1. Fix spelling, capitalization, and punctuation errors.
@@ -15,9 +15,12 @@ Apply these rules:
    - exclamation point -> !
    - colon -> :
    - semicolon -> ;
-4. Remove filler words, filler phrases, and hedge phrases only when they add no meaning and the remaining sentence is still clear and grammatical.
-   - Common examples: um, uh, like as filler, you know, I mean, anyways, so anyways, kind of, sort of, basically, I guess, I'm wondering if maybe, if that makes sense
-   - Delete sentence-final filler clauses like "if that makes sense" only when they do not add meaning
+4. Remove filler words, discourse markers, verbal tics, and hedge phrases only when they add no meaning and the remaining sentence is still clear and grammatical.
+   - Common examples: um, uh, like as filler, you know, I mean, anyways, so anyways, kind of, sort of, basically, I guess, if that makes sense
+   - Remove filler anywhere in the sentence, not just at the end
+   - If a filler phrase appears multiple times in one sentence or clause, drop all unnecessary copies
+   - Example: "I'm wondering if maybe, you know, if you know, if there was a change" -> "I'm wondering if there was a change"
+   - Keep phrases that materially express uncertainty or scope
    - If deleting a phrase would make the sentence unclear, ungrammatical, or change the speaker's intent, keep it
 5. Remove obvious transcription duplication.
    - Collapse immediate repeated words: the the -> the
@@ -26,16 +29,23 @@ Apply these rules:
    - Preserve 1 meaningful copy when the repeated word itself matters: mainly mainly want -> mainly want
    - Collapse very long repeated runs to a single instance unless the repetition is clearly meaningful
 6. After removing filler or duplication, make the smallest possible cleanup needed so the sentence still makes sense and remains grammatically correct.
-7. Keep deliberate repetition only when it clearly affects meaning.
-8. Preserve exact technical identifiers, filenames, paths, commands, key combinations, acronyms, and Markdown structure when they appear.
+7. Repair short, obviously garbled spans only when the intended wording is highly likely from nearby context.
+   - Use nearby words, sentence structure, and topic context to fix likely speech-to-text errors, homophones, or broken phrase boundaries
+   - Prefer the smallest plausible repair
+   - Example: "I feel like body will always be running, sales forget to do that" -> "I feel like Handy will always be running, so I'll forget to do that"
+   - Restore likely technical identifiers when nearby context strongly supports them
+   - If confidence is low, keep the original wording rather than guessing
+8. Keep deliberate repetition only when it clearly affects meaning.
+9. Preserve exact technical identifiers, filenames, paths, commands, key combinations, acronyms, and Markdown structure when they appear.
    - Examples: AGENTS.md, tmux, useEffect, option+space
    - Do not guess unknown identifiers or rewrite them into more common words
-9. If you are unsure whether a word or phrase is filler or meaningful, keep it.
+10. If you are unsure whether a word or phrase is filler or meaningful, keep it.
 
 Important constraints:
 - Prefer the smallest possible edit.
 - Preserve the speaker's intent, certainty, scope, and qualifiers unless they are clearly filler or transcription artifacts.
 - Deleting filler, hedge phrases, and accidental duplication is allowed and does not count as paraphrasing.
+- Small local repairs are allowed when transcription artifacts make the sentence nonsensical and the intended wording is highly likely.
 - Keep all remaining words in their original order when possible.
 - Do not add new information.
 - Do not rewrite for style.
