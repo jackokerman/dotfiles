@@ -351,17 +351,6 @@
   # Branch icon. Set this parameter to '\UE0A0 ' for the popular Powerline branch icon.
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=' '
 
-  # Custom git status segments use the bundled gitstatus backend directly so they can skip work
-  # entirely in disabled repo roots such as large monorepos.
-  local dotfiles_gitstatus_plugin="${ZPLUGINDIR:-${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins}/powerlevel10k/gitstatus/gitstatus.plugin.zsh"
-  if [[ -r $dotfiles_gitstatus_plugin ]]; then
-    builtin source "$dotfiles_gitstatus_plugin" _dotfiles_prompt_ || true
-    if (( $+functions[gitstatus_start_dotfiles_prompt_] )); then
-      gitstatus_stop_dotfiles_prompt_ DOTFILES_P10K >/dev/null 2>&1 || true
-      gitstatus_start_dotfiles_prompt_ -s 1 -u 1 -c 1 -d 1 DOTFILES_P10K >/dev/null 2>&1 || true
-    fi
-  fi
-
   ##########################[ status: exit code of the last command ]###########################
   # Enable OK_PIPE, ERROR_PIPE and ERROR_SIGNAL status states to allow us to enable, disable and
   # style them independently from the regular OK and ERROR state.
@@ -1473,6 +1462,95 @@
     return 0
   }
 
+  function dotfiles_p10k_git_action() {
+    emulate -L zsh
+
+    local git_dir
+    git_dir=$(command git rev-parse --absolute-git-dir 2>/dev/null) || return 1
+
+    if [[ -d $git_dir/rebase-merge || -d $git_dir/rebase-apply ]]; then
+      print -r -- rebase
+    elif [[ -f $git_dir/MERGE_HEAD ]]; then
+      print -r -- merge
+    elif [[ -f $git_dir/CHERRY_PICK_HEAD ]]; then
+      print -r -- cherry-pick
+    elif [[ -f $git_dir/REVERT_HEAD ]]; then
+      print -r -- revert
+    elif [[ -f $git_dir/BISECT_LOG ]]; then
+      print -r -- bisect
+    else
+      return 1
+    fi
+  }
+
+  # Parse porcelain v2 output directly instead of using gitstatusd here. The custom segment only
+  # renders outside disabled repo roots, so one status call keeps the behavior predictable without
+  # reintroducing slow prompt work in large repos.
+  function dotfiles_p10k_git_status_flags() {
+    emulate -L zsh
+
+    local status_output
+    status_output=$(
+      command git status \
+        --porcelain=v2 \
+        --branch \
+        --ahead-behind \
+        --show-stash \
+        --ignore-submodules=dirty \
+        --no-renames \
+        2>/dev/null
+    ) || return 1
+
+    local line vcs_status action
+    local -i ahead=0 behind=0 conflicted=0 stashed=0 staged=0 unstaged=0 untracked=0
+
+    while IFS= read -r line; do
+      case $line in
+        '# branch.ab +'*)
+          local ab=${line#'# branch.ab +'}
+          ahead=${ab%% -*}
+          behind=${ab#* -}
+          ;;
+        '# stash '*)
+          (( ${line#'# stash '} > 0 )) && stashed=1
+          ;;
+        '1 '*|'2 '*)
+          [[ ${line[3,3]} != '.' ]] && staged=1
+          [[ ${line[4,4]} != '.' ]] && unstaged=1
+          ;;
+        'u '*)
+          conflicted=1
+          ;;
+        '? '*)
+          untracked=1
+          ;;
+      esac
+    done <<< "$status_output"
+
+    if (( ahead && behind )); then
+      vcs_status+='⇕'
+    elif (( ahead )); then
+      vcs_status+='⇡'
+    elif (( behind )); then
+      vcs_status+='⇣'
+    fi
+
+    (( conflicted )) && vcs_status+='='
+    (( stashed    )) && vcs_status+='$'
+    (( unstaged   )) && vcs_status+='!'
+    (( staged     )) && vcs_status+='+'
+    (( untracked  )) && vcs_status+='?'
+
+    action=$(dotfiles_p10k_git_action) || action=
+    if [[ -n $action ]]; then
+      [[ -n $vcs_status ]] && vcs_status+=' '
+      vcs_status+="${action//\%/%%}"
+    fi
+
+    [[ -n $vcs_status ]] || return 1
+    print -r -- "$vcs_status"
+  }
+
   function dotfiles_p10k_git_ref() {
     emulate -L zsh
 
@@ -1529,10 +1607,6 @@
     emulate -L zsh
 
     dotfiles_p10k_should_show_git_status || return
-    (( $+functions[gitstatus_query_dotfiles_prompt_] )) || return
-
-    gitstatus_query_dotfiles_prompt_ -d "$PWD" DOTFILES_P10K || return
-    [[ $VCS_STATUS_RESULT == ok-sync ]] || return
 
     # Legend:
     #   ⇕ ahead of and behind upstream
@@ -1545,27 +1619,8 @@
     #   ? untracked files
     #   action text for rebase/merge/cherry-pick/etc.
     # Run `git-prompt-help` for the full legend and useful cleanup commands.
-    local vcs_status=
-    if (( VCS_STATUS_COMMITS_AHEAD && VCS_STATUS_COMMITS_BEHIND )); then
-      vcs_status+='⇕'
-    elif (( VCS_STATUS_COMMITS_AHEAD )); then
-      vcs_status+='⇡'
-    elif (( VCS_STATUS_COMMITS_BEHIND )); then
-      vcs_status+='⇣'
-    fi
-
-    (( VCS_STATUS_NUM_CONFLICTED )) && vcs_status+='='
-    (( VCS_STATUS_STASHES       )) && vcs_status+='$'
-    (( VCS_STATUS_HAS_UNSTAGED == 1 )) && vcs_status+='!'
-    (( VCS_STATUS_NUM_STAGED    )) && vcs_status+='+'
-    (( VCS_STATUS_HAS_UNTRACKED == 1 )) && vcs_status+='?'
-
-    if [[ -n $VCS_STATUS_ACTION ]]; then
-      [[ -n $vcs_status ]] && vcs_status+=' '
-      vcs_status+="${VCS_STATUS_ACTION//\%/%%}"
-    fi
-
-    [[ -n $vcs_status ]] || return
+    local vcs_status
+    vcs_status=$(dotfiles_p10k_git_status_flags) || return
     p10k segment -f 9 -i '' -t "[${vcs_status}]"
   }
 
