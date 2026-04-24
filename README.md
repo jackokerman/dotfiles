@@ -67,6 +67,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 ## Where To Change Things
 
 - Shell: `home/.zshenv` and `home/.config/zsh/`
+- Sesh picker and one-shot launcher helpers: `home/.local/bin/sesh-pick` and `home/.local/bin/sesh-one-shot`
 - NeoVim: `home/.config/nvim/`
 - Git prompt legend in shell: run `git-prompt-help`
 - Git shared defaults: `home/.config/git/config` via `git config-shared`

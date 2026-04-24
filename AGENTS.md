@@ -32,6 +32,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `scripts/` contains setup, sync, and validation helpers.
 - `tests/tmux-agent-status/` holds the tmux agent-status regression tests.
 - `home/.config/zsh/.zshrc` owns interactive completion discovery; user-installed completions live under `~/.local/share/zsh/site-functions`, and Homebrew completions under `/opt/homebrew/share/zsh/site-functions`.
+- Keep the generic sesh picker and one-shot launcher helpers in `home/.local/bin/`; session definitions that use them belong in the appropriate repo later in the dotty chain.
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
 - The generic tmux agent-status entrypoints live in `home/.config/tmux/`, and the private implementation lives in `home/.config/tmux/agent-status/`; extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Run a one-shot sesh launcher and invalidate sesh's tmux session cache when it exits.
+
+set -euo pipefail
+
+if (($# == 0)); then
+  printf 'usage: %s <command> [args...]\n' "${0##*/}" >&2
+  exit 64
+fi
+
+SESH_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob"
+
+cleanup() {
+  rm -f "${SESH_CACHE}"
+}
+
+trap cleanup EXIT
+
+"$@"

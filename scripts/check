@@ -26,6 +26,7 @@ run_bash_syntax() {
         "home/.local/bin/git-delta-diff-filter"
         "home/.local/bin/git-pager-delta"
         "home/.local/bin/sesh-pick"
+        "home/.local/bin/sesh-one-shot"
         "home/.local/bin/tmux-link-test"
         "home/.raycast-scripts/arrange-windows.sh"
         "install.sh"
