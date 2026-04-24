@@ -23,6 +23,13 @@
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
 - Use another runtime only when it has a clear operational advantage.
 
+## Research Workflow
+- For questions about tool behavior, configuration, or documented workflows, prefer deterministic verification over inference.
+- Check the local environment, CLI help, tracked config, or repo sources first when they are available.
+- Use official documentation as the primary source of truth for product behavior and configuration.
+- If the docs are unclear or incomplete and source code is available, inspect the relevant implementation, schema, or tests before answering.
+- Be explicit about what was confirmed from docs or source and what remains uncertain. Avoid conjecture when verification is possible.
+
 ## Routing
 - Generic personal preferences and reusable non-work Codex setup belong in the public `dotfiles` repo.
 - Company-specific workflow, permissions, and work-only Codex setup belong in the private overlay repo.
