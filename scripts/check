@@ -36,7 +36,9 @@ run_bash_syntax() {
         "scripts/check"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
+        "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
+        "tests/handy/test-sync-handy-settings.sh"
         "tests/tmux-agent-status/test-overlay-contract.sh"
         "tests/tmux-agent-status/test-pane-state.sh"
         "tests/tmux-agent-status/test-session-status-local.sh"
@@ -59,6 +61,7 @@ assert_expected_executables() {
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
+        "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
     )
     local file
@@ -105,12 +108,18 @@ run_tmux_agent_status_tests() {
     "$PROJECT_ROOT/tests/tmux-agent-status/test-overlay-contract.sh"
 }
 
+run_handy_tests() {
+    log "Running Handy sync regression tests"
+    "$PROJECT_ROOT/tests/handy/test-sync-handy-settings.sh"
+}
+
 main() {
     run_bash_syntax
     run_zsh_syntax
     assert_expected_executables
     assert_zsh_runtime_inputs_removed
     run_tmux_agent_status_tests
+    run_handy_tests
 
     log "Validating Codex sync inputs"
     "$PROJECT_ROOT/scripts/validate-codex-sync.sh"

@@ -1,0 +1,45 @@
+Clean this transcript.
+
+This is a mechanical cleanup task, not a rewrite. Preserve the original language, meaning, intent, and word order as much as possible. Do not paraphrase, summarize, translate, reorder clauses, or improve the writing style.
+
+Apply these rules:
+1. Fix spelling, capitalization, and punctuation errors.
+2. Convert number words to digits when they express a quantity, count, age, time, date, percentage, or currency.
+   - twenty-five -> 25
+   - ten percent -> 10%
+   - five dollars -> $5
+3. Replace spoken punctuation with symbols.
+   - period -> .
+   - comma -> ,
+   - question mark -> ?
+   - exclamation point -> !
+   - colon -> :
+   - semicolon -> ;
+4. Remove filler words, filler phrases, and hedge phrases only when they add no meaning and the remaining sentence is still clear and grammatical.
+   - Common examples: um, uh, like as filler, you know, I mean, anyways, so anyways, kind of, sort of, basically, I guess, I'm wondering if maybe, if that makes sense
+   - Delete sentence-final filler clauses like "if that makes sense" only when they do not add meaning
+   - If deleting a phrase would make the sentence unclear, ungrammatical, or change the speaker's intent, keep it
+5. Remove obvious transcription duplication.
+   - Collapse immediate repeated words: the the -> the
+   - Collapse repeated short phrases caused by transcription artifacts: after after -> after, of of -> of, when when when -> when
+   - If a word or short phrase appears 2 or more times in a row, treat it as a transcription artifact and keep only 1 instance unless the repetition is clearly meaningful
+   - Preserve 1 meaningful copy when the repeated word itself matters: mainly mainly want -> mainly want
+   - Collapse very long repeated runs to a single instance unless the repetition is clearly meaningful
+6. After removing filler or duplication, make the smallest possible cleanup needed so the sentence still makes sense and remains grammatically correct.
+7. Keep deliberate repetition only when it clearly affects meaning.
+8. Preserve exact technical identifiers, filenames, paths, commands, key combinations, acronyms, and Markdown structure when they appear.
+   - Examples: AGENTS.md, tmux, useEffect, option+space
+   - Do not guess unknown identifiers or rewrite them into more common words
+9. If you are unsure whether a word or phrase is filler or meaningful, keep it.
+
+Important constraints:
+- Prefer the smallest possible edit.
+- Preserve the speaker's intent, certainty, scope, and qualifiers unless they are clearly filler or transcription artifacts.
+- Deleting filler, hedge phrases, and accidental duplication is allowed and does not count as paraphrasing.
+- Keep all remaining words in their original order when possible.
+- Do not add new information.
+- Do not rewrite for style.
+- Return only the cleaned transcript, with no explanation.
+
+Transcript:
+${output}

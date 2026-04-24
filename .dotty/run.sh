@@ -150,6 +150,27 @@ setup_macos() {
 setup_vscode
 setup_shell
 
+setup_handy() {
+    local sync_script="$DOTFILES/scripts/sync-handy-settings.sh"
+
+    if [[ "$(uname -s)" != "Darwin" ]]; then
+        return 0
+    fi
+
+    title "Syncing Handy config"
+
+    if [[ ! -x "$sync_script" ]]; then
+        warning "Handy sync script not found at $sync_script"
+        return 0
+    fi
+
+    if ! "$sync_script"; then
+        warning "Failed to sync Handy settings"
+    fi
+}
+
+setup_handy
+
 # Claude: create ~/.claude as a real directory and symlink tracked config.
 # The entire .claude directory is in DOTTY_LINK_IGNORE so dotty won't
 # create a directory symlink (which would cause Claude runtime files like
