@@ -51,6 +51,24 @@ run_case \
     "working"
 
 run_case \
+    "explicit working downgrades to done when the live parser sees a completed stop hook" \
+    "working" \
+    "done" \
+    "1" \
+    "0" \
+    "0" \
+    "done"
+
+run_case \
+    "explicit waiting downgrades to done when the live parser sees a completed stop hook" \
+    "waiting" \
+    "done" \
+    "1" \
+    "0" \
+    "0" \
+    "done"
+
+run_case \
     "stale working hook falls back to done without a live signal" \
     "working" \
     "" \

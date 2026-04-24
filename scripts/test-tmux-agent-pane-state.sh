@@ -80,11 +80,29 @@ EOF
 run_case \
     "completed transcript plus idle footer stays neutral" \
     "codex" \
-    "" \
+    "done" \
     "$(cat <<'EOF'
 • Running Stop hook
 
 Stop hook (completed)
+
+
+› Audit this parser
+
+  gpt-5.4 xhigh · 78% left · ~/src/project
+EOF
+)"
+
+run_case \
+    "codex working beats an older completed stop hook" \
+    "codex" \
+    "working" \
+    "$(cat <<'EOF'
+• Running Stop hook
+
+Stop hook (completed)
+
+• Working (2m 27s • esc to interrupt)
 
 
 › Audit this parser

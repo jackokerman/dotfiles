@@ -36,6 +36,19 @@ tmux_codex_line_is_waiting() {
 
   return 1
 }
+
+tmux_codex_line_is_done() {
+  local line="$1"
+
+  case "${line}" in
+    *"Stop hook (completed)"*)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
 tmux_agent_line_is_working() {
   local line="$1"
 
@@ -76,6 +89,11 @@ tmux_codex_classify_line() {
 
   if tmux_agent_line_is_working "${line}"; then
     printf '%s\n' "working"
+    return 0
+  fi
+
+  if tmux_codex_line_is_done "${line}"; then
+    printf '%s\n' "done"
     return 0
   fi
 
