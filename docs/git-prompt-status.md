@@ -1,6 +1,16 @@
 # Git Prompt Status
 
-The custom Powerlevel10k git segment in [home/.config/zsh/.p10k.zsh](/Users/jackokerman/dotfiles/home/.config/zsh/.p10k.zsh) uses a compact Spaceship-style status block. It only renders when there is something worth noticing.
+The built-in Powerlevel10k `vcs` segment in [home/.config/zsh/.p10k.zsh](/Users/jackokerman/dotfiles/home/.config/zsh/.p10k.zsh) uses standard `gitstatusd` plumbing with a compact Spaceship-style formatter. It always shows the current ref as `on  branch`, and it only adds the bracketed status block when there is something worth noticing.
+
+## Accuracy Note
+
+If the prompt ever disagrees with `git status`, check:
+
+```bash
+git config -l | rg 'skipHash|manyFiles'
+```
+
+Powerlevel10k documents that `gitstatusd` relies on `libgit2`, which does not support `skipHash`. `feature.manyFiles` can enable `skipHash` implicitly. This dotfiles config keeps `manyFiles` enabled but forces `index.skipHash = false` so prompt status stays accurate.
 
 If you want the legend in a shell, run:
 

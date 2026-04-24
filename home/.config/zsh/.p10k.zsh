@@ -34,8 +34,7 @@
     # os_icon               # os identifier
     # context               # user@hostname
     dir                     # current directory
-    vcs_branch              # git branch, tag, or detached commit
-    vcs_status              # spaceship-style git status outside disabled repo roots
+    vcs                     # spaceship-style branch + git status via standard p10k vcs plumbing
     command_execution_time  # duration of the last command
     # =========================[ Line #2 ]=========================
     newline                 # \n
@@ -350,6 +349,71 @@
   #####################################[ vcs: git status ]######################################
   # Branch icon. Set this parameter to '\UE0A0 ' for the popular Powerline branch icon.
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=' '
+
+  # Keep standard p10k vcs plumbing and only override the formatter so the branch and status stay
+  # compact and Spaceship-like. Other config can optionally suppress the status block for matching
+  # workdirs while keeping the ref visible by setting
+  # DOTFILES_P10K_VCS_STATUS_DISABLED_WORKDIR_PATTERN.
+  function dotfiles_p10k_git_formatter() {
+    emulate -L zsh -o extended_glob
+
+    if [[ -n $P9K_CONTENT ]]; then
+      typeset -g _DOTFILES_P10K_GIT_FORMAT=$P9K_CONTENT
+      return
+    fi
+
+    local res ref_display vcs_status
+    if [[ -n $VCS_STATUS_LOCAL_BRANCH ]]; then
+      ref_display="%F{13}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${${(V)VCS_STATUS_LOCAL_BRANCH}//\%/%%}%f"
+    elif [[ -n $VCS_STATUS_TAG ]]; then
+      ref_display="%F{10}#${${(V)VCS_STATUS_TAG}//\%/%%}%f"
+    else
+      ref_display="%F{10}@${VCS_STATUS_COMMIT[1,8]}%f"
+    fi
+    res="%fon ${ref_display}"
+
+    if [[ -z $DOTFILES_P10K_VCS_STATUS_DISABLED_WORKDIR_PATTERN ||
+          $VCS_STATUS_WORKDIR != $~DOTFILES_P10K_VCS_STATUS_DISABLED_WORKDIR_PATTERN ]]; then
+      if (( VCS_STATUS_COMMITS_AHEAD && VCS_STATUS_COMMITS_BEHIND )); then
+        vcs_status+='⇕'
+      elif (( VCS_STATUS_COMMITS_AHEAD )); then
+        vcs_status+='⇡'
+      elif (( VCS_STATUS_COMMITS_BEHIND )); then
+        vcs_status+='⇣'
+      fi
+
+      (( VCS_STATUS_NUM_CONFLICTED    )) && vcs_status+='='
+      (( VCS_STATUS_STASHES           )) && vcs_status+='$'
+      (( VCS_STATUS_HAS_UNSTAGED == 1 )) && vcs_status+='!'
+      (( VCS_STATUS_NUM_STAGED        )) && vcs_status+='+'
+      (( VCS_STATUS_HAS_UNTRACKED == 1 )) && vcs_status+='?'
+
+      if [[ -n $VCS_STATUS_ACTION ]]; then
+        [[ -n $vcs_status ]] && vcs_status+=' '
+        vcs_status+="${VCS_STATUS_ACTION//\%/%%}"
+      fi
+
+      [[ -n $vcs_status ]] && res+=" %F{9}[${vcs_status}]%f"
+    fi
+
+    typeset -g _DOTFILES_P10K_GIT_FORMAT=$res
+  }
+  functions -M dotfiles_p10k_git_formatter 2>/dev/null
+
+  # Keep full gitstatusd accuracy and let the formatter suppress status in the mint monorepo.
+  typeset -g POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY=-1
+  typeset -g POWERLEVEL9K_VCS_DISABLE_GITSTATUS_FORMATTING=true
+  typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='${$((dotfiles_p10k_git_formatter(1)))+${_DOTFILES_P10K_GIT_FORMAT}}'
+  typeset -g POWERLEVEL9K_VCS_LOADING_CONTENT_EXPANSION='${$((dotfiles_p10k_git_formatter(0)))+${_DOTFILES_P10K_GIT_FORMAT}}'
+  typeset -g POWERLEVEL9K_VCS_{STAGED,UNSTAGED,UNTRACKED,CONFLICTED,COMMITS_AHEAD,COMMITS_BEHIND}_MAX_NUM=-1
+  typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_COLOR=2
+  typeset -g POWERLEVEL9K_VCS_LOADING_VISUAL_IDENTIFIER_COLOR=
+  typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_EXPANSION=
+  typeset -g POWERLEVEL9K_VCS_PREFIX=
+  typeset -g POWERLEVEL9K_VCS_BACKENDS=(git)
+  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=2
+  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=2
+  typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=3
 
   ##########################[ status: exit code of the last command ]###########################
   # Enable OK_PIPE, ERROR_PIPE and ERROR_SIGNAL status states to allow us to enable, disable and
@@ -1435,193 +1499,6 @@
   # Type `p10k help segment` for documentation and a more sophisticated example.
   function prompt_example() {
     p10k segment -f 2 -i '⭐' -t 'hello, %n'
-  }
-
-  # Repo roots where full git status is intentionally suppressed.
-  typeset -gaU DOTFILES_P10K_GIT_STATUS_DISABLED_REPO_ROOTS
-
-  function dotfiles_p10k_git_repo_root() {
-    emulate -L zsh
-    command git rev-parse --show-toplevel 2>/dev/null
-  }
-
-  function dotfiles_p10k_should_show_git_status() {
-    emulate -L zsh
-
-    local repo_root
-    repo_root=$(dotfiles_p10k_git_repo_root) || return 1
-    [[ -n $repo_root ]] || return 1
-    repo_root=${repo_root:A}
-
-    local disabled_root
-    for disabled_root in "${DOTFILES_P10K_GIT_STATUS_DISABLED_REPO_ROOTS[@]}"; do
-      [[ -z $disabled_root ]] && continue
-      [[ $repo_root == ${disabled_root:A} ]] && return 1
-    done
-
-    return 0
-  }
-
-  function dotfiles_p10k_git_action() {
-    emulate -L zsh
-
-    local git_dir
-    git_dir=$(command git rev-parse --absolute-git-dir 2>/dev/null) || return 1
-
-    if [[ -d $git_dir/rebase-merge || -d $git_dir/rebase-apply ]]; then
-      print -r -- rebase
-    elif [[ -f $git_dir/MERGE_HEAD ]]; then
-      print -r -- merge
-    elif [[ -f $git_dir/CHERRY_PICK_HEAD ]]; then
-      print -r -- cherry-pick
-    elif [[ -f $git_dir/REVERT_HEAD ]]; then
-      print -r -- revert
-    elif [[ -f $git_dir/BISECT_LOG ]]; then
-      print -r -- bisect
-    else
-      return 1
-    fi
-  }
-
-  # Parse porcelain v2 output directly instead of using gitstatusd here. The custom segment only
-  # renders outside disabled repo roots, so one status call keeps the behavior predictable without
-  # reintroducing slow prompt work in large repos.
-  function dotfiles_p10k_git_status_flags() {
-    emulate -L zsh
-
-    local status_output
-    status_output=$(
-      command git status \
-        --porcelain=v2 \
-        --branch \
-        --ahead-behind \
-        --show-stash \
-        --ignore-submodules=dirty \
-        --no-renames \
-        2>/dev/null
-    ) || return 1
-
-    local line vcs_status action
-    local -i ahead=0 behind=0 conflicted=0 stashed=0 staged=0 unstaged=0 untracked=0
-
-    while IFS= read -r line; do
-      case $line in
-        '# branch.ab +'*)
-          local ab=${line#'# branch.ab +'}
-          ahead=${ab%% -*}
-          behind=${ab#* -}
-          ;;
-        '# stash '*)
-          (( ${line#'# stash '} > 0 )) && stashed=1
-          ;;
-        '1 '*|'2 '*)
-          [[ ${line[3,3]} != '.' ]] && staged=1
-          [[ ${line[4,4]} != '.' ]] && unstaged=1
-          ;;
-        'u '*)
-          conflicted=1
-          ;;
-        '? '*)
-          untracked=1
-          ;;
-      esac
-    done <<< "$status_output"
-
-    if (( ahead && behind )); then
-      vcs_status+='⇕'
-    elif (( ahead )); then
-      vcs_status+='⇡'
-    elif (( behind )); then
-      vcs_status+='⇣'
-    fi
-
-    (( conflicted )) && vcs_status+='='
-    (( stashed    )) && vcs_status+='$'
-    (( unstaged   )) && vcs_status+='!'
-    (( staged     )) && vcs_status+='+'
-    (( untracked  )) && vcs_status+='?'
-
-    action=$(dotfiles_p10k_git_action) || action=
-    if [[ -n $action ]]; then
-      [[ -n $vcs_status ]] && vcs_status+=' '
-      vcs_status+="${action//\%/%%}"
-    fi
-
-    [[ -n $vcs_status ]] || return 1
-    print -r -- "$vcs_status"
-  }
-
-  function dotfiles_p10k_git_ref() {
-    emulate -L zsh
-
-    local ref
-    ref=$(command git symbolic-ref --quiet --short HEAD 2>/dev/null) && {
-      print -r -- "branch:${ref}"
-      return 0
-    }
-
-    ref=$(command git describe --tags --exact-match 2>/dev/null) && {
-      print -r -- "tag:${ref}"
-      return 0
-    }
-
-    ref=$(command git rev-parse --short HEAD 2>/dev/null) && {
-      print -r -- "commit:${ref}"
-      return 0
-    }
-
-    return 1
-  }
-
-  # Add "on  branch_name" to the prompt if we're in a git repo.
-  function prompt_vcs_branch() {
-    emulate -L zsh
-
-    local ref kind name display
-    ref=$(dotfiles_p10k_git_ref) || return
-
-    kind=${ref%%:*}
-    name=${ref#*:}
-    name=${name//\%/%%}
-
-    case $kind in
-      branch)
-        display="%F{13}${(g::)POWERLEVEL9K_VCS_BRANCH_ICON}${name}%f"
-        ;;
-      tag)
-        display="%F{10}#${name}%f"
-        ;;
-      commit)
-        display="%F{10}@${name}%f"
-        ;;
-      *)
-        return
-        ;;
-    esac
-
-    p10k segment -i '' -t "%fon ${display}"
-  }
-
-  # Add compact spaceship-style Git status outside disabled repo roots.
-  function prompt_vcs_status() {
-    emulate -L zsh
-
-    dotfiles_p10k_should_show_git_status || return
-
-    # Legend:
-    #   ⇕ ahead of and behind upstream
-    #   ⇡ ahead of upstream
-    #   ⇣ behind upstream
-    #   = merge conflicts
-    #   $ stash entries exist
-    #   ! unstaged tracked changes
-    #   + staged changes
-    #   ? untracked files
-    #   action text for rebase/merge/cherry-pick/etc.
-    # Run `git-prompt-help` for the full legend and useful cleanup commands.
-    local vcs_status
-    vcs_status=$(dotfiles_p10k_git_status_flags) || return
-    p10k segment -f 9 -i '' -t "[${vcs_status}]"
   }
 
   # User-defined prompt segments may optionally provide an instant_prompt_* function. Its job

@@ -27,6 +27,14 @@
 [core]
     pager = ~/.local/bin/git-pager-delta
 
+[feature]
+    manyFiles = true
+
+[index]
+    # Powerlevel10k/gitstatus uses libgit2, which doesn't support skipHash.
+    # Keep manyFiles enabled for the other defaults, but override this knob.
+    skipHash = false
+
 [interactive]
     diffFilter = ~/.local/bin/git-delta-diff-filter
 
