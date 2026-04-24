@@ -11,7 +11,7 @@ cd ~/dotfiles && ./install.sh
 
 `./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook.
 
-Once the repo is cloned, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, and reconciles tracked `Brewfile` formulae and casks on macOS.
+Once the repo is cloned, `dotty update` is the normal catch-up command. It refreshes the dotty chain and reruns the repo hook. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS.
 
 If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after install. `scripts/install-fonts.sh` will install it the next time the hook runs. Symbols Nerd Font is downloaded automatically.
 
@@ -19,11 +19,13 @@ If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after
 
 ```bash
 dotty update
+dotty run brew-sync
 ./scripts/check
 ./scripts/install-git-hooks.sh
 ```
 
-- `dotty update` refreshes symlinks, reruns setup hooks, and reconciles tracked `Brewfile` formulae and casks on macOS.
+- `dotty update` refreshes symlinks and reruns setup hooks without touching Homebrew.
+- `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones.
 - `./scripts/check` runs the fast local validation path for this repo, including tmux agent status regression tests.
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
@@ -57,6 +59,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - `AGENTS.md`: canonical repo-specific agent instructions for this repo (`CLAUDE.md` is a compatibility symlink)
 - `home/`: tracked source files that dotty links into `$HOME`
 - `.dotty/`: repo identity and post-link hook
+- `.dotty/commands/`: repo-defined dotty commands such as `brew-sync`
 - `scripts/`: setup, sync, and validation helpers
 - `tests/`: focused regression tests for repo-managed subsystems
 - `docs/layout.md`: layout, dotty chain, and source/runtime boundaries

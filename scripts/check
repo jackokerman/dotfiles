@@ -16,6 +16,7 @@ fail() {
 run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
+        ".dotty/commands/brew-sync"
         ".githooks/pre-commit"
         "home/.config/tmux/agent-status-hook.sh"
         "home/.config/tmux/agent-status/hook.sh"
@@ -30,6 +31,7 @@ run_bash_syntax() {
         "home/.local/bin/tmux-link-test"
         "home/.raycast-scripts/arrange-windows.sh"
         "install.sh"
+        "scripts/brew-sync.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/check"
         "scripts/install-fonts.sh"
@@ -45,6 +47,26 @@ run_bash_syntax() {
 
     log "Checking bash syntax"
     (cd "$PROJECT_ROOT" && bash -n "${files[@]}")
+}
+
+assert_expected_executables() {
+    local -a files=(
+        ".dotty/run.sh"
+        ".dotty/commands/brew-sync"
+        "install.sh"
+        "scripts/brew-sync.sh"
+        "scripts/check"
+        "scripts/enable-touchid-sudo.sh"
+        "scripts/install-fonts.sh"
+        "scripts/install-git-hooks.sh"
+        "scripts/macos.sh"
+    )
+    local file
+
+    log "Checking expected executable files"
+    for file in "${files[@]}"; do
+        [[ -x "$PROJECT_ROOT/$file" ]] || fail "expected executable bit on $file"
+    done
 }
 
 run_zsh_syntax() {
@@ -86,6 +108,7 @@ run_tmux_agent_status_tests() {
 main() {
     run_bash_syntax
     run_zsh_syntax
+    assert_expected_executables
     assert_zsh_runtime_inputs_removed
     run_tmux_agent_status_tests
 

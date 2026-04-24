@@ -81,42 +81,18 @@ setup_shell() {
 
 # Homebrew
 
-setup_brew() {
-    title "Installing Homebrew packages"
-    local brewfile="$DOTFILES/Brewfile"
+run_brew_sync() {
+    local brew_sync_script="$DOTFILES/scripts/brew-sync.sh"
 
-    if ! command -v brew >/dev/null 2>&1; then
-        if [ "$(uname -s)" != "Darwin" ]; then
-            info "Skipping Homebrew setup (brew not found and not on macOS)"
-            return 0
-        fi
-        info "Homebrew not found. Installing Homebrew..."
-        if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
-            success "Homebrew installed successfully"
-            if [ -f "/opt/homebrew/bin/brew" ]; then
-                export PATH="/opt/homebrew/bin:$PATH"
-            elif [ -f "/usr/local/bin/brew" ]; then
-                export PATH="/usr/local/bin:$PATH"
-            fi
-        else
-            die "Failed to install Homebrew"
-        fi
-    else
-        info "Homebrew already installed... Skipping installation."
+    if [[ ! -x "$brew_sync_script" ]]; then
+        warning "Homebrew sync script not found at $brew_sync_script"
+        return 0
     fi
 
-    info "Installing packages from Brewfile"
-    if brew bundle --file "$brewfile"; then
-        success "Homebrew packages installed successfully"
+    if "$brew_sync_script"; then
+        success "Homebrew packages synced"
     else
-        warning "Some Homebrew packages failed to install. Continuing with remaining setup..."
-    fi
-
-    info "Removing formulae and casks not present in Brewfile"
-    if brew bundle cleanup --file "$brewfile" --force --formula --cask; then
-        success "Homebrew cleanup completed"
-    else
-        warning "Some Homebrew cleanup steps failed. Continuing with remaining setup..."
+        warning "Homebrew package sync failed"
     fi
 }
 
@@ -317,9 +293,8 @@ case "$DOTTY_COMMAND" in
         setup_git_hooks
 
         if [[ "$(uname -s)" == "Darwin" ]]; then
-            setup_brew
-
             if [[ "$DOTTY_COMMAND" == "install" ]]; then
+                run_brew_sync
                 setup_macos
             fi
         fi

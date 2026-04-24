@@ -27,6 +27,8 @@ Additional repos can extend the base with their own `DOTTY_EXTENDS` entry. Dotty
 
 - `dotty install <path-or-url>`: install or register a repo chain and run hooks
 - `dotty update [name]`: refresh links, pull updates, and rerun hooks
+- `dotty commands`: list repo-defined commands from `.dotty/commands/`
+- `dotty run <name> [args]`: execute a repo-defined command from the active chain
 - `dotty link [name]`: relink without pulling or rerunning hooks
 - `dotty status`: inspect the current chain and environment detection
 
