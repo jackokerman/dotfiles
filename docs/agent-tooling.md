@@ -11,7 +11,7 @@
 
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
-- `home/.config/tmux/session-status.sh` is the base tmux entrypoint and `home/.config/tmux/session-status-lib.sh` owns the generic local collector and renderer helpers
+- `home/.config/tmux/session-status.sh` is the base tmux entrypoint and `home/.config/tmux/agent-status/` owns the generic parser, collector, and renderer internals
 - `home/.config/tmux/README.md` is the code-local change guide for the tmux agent-status stack
 - Later repos in the dotty chain can extend the base collector through `~/.config/tmux/session-status-overlay.sh`
 - The extension hook names are:
@@ -24,6 +24,7 @@
 - When a Codex prompt line includes both waiting cues and `esc to interrupt`, tmux treats it as `waiting` rather than `working`
 - Generic Codex footer text such as the model/path line is not treated as a waiting signal
 - Finished shell-only sessions are hidden once no live agent process remains
+- tmux regression tests live under `tests/tmux-agent-status/`
 
 ## Claude
 

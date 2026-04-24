@@ -4,29 +4,10 @@ set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 TARGET_SCRIPT="${PROJECT_ROOT}/home/.config/tmux/session-status.sh"
+TEST_PREFIX="tmux-overlay-test"
 
-pass() {
-  printf '[tmux-overlay-test] pass: %s\n' "$1"
-}
-
-fail() {
-  printf '[tmux-overlay-test] fail: %s\n' "$1" >&2
-  exit 1
-}
-
-assert_equal() {
-  local name="$1" expected="$2" actual="$3"
-
-  if [[ "${actual}" == "${expected}" ]]; then
-    pass "${name}"
-    return 0
-  fi
-
-  printf '[tmux-overlay-test] fail: %s\n' "${name}" >&2
-  printf '[tmux-overlay-test] expected: %q\n' "${expected}" >&2
-  printf '[tmux-overlay-test] actual: %q\n' "${actual}" >&2
-  exit 1
-}
+# shellcheck source=/dev/null
+source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
 
 run_case() {
   local name="$1" expected="$2" local_rows="$3" overlay_body="$4" require_marker="${5:-0}"

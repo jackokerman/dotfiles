@@ -17,9 +17,11 @@ run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
         ".githooks/pre-commit"
-        "home/.config/tmux/agent-pane-state.sh"
         "home/.config/tmux/agent-status-hook.sh"
-        "home/.config/tmux/session-status-lib.sh"
+        "home/.config/tmux/agent-status/hook.sh"
+        "home/.config/tmux/agent-status/lib.sh"
+        "home/.config/tmux/agent-status/main.sh"
+        "home/.config/tmux/agent-status/pane-state.sh"
         "home/.config/tmux/session-status.sh"
         "home/.local/bin/git-delta-diff-filter"
         "home/.local/bin/git-pager-delta"
@@ -32,10 +34,11 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos.sh"
-        "scripts/test-tmux-agent-pane-state.sh"
-        "scripts/test-tmux-session-status-local.sh"
-        "scripts/test-tmux-session-status-overlay.sh"
-        "scripts/test-tmux-session-status.sh"
+        "tests/tmux-agent-status/test-overlay-contract.sh"
+        "tests/tmux-agent-status/test-pane-state.sh"
+        "tests/tmux-agent-status/test-session-status-local.sh"
+        "tests/tmux-agent-status/test-session-status.sh"
+        "tests/tmux-agent-status/testlib.sh"
         "scripts/validate-codex-sync.sh"
     )
 
@@ -73,10 +76,10 @@ assert_zsh_runtime_inputs_removed() {
 
 run_tmux_agent_status_tests() {
     log "Running tmux agent status regression tests"
-    "$PROJECT_ROOT/scripts/test-tmux-agent-pane-state.sh"
-    "$PROJECT_ROOT/scripts/test-tmux-session-status-local.sh"
-    "$PROJECT_ROOT/scripts/test-tmux-session-status.sh"
-    "$PROJECT_ROOT/scripts/test-tmux-session-status-overlay.sh"
+    "$PROJECT_ROOT/tests/tmux-agent-status/test-pane-state.sh"
+    "$PROJECT_ROOT/tests/tmux-agent-status/test-session-status-local.sh"
+    "$PROJECT_ROOT/tests/tmux-agent-status/test-session-status.sh"
+    "$PROJECT_ROOT/tests/tmux-agent-status/test-overlay-contract.sh"
 }
 
 main() {

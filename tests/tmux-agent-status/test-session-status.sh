@@ -4,23 +4,19 @@ set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 TARGET_SCRIPT="${PROJECT_ROOT}/home/.config/tmux/session-status.sh"
+TEST_PREFIX="tmux-status-test"
+TMUX_SESSION_STATUS_OVERLAY_SCRIPT="/dev/null"
 
 # shellcheck source=/dev/null
 source "${TARGET_SCRIPT}"
+# shellcheck source=/dev/null
+source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
 
 run_case() {
     local name="$1" explicit_state="$2" live_state="$3" has_known_agent_pane="$4" stale_working="$5" agent_mismatch="$6" expected="$7" actual=""
 
     actual=$(tmux_session_status_resolve_state "${explicit_state}" "${live_state}" "${has_known_agent_pane}" "${stale_working}" "${agent_mismatch}")
-    if [[ "${actual}" == "${expected}" ]]; then
-        printf '[tmux-status-test] pass: %s\n' "${name}"
-        return 0
-    fi
-
-    printf '[tmux-status-test] fail: %s\n' "${name}" >&2
-    printf '[tmux-status-test] expected: %q\n' "${expected}" >&2
-    printf '[tmux-status-test] actual: %q\n' "${actual}" >&2
-    exit 1
+    assert_equal "${name}" "${expected}" "${actual}"
 }
 
 run_case \

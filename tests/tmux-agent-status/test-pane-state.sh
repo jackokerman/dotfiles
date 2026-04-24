@@ -3,21 +3,17 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
-TARGET_SCRIPT="${PROJECT_ROOT}/home/.config/tmux/agent-pane-state.sh"
+TEST_PREFIX="tmux-pane-state-test"
+TARGET_SCRIPT="${PROJECT_ROOT}/home/.config/tmux/agent-status/pane-state.sh"
+
+# shellcheck source=/dev/null
+source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
 
 run_case() {
-    local name="$1" agent="$2" expected="$3" input="$4" actual=""
+  local name="$1" agent="$2" expected="$3" input="$4" actual=""
 
-    actual=$(printf '%s' "$input" | "$TARGET_SCRIPT" infer-tail "$agent")
-    if [[ "$actual" == "$expected" ]]; then
-        printf '[tmux-test] pass: %s\n' "$name"
-        return 0
-    fi
-
-    printf '[tmux-test] fail: %s\n' "$name" >&2
-    printf '[tmux-test] expected: %q\n' "$expected" >&2
-    printf '[tmux-test] actual: %q\n' "$actual" >&2
-    exit 1
+  actual=$(printf '%s' "$input" | "$TARGET_SCRIPT" infer-tail "$agent")
+  assert_equal "$name" "$expected" "$actual"
 }
 
 run_case \

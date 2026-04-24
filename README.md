@@ -58,6 +58,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - `home/`: tracked source files that dotty links into `$HOME`
 - `.dotty/`: repo identity and post-link hook
 - `scripts/`: setup, sync, and validation helpers
+- `tests/`: focused regression tests for repo-managed subsystems
 - `docs/layout.md`: layout, dotty chain, and source/runtime boundaries
 - `docs/agent-tooling.md`: tmux, Codex, and Claude operational notes
 - `docs/git-prompt-status.md`: Powerlevel10k git prompt symbol legend and cleanup guidance
@@ -72,7 +73,9 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Git local overrides: `~/.gitconfig.local` via `git config-local`
 - Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
 - tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
-- tmux agent status core: `home/.config/tmux/agent-pane-state.sh`, `home/.config/tmux/session-status.sh`, and `home/.config/tmux/session-status-lib.sh`
+- tmux agent status entrypoints: `home/.config/tmux/session-status.sh` and `home/.config/tmux/agent-status-hook.sh`
+- tmux agent status internals: `home/.config/tmux/agent-status/`
+- tmux agent status tests: `tests/tmux-agent-status/`
 - tmux agent status extension hook: `~/.config/tmux/session-status-overlay.sh` when you need extra collectors outside the base repo
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`

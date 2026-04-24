@@ -30,9 +30,10 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `home/` is tracked source that dotty links into `$HOME`.
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
+- `tests/tmux-agent-status/` holds the tmux agent-status regression tests.
 - `home/.config/zsh/.zshrc` owns interactive completion discovery; user-installed completions live under `~/.local/share/zsh/site-functions`, and Homebrew completions under `/opt/homebrew/share/zsh/site-functions`.
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
-- The generic tmux agent-status collector and renderer live here; extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
+- The generic tmux agent-status entrypoints live in `home/.config/tmux/`, and the private implementation lives in `home/.config/tmux/agent-status/`; extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
 - Keep reusable generic Codex skills in `home/.codex/skills/`, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across the dotty chain.
