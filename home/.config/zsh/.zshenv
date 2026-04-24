@@ -8,6 +8,9 @@ export ZSH_CACHE_DIR="${ZSH_CACHE_DIR:-$XDG_CACHE_HOME/zsh}"
 export ZSH_STATE_DIR="${ZSH_STATE_DIR:-$XDG_STATE_HOME/zsh}"
 mkdir -p "$ZSH_CACHE_DIR/.zcompcache" "$ZSH_STATE_DIR"
 
+# Initialize history sizing before zsh imports history for interactive shells.
+export HISTSIZE="${HISTSIZE:-2000}"
+export SAVEHIST="${SAVEHIST:-1000}"
 export HISTFILE="$ZSH_STATE_DIR/history"
 export ZSH_COMPDUMP="$ZSH_CACHE_DIR/.zcompdump"
 export ZSH_COMPCACHE_DIR="$ZSH_CACHE_DIR/.zcompcache"

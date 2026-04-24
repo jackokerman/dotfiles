@@ -9,6 +9,11 @@ fi
 # /etc/zshrc resets HISTFILE after .zshenv runs, so restore the repo-managed path here.
 export HISTFILE="$ZSH_STATE_DIR/history"
 
+# Share one history stream across open shells. Keep the mutually exclusive
+# incremental append modes off so history behavior stays predictable.
+setopt sharehistory
+unsetopt incappendhistory incappendhistorytime
+
 # Remind once per session if dotfiles are stale.
 # Runs above instant prompt to avoid p10k's console output warning.
 command -v dotty >/dev/null 2>&1 && dotty check
