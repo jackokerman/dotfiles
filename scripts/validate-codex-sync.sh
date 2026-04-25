@@ -78,7 +78,7 @@ collect_sources() {
         fi
     fi
 
-    printf '%s\n' "${sources[@]}"
+    printf '%s\n' "${sources[@]+"${sources[@]}"}"
 }
 
 validate_kind() {
@@ -100,7 +100,7 @@ validate_kind() {
     fi
 
     local -a args=("$mode" "--validate-only")
-    for source in "${sources[@]}"; do
+    for source in "${sources[@]+"${sources[@]}"}"; do
         args+=("--source" "$source")
     done
 
@@ -128,10 +128,10 @@ validate_custom_agents() {
     done < <(collect_sources "skills" "skills" "$env_name" "dir" "quiet")
 
     local -a args=("custom-agents" "--validate-only")
-    for source in "${agent_sources[@]}"; do
+    for source in "${agent_sources[@]+"${agent_sources[@]}"}"; do
         args+=("--source" "$source")
     done
-    for source in "${skill_sources[@]}"; do
+    for source in "${skill_sources[@]+"${skill_sources[@]}"}"; do
         args+=("--skill-source" "$source")
     done
 
@@ -165,13 +165,13 @@ validate_frontend_workflow() {
     fi
 
     local -a args=()
-    for source in "${manifest_sources[@]}"; do
+    for source in "${manifest_sources[@]+"${manifest_sources[@]}"}"; do
         args+=("--manifest-source" "$source")
     done
-    for source in "${agent_sources[@]}"; do
+    for source in "${agent_sources[@]+"${agent_sources[@]}"}"; do
         args+=("--agent-source" "$source")
     done
-    for source in "${skill_sources[@]}"; do
+    for source in "${skill_sources[@]+"${skill_sources[@]}"}"; do
         args+=("--skill-source" "$source")
     done
 
