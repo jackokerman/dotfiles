@@ -90,7 +90,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 
 Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting, `godspeed-tasks` for read-only Godspeed inbox triage, and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
 
-Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories.
+Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories. For Claude, `home/.claude/` is an allowlisted source tree for tracked config only; live runtime state stays in `~/.claude/`.
 
 ## Post-Install Notes
 

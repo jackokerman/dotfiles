@@ -39,7 +39,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep reusable generic Codex skills in `home/.codex/skills/`, including `godspeed-tasks` for Godspeed inbox triage, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across the dotty chain.
 
-Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree.
+Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree. For Claude, treat `home/.claude/` as an allowlisted tracked-config source tree only; runtime state belongs in the live `~/.claude/` directory.
 
 ## Reference Docs
 

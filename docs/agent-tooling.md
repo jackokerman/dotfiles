@@ -33,6 +33,7 @@ The repo hook keeps `~/.claude` as a real directory and manages tracked contents
 - `CLAUDE.md` is symlinked into place
 - tracked `hooks/`, `rules/`, and `skills/` entries are linked individually
 - `settings.json` is copied so later repos can extend it without writing through into this repo
+- `home/.claude/` is allowlisted for tracked config only; Claude runtime files belong in `~/.claude/`, not the repo source tree
 
 Later repos in the dotty chain can add more entries to the same live `~/.claude/` directories.
 
