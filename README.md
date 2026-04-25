@@ -85,9 +85,10 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - tmux agent status extension hook: `~/.config/tmux/session-status-overlay.sh` when you need extra collectors outside the base repo
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
+- Codex-only local skill tokens: `~/.codex/env.local` (for example `GODSPEED_API_TOKEN`)
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 
-Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
+Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting, `godspeed-tasks` for read-only Godspeed inbox triage, and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
 
 Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories.
 

@@ -117,6 +117,11 @@ run_handy_tests() {
     "$PROJECT_ROOT/tests/handy/test-sync-handy-settings.sh"
 }
 
+run_godspeed_tasks_tests() {
+    log "Running Godspeed task helper tests"
+    bun test "$PROJECT_ROOT/tests/godspeed-tasks/godspeed-tasks.test.ts"
+}
+
 main() {
     run_bash_syntax
     run_zsh_syntax
@@ -124,6 +129,7 @@ main() {
     assert_zsh_runtime_inputs_removed
     run_tmux_agent_status_tests
     run_handy_tests
+    run_godspeed_tasks_tests
 
     log "Validating Codex sync inputs"
     "$PROJECT_ROOT/scripts/validate-codex-sync.sh"

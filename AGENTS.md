@@ -36,7 +36,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
 - The generic tmux agent-status entrypoints live in `home/.config/tmux/`, and the private implementation lives in `home/.config/tmux/agent-status/`; extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
-- Keep reusable generic Codex skills in `home/.codex/skills/`, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
+- Keep reusable generic Codex skills in `home/.codex/skills/`, including `godspeed-tasks` for Godspeed inbox triage, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across the dotty chain.
 
 Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree.

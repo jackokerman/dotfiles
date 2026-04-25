@@ -1,0 +1,4 @@
+interface:
+  display_name: "Godspeed Tasks"
+  short_description: "Read-only Godspeed inbox triage and task summaries."
+  default_prompt: "Use $godspeed-tasks to triage your Godspeed work or personal inboxes, keep the workflow read-only, and surface candidates for completion based on local evidence."
