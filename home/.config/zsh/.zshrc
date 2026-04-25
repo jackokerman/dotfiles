@@ -54,10 +54,13 @@ zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$ZSH_COMPCACHE_DIR"
 zetch compinit $fpath_dirs
 
+# fzf-tab hooks into the completion widgets and is safe to load during
+# dotty's non-TTY warm-up shell.
+zetch Aloxaf/fzf-tab
+
 # Widget-heavy plugins need a real terminal. dotty's warm-up uses
 # `zsh -i -c`, which is interactive but has no attached TTY.
 if [[ -t 0 && -t 1 ]]; then
-  zetch Aloxaf/fzf-tab
   zetch zsh-users/zsh-autosuggestions
   zetch trystan2k/zsh-tab-title
   zetch zsh-users/zsh-syntax-highlighting
