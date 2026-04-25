@@ -10,7 +10,7 @@
 ## Writing Workflow
 - For drafting-heavy writing tasks such as Slack messages, PR descriptions, Jira comments, review comments, or status updates, use the native `writing-style` skill before substantial drafting.
 - Keep universal writing invariants that should always apply in `AGENTS.md`. Keep richer examples and drafting guidance in the `writing-style` skill.
-- On markdown-capable surfaces, wrap exact technical identifiers in backticks. Use this for literal code-facing names such as files, paths, commands, components, hooks, functions, flags, and packages. Skip generic concepts and plain-text-only surfaces such as commit subjects and PR titles.
+- On markdown-capable surfaces, wrap exact technical identifiers in backticks. Use this for literal code-facing names such as files, paths, commands, components, hooks, functions, flags, and packages. Skip generic concepts, issue or ticket IDs that should be linked semantically, and plain-text-only surfaces such as commit subjects and PR titles.
 
 ## Engineering Style
 - Default to the simplest implementation that fully solves the stated problem.
@@ -42,6 +42,10 @@
 - For clearly CSS, layout, spacing, sizing, overflow, positioning, or stacking work, use the native `css-layout` skill before substantial edits.
 - Keep reusable frontend guidance in tracked Codex skills under `home/.codex/skills/`, not in `AGENTS.md`.
 - Do not apply this React guidance to non-frontend tasks.
+
+## Godspeed Workflow
+- For Godspeed inbox triage, Godspeed task planning, or requests to organize the work or personal inbox, use the native `godspeed-tasks` skill.
+- Keep Godspeed triage read-only by default. Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`, not the top-level default inbox.
 
 ## Dotfiles Workflow
 - In personal dotty-managed repos, the task is not done until changes are committed and pushed to `main`.
