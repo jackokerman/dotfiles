@@ -17,6 +17,7 @@ if OS.mac?
   cask "codex"                      # OpenAI coding agent terminal CLI
   cask "claude-code"                # Anthropic coding agent terminal CLI
   cask "handy"                      # window snapping and management
+  cask "zen-browser"                # firefox-based browser
 end
 
 # Packages
