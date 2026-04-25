@@ -63,10 +63,9 @@ setup_vscode() {
 setup_shell() {
     title "Setting up shell"
 
-    # bat cache (for custom theme) — only on install since themes rarely change
+    # bat cache (for custom themes used by delta)
     if command -v bat >/dev/null 2>&1 \
-        && [ -d "$(bat --config-dir)/themes" ] \
-        && [ "$DOTTY_COMMAND" = "install" ]; then
+        && [ -d "$(bat --config-dir)/themes" ]; then
         info "Setting up bat"
         bat cache --build
     fi
