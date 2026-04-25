@@ -58,9 +58,9 @@ zetch compinit $fpath_dirs
 # dotty's non-TTY warm-up shell.
 zetch Aloxaf/fzf-tab
 
-# Widget-heavy plugins need a real terminal. dotty's warm-up uses
-# `zsh -i -c`, which is interactive but has no attached TTY.
-if [[ -t 0 && -t 1 ]]; then
+# Widget-heavy plugins need an input TTY. dotty's warm-up uses
+# `zsh -i -c`, which is interactive but has no attached terminal stdin.
+if [[ -t 0 ]]; then
   zetch zsh-users/zsh-autosuggestions
   zetch trystan2k/zsh-tab-title
   zetch zsh-users/zsh-syntax-highlighting
@@ -86,8 +86,8 @@ source $ZDOTDIR/.aliases
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
-# Setup fzf widgets and key bindings only when the shell owns a terminal.
-if [[ -t 0 && -t 1 ]] && command -v fzf >/dev/null 2>&1; then
+# Setup fzf widgets and key bindings only when the shell has terminal input.
+if [[ -t 0 ]] && command -v fzf >/dev/null 2>&1; then
     if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
         # APT installation (Linux devboxes)
         source /usr/share/doc/fzf/examples/key-bindings.zsh
@@ -96,10 +96,17 @@ if [[ -t 0 && -t 1 ]] && command -v fzf >/dev/null 2>&1; then
         # Homebrew or other installation
         source <(fzf --zsh)
     fi
+
+    # Keep Ctrl-R on fzf history even if another widget reset the default map.
+    if whence -w fzf-history-widget >/dev/null 2>&1; then
+        bindkey -M emacs '^R' fzf-history-widget
+        bindkey -M vicmd '^R' fzf-history-widget
+        bindkey -M viins '^R' fzf-history-widget
+    fi
 fi
 
 # Sesh session picker (Alt+S keybinding)
-[[ -t 0 && -t 1 && -f $ZDOTDIR/sesh.zsh ]] && source $ZDOTDIR/sesh.zsh
+[[ -t 0 && -f $ZDOTDIR/sesh.zsh ]] && source $ZDOTDIR/sesh.zsh
 
 # bun completions (sourced, not fpath-based — bun uses dynamic compdef)
 if [[ -s "$HOME/.bun/_bun" ]]; then
