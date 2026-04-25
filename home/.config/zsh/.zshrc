@@ -1,11 +1,3 @@
-# Source system-managed ~/.zshrc if present (e.g., Chef-managed on work machines).
-# Only source if it's a real file (not a symlink to our config). The guard variable
-# prevents infinite recursion when ~/.zshrc tries to source our old path.
-if [[ -z "$_DOTFILES_ZSHRC_LOADED" && -f ~/.zshrc && ! -L ~/.zshrc ]]; then
-  _DOTFILES_ZSHRC_LOADED=1
-  source ~/.zshrc 2>/dev/null || true
-fi
-
 # /etc/zshrc resets HISTFILE after .zshenv runs, so restore the repo-managed path here.
 export HISTFILE="$ZSH_STATE_DIR/history"
 
@@ -24,6 +16,16 @@ command -v dotty >/dev/null 2>&1 && dotty check
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+# dotty warms plugins with `zsh -i -c`, which is interactive but not a real
+# prompt shell. Keep widget/keybinding setup for real prompt shells only.
+_dotfiles_is_prompt_shell() {
+  [[ -o interactive ]] && [[ -z ${ZSH_EXECUTION_STRING-} ]]
+}
+
+# Allow later dotty repos and local overrides to extend `fpath` or source shell
+# init before compinit runs.
+[[ ! -f ~/.zshrc.pre.local ]] || source ~/.zshrc.pre.local
 
 # Plugins (clones missing plugins in parallel, then sources in order)
 source $ZDOTDIR/.zetch.zsh
@@ -58,9 +60,9 @@ zetch compinit $fpath_dirs
 # dotty's non-TTY warm-up shell.
 zetch Aloxaf/fzf-tab
 
-# Widget-heavy plugins need an input TTY. dotty's warm-up uses
-# `zsh -i -c`, which is interactive but has no attached terminal stdin.
-if [[ -t 0 ]]; then
+# Widget-heavy plugins should only load in real prompt shells. dotty's warm-up
+# uses `zsh -i -c`, which is interactive but not a prompt session.
+if _dotfiles_is_prompt_shell; then
   zetch zsh-users/zsh-autosuggestions
   zetch trystan2k/zsh-tab-title
   zetch zsh-users/zsh-syntax-highlighting
@@ -86,8 +88,8 @@ source $ZDOTDIR/.aliases
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
-# Setup fzf widgets and key bindings only when the shell has terminal input.
-if [[ -t 0 ]] && command -v fzf >/dev/null 2>&1; then
+# Setup fzf widgets and key bindings only in real prompt shells.
+if _dotfiles_is_prompt_shell && command -v fzf >/dev/null 2>&1; then
     if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
         # APT installation (Linux devboxes)
         source /usr/share/doc/fzf/examples/key-bindings.zsh
@@ -106,7 +108,9 @@ if [[ -t 0 ]] && command -v fzf >/dev/null 2>&1; then
 fi
 
 # Sesh session picker (Alt+S keybinding)
-[[ -t 0 && -f $ZDOTDIR/sesh.zsh ]] && source $ZDOTDIR/sesh.zsh
+if _dotfiles_is_prompt_shell && [[ -f $ZDOTDIR/sesh.zsh ]]; then
+  source $ZDOTDIR/sesh.zsh
+fi
 
 # bun completions (sourced, not fpath-based — bun uses dynamic compdef)
 if [[ -s "$HOME/.bun/_bun" ]]; then

@@ -60,8 +60,30 @@ setup_vscode() {
 
 # Shell tools
 
+migrate_legacy_zshrc_wrapper() {
+    local legacy_zshrc="$HOME/.zshrc"
+    local backup_zshrc="$HOME/.zshrc.pre-zdotdir-backup"
+    local backup_index=1
+
+    [[ -f "$legacy_zshrc" && ! -L "$legacy_zshrc" ]] || return 0
+
+    if ! grep -Eq '(^|[[:space:]])source[[:space:]].*/dotfiles/home/\.zshrc($|[[:space:]])' "$legacy_zshrc"; then
+        return 0
+    fi
+
+    while [[ -e "$backup_zshrc" ]]; do
+        backup_zshrc="$HOME/.zshrc.pre-zdotdir-backup.$backup_index"
+        ((backup_index++))
+    done
+
+    mv "$legacy_zshrc" "$backup_zshrc"
+    success "Moved stale ~/.zshrc wrapper to $backup_zshrc"
+}
+
 setup_shell() {
     title "Setting up shell"
+
+    migrate_legacy_zshrc_wrapper
 
     # bat cache (for custom themes used by delta)
     if command -v bat >/dev/null 2>&1 \

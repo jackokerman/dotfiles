@@ -104,6 +104,20 @@ assert_zsh_runtime_inputs_removed() {
     done
 }
 
+assert_zsh_bootstrap_boundary() {
+    local zshrc_path="$PROJECT_ROOT/home/.config/zsh/.zshrc"
+
+    log "Checking zsh bootstrap boundary"
+
+    if grep -q '_DOTFILES_ZSHRC_LOADED' "$zshrc_path"; then
+        fail "tracked zshrc should not depend on real ~/.zshrc"
+    fi
+
+    if grep -Eq 'source[[:space:]]+("?)(~|\$HOME|\$\{HOME\})/\.zshrc\1([[:space:]]|$)' "$zshrc_path"; then
+        fail "tracked zshrc should not source real ~/.zshrc"
+    fi
+}
+
 run_tmux_agent_status_tests() {
     log "Running tmux agent status regression tests"
     "$PROJECT_ROOT/tests/tmux-agent-status/test-pane-state.sh"
@@ -127,6 +141,7 @@ main() {
     run_zsh_syntax
     assert_expected_executables
     assert_zsh_runtime_inputs_removed
+    assert_zsh_bootstrap_boundary
     run_tmux_agent_status_tests
     run_handy_tests
     run_godspeed_tasks_tests

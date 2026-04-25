@@ -34,6 +34,13 @@ dotty run macos-setup
 
 ## Shell Completions
 
+`~/.zshenv` is the only top-level zsh bootstrap in this setup. It points `ZDOTDIR` at `~/.config/zsh`, so tracked interactive shell config lives under `home/.config/zsh/` instead of a repo-managed `~/.zshrc`.
+
+Tracked zsh config exposes two local shell hooks for later repos or machine-local overrides:
+
+- `~/.zshrc.pre.local` runs before `compinit` and is the right place to add completion paths or source shell init that needs to run before completion registration.
+- `~/.zshrc.local` runs after `compinit` and plugin setup and is the right place for post-completion interactive shell config.
+
 Tracked zsh config loads completions from these standard locations in interactive shells:
 
 - `~/.local/share/zsh/site-functions` for user-installed tools such as `dotty`
@@ -72,6 +79,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 ## Where To Change Things
 
 - Shell: `home/.zshenv` and `home/.config/zsh/`
+- Shell local hooks: `~/.zshrc.pre.local` for pre-`compinit` setup and `~/.zshrc.local` for post-`compinit` interactive overrides
 - Sesh picker and one-shot launcher helpers: `home/.local/bin/sesh-pick` and `home/.local/bin/sesh-one-shot`
 - NeoVim: `home/.config/nvim/`
 - Git prompt legend in shell: run `git-prompt-help`
@@ -91,6 +99,8 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting, `godspeed-tasks` for read-only Godspeed inbox triage, and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
 
 Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories. For Claude, `home/.claude/` is an allowlisted source tree for tracked config only; live runtime state stays in `~/.claude/`.
+
+Top-level `~/.zshrc` is intentionally not part of the tracked startup path here. If you need shell-local changes, use `~/.zshrc.pre.local`, `~/.zshrc.local`, or a later dotty repo instead of reintroducing a wrapper bootstrap.
 
 ## Post-Install Notes
 

@@ -41,10 +41,13 @@ Current conventions:
 - shared Git defaults in `~/.config/git/config`
 - `~/.gitconfig.local` for machine-specific git config
 - `~/.zshenv.local` for env vars and path tweaks
+- `~/.zshrc.pre.local` for pre-`compinit` shell init such as completion path setup
 - `~/.zshrc.local` for interactive shell overrides
 - later repos in the dotty chain for machine-family-specific behavior
 
 For Git config changes in this setup, use `git config-shared`, `git config-local`, or explicit `git config --file ...`. Avoid `git config --global`, which writes unmanaged `~/.gitconfig`.
+
+`~/.zshenv` is the only top-level zsh bootstrap in this layout. It sets `ZDOTDIR=~/.config/zsh` and hands off to the tracked config there. Base `dotfiles` intentionally does not source a real `~/.zshrc`.
 
 ## Source vs Runtime State
 
