@@ -17,6 +17,7 @@ run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/commands/brew-sync"
+        ".dotty/commands/macos-setup"
         ".githooks/pre-commit"
         "home/.config/tmux/agent-status-hook.sh"
         "home/.config/tmux/agent-status/hook.sh"
@@ -36,6 +37,7 @@ run_bash_syntax() {
         "scripts/check"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
+        "scripts/macos-setup.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "tests/handy/test-sync-handy-settings.sh"
@@ -55,12 +57,14 @@ assert_expected_executables() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/commands/brew-sync"
+        ".dotty/commands/macos-setup"
         "install.sh"
         "scripts/brew-sync.sh"
         "scripts/check"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
+        "scripts/macos-setup.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
     )

@@ -99,50 +99,10 @@ run_brew_sync() {
 # macOS
 
 setup_macos() {
-    if [ "$(uname -s)" != "Darwin" ]; then
-        info "Skipping macOS configuration (not running on macOS)"
-        return 0
-    fi
+    local macos_setup_script="$DOTFILES/scripts/macos-setup.sh"
 
-    title "Configuring macOS system preferences"
-
-    if [ -f "$DOTFILES/scripts/enable-touchid-sudo.sh" ]; then
-        if "$DOTFILES/scripts/enable-touchid-sudo.sh"; then
-            success "Touch ID setup completed"
-        else
-            warning "Touch ID setup was skipped or failed"
-        fi
-    fi
-
-    if [ -f "$DOTFILES/scripts/macos.sh" ]; then
-        info "Running macOS configuration script"
-        if "$DOTFILES/scripts/macos.sh"; then
-            success "macOS configuration completed"
-        else
-            die "Failed to configure macOS settings"
-        fi
-    else
-        die "macOS configuration script not found at $DOTFILES/scripts/macos.sh"
-    fi
-
-    if [ -f "$DOTFILES/scripts/karabiner-config.ts" ]; then
-        if command -v bun >/dev/null 2>&1; then
-            info "Generating Karabiner-Elements configuration"
-            if bun run "$DOTFILES/scripts/karabiner-config.ts"; then
-                success "Karabiner-Elements configuration generated"
-            else
-                warning "Failed to generate Karabiner-Elements configuration"
-            fi
-        else
-            warning "Bun not found. Skipping Karabiner-Elements configuration generation."
-            info "Install Bun with: brew install oven-sh/bun/bun"
-        fi
-    fi
-
-    if [ -f "$DOTFILES/scripts/install-fonts.sh" ]; then
-        info "Installing fonts"
-        "$DOTFILES/scripts/install-fonts.sh"
-    fi
+    [[ -x "$macos_setup_script" ]] || die "macOS setup script not found at $macos_setup_script"
+    "$macos_setup_script"
 }
 
 # Run

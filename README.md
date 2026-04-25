@@ -11,21 +11,23 @@ cd ~/dotfiles && ./install.sh
 
 `./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook.
 
-Once the repo is cloned, `dotty update` is the normal catch-up command. It refreshes the dotty chain and reruns the repo hook. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS.
+Once the repo is cloned, `dotty update` is the normal catch-up command. It refreshes the dotty chain and reruns the repo hook. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS, and `dotty run macos-setup` when you want to reapply tracked macOS defaults and related setup.
 
-If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after install. `scripts/install-fonts.sh` will install it the next time the hook runs. Symbols Nerd Font is downloaded automatically.
+If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after install. `dotty run macos-setup` will install it the next time you run it on macOS. Symbols Nerd Font is downloaded automatically.
 
 ## Daily Use
 
 ```bash
 dotty update
 dotty run brew-sync
+dotty run macos-setup
 ./scripts/check
 ./scripts/install-git-hooks.sh
 ```
 
 - `dotty update` refreshes symlinks and reruns setup hooks without touching Homebrew.
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones.
+- `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
 - `./scripts/check` runs the fast local validation path for this repo, including tmux agent status regression tests.
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
@@ -59,7 +61,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - `AGENTS.md`: canonical repo-specific agent instructions for this repo (`CLAUDE.md` is a compatibility symlink)
 - `home/`: tracked source files that dotty links into `$HOME`
 - `.dotty/`: repo identity and post-link hook
-- `.dotty/commands/`: repo-defined dotty commands such as `brew-sync`
+- `.dotty/commands/`: repo-defined dotty commands such as `brew-sync` and `macos-setup`
 - `scripts/`: setup, sync, and validation helpers
 - `tests/`: focused regression tests for repo-managed subsystems
 - `docs/layout.md`: layout, dotty chain, and source/runtime boundaries
