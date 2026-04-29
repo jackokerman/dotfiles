@@ -124,6 +124,22 @@ EOF
 )"
 
 run_case \
+    "queued post-tool message footer stays working" \
+    "codex" \
+    "working" \
+    "$(cat <<'EOF'
+• Working (23m 35s • esc to interrupt)
+
+• Messages to be submitted after next tool call (press esc to interrupt and send immediately)
+  ↳ I might need to restart some services if you are not seeing the actual dashboard page.
+
+› Run /review on my current changes
+
+  gpt-5.4 xhigh · /pay/src/pay-server/frontend/dashboard-object-creation
+EOF
+)"
+
+run_case \
     "approval prompt stays waiting" \
     "claude" \
     "waiting" \
