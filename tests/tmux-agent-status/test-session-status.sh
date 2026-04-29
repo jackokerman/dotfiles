@@ -38,31 +38,40 @@ run_case \
     "waiting"
 
 run_case \
-    "explicit done upgrades back to working when the live signal is active" \
+    "explicit working upgrades to waiting on a real waiting prompt" \
+    "working" \
+    "waiting" \
+    "1" \
+    "0" \
+    "0" \
+    "waiting"
+
+run_case \
+    "explicit done ignores a non-waiting live working signal" \
     "done" \
     "working" \
+    "1" \
+    "0" \
+    "0" \
+    "done"
+
+run_case \
+    "explicit working ignores a non-waiting live done signal" \
+    "working" \
+    "done" \
     "1" \
     "0" \
     "0" \
     "working"
 
 run_case \
-    "explicit working downgrades to done when the live parser sees a completed stop hook" \
-    "working" \
-    "done" \
-    "1" \
-    "0" \
-    "0" \
-    "done"
-
-run_case \
-    "explicit waiting downgrades to done when the live parser sees a completed stop hook" \
+    "explicit waiting ignores a non-waiting live done signal" \
     "waiting" \
     "done" \
     "1" \
     "0" \
     "0" \
-    "done"
+    "waiting"
 
 run_case \
     "stale working hook falls back to done without a live signal" \

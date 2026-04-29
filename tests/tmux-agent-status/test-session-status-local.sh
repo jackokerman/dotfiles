@@ -69,7 +69,7 @@ run_shell_wrapped_explicit_done_case() {
     actual=$(tmux_session_status_emit_local_record "${session}" "current")
     assert_equal \
       "${name}" \
-      $'review-shell\tcodex\tworking\tlocal_explicit\t42' \
+      $'review-shell\tcodex\tdone\tlocal_explicit\t42' \
       "${actual}"
 
     rm -rf "${tmp_dir}"
@@ -77,7 +77,7 @@ run_shell_wrapped_explicit_done_case() {
 }
 
 run_shell_wrapped_explicit_done_case \
-    "shell-wrapped explicit done session upgrades to working from the live agent tail"
+    "shell-wrapped explicit done session keeps the explicit done state"
 
 run_shell_wrapped_fallback_case() {
   local name="$1"

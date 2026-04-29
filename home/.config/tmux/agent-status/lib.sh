@@ -151,8 +151,11 @@ tmux_session_status_resolve_state() {
         state="done"
       fi
 
-      if [[ -n "${live_state}" ]]; then
-        state="${live_state}"
+      # Explicit hook state remains authoritative for active sessions. The live
+      # parser only upgrades the row to waiting when the pane clearly needs
+      # user attention.
+      if [[ "${live_state}" == "waiting" ]]; then
+        state="waiting"
       elif [[ "${state}" == "working" && "${stale_working}" == "1" ]]; then
         state="done"
       fi

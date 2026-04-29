@@ -35,6 +35,7 @@ The base renderer should not learn overlay-specific cache layout or transport lo
 - Do not patch the base renderer to understand a specific remote transport or cache format.
 - Treat Codex prompt detection as regression-prone. If you change prompt heuristics, add or update focused tail tests.
 - Treat state reconciliation as separate from prompt parsing. If you change state precedence, stale-working handling, or duplicate suppression, add or update reconciliation or integration tests.
+- Keep explicit hook state authoritative. Live parsing should only promote active rows to `waiting`, or drive fallback-only sessions that have no explicit state file.
 - Prefer changing the smallest layer that owns the behavior:
   - prompt parsing: `agent-status/pane-state.sh`
   - local collection or render policy: `agent-status/lib.sh`
