@@ -35,14 +35,14 @@ _session_has_pane_command() {
 }
 
 _session_has_known_agent_pane() {
-  _session_has_pane_command "$1" "${KNOWN_AGENT_COMMANDS[@]}"
+  [[ -n "$(_session_agent_command "$1" 2>/dev/null || true)" ]]
 }
 
 _session_has_remote_transport_pane() {
   _session_has_pane_command "$1" "${REMOTE_TRANSPORT_COMMANDS[@]}"
 }
 
-_session_has_live_agent_process() {
+_session_live_agent_command() {
   local session="$1" agent="${2:-}" pane_pids="" line="" pid="" comm="" current_pid="" parent_pid=""
   local -a target_agents=()
 
@@ -71,6 +71,7 @@ _session_has_live_agent_process() {
     current_pid="${pid}"
     while [[ -n "${current_pid}" && "${current_pid}" != "1" ]]; do
       if printf '%s\n' "${pane_pids}" | grep -qx "${current_pid}"; then
+        printf '%s\n' "${comm}"
         return 0
       fi
 
@@ -82,6 +83,10 @@ _session_has_live_agent_process() {
   done < <(ps -eo pid=,ppid=,comm= 2>/dev/null || true)
 
   return 1
+}
+
+_session_has_live_agent_process() {
+  [[ -n "$(_session_live_agent_command "$@" 2>/dev/null || true)" ]]
 }
 
 _session_agent_command() {
@@ -96,7 +101,7 @@ _session_agent_command() {
     done
   done < <(tmux list-panes -t "${session}" -F '#{pane_current_command}' 2>/dev/null)
 
-  return 1
+  _session_live_agent_command "${session}" 2>/dev/null || return 1
 }
 
 _session_live_state() {

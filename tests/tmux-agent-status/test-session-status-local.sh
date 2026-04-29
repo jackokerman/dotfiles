@@ -39,3 +39,72 @@ run_done_cleanup_case() {
 
 run_done_cleanup_case \
     "explicit done local session without a live agent is hidden and clears state"
+
+run_shell_wrapped_explicit_done_case() {
+  local name="$1"
+
+  (
+    local tmp_dir="" session="review-shell" actual=""
+
+    tmp_dir=$(mktemp -d)
+    STATE_DIR="${tmp_dir}"
+    printf 'codex\tdone\n' > "${STATE_DIR}/${session}"
+
+    _session_has_live_agent_process() {
+      return 0
+    }
+
+    _session_agent_command() {
+      printf '%s\n' "codex"
+    }
+
+    _session_live_state() {
+      printf '%s\n' "working"
+    }
+
+    _state_file_mtime() {
+      printf '%s\n' "42"
+    }
+
+    actual=$(tmux_session_status_emit_local_record "${session}" "current")
+    assert_equal \
+      "${name}" \
+      $'review-shell\tcodex\tworking\tlocal_explicit\t42' \
+      "${actual}"
+
+    rm -rf "${tmp_dir}"
+  )
+}
+
+run_shell_wrapped_explicit_done_case \
+    "shell-wrapped explicit done session upgrades to working from the live agent tail"
+
+run_shell_wrapped_fallback_case() {
+  local name="$1"
+
+  (
+    local tmp_dir="" session="review-shell" actual=""
+
+    tmp_dir=$(mktemp -d)
+    STATE_DIR="${tmp_dir}"
+
+    _session_agent_command() {
+      printf '%s\n' "codex"
+    }
+
+    _session_live_state() {
+      printf '%s\n' "working"
+    }
+
+    actual=$(tmux_session_status_emit_local_record "${session}" "current")
+    assert_equal \
+      "${name}" \
+      $'review-shell\tcodex\tworking\tlocal_fallback\t0' \
+      "${actual}"
+
+    rm -rf "${tmp_dir}"
+  )
+}
+
+run_shell_wrapped_fallback_case \
+    "shell-wrapped live agent sessions without explicit state still render"
