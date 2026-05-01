@@ -47,13 +47,13 @@ run_case \
     "waiting"
 
 run_case \
-    "explicit done ignores a non-waiting live working signal" \
-    "done" \
-    "working" \
-    "1" \
-    "0" \
-    "0" \
-    "done"
+  "explicit done recovers to working on a visible live working footer" \
+  "done" \
+  "working" \
+  "1" \
+  "0" \
+  "0" \
+  "working"
 
 run_case \
     "explicit working ignores a non-waiting live done signal" \

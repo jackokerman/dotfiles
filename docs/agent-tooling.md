@@ -19,13 +19,13 @@
   - `tmux_agent_overlay_emit_records`
 - Overlay emitters should print tab-separated records in the form `session_label<TAB>agent<TAB>state<TAB>source<TAB>updated_at`
 - The status bar still polls every 2 seconds, but tmux also forces an immediate refresh on `client-session-changed` and `client-attached`
-- For Codex, `working` and `done` remain hook-driven; live pane parsing is only used to detect explicit waiting prompts
-- When an explicit state file exists, only a live `waiting` prompt may override it; non-waiting live signals do not replace explicit `working` or `done`
+- For Codex, `working` and `done` remain mostly hook-driven, but a live pane footer can recover a stale explicit `done` back to `working` or `waiting`
+- When an explicit state file exists, a live `working` or `waiting` footer may override an explicit `done`; otherwise non-waiting live signals do not replace explicit `working` or `waiting`
 - Codex does not currently expose a dedicated public hook for "waiting for user input", so tmux infers that state from a small allowlist of known prompt shapes
 - When a Codex prompt line includes both waiting cues and `esc to interrupt`, tmux treats it as `waiting` rather than `working`
 - Generic Codex footer text such as the model/path line is not treated as a waiting signal
 - Fallback-only sessions without an explicit state file may still infer `working` or `waiting` from the live pane tail
-- Overlay-provided remote mirrors follow the same precedence rule once the remote state file has been fetched locally
+- Overlay-provided remote mirrors may apply their own reconciliation before emitting records; the generic local collector rule above only applies to locally collected sessions
 - Finished shell-only sessions are hidden once no live agent process remains
 - tmux regression tests live under `tests/tmux-agent-status/`
 
