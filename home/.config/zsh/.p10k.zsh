@@ -28,18 +28,28 @@
   # Zsh >= 5.1 is required.
   [[ $ZSH_VERSION == (5.<1->*|<6->.*) ]] || return
 
-  # The list of segments shown on the left. Fill it with the most important segments.
-  typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
-    # =========================[ Line #1 ]=========================
-    # os_icon               # os identifier
-    # context               # user@hostname
-    dir                     # current directory
-    vcs                     # spaceship-style branch + git status via standard p10k vcs plumbing
-    command_execution_time  # duration of the last command
-    # =========================[ Line #2 ]=========================
-    newline                 # \n
-    prompt_char             # prompt symbol
+  # Later dotty repos can override the left prompt layout or disable gitstatus
+  # before p10k config is applied by setting DOTFILES_P10K_* in
+  # ~/.zshrc.pre.local.
+  local -a dotfiles_p10k_left_prompt_elements=(
+    dir
+    vcs
+    command_execution_time
+    newline
+    prompt_char
   )
+  local dotfiles_p10k_disable_gitstatus="${${DOTFILES_P10K_DISABLE_GITSTATUS-}:l}"
+
+  if (( ${+DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE} )); then
+    dotfiles_p10k_left_prompt_elements=("${DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE[@]}")
+  fi
+
+  if [[ "$dotfiles_p10k_disable_gitstatus" == (1|true|yes|on) ]]; then
+    typeset -g POWERLEVEL9K_DISABLE_GITSTATUS=true
+  fi
+
+  # The list of segments shown on the left. Fill it with the most important segments.
+  typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=("${dotfiles_p10k_left_prompt_elements[@]}")
 
   # The list of segments shown on the right. Fill it with less important segments.
   # Right prompt on the last prompt line (where you are typing your commands) gets

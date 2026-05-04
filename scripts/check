@@ -45,6 +45,7 @@ run_bash_syntax() {
         "tests/tmux-agent-status/test-pane-state.sh"
         "tests/tmux-agent-status/test-session-status-local.sh"
         "tests/tmux-agent-status/test-session-status.sh"
+        "tests/zsh/test-p10k-overrides.sh"
         "tests/tmux-agent-status/testlib.sh"
         "scripts/validate-codex-sync.sh"
     )
@@ -131,6 +132,11 @@ run_handy_tests() {
     "$PROJECT_ROOT/tests/handy/test-sync-handy-settings.sh"
 }
 
+run_zsh_prompt_tests() {
+    log "Running zsh prompt regression tests"
+    bash "$PROJECT_ROOT/tests/zsh/test-p10k-overrides.sh"
+}
+
 run_godspeed_tasks_tests() {
     log "Running Godspeed task helper tests"
     bun test "$PROJECT_ROOT/tests/godspeed-tasks/godspeed-tasks.test.ts"
@@ -144,6 +150,7 @@ main() {
     assert_zsh_bootstrap_boundary
     run_tmux_agent_status_tests
     run_handy_tests
+    run_zsh_prompt_tests
     run_godspeed_tasks_tests
 
     log "Validating Codex sync inputs"

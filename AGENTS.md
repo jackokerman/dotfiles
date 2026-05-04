@@ -33,6 +33,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `tests/tmux-agent-status/` holds the tmux agent-status regression tests.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
 - Use `~/.zshrc.pre.local` for pre-`compinit` shell init and `~/.zshrc.local` for post-`compinit` interactive overrides. Do not reintroduce a tracked dependency on a real `~/.zshrc`.
+- Later repos that need Powerlevel10k changes before `home/.config/zsh/.p10k.zsh` loads should set the generic `DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE` array or `DOTFILES_P10K_DISABLE_GITSTATUS=true` in `~/.zshrc.pre.local` instead of writing `POWERLEVEL9K_*` directly.
 - User-installed completions live under `~/.local/share/zsh/site-functions`, and Homebrew completions under `/opt/homebrew/share/zsh/site-functions`.
 - Keep the generic sesh picker and one-shot launcher helpers in `home/.local/bin/`; session definitions that use them belong in the appropriate repo later in the dotty chain.
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.

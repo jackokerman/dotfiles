@@ -41,6 +41,8 @@ Tracked zsh config exposes two local shell hooks for later repos or machine-loca
 - `~/.zshrc.pre.local` runs before `compinit` and is the right place to add completion paths or source shell init that needs to run before completion registration.
 - `~/.zshrc.local` runs after `compinit` and plugin setup and is the right place for post-completion interactive shell config.
 
+`~/.zshrc.pre.local` is also where later repos should set early Powerlevel10k overrides that must land before `~/.config/zsh/.p10k.zsh` loads. The supported generic hooks are `DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE=(...)` and `DOTFILES_P10K_DISABLE_GITSTATUS=true`.
+
 Tracked zsh config loads completions from these standard locations in interactive shells:
 
 - `~/.local/share/zsh/site-functions` for user-installed tools such as `dotty`

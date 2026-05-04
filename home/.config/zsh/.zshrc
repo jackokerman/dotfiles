@@ -10,6 +10,48 @@ unsetopt incappendhistory incappendhistorytime
 # Runs above instant prompt to avoid p10k's console output warning.
 command -v dotty >/dev/null 2>&1 && dotty check
 
+# Allow later dotty repos and local overrides to extend `fpath`, source shell
+# init, or request early prompt changes before instant prompt and plugin setup.
+[[ ! -f ~/.zshrc.pre.local ]] || source ~/.zshrc.pre.local
+
+_dotfiles_p10k_reset_cache_if_needed() {
+  emulate -L zsh
+
+  local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}"
+  local dump_file="${cache_dir}/p10k-dump-${(%):-%n}.zsh"
+  local instant_prompt_file="${cache_dir}/p10k-instant-prompt-${(%):-%n}.zsh"
+  local expected_left_prompt="dir vcs command_execution_time newline prompt_char"
+  local expected_gitstatus_disabled=0
+  local actual_gitstatus_disabled=0
+
+  if (( ${+DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE} )); then
+    expected_left_prompt="${(j: :)DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE}"
+  fi
+
+  case "${${DOTFILES_P10K_DISABLE_GITSTATUS-}:l}" in
+    1|true|yes|on)
+      expected_gitstatus_disabled=1
+      ;;
+  esac
+
+  [[ -r "${dump_file}" ]] || return
+
+  command grep -Fq "_POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=( ${expected_left_prompt} )" "${dump_file}" || {
+    command rm -f -- "${dump_file}" "${dump_file}.zwc" "${instant_prompt_file}" "${instant_prompt_file}.zwc"
+    return
+  }
+
+  if command grep -Fq '_POWERLEVEL9K_DISABLE_GITSTATUS=1' "${dump_file}"; then
+    actual_gitstatus_disabled=1
+  fi
+
+  (( actual_gitstatus_disabled == expected_gitstatus_disabled )) || \
+    command rm -f -- "${dump_file}" "${dump_file}.zwc" "${instant_prompt_file}" "${instant_prompt_file}.zwc"
+}
+
+_dotfiles_p10k_reset_cache_if_needed
+unfunction _dotfiles_p10k_reset_cache_if_needed
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -22,10 +64,6 @@ fi
 _dotfiles_is_prompt_shell() {
   [[ -o interactive ]] && [[ -z ${ZSH_EXECUTION_STRING-} ]]
 }
-
-# Allow later dotty repos and local overrides to extend `fpath` or source shell
-# init before compinit runs.
-[[ ! -f ~/.zshrc.pre.local ]] || source ~/.zshrc.pre.local
 
 # Plugins (clones missing plugins in parallel, then sources in order)
 source $ZDOTDIR/.zetch.zsh
