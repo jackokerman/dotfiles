@@ -1,8 +1,16 @@
 {
   "plugins": {
+    "conform.nvim": {
+      "rev": "dca1a190aa85f9065979ef35802fb77131911106",
+      "src": "https://github.com/stevearc/conform.nvim"
+    },
     "nightfly": {
       "rev": "caaba387a4a50cf08791395acc4a5b7363367cff",
       "src": "https://github.com/bluz71/vim-nightfly-colors"
+    },
+    "nvim-lspconfig": {
+      "rev": "31026a13eefb20681124706a79fc1df6bf11ab27",
+      "src": "https://github.com/neovim/nvim-lspconfig"
     }
   }
 }

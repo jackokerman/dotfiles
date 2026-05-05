@@ -37,6 +37,8 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - User-installed completions live under `~/.local/share/zsh/site-functions`, and Homebrew completions under `/opt/homebrew/share/zsh/site-functions`.
 - Keep the generic sesh picker and one-shot launcher helpers in `home/.local/bin/`; session definitions that use them belong in the appropriate repo later in the dotty chain.
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
+- Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
+- Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
 - The generic tmux agent-status entrypoints live in `home/.config/tmux/`, and the private implementation lives in `home/.config/tmux/agent-status/`; extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
 - Keep reusable generic Codex skills in `home/.codex/skills/`, including `godspeed-tasks` for Godspeed inbox triage, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.

@@ -152,6 +152,23 @@ setup_handy() {
 
 setup_handy
 
+setup_nvim_js_tools() {
+    local install_script="$DOTFILES/scripts/install-nvim-js-tools.sh"
+
+    title "Installing Neovim JS tools"
+
+    if [[ ! -x "$install_script" ]]; then
+        warning "Neovim JS tool installer not found at $install_script"
+        return 0
+    fi
+
+    if ! "$install_script"; then
+        warning "Failed to install Neovim JS tools"
+    fi
+}
+
+setup_nvim_js_tools
+
 # Claude: create ~/.claude as a real directory and symlink tracked config.
 # The entire .claude directory is in DOTTY_LINK_IGNORE so dotty won't
 # create a directory symlink (which would cause Claude runtime files like

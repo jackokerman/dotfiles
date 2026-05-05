@@ -20,6 +20,7 @@ If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after
 ```bash
 dotty update
 dotty run brew-sync
+dotty run install-nvim-js-tools
 dotty run macos-setup
 ./scripts/check
 ./scripts/install-git-hooks.sh
@@ -27,6 +28,7 @@ dotty run macos-setup
 
 - `dotty update` refreshes symlinks and reruns setup hooks without touching Homebrew.
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones.
+- `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
 - `./scripts/check` runs the fast local validation path for this repo, including tmux agent status regression tests.
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
@@ -84,6 +86,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Shell local hooks: `~/.zshrc.pre.local` for pre-`compinit` setup and `~/.zshrc.local` for post-`compinit` interactive overrides
 - Sesh picker and one-shot launcher helpers: `home/.local/bin/sesh-pick` and `home/.local/bin/sesh-one-shot`
 - NeoVim: `home/.config/nvim/`
+- NeoVim JS tool installer: `scripts/install-nvim-js-tools.sh` via `dotty run install-nvim-js-tools`
 - Git prompt legend in shell: run `git-prompt-help`
 - Git shared defaults: `home/.config/git/config` via `git config-shared`
 - Git local overrides: `~/.gitconfig.local` via `git config-local`
@@ -99,6 +102,8 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 
 Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting, `godspeed-tasks` for read-only Godspeed inbox triage, and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
+
+The tracked NeoVim config intentionally stays minimal. For frontend work it currently relies on Neovim 0.12 built-in syntax highlighting, `nvim-lspconfig` for `ts_ls` and `eslint`, and `conform.nvim` for manual local-first formatting. Project-local `prettier` and `eslint` remain authoritative; the repo-managed helper installs only the editor-facing language server binaries.
 
 Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories. For Claude, `home/.claude/` is an allowlisted source tree for tracked config only; live runtime state stays in `~/.claude/`.
 

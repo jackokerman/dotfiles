@@ -5,6 +5,7 @@ opt.relativenumber = false
 opt.termguicolors = true
 opt.clipboard = "unnamedplus"
 opt.mouse = "a"
+opt.signcolumn = "yes"
 opt.splitright = true
 opt.splitbelow = true
 opt.ignorecase = true
