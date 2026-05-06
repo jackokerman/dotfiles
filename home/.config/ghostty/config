@@ -16,6 +16,6 @@ mouse-hide-while-typing = true
 
 # Theme
 theme = nightfly
-# Codex inside tmux reliably treats LF as "insert newline", while modified
-# Enter sequences depend on tmux key-mode negotiation. Send LF directly.
-keybind = super+enter=text:\n
+# Codex inside tmux reliably treats LF as "insert newline". Bind the
+# canonical Shift+Enter shortcut directly to LF.
+keybind = shift+enter=text:\n
