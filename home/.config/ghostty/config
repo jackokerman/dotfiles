@@ -16,4 +16,6 @@ mouse-hide-while-typing = true
 
 # Theme
 theme = nightfly
-keybind = shift+enter=text:\x1b\r
+# Ghostty already sends Shift+Enter natively. Reuse Cmd+Enter for the same
+# CSI-u newline sequence so terminal apps like Codex don't hit fullscreen.
+keybind = super+enter=text:\x1b[13;2u
