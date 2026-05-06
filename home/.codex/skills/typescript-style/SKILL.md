@@ -31,9 +31,11 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 
 ## Documentation
 
-- Add JSDoc descriptions to exported functions, hooks, and types when they define a module contract or non-obvious behavior.
+- Add JSDoc descriptions to exported functions, hooks, components, and types when they define a module contract or non-obvious behavior.
+- If an exported component or function relies on a local props, options, or input type to define that contract, document that supporting type too even when the type itself is not exported.
 - For exported utility helpers in shared modules, prefer a short JSDoc sentence even when the implementation is small, especially if the helper mutates inputs or mirrors another library contract.
 - When documenting functions or types, use JSDoc block comments (`/** ... */`) instead of line comments.
+- Always format JSDoc as a multiline block, even for a single sentence. Do not use the condensed single-line form `/** ... */`.
 - Skip `@param` and `@returns` tags unless a specific tool requires them. The TypeScript signature already carries that information.
 - Document nested object fields inline on the type when that is the clearest place to explain them.
 - Focus documentation on exported and non-obvious code. Do not blanket-comment trivial local helpers.
