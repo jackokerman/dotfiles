@@ -24,11 +24,6 @@
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
 - Use another runtime only when it has a clear operational advantage.
 
-## Tool Discovery
-- When `tool_search` is available, treat the initially listed tool set as incomplete. Use deferred tool discovery before concluding that a requested action is unsupported.
-- Trigger that search when the user asks you to perform an external action such as sending, posting, scheduling, uploading, or searching and no obvious directly listed tool already fits.
-- When an authenticated tool exists for the requested action, prefer actually doing it over only returning manual copy-paste text or instructions.
-
 ## Research Workflow
 - For questions about tool behavior, configuration, library or framework semantics, APIs, or documented workflows, prefer deterministic verification over inference.
 - Check the strongest available sources first: official docs, local CLI help, tracked config, local types, project usages, tests, or repo sources.
