@@ -117,3 +117,38 @@ run_case \
     "0" \
     "0" \
     ""
+
+run_render_case() {
+  local name="$1" available_width="$2" rows="$3" expected="$4" actual=""
+
+  actual=$(
+    AVAILABLE_WIDTH="${available_width}" \
+    ROWS="${rows}" \
+    TARGET_SCRIPT="${TARGET_SCRIPT}" \
+    "${BASH}" <<'EOF'
+set -euo pipefail
+
+source "${TARGET_SCRIPT}"
+
+tmux_session_status_right_available_width() {
+  printf '%s\n' "${AVAILABLE_WIDTH}"
+}
+
+printf '%b' "${ROWS}" | tmux_session_status_render_records "current"
+EOF
+  )
+
+  assert_equal "${name}" "${expected}" "${actual}"
+}
+
+run_render_case \
+    "renderer uses the full available width before showing an ellipsis" \
+    "19" \
+    $'alpha\tcodex\tworking\tlocal_explicit\t10\nbeta\tcodex\twaiting\tlocal_explicit\t20\ngamma\tcodex\tdone\tlocal_explicit\t30\n' \
+    $'#[fg=#82aaff] alpha#[fg=default]  #[fg=#e3d18a] beta#[fg=default]  #[fg=#7f8c98]…#[fg=default] '
+
+run_render_case \
+    "renderer drops the last visible item when it needs room for the ellipsis" \
+    "17" \
+    $'alpha\tcodex\tworking\tlocal_explicit\t10\nbeta\tcodex\twaiting\tlocal_explicit\t20\ngamma\tcodex\tdone\tlocal_explicit\t30\n' \
+    $'#[fg=#82aaff] alpha#[fg=default]  #[fg=#7f8c98]…#[fg=default] '

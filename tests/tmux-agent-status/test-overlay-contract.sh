@@ -34,6 +34,10 @@ set -euo pipefail
 
 source "${TARGET_SCRIPT}"
 
+tmux_session_status_right_available_width() {
+  return 1
+}
+
 tmux_session_status_current_session() {
   printf '%s\n' "${CURRENT_SESSION}"
 }
