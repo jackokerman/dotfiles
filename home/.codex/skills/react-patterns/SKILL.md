@@ -21,6 +21,7 @@ Use this skill for clearly React or frontend work. These are opinionated default
 - Destructure props in the component signature unless keeping the object whole is materially clearer. Put default values in the signature when a default belongs to the component boundary; do not use `defaultProps` on function components.
 - Treat high prop count as a design smell. Pass one typed domain object when several values travel together, but do not hide unrelated values in a generic options bag.
 - Keep leaf components boring and usually stateless. Parents decide what to render; children render resolved props and emit events.
+- Do not add customization props, escape hatches, or alternate render knobs unless a real current consumer needs them. Prefer the smallest prop surface that covers the shipped use cases.
 - Prefer composition over mode flags or internal branching. If branches represent different workflows or shapes, split components.
 - Move pure helpers outside the component. If extracted markup grows its own branches, mapping, or state, make it a named component or hook.
 - If a helper returns UI and is meant to be rendered, make it a real component with a capitalized name and render it with JSX instead of calling `getFoo()`-style functions from the parent render path.
