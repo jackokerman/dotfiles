@@ -33,6 +33,7 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 
 - Add JSDoc descriptions to exported functions, hooks, components, and types when they define a module contract or non-obvious behavior.
 - If an exported component or function relies on a local props, options, or input type to define that contract, document that supporting type too even when the type itself is not exported.
+- For prop, options, and input object types that back an exported API, add inline JSDoc to the individual fields when that hover text clarifies the contract or disambiguates similarly named props.
 - For exported utility helpers in shared modules, prefer a short JSDoc sentence even when the implementation is small, especially if the helper mutates inputs or mirrors another library contract.
 - When documenting functions or types, use JSDoc block comments (`/** ... */`) instead of line comments.
 - Always format JSDoc as a multiline block, even for a single sentence. Do not use the condensed single-line form `/** ... */`.
