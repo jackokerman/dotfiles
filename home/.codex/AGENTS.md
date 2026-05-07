@@ -47,6 +47,10 @@
 - For Godspeed inbox triage, Godspeed task planning, or requests to organize the work or personal inbox, use the native `godspeed-tasks` skill.
 - Keep Godspeed triage read-only by default. Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`, not the top-level default inbox.
 
+## Neovim Workflow
+- For personal Neovim config changes, plugin selection, keymap design, or requests to grow the editor setup incrementally, use the native `nvim-config-coach` skill before substantial edits.
+- Keep the generic Neovim workflow guidance in tracked Codex skills under `home/.codex/skills/`, not in `AGENTS.md`.
+
 ## Dotfiles Workflow
 - In personal dotty-managed repos, the task is not done until changes are committed and pushed to `main`.
 - Use conventional commits.

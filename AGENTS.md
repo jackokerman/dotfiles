@@ -41,7 +41,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
 - The generic tmux agent-status entrypoints live in `home/.config/tmux/`, and the private implementation lives in `home/.config/tmux/agent-status/`; extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
-- Keep reusable generic Codex skills in `home/.codex/skills/`, including `godspeed-tasks` for Godspeed inbox triage, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
+- Keep reusable generic Codex skills in `home/.codex/skills/`, including `godspeed-tasks` for Godspeed inbox triage and `nvim-config-coach` for incremental Neovim config work, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across the dotty chain.
 
 Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree. For Claude, treat `home/.claude/` as an allowlisted tracked-config source tree only; runtime state belongs in the live `~/.claude/` directory.

@@ -101,7 +101,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Codex-only local skill tokens: `~/.codex/env.local` (for example `GODSPEED_API_TOKEN`)
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 
-Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting, `godspeed-tasks` for read-only Godspeed inbox triage, and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
+Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting, `godspeed-tasks` for read-only Godspeed inbox triage, `nvim-config-coach` for incremental personal Neovim config work, and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
 
 The tracked NeoVim config intentionally stays minimal. For frontend work it currently relies on Neovim 0.12 built-in syntax highlighting, `nvim-lspconfig` for `ts_ls` and `eslint`, and `conform.nvim` for manual local-first formatting. Project-local `prettier` and `eslint` remain authoritative; the repo-managed helper installs only the editor-facing language server binaries.
 

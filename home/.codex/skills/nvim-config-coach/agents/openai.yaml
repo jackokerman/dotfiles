@@ -1,0 +1,4 @@
+interface:
+  display_name: "Neovim Config Coach"
+  short_description: "Incremental Neovim coaching for a growing vim.pack config."
+  default_prompt: "Use $nvim-config-coach to inspect my current Neovim config, recommend one modern approach plus a fallback, and wait for my choice before implementing it."
