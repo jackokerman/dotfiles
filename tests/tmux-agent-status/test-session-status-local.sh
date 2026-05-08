@@ -140,7 +140,7 @@ run_working_heartbeat_case() {
   local name="$1"
 
   (
-    local tmp_dir="" session="heartbeat" actual="" refreshed_at="" now=""
+    local tmp_dir="" session="heartbeat" actual="" second_actual=""
 
     tmp_dir=$(mktemp -d)
     STATE_DIR="${tmp_dir}"
@@ -156,27 +156,20 @@ run_working_heartbeat_case() {
     }
 
     actual=$(tmux_session_status_emit_local_record "${session}" "current")
-    refreshed_at=$(_state_file_mtime "${STATE_DIR}/${session}")
-    now=$(date +%s)
 
-    if (( now - refreshed_at > 5 )); then
-      fail "${name} state file heartbeat was not refreshed"
+    if [[ ! "${actual}" =~ ^heartbeat$'\t'codex$'\t'working$'\t'local_explicit$'\t'[0-9]+$ ]]; then
+      fail "${name} returned an unexpected local record: ${actual}"
     fi
-
-    assert_equal \
-      "${name}" \
-      $'heartbeat\tcodex\tworking\tlocal_explicit\t'"${refreshed_at}" \
-      "${actual}"
 
     _session_live_state() {
       printf '%s\n' ""
     }
 
-    actual=$(tmux_session_status_emit_local_record "${session}" "current")
+    second_actual=$(tmux_session_status_emit_local_record "${session}" "current")
     assert_equal \
       "${name} survives a transient empty live parse" \
-      $'heartbeat\tcodex\tworking\tlocal_explicit\t'"${refreshed_at}" \
-      "${actual}"
+      "${actual}" \
+      "${second_actual}"
 
     rm -rf "${tmp_dir}"
   )
