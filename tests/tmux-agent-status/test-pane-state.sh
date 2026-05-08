@@ -74,9 +74,9 @@ EOF
 )"
 
 run_case \
-    "completed transcript plus idle footer stays neutral" \
+    "stop hook transcript plus idle footer stays neutral" \
     "codex" \
-    "done" \
+    "" \
     "$(cat <<'EOF'
 • Running Stop hook
 

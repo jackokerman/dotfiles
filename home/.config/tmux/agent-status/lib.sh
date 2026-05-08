@@ -185,7 +185,7 @@ tmux_session_status_resolve_state() {
   if [[ -n "${live_state}" ]]; then
     printf '%s\n' "${live_state}"
   else
-    printf '%s\n' "done"
+    printf '%s\n' ""
   fi
 }
 

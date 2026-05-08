@@ -101,13 +101,13 @@ run_case \
     "waiting"
 
 run_case \
-    "sessions without explicit state default to done when the pane is just idle" \
+    "sessions without explicit state stay hidden when the pane is just idle" \
     "" \
     "" \
     "1" \
     "0" \
     "0" \
-    "done"
+    ""
 
 run_case \
     "sessions without agent panes stay hidden" \

@@ -24,7 +24,7 @@
 - Codex does not currently expose a dedicated public hook for "waiting for user input", so tmux infers that state from a small allowlist of known prompt shapes
 - When a Codex prompt line includes both waiting cues and `esc to interrupt`, tmux treats it as `waiting` rather than `working`
 - Generic Codex footer text such as the model/path line is not treated as a waiting signal
-- Fallback-only sessions without an explicit state file may still infer `working` or `waiting` from the live pane tail
+- Fallback-only sessions without an explicit state file may still infer `working` or `waiting` from the live pane tail, but they stay hidden when the tail is neutral
 - Overlay-provided remote mirrors may apply their own reconciliation before emitting records; the generic local collector rule above only applies to locally collected sessions
 - Finished shell-only sessions are hidden once no live agent process remains
 - tmux regression tests live under `tests/tmux-agent-status/`
