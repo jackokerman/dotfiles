@@ -36,6 +36,7 @@ The base renderer should not learn overlay-specific cache layout or transport lo
 - Treat Codex prompt detection as regression-prone. If you change prompt heuristics, add or update focused tail tests.
 - Treat state reconciliation as separate from prompt parsing. If you change state precedence, stale-working handling, or duplicate suppression, add or update reconciliation or integration tests.
 - Keep regression tests behavior-first. Assert rendered session state, pane-tail classification, or the overlay contract. Do not couple tests to tmp-file layout, mtimes, or which internal helper produced the answer unless that detail is itself the supported contract.
+- When a bug comes from a real tmux session, first reduce it to the smallest reproducible pane tail or rendered row and encode that in the narrowest regression test described in `tests/tmux-agent-status/README.md`, then change code.
 - Keep explicit hook state authoritative for active sessions, but allow a clearly live `working` or `waiting` footer to correct a stale explicit `done`. Fallback-only sessions may still infer `working` or `waiting` from the live pane when they have no explicit state file, but they should stay hidden when the live pane is neutral.
 - Prefer changing the smallest layer that owns the behavior:
   - prompt parsing: `agent-status/pane-state.sh`
@@ -54,5 +55,7 @@ Run these before committing tmux status changes:
 ./tests/tmux-agent-status/test-overlay-contract.sh
 ./scripts/check
 ```
+
+See `tests/tmux-agent-status/README.md` for the bug-to-test workflow and test ownership guide.
 
 If you change the overlay contract, update this file, `docs/agent-tooling.md`, and the overlay repo that consumes it in the same change.

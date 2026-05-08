@@ -156,10 +156,10 @@ run_working_heartbeat_case() {
     }
 
     actual=$(tmux_session_status_emit_local_record "${session}" "current")
-
-    if [[ ! "${actual}" =~ ^heartbeat$'\t'codex$'\t'working$'\t'local_explicit$'\t'[0-9]+$ ]]; then
-      fail "${name} returned an unexpected local record: ${actual}"
-    fi
+    assert_matches \
+      "${name}" \
+      $'^heartbeat\tcodex\tworking\tlocal_explicit\t[0-9]+$' \
+      "${actual}"
 
     _session_live_state() {
       printf '%s\n' ""

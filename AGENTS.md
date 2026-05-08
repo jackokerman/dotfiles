@@ -24,6 +24,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep generic parser, collector, and renderer behavior in this repo; extend through `~/.config/tmux/session-status-overlay.sh` when you need extra records.
 - Changes to prompt heuristics, state reconciliation, duplicate suppression, or the extension contract must add or update tmux regression tests.
 - Keep tmux regression tests behavior-first. Assert rendered session state, pane classification, or the overlay contract, not temp-file layout, mtimes, or helper boundaries unless that detail is itself the supported contract.
+- When a tmux status bug comes from a real session, reduce it to the smallest reproducible pane tail or rendered row and add it to the narrowest base regression test before changing code. Start with `tests/tmux-agent-status/README.md`, and only reach for overlay tests when the bug is actually remote.
 - Do not change tmux agent-status behavior without running `./scripts/check`.
 
 ## Mental Model

@@ -22,3 +22,17 @@ assert_equal() {
   printf '[%s] actual: %q\n' "${TEST_PREFIX:-tmux-test}" "${actual}" >&2
   exit 1
 }
+
+assert_matches() {
+  local name="$1" pattern="$2" actual="$3"
+
+  if [[ "${actual}" =~ ${pattern} ]]; then
+    pass "${name}"
+    return 0
+  fi
+
+  printf '[%s] fail: %s\n' "${TEST_PREFIX:-tmux-test}" "${name}" >&2
+  printf '[%s] expected pattern: %s\n' "${TEST_PREFIX:-tmux-test}" "${pattern}" >&2
+  printf '[%s] actual: %q\n' "${TEST_PREFIX:-tmux-test}" "${actual}" >&2
+  exit 1
+}
