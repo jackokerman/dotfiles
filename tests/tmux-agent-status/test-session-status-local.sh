@@ -108,3 +108,52 @@ run_shell_wrapped_fallback_case() {
 
 run_shell_wrapped_fallback_case \
     "shell-wrapped live agent sessions without explicit state still render"
+
+run_working_heartbeat_case() {
+  local name="$1"
+
+  (
+    local tmp_dir="" session="heartbeat" actual="" refreshed_at="" now=""
+
+    tmp_dir=$(mktemp -d)
+    STATE_DIR="${tmp_dir}"
+    printf 'codex\tworking\n' > "${STATE_DIR}/${session}"
+    touch -t 202001010000 "${STATE_DIR}/${session}"
+
+    _session_agent_command() {
+      printf '%s\n' "codex"
+    }
+
+    _session_live_state() {
+      printf '%s\n' "working"
+    }
+
+    actual=$(tmux_session_status_emit_local_record "${session}" "current")
+    refreshed_at=$(_state_file_mtime "${STATE_DIR}/${session}")
+    now=$(date +%s)
+
+    if (( now - refreshed_at > 5 )); then
+      fail "${name} state file heartbeat was not refreshed"
+    fi
+
+    assert_equal \
+      "${name}" \
+      $'heartbeat\tcodex\tworking\tlocal_explicit\t'"${refreshed_at}" \
+      "${actual}"
+
+    _session_live_state() {
+      printf '%s\n' ""
+    }
+
+    actual=$(tmux_session_status_emit_local_record "${session}" "current")
+    assert_equal \
+      "${name} survives a transient empty live parse" \
+      $'heartbeat\tcodex\tworking\tlocal_explicit\t'"${refreshed_at}" \
+      "${actual}"
+
+    rm -rf "${tmp_dir}"
+  )
+}
+
+run_working_heartbeat_case \
+    "live working refreshes the explicit state heartbeat"
