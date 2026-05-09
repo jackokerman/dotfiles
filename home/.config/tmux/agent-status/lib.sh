@@ -185,7 +185,10 @@ tmux_session_status_resolve_state() {
   if [[ -n "${live_state}" ]]; then
     printf '%s\n' "${live_state}"
   else
-    printf '%s\n' ""
+    # Keep open agent sessions visible even when the live tail has no active
+    # working/waiting marker. They should only disappear once the agent process
+    # itself is gone.
+    printf '%s\n' "done"
   fi
 }
 

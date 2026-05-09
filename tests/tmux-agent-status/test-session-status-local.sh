@@ -109,7 +109,7 @@ run_shell_wrapped_fallback_case() {
 run_shell_wrapped_fallback_case \
     "shell-wrapped live agent sessions without explicit state still render"
 
-run_idle_fallback_hidden_case() {
+run_idle_fallback_done_case() {
   local name="$1"
 
   (
@@ -127,14 +127,17 @@ run_idle_fallback_hidden_case() {
     }
 
     actual=$(tmux_session_status_emit_local_record "${session}" "current")
-    assert_equal "${name}" "" "${actual}"
+    assert_equal \
+      "${name}" \
+      $'idle-fallback\tcodex\tdone\tlocal_fallback\t0' \
+      "${actual}"
 
     rm -rf "${tmp_dir}"
   )
 }
 
-run_idle_fallback_hidden_case \
-    "fallback sessions stay hidden when the live pane is neutral"
+run_idle_fallback_done_case \
+    "fallback sessions stay visible as done when the live pane is neutral"
 
 run_working_heartbeat_case() {
   local name="$1"
