@@ -33,8 +33,38 @@ const SECTION_LABELS = new Set([
     "Blockers:",
 ]);
 
+const NORMALIZED_SECTION_LABELS = new Map([
+    ["Since last time", "Since last time:"],
+    ["Since last time:", "Since last time:"],
+    ["What's next", "What's next:"],
+    ["What's next:", "What's next:"],
+    ["Blockers", "Blockers:"],
+    ["Blockers:", "Blockers:"],
+]);
+
 function readClipboardText() {
     return execFileSync("pbpaste", {encoding: "utf8"});
+}
+
+function normalizeSectionLabel(text) {
+    return NORMALIZED_SECTION_LABELS.get(text) ?? text;
+}
+
+function normalizePlainText(input) {
+    return input
+        .replace(/\r\n?/g, "\n")
+        .split("\n")
+        .map((line) => {
+            const leadingWhitespace = line.match(/^[\t ]*/)?.[0] ?? "";
+            const trimmed = line.trim();
+
+            if (!SECTION_LABELS.has(trimmed)) {
+                return line;
+            }
+
+            return `${leadingWhitespace}${normalizeSectionLabel(trimmed)}`;
+        })
+        .join("\n");
 }
 
 function escapeHtml(value) {
@@ -146,7 +176,6 @@ function parseList(tokens, startIndex, level) {
         const token = tokens[index];
 
         if (token.type === "blank") {
-            index += 1;
             break;
         }
 
@@ -214,7 +243,13 @@ function parseBlocks(tokens) {
         const token = tokens[index];
 
         if (token.type === "blank") {
-            index += 1;
+            while (index < tokens.length && tokens[index].type === "blank") {
+                index += 1;
+            }
+
+            if (blocks.length > 0 && index < tokens.length) {
+                blocks.push({type: "spacer"});
+            }
             continue;
         }
 
@@ -237,7 +272,7 @@ function parseBlocks(tokens) {
         if (SECTION_LABELS.has(token.content)) {
             blocks.push({
                 type: "paragraph",
-                html: `<strong>${formatInline(token.content)}</strong>`,
+                html: formatInline(normalizeSectionLabel(token.content)),
             });
             index += 1;
             continue;
@@ -256,6 +291,10 @@ function parseBlocks(tokens) {
 function renderBlock(block) {
     if (block.type === "paragraph") {
         return `<p>${block.html}</p>`;
+    }
+
+    if (block.type === "spacer") {
+        return "<p><br/></p>";
     }
 
     if (block.type === "list") {
@@ -323,7 +362,7 @@ pasteboard.setStringForType($(payload.plainText), $.NSPasteboardTypeString);
 }
 
 function main() {
-    const plainText = readClipboardText().trim();
+    const plainText = normalizePlainText(readClipboardText().trim());
     if (plainText === "") {
         throw new Error("Clipboard is empty");
     }
