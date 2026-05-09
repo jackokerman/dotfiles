@@ -6,7 +6,7 @@ commit_attribution = ""
 suppress_unstable_features_warning = true
 
 [features]
-codex_hooks = true
+hooks = true
 
 [tui]
 theme = "nightfly"

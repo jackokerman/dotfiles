@@ -148,6 +148,29 @@ function replaceArrays(_targetValue: unknown, sourceValue: unknown) {
   return undefined;
 }
 
+function stripDeprecatedConfigKeys(doc: TomlDocument) {
+  const features = doc.features;
+  if (!isObject(features)) {
+    return;
+  }
+
+  delete features.codex_hooks;
+  if (Object.keys(features).length === 0) {
+    delete doc.features;
+  }
+}
+
+function assertNoDeprecatedConfigKeys(doc: TomlDocument, context: string) {
+  const features = doc.features;
+  if (!isObject(features) || features.codex_hooks === undefined) {
+    return;
+  }
+
+  throw new Error(
+    `Deprecated Codex config key in ${context}: use [features].hooks instead of [features].codex_hooks`,
+  );
+}
+
 function loadJson(path: string): JsonObject {
   if (!existsSync(path)) {
     return {};
@@ -563,10 +586,13 @@ function syncAgents(outputPath: string, sourcePaths: string[], validateOnly: boo
 
 function renderConfig(outputPath: string, sourcePaths: string[], validateOnly: boolean) {
   let merged = validateOnly ? {} : clone(loadToml(outputPath));
+  stripDeprecatedConfigKeys(merged);
   const sources = existingPaths(sourcePaths);
 
   for (const source of sources) {
-    merged = mergeWith(merged, loadToml(source), replaceArrays) as TomlDocument;
+    const sourceDoc = loadToml(source);
+    assertNoDeprecatedConfigKeys(sourceDoc, source);
+    merged = mergeWith(merged, sourceDoc, replaceArrays) as TomlDocument;
   }
 
   const body = stringify(merged);
