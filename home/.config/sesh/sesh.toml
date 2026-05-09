@@ -1,0 +1,5 @@
+# Shared baseline for portable sesh behavior across machines.
+# Keep this file generic. Session definitions and machine/work-specific hooks
+# belong in later repos in the dotty chain.
+
+dir_length = 2
