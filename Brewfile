@@ -18,7 +18,7 @@ if OS.mac?
   cask "claude-code"                # Anthropic coding agent terminal CLI
   cask "handy"                      # window snapping and management
   cask "discord"                    # chat and voice application
-  cask "zen-browser"                # firefox-based browser
+  cask "zen"                        # firefox-based browser
 end
 
 # Packages
@@ -32,7 +32,7 @@ brew "git-delta"                    # syntax-highlighted git diff pager
 brew "jq"                           # parse and work with JSON
 brew "neovim"                       # extensible modal editor
 brew "python"                       # python (latest)
-brew "ripgrep"                     # fast recursive search tool (`rg`)
+brew "ripgrep"                      # fast recursive search tool (`rg`)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
