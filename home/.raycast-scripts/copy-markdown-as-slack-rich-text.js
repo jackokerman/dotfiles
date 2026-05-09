@@ -33,38 +33,15 @@ const SECTION_LABELS = new Set([
     "Blockers:",
 ]);
 
-const NORMALIZED_SECTION_LABELS = new Map([
-    ["Since last time", "Since last time:"],
-    ["Since last time:", "Since last time:"],
-    ["What's next", "What's next:"],
-    ["What's next:", "What's next:"],
-    ["Blockers", "Blockers:"],
-    ["Blockers:", "Blockers:"],
-]);
-
 function readClipboardText() {
     return execFileSync("pbpaste", {encoding: "utf8"});
 }
 
-function normalizeSectionLabel(text) {
-    return NORMALIZED_SECTION_LABELS.get(text) ?? text;
-}
-
-function normalizePlainText(input) {
+function trimSurroundingBlankLines(input) {
     return input
         .replace(/\r\n?/g, "\n")
-        .split("\n")
-        .map((line) => {
-            const leadingWhitespace = line.match(/^[\t ]*/)?.[0] ?? "";
-            const trimmed = line.trim();
-
-            if (!SECTION_LABELS.has(trimmed)) {
-                return line;
-            }
-
-            return `${leadingWhitespace}${normalizeSectionLabel(trimmed)}`;
-        })
-        .join("\n");
+        .replace(/^(?:[ \t]*\n)+/, "")
+        .replace(/(?:\n[ \t]*)+$/, "");
 }
 
 function escapeHtml(value) {
@@ -272,7 +249,7 @@ function parseBlocks(tokens) {
         if (SECTION_LABELS.has(token.content)) {
             blocks.push({
                 type: "paragraph",
-                html: formatInline(normalizeSectionLabel(token.content)),
+                html: formatInline(token.content),
             });
             index += 1;
             continue;
@@ -362,8 +339,8 @@ pasteboard.setStringForType($(payload.plainText), $.NSPasteboardTypeString);
 }
 
 function main() {
-    const plainText = normalizePlainText(readClipboardText().trim());
-    if (plainText === "") {
+    const plainText = trimSurroundingBlankLines(readClipboardText());
+    if (plainText.trim() === "") {
         throw new Error("Clipboard is empty");
     }
 
