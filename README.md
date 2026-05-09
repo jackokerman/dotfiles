@@ -86,6 +86,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Shell local hooks: `~/.zshrc.pre.local` for pre-`compinit` setup and `~/.zshrc.local` for post-`compinit` interactive overrides
 - Sesh picker and one-shot launcher helpers: `home/.local/bin/sesh-pick` and `home/.local/bin/sesh-one-shot`
 - Raycast script commands: `home/.raycast-scripts/`
+- Slack rich-text clipboard helper: `home/.local/bin/slack-rich-text`, `home/.local/lib/slack-rich-text.ts`, and the Raycast wrappers in `home/.raycast-scripts/`
 - NeoVim: `home/.config/nvim/`
 - NeoVim JS tool installer: `scripts/install-nvim-js-tools.sh` via `dotty run install-nvim-js-tools`
 - Git prompt legend in shell: run `git-prompt-help`

@@ -28,10 +28,13 @@ run_bash_syntax() {
         "home/.config/tmux/session-status.sh"
         "home/.local/bin/git-delta-diff-filter"
         "home/.local/bin/git-pager-delta"
+        "home/.local/bin/slack-rich-text"
         "home/.local/bin/sesh-pick"
         "home/.local/bin/sesh-one-shot"
         "home/.local/bin/tmux-link-test"
         "home/.raycast-scripts/arrange-windows.sh"
+        "home/.raycast-scripts/copy-markdown-as-slack-rich-text.sh"
+        "home/.raycast-scripts/paste-markdown-as-slack-rich-text.sh"
         "install.sh"
         "scripts/brew-sync.sh"
         "scripts/enable-touchid-sudo.sh"
@@ -72,6 +75,7 @@ assert_expected_executables() {
         "scripts/macos-setup.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
+        "home/.local/bin/slack-rich-text"
     )
     local file
 
@@ -151,6 +155,11 @@ run_codex_sync_tests() {
     bun test "$PROJECT_ROOT/tests/codex/sync-codex.test.ts"
 }
 
+run_slack_rich_text_tests() {
+    log "Running Slack rich-text helper tests"
+    bun --install=auto test "$PROJECT_ROOT/tests/slack-rich-text/slack-rich-text.test.ts"
+}
+
 main() {
     run_bash_syntax
     run_zsh_syntax
@@ -162,6 +171,7 @@ main() {
     run_zsh_prompt_tests
     run_godspeed_tasks_tests
     run_codex_sync_tests
+    run_slack_rich_text_tests
 
     log "Validating Codex sync inputs"
     "$PROJECT_ROOT/scripts/validate-codex-sync.sh"

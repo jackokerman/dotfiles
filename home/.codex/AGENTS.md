@@ -9,6 +9,7 @@
 
 ## Writing Workflow
 - For drafting-heavy writing tasks such as Slack messages, PR descriptions, Jira comments, review comments, or status updates, use the native `writing-style` skill before substantial drafting.
+- For reusable Slack paste workflows where the message is already drafted and the goal is rich-text clipboard copy or direct paste into a focused composer, use the native `slack-clipboard` skill. Prefer authenticated Slack tools when the user wants actual delivery.
 - Keep universal writing invariants that should always apply in `AGENTS.md`. Keep richer examples and drafting guidance in the `writing-style` skill.
 - On markdown-capable surfaces, wrap exact technical identifiers in backticks. Use this for literal code-facing names such as files, paths, commands, components, hooks, functions, flags, and packages. Skip generic concepts, issue or ticket IDs that should be linked semantically, and plain-text-only surfaces such as commit subjects. PR titles support markdown, so use backticks there too when they improve precision.
 

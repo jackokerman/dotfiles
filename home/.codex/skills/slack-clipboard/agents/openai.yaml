@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slack Clipboard"
+  short_description: "Copy Slack-ready rich text to the clipboard or paste it."
+  default_prompt: "Use $slack-clipboard to put approved markdown on the Slack-rich-text clipboard, or paste it into the focused composer when I explicitly ask."
