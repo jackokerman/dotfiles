@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Stable tmux entrypoint for explicit agent state writes.
 set -euo pipefail
 
-_agent_status_hook="$(cd "$(dirname "${BASH_SOURCE[0]}")/agent-status" && pwd)/hook.sh"
+_tmux_agent_bar_path_helper="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tmux-agent-bar-path.sh"
 
 # shellcheck source=/dev/null
-source "${_agent_status_hook}"
+source "${_tmux_agent_bar_path_helper}"
 
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-  tmux_agent_status_hook_main "$@"
-fi
+_tmux_agent_bar_repo="$(tmux_agent_bar_runtime_repo_path)"
+_tmux_agent_bar_bin="${_tmux_agent_bar_repo}/bin/tmux-agent-bar-hook"
+
+[[ -x "${_tmux_agent_bar_bin}" ]] || exit 0
+
+exec "${_tmux_agent_bar_bin}" "$@"

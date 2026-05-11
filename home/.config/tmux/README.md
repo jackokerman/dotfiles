@@ -1,61 +1,40 @@
 # tmux Agent Status
 
-This directory owns the generic tmux agent-status pipeline.
+This directory now owns the tmux-side wrappers and path resolution for the external `tmux-agent-bar` runtime.
 
 ## Ownership
 
-- `session-status.sh`: stable tmux entrypoint that loads the generic renderer and optional overlay adapter.
-- `agent-status-hook.sh`: stable hook entrypoint that writes explicit `agent<TAB>state` records for the current tmux session into `/tmp/tmux-agent-$(id -u)`.
-- `agent-status/main.sh`: generic session-status orchestration.
-- `agent-status/lib.sh`: generic local collection, state reconciliation, duplicate suppression, and rendering helpers.
-- `agent-status/pane-state.sh`: live pane-tail classification for `codex` and `claude`. This is where prompt-shape heuristics live.
-- `agent-status/hook.sh`: explicit state-file writer used by the stable hook entrypoint.
-- `tmux.conf`: wires the status script into `status-right`.
+- `session-status.sh`: stable tmux entrypoint that resolves the active `tmux-agent-bar` checkout and execs its renderer.
+- `agent-status-hook.sh`: stable hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its explicit-state writer.
+- `tmux-agent-bar-path.sh`: shared path-resolution helper for the wrappers.
+- `tmux.conf`: wires the stable wrapper into `status-right`.
 
-## Overlay contract
+The generic parser, collector, renderer, and prompt heuristics live in the managed `tmux-agent-bar` repo, not in this repo.
 
-Overlays may extend the generic collector through `~/.config/tmux/session-status-overlay.sh`.
+## Runtime resolution
 
-Supported hooks:
+The wrappers resolve the runtime checkout in this order:
 
-- `tmux_agent_overlay_maybe_refresh`
-- `tmux_agent_overlay_emit_records`
+1. `TMUX_AGENT_BAR_DIR`
+2. `~/.config/tmux-agent-bar/path.local`
+3. `~/.local/share/tmux-agent-bar/repo`
 
-Overlay emitters must print tab-separated rows:
-
-```text
-session_label<TAB>agent<TAB>state<TAB>source<TAB>updated_at
-```
-
-The base renderer should not learn overlay-specific cache layout or transport logic.
+`dotty update` manages the default checkout under `~/.local/share/tmux-agent-bar/repo`.
 
 ## Change rules
 
-- Keep generic behavior here. Work-specific collectors belong in an overlay repo.
-- Do not patch the base renderer to understand a specific remote transport or cache format.
-- Treat Codex prompt detection as regression-prone. If you change prompt heuristics, add or update focused tail tests.
-- Treat state reconciliation as separate from prompt parsing. If you change state precedence, stale-working handling, or duplicate suppression, add or update reconciliation or integration tests.
-- Keep regression tests behavior-first. Assert rendered session state, pane-tail classification, or the overlay contract. Do not couple tests to tmp-file layout, mtimes, or which internal helper produced the answer unless that detail is itself the supported contract.
-- When a bug comes from a real tmux session, first reduce it to the smallest reproducible pane tail or rendered row and encode that in the narrowest regression test described in `tests/tmux-agent-status/README.md`, then change code.
-- Keep explicit hook state authoritative for active sessions, but allow a clearly live `working` or `waiting` footer to correct a stale explicit `done`. Fallback-only sessions may still infer `working` or `waiting` from the live pane when they have no explicit state file. When the live parser is neutral but the agent process is still attached, keep that session visible as `done` instead of hiding it.
-- Prefer changing the smallest layer that owns the behavior:
-  - prompt parsing: `agent-status/pane-state.sh`
-  - local collection or render policy: `agent-status/lib.sh`
-  - tmux wiring: `session-status.sh`
-  - environment-specific collection: overlay script in another repo
+- Keep generic status-bar logic in `tmux-agent-bar`, not here.
+- Keep this repo responsible only for wrapper stability, checkout sync, and path resolution.
+- If a status-bar bug is in agent detection, rendering, or remote-source behavior, fix it in `tmux-agent-bar` and keep the regression there.
+- If a bug is in install/update behavior or wrapper path selection, fix it here and add a focused wrapper or sync test.
 
 ## Required verification
 
-Run these before committing tmux status changes:
+Run these before committing wrapper or sync changes:
 
 ```bash
-./tests/tmux-agent-status/test-pane-state.sh
-./tests/tmux-agent-status/test-session-status-local.sh
-./tests/tmux-agent-status/test-session-status.sh
-./tests/tmux-agent-status/test-overlay-contract.sh
+./tests/tmux-agent-bar/test-runtime-path.sh
+./tests/tmux-agent-bar/test-wrappers.sh
+./tests/tmux-agent-bar/test-sync.sh
 ./scripts/check
 ```
-
-See `tests/tmux-agent-status/README.md` for the bug-to-test workflow and test ownership guide.
-
-If you change the overlay contract, update this file, `docs/agent-tooling.md`, and the overlay repo that consumes it in the same change.

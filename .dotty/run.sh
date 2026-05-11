@@ -100,6 +100,24 @@ setup_shell() {
     fi
 }
 
+setup_tmux_agent_bar() {
+    local sync_script="$DOTFILES/scripts/sync-tmux-agent-bar.sh"
+
+    title "Syncing tmux-agent-bar"
+
+    if [[ ! -x "$sync_script" ]]; then
+        warning "tmux-agent-bar sync script not found at $sync_script"
+        return 0
+    fi
+
+    if ! "$sync_script"; then
+        if [[ "${DOTTY_COMMAND:-}" == "install" ]]; then
+            die "Failed to sync tmux-agent-bar"
+        fi
+        warning "Failed to sync tmux-agent-bar"
+    fi
+}
+
 # Homebrew
 
 run_brew_sync() {
@@ -321,3 +339,4 @@ case "$DOTTY_COMMAND" in
 esac
 
 setup_codex
+setup_tmux_agent_bar

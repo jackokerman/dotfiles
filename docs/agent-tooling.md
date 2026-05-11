@@ -11,23 +11,17 @@
 
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
-- `home/.config/tmux/session-status.sh` is the base tmux entrypoint and `home/.config/tmux/agent-status/` owns the generic parser, collector, and renderer internals
-- `home/.config/tmux/README.md` is the code-local change guide for the tmux agent-status stack
-- Later repos in the dotty chain can extend the base collector through `~/.config/tmux/session-status-overlay.sh`
-- The extension hook names are:
-  - `tmux_agent_overlay_maybe_refresh`
-  - `tmux_agent_overlay_emit_records`
-- Overlay emitters should print tab-separated records in the form `session_label<TAB>agent<TAB>state<TAB>source<TAB>updated_at`
+- `home/.config/tmux/session-status.sh` and `home/.config/tmux/agent-status-hook.sh` are stable wrappers that exec the managed `tmux-agent-bar` runtime
+- `home/.config/tmux/tmux-agent-bar-path.sh` resolves the runtime checkout in this order:
+  - `TMUX_AGENT_BAR_DIR`
+  - `~/.config/tmux-agent-bar/path.local`
+  - `~/.local/share/tmux-agent-bar/repo`
+- `dotty update` keeps the default managed checkout current
+- `home/.config/tmux/README.md` is the code-local change guide for the wrappers and runtime path model
 - The status bar still polls every 2 seconds, but tmux also forces an immediate refresh on `client-session-changed` and `client-attached`
-- For Codex, `working` and `done` remain mostly hook-driven, but a live pane footer can recover a stale explicit `done` back to `working` or `waiting`
-- When an explicit state file exists, a live `working` or `waiting` footer may override an explicit `done`; otherwise non-waiting live signals do not replace explicit `working` or `waiting`
-- Codex does not currently expose a dedicated public hook for "waiting for user input", so tmux infers that state from a small allowlist of known prompt shapes
-- When a Codex prompt line includes both waiting cues and `esc to interrupt`, tmux treats it as `waiting` rather than `working`
-- Generic Codex footer text such as the model/path line is not treated as a waiting signal
-- Fallback-only sessions without an explicit state file may still infer `working` or `waiting` from the live pane tail, but they stay hidden when the tail is neutral
-- Overlay-provided remote mirrors may apply their own reconciliation before emitting records; the generic local collector rule above only applies to locally collected sessions
+- The generic prompt heuristics, reconciliation rules, and source registration now live in the `tmux-agent-bar` repo
 - Finished shell-only sessions are hidden once no live agent process remains
-- tmux regression tests live under `tests/tmux-agent-status/`
+- dotfiles-side wrapper and sync tests live under `tests/tmux-agent-bar/`
 
 ## Claude
 
@@ -65,7 +59,7 @@ Use `./scripts/check` as the fast local validation path. It currently:
 
 - runs shell syntax checks for tracked bash and zsh files
 - asserts that zsh runtime artifacts are not present in `home/.config/zsh`
-- runs tmux agent status regression tests, including the optional extension contract path
+- runs `tmux-agent-bar` wrapper and sync tests
 - runs Codex sync validation, including tracked skill UI metadata and extra frontend workflow manifest checks when present
 
 To install the repo-local pre-commit hook:

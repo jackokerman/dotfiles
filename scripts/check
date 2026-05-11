@@ -19,13 +19,11 @@ run_bash_syntax() {
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
+        ".dotty/commands/sync-tmux-agent-bar"
         ".githooks/pre-commit"
         "home/.config/tmux/agent-status-hook.sh"
-        "home/.config/tmux/agent-status/hook.sh"
-        "home/.config/tmux/agent-status/lib.sh"
-        "home/.config/tmux/agent-status/main.sh"
-        "home/.config/tmux/agent-status/pane-state.sh"
         "home/.config/tmux/session-status.sh"
+        "home/.config/tmux/tmux-agent-bar-path.sh"
         "home/.local/bin/git-delta-diff-filter"
         "home/.local/bin/git-pager-delta"
         "home/.local/bin/slack-rich-text"
@@ -43,13 +41,13 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
+        "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "tests/handy/test-sync-handy-settings.sh"
-        "tests/tmux-agent-status/test-overlay-contract.sh"
-        "tests/tmux-agent-status/test-pane-state.sh"
-        "tests/tmux-agent-status/test-session-status-local.sh"
-        "tests/tmux-agent-status/test-session-status.sh"
+        "tests/tmux-agent-bar/test-runtime-path.sh"
+        "tests/tmux-agent-bar/test-sync.sh"
+        "tests/tmux-agent-bar/test-wrappers.sh"
         "tests/zsh/test-p10k-overrides.sh"
         "tests/tmux-agent-status/testlib.sh"
         "scripts/validate-codex-sync.sh"
@@ -65,6 +63,7 @@ assert_expected_executables() {
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
+        ".dotty/commands/sync-tmux-agent-bar"
         "install.sh"
         "scripts/brew-sync.sh"
         "scripts/check"
@@ -73,6 +72,7 @@ assert_expected_executables() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
+        "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "home/.local/bin/slack-rich-text"
@@ -127,12 +127,11 @@ assert_zsh_bootstrap_boundary() {
     fi
 }
 
-run_tmux_agent_status_tests() {
-    log "Running tmux agent status regression tests"
-    "$PROJECT_ROOT/tests/tmux-agent-status/test-pane-state.sh"
-    "$PROJECT_ROOT/tests/tmux-agent-status/test-session-status-local.sh"
-    "$PROJECT_ROOT/tests/tmux-agent-status/test-session-status.sh"
-    "$PROJECT_ROOT/tests/tmux-agent-status/test-overlay-contract.sh"
+run_tmux_agent_bar_tests() {
+    log "Running tmux-agent-bar wrapper and sync tests"
+    "$PROJECT_ROOT/tests/tmux-agent-bar/test-runtime-path.sh"
+    "$PROJECT_ROOT/tests/tmux-agent-bar/test-wrappers.sh"
+    "$PROJECT_ROOT/tests/tmux-agent-bar/test-sync.sh"
 }
 
 run_handy_tests() {
@@ -166,7 +165,7 @@ main() {
     assert_expected_executables
     assert_zsh_runtime_inputs_removed
     assert_zsh_bootstrap_boundary
-    run_tmux_agent_status_tests
+    run_tmux_agent_bar_tests
     run_handy_tests
     run_zsh_prompt_tests
     run_godspeed_tasks_tests

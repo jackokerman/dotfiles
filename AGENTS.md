@@ -13,7 +13,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - In this repo, changes are not done until they are committed and pushed to `main` with a conventional commit.
 - Use `dotty update` when catching a machine up to the repo state. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS, and `dotty run macos-setup` when you want to reapply tracked macOS defaults and related setup.
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
-- Run `./scripts/check` before commit. It includes tmux agent status regression tests. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
+- Run `./scripts/check` before commit. It includes `tmux-agent-bar` wrapper and sync tests. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
 - The shared Codex validation path also checks tracked skill UI metadata and extra frontend workflow manifests when they are present in the active dotty chain.
 - If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.
 - For Git config changes in this setup, use `git config-shared`, `git config-local`, or `git config --file ...`, not `git config --global`.
@@ -21,10 +21,10 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 ## tmux Agent Status
 
 - Read `home/.config/tmux/README.md` before making tmux agent-status changes.
-- Keep generic parser, collector, and renderer behavior in this repo; extend through `~/.config/tmux/session-status-overlay.sh` when you need extra records.
-- Changes to prompt heuristics, state reconciliation, duplicate suppression, or the extension contract must add or update tmux regression tests.
-- Keep tmux regression tests behavior-first. Assert rendered session state, pane classification, or the overlay contract, not temp-file layout, mtimes, or helper boundaries unless that detail is itself the supported contract.
-- When a tmux status bug comes from a real session, reduce it to the smallest reproducible pane tail or rendered row and add it to the narrowest base regression test before changing code. Start with `tests/tmux-agent-status/README.md`, and only reach for overlay tests when the bug is actually remote.
+- Keep generic parser, collector, renderer, prompt heuristics, and source registration in the external `tmux-agent-bar` repo, not in this repo.
+- Use this repo for `tmux-agent-bar` checkout management, wrapper stability, and runtime path resolution only.
+- Keep wrapper and sync tests behavior-first. Assert path precedence, wrapper exec behavior, and safe update behavior instead of helper boundaries.
+- When a tmux status bug comes from a real session, reduce it to the smallest reproducer in `tmux-agent-bar`; only add a dotfiles test when the bug is specifically about wrapper or checkout behavior.
 - Do not change tmux agent-status behavior without running `./scripts/check`.
 
 ## Mental Model
@@ -32,7 +32,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `home/` is tracked source that dotty links into `$HOME`.
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
-- `tests/tmux-agent-status/` holds the tmux agent-status regression tests.
+- `tests/tmux-agent-bar/` holds the wrapper and sync tests for the managed `tmux-agent-bar` runtime.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
 - Use `~/.zshrc.pre.local` for pre-`compinit` shell init and `~/.zshrc.local` for post-`compinit` interactive overrides. Do not reintroduce a tracked dependency on a real `~/.zshrc`.
 - Later repos that need Powerlevel10k changes before `home/.config/zsh/.p10k.zsh` loads should set the generic `DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE` array or `DOTFILES_P10K_DISABLE_GITSTATUS=true` in `~/.zshrc.pre.local` instead of writing `POWERLEVEL9K_*` directly.
@@ -42,7 +42,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
-- The generic tmux agent-status entrypoints live in `home/.config/tmux/`, and the private implementation lives in `home/.config/tmux/agent-status/`; extend them through `~/.config/tmux/session-status-overlay.sh` instead of patching the base renderer directly.
+- The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the managed `tmux-agent-bar` checkout under `~/.local/share/tmux-agent-bar/repo` unless a local override path is set.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
 - Keep reusable generic Codex skills in `home/.codex/skills/`, including `godspeed-tasks` for Godspeed inbox triage and `nvim-config-coach` for incremental Neovim config work, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across the dotty chain.

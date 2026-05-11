@@ -30,7 +30,7 @@ dotty run macos-setup
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
-- `./scripts/check` runs the fast local validation path for this repo, including tmux agent status regression tests. Keep those tests behavior-oriented: assert user-visible session state, pane classification, or the overlay contract rather than internal cache or helper details.
+- `./scripts/check` runs the fast local validation path for this repo, including `tmux-agent-bar` wrapper and sync tests.
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
 
@@ -72,13 +72,13 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - `AGENTS.md`: canonical repo-specific agent instructions for this repo (`CLAUDE.md` is a compatibility symlink)
 - `home/`: tracked source files that dotty links into `$HOME`
 - `.dotty/`: repo identity and post-link hook
-- `.dotty/commands/`: repo-defined dotty commands such as `brew-sync` and `macos-setup`
+- `.dotty/commands/`: repo-defined dotty commands such as `brew-sync`, `macos-setup`, and `sync-tmux-agent-bar`
 - `scripts/`: setup, sync, and validation helpers
 - `tests/`: focused regression tests for repo-managed subsystems
 - `docs/layout.md`: layout, dotty chain, and source/runtime boundaries
 - `docs/agent-tooling.md`: tmux, Codex, and Claude operational notes
 - `docs/git-prompt-status.md`: Powerlevel10k git prompt symbol legend and cleanup guidance
-- `home/.config/tmux/README.md`: code-local tmux agent-status architecture and change guide
+- `home/.config/tmux/README.md`: code-local tmux wrapper and `tmux-agent-bar` runtime guide
 
 ## Where To Change Things
 
@@ -95,9 +95,9 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
 - tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
 - tmux agent status entrypoints: `home/.config/tmux/session-status.sh` and `home/.config/tmux/agent-status-hook.sh`
-- tmux agent status internals: `home/.config/tmux/agent-status/`
-- tmux agent status tests: `tests/tmux-agent-status/`
-- tmux agent status extension hook: `~/.config/tmux/session-status-overlay.sh` when you need extra collectors outside the base repo
+- tmux agent status path helper: `home/.config/tmux/tmux-agent-bar-path.sh`
+- tmux agent status sync: `scripts/sync-tmux-agent-bar.sh` via `dotty run sync-tmux-agent-bar`
+- tmux wrapper and sync tests: `tests/tmux-agent-bar/`
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
 - Codex-only local skill tokens: `~/.codex/env.local` (for example `GODSPEED_API_TOKEN`)

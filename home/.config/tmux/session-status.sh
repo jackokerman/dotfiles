@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Stable tmux entrypoint for agent status rendering.
 set -euo pipefail
 
-_agent_status_main="$(cd "$(dirname "${BASH_SOURCE[0]}")/agent-status" && pwd)/main.sh"
+_tmux_agent_bar_path_helper="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tmux-agent-bar-path.sh"
 
 # shellcheck source=/dev/null
-source "${_agent_status_main}"
+source "${_tmux_agent_bar_path_helper}"
 
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-  tmux_session_status_main "$@"
-fi
+_tmux_agent_bar_repo="$(tmux_agent_bar_runtime_repo_path)"
+_tmux_agent_bar_bin="${_tmux_agent_bar_repo}/bin/tmux-agent-bar"
+
+[[ -x "${_tmux_agent_bar_bin}" ]] || exit 0
+
+exec "${_tmux_agent_bar_bin}" "$@"
