@@ -1,4 +1,5 @@
 tap "oven-sh/bun"
+tap "modem-dev/tap"
 
 if OS.mac?
   # Applications
@@ -37,6 +38,7 @@ brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
 brew "oven-sh/bun/bun"              # JavaScript runtime
+brew "modem-dev/tap/hunk"           # review-first terminal diff viewer
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
 brew "zoxide"                       # smarter cd command (z/zi)

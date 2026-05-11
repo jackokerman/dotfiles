@@ -40,6 +40,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep the generic sesh picker and one-shot launcher helpers in `home/.local/bin/`; session definitions that use them belong in the appropriate repo later in the dotty chain.
 - Keep generic Raycast script commands in `home/.raycast-scripts/`. Reach for Hammerspoon only when the workflow needs an always-on hotkey, app watcher, or other resident automation.
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
+- Keep generic Hunk defaults in `home/.config/hunk/`; host-specific install routing belongs in later repos in the dotty chain.
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
 - The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the managed `tmux-agent-bar` checkout under `~/.local/share/tmux-agent-bar/repo` unless a local override path is set.

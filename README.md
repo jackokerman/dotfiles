@@ -27,7 +27,7 @@ dotty run macos-setup
 ```
 
 - `dotty update` refreshes symlinks and reruns setup hooks without touching Homebrew.
-- `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones.
+- `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones, including personal-machine tools such as `hunk`.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
 - `./scripts/check` runs the fast local validation path for this repo, including `tmux-agent-bar` wrapper and sync tests.
@@ -88,6 +88,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Raycast script commands: `home/.raycast-scripts/`
 - Slack rich-text clipboard helper: `home/.local/bin/slack-rich-text`, `home/.local/lib/slack-rich-text.ts`, and the Raycast wrappers in `home/.raycast-scripts/`
 - NeoVim: `home/.config/nvim/`
+- Hunk defaults: `home/.config/hunk/config.toml`
 - NeoVim JS tool installer: `scripts/install-nvim-js-tools.sh` via `dotty run install-nvim-js-tools`
 - Git prompt legend in shell: run `git-prompt-help`
 - Git shared defaults: `home/.config/git/config` via `git config-shared`
