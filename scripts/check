@@ -48,6 +48,7 @@ run_bash_syntax() {
         "tests/tmux-agent-bar/test-runtime-path.sh"
         "tests/tmux-agent-bar/test-sync.sh"
         "tests/tmux-agent-bar/test-wrappers.sh"
+        "tests/tuicr/test-setup.sh"
         "tests/zsh/test-p10k-overrides.sh"
         "tests/tmux-agent-status/testlib.sh"
         "scripts/validate-codex-sync.sh"
@@ -76,6 +77,7 @@ assert_expected_executables() {
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "home/.local/bin/slack-rich-text"
+        "tests/tuicr/test-setup.sh"
     )
     local file
 
@@ -139,6 +141,11 @@ run_handy_tests() {
     "$PROJECT_ROOT/tests/handy/test-sync-handy-settings.sh"
 }
 
+run_tuicr_tests() {
+    log "Running tuicr runtime checkout tests"
+    "$PROJECT_ROOT/tests/tuicr/test-setup.sh"
+}
+
 run_zsh_prompt_tests() {
     log "Running zsh prompt regression tests"
     bash "$PROJECT_ROOT/tests/zsh/test-p10k-overrides.sh"
@@ -167,6 +174,7 @@ main() {
     assert_zsh_bootstrap_boundary
     run_tmux_agent_bar_tests
     run_handy_tests
+    run_tuicr_tests
     run_zsh_prompt_tests
     run_godspeed_tasks_tests
     run_codex_sync_tests

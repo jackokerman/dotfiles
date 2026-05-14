@@ -13,6 +13,8 @@ cd ~/dotfiles && ./install.sh
 
 Once the repo is cloned, `dotty update` is the normal catch-up command. It refreshes the dotty chain and reruns the repo hook. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS, and `dotty run macos-setup` when you want to reapply tracked macOS defaults and related setup.
 
+`dotty update` also keeps the managed `tuicr` runtime checkout current under `~/.local/share/tuicr/repo`. This repo currently builds `tuicr` from that checkout with Cargo instead of managing it through Homebrew.
+
 If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after install. `dotty run macos-setup` will install it the next time you run it on macOS. Symbols Nerd Font is downloaded automatically.
 
 ## Daily Use
@@ -26,11 +28,11 @@ dotty run macos-setup
 ./scripts/install-git-hooks.sh
 ```
 
-- `dotty update` refreshes symlinks and reruns setup hooks without touching Homebrew.
+- `dotty update` refreshes symlinks, reruns setup hooks, and updates managed runtime checkouts such as `tmux-agent-bar` and `tuicr` without touching Homebrew.
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones, including personal-machine tools such as `hunk`.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
-- `./scripts/check` runs the fast local validation path for this repo, including `tmux-agent-bar` wrapper and sync tests.
+- `./scripts/check` runs the fast local validation path for this repo, including `tmux-agent-bar` and `tuicr` managed-checkout tests.
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
 
@@ -89,6 +91,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Slack rich-text clipboard helper: `home/.local/bin/slack-rich-text`, `home/.local/lib/slack-rich-text.ts`, and the Raycast wrappers in `home/.raycast-scripts/`
 - NeoVim: `home/.config/nvim/`
 - Hunk defaults: `home/.config/hunk/config.toml`
+- tuicr config: `home/.config/tuicr/config.toml`
 - NeoVim JS tool installer: `scripts/install-nvim-js-tools.sh` via `dotty run install-nvim-js-tools`
 - Git prompt legend in shell: run `git-prompt-help`
 - Git shared defaults: `home/.config/git/config` via `git config-shared`
@@ -99,6 +102,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - tmux agent status path helper: `home/.config/tmux/tmux-agent-bar-path.sh`
 - tmux agent status sync: `scripts/sync-tmux-agent-bar.sh` via `dotty run sync-tmux-agent-bar`
 - tmux wrapper and sync tests: `tests/tmux-agent-bar/`
+- tuicr runtime checkout management: `.dotty/run.sh` for `~/.local/share/tuicr/repo`, with tests in `tests/tuicr/`
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
 - Codex-only local skill tokens: `~/.codex/env.local` (for example `GODSPEED_API_TOKEN`)
@@ -109,6 +113,8 @@ Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared
 The tracked NeoVim config intentionally stays minimal. For frontend work it currently relies on Neovim 0.12 built-in syntax highlighting, `nvim-lspconfig` for `ts_ls` and `eslint`, and `conform.nvim` for manual local-first formatting. Project-local `prettier` and `eslint` remain authoritative; the repo-managed helper installs only the editor-facing language server binaries.
 
 Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories. For Claude, `home/.claude/` is an allowlisted source tree for tracked config only; live runtime state stays in `~/.claude/`.
+
+Managed runtime checkouts are runtime state too. Keep the dotty-owned `tuicr` checkout at `~/.local/share/tuicr/repo` separate from any manual development clone you use for upstream contributions.
 
 Top-level `~/.zshrc` is intentionally not part of the tracked startup path here. If you need shell-local changes, use `~/.zshrc.pre.local`, `~/.zshrc.local`, or a later dotty repo instead of reintroducing a wrapper bootstrap.
 
