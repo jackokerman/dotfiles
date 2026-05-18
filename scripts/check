@@ -146,6 +146,11 @@ run_tuicr_tests() {
     "$PROJECT_ROOT/tests/tuicr/test-setup.sh"
 }
 
+run_sesh_tests() {
+    log "Running sesh picker regression tests"
+    "$PROJECT_ROOT/tests/sesh/test-pick.sh"
+}
+
 run_zsh_prompt_tests() {
     log "Running zsh prompt regression tests"
     bash "$PROJECT_ROOT/tests/zsh/test-p10k-overrides.sh"
@@ -175,6 +180,7 @@ main() {
     run_tmux_agent_bar_tests
     run_handy_tests
     run_tuicr_tests
+    run_sesh_tests
     run_zsh_prompt_tests
     run_godspeed_tasks_tests
     run_codex_sync_tests
