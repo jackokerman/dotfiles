@@ -1,11 +1,11 @@
 ---
 name: react-patterns
-description: Use for React or frontend work that needs guidance on component boundaries, hooks, context, rendering, testing, and modern React defaults.
+description: Use for React or frontend work that needs guidance on cleanup and simplification, component boundaries, hooks, context, rendering, testing, and modern React defaults.
 ---
 
 # React Patterns
 
-Use this skill for clearly React or frontend work. These are opinionated defaults, not laws. Package-local docs, neighboring files, and stronger framework conventions win.
+Use this skill for clearly React or frontend work, including cleanup or simplification passes that should make existing code smaller, clearer, and more idiomatic without changing behavior. These are opinionated defaults, not laws. Package-local docs, neighboring files, and stronger framework conventions win.
 
 ## Workflow
 
