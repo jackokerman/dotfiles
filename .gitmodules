@@ -1,0 +1,8 @@
+[submodule "home/.codex/references/nightfly/fly16-bat"]
+	path = home/.codex/references/nightfly/fly16-bat
+	url = https://github.com/bluz71/fly16-bat.git
+	branch = master
+[submodule "home/.codex/references/nightfly/vim-nightfly-colors"]
+	path = home/.codex/references/nightfly/vim-nightfly-colors
+	url = https://github.com/bluz71/vim-nightfly-colors.git
+	branch = master

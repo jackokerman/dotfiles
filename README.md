@@ -11,6 +11,8 @@ cd ~/dotfiles && ./install.sh
 
 `./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook.
 
+Pinned repo submodules are synced during `./install.sh` and `dotty update`. If you want a fully populated checkout immediately after clone, use `git clone --recurse-submodules`.
+
 Once the repo is cloned, `dotty update` is the normal catch-up command. It refreshes the dotty chain and reruns the repo hook. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS, and `dotty run macos-setup` when you want to reapply tracked macOS defaults and related setup.
 
 `dotty update` also keeps the managed `tuicr` runtime checkout current under `~/.local/share/tuicr/repo`. This repo currently builds `tuicr` from that checkout with Cargo instead of managing it through Homebrew.
@@ -28,7 +30,7 @@ dotty run macos-setup
 ./scripts/install-git-hooks.sh
 ```
 
-- `dotty update` refreshes symlinks, reruns setup hooks, and updates managed runtime checkouts such as `tmux-agent-bar` and `tuicr` without touching Homebrew.
+- `dotty update` refreshes symlinks, reruns setup hooks, syncs pinned repo submodules, and updates managed runtime checkouts such as `tmux-agent-bar` and `tuicr` without touching Homebrew.
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones, including personal-machine tools such as `hunk`.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
@@ -105,7 +107,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - tuicr runtime checkout management: `.dotty/run.sh` for `~/.local/share/tuicr/repo`, with tests in `tests/tuicr/`
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
-- Codex Nightfly theme sources and generator: `home/.codex/references/nightfly/`, `scripts/sync-codex-nightfly-theme.ts`, and `home/.codex/themes/nightfly.tmTheme`
+- Codex Nightfly theme source submodules and generator: `home/.codex/references/nightfly/`, `scripts/sync-codex-nightfly-theme.ts`, and `home/.codex/themes/nightfly.tmTheme`
 - Codex-only local skill tokens: `~/.codex/env.local` (for example `GODSPEED_API_TOKEN`)
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 

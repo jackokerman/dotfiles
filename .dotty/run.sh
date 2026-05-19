@@ -33,6 +33,21 @@ setup_git_hooks() {
     fi
 }
 
+sync_repo_submodules() {
+    title "Syncing repo submodules"
+
+    if [[ ! -e "$DOTFILES/.git" ]]; then
+        warning "Skipping repo submodule sync because $DOTFILES is not a git checkout"
+        return 0
+    fi
+
+    if git -C "$DOTFILES" submodule update --init --recursive; then
+        success "Repo submodules synced"
+    else
+        warning "Failed to sync repo submodules"
+    fi
+}
+
 # VS Code / Cursor
 
 setup_vscode() {
@@ -461,6 +476,7 @@ main() {
             fi
 
             setup_git_hooks
+            sync_repo_submodules
             setup_tuicr
 
             if [[ "$(uname -s)" == "Darwin" ]]; then
