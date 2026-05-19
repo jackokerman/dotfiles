@@ -171,6 +171,11 @@ run_slack_rich_text_tests() {
     bun --install=auto test "$PROJECT_ROOT/tests/slack-rich-text/slack-rich-text.test.ts"
 }
 
+run_codex_theme_sync_check() {
+    log "Checking Codex Nightfly theme generation"
+    bun --install=auto "$PROJECT_ROOT/scripts/sync-codex-nightfly-theme.ts" --check
+}
+
 main() {
     run_bash_syntax
     run_zsh_syntax
@@ -185,6 +190,7 @@ main() {
     run_godspeed_tasks_tests
     run_codex_sync_tests
     run_slack_rich_text_tests
+    run_codex_theme_sync_check
 
     log "Validating Codex sync inputs"
     "$PROJECT_ROOT/scripts/validate-codex-sync.sh"

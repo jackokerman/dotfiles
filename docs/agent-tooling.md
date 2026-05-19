@@ -42,6 +42,8 @@ Tracked Codex inputs live under `home/.codex/`.
 - `scripts/sync-codex.ts` validates and syncs those fragments into the live `~/.codex/` directory
 - tracked skills are synced into `~/.codex/skills/`
 - tracked agents are synced into `~/.codex/agents/`
+- vendored Codex theme reference inputs live under `home/.codex/references/`
+- `scripts/sync-codex-nightfly-theme.ts` regenerates the tracked `nightfly` theme from those upstream reference files
 - tracked themes are symlinked into `~/.codex/themes/`
 
 `~/.codex` stays a real directory so Codex can keep local runtime state there. Do not edit the generated live outputs when a tracked source file exists in this repo.

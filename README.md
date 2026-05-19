@@ -105,6 +105,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - tuicr runtime checkout management: `.dotty/run.sh` for `~/.local/share/tuicr/repo`, with tests in `tests/tuicr/`
 - Codex and Claude: `home/.codex/` and `home/.claude/`
 - Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
+- Codex Nightfly theme sources and generator: `home/.codex/references/nightfly/`, `scripts/sync-codex-nightfly-theme.ts`, and `home/.codex/themes/nightfly.tmTheme`
 - Codex-only local skill tokens: `~/.codex/env.local` (for example `GODSPEED_API_TOKEN`)
 - Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
 
