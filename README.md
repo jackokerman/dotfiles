@@ -19,6 +19,16 @@ Once the repo is cloned, `dotty update` is the normal catch-up command. It refre
 
 If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after install. `dotty run macos-setup` will install it the next time you run it on macOS. Symbols Nerd Font is downloaded automatically.
 
+On a new machine, authenticate GitHub CLI before expecting Codex, Claude, or other local agents to perform GitHub operations on your behalf:
+
+```bash
+gh auth login --web --git-protocol ssh
+gh auth setup-git
+gh auth status
+```
+
+The default browser flow stores the token in the macOS credential store when available. If you need extra GitHub API scopes later, run `gh auth refresh --scopes ...`.
+
 ## Daily Use
 
 ```bash

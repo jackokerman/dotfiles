@@ -55,6 +55,16 @@ Current managed defaults also:
 - use `approval_policy = "never"`
 - use `sandbox_mode = "danger-full-access"`
 
+For GitHub operations, local agents rely on your machine auth. On a new machine, run:
+
+```bash
+gh auth login --web --git-protocol ssh
+gh auth setup-git
+gh auth status
+```
+
+`gh auth login` uses a browser-based flow by default and stores credentials in the system keychain when available. `gh auth setup-git` configures git to use `gh` as the credential helper for authenticated hosts.
+
 ## Validation
 
 Use `./scripts/check` as the fast local validation path. It currently:
