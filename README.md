@@ -110,7 +110,7 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 - Git local overrides: `~/.gitconfig.local` via `git config-local`
 - Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
 - tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
-- tmux agent status entrypoints: `home/.config/tmux/session-status.sh` and `home/.config/tmux/agent-status-hook.sh`
+- tmux agent status entrypoints: `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, and `home/.config/tmux/agent-status-hook.sh`
 - tmux agent status path helper: `home/.config/tmux/tmux-agent-bar-path.sh`
 - tmux agent status sync: `scripts/sync-tmux-agent-bar.sh` via `dotty run sync-tmux-agent-bar`
 - tmux wrapper and sync tests: `tests/tmux-agent-bar/`

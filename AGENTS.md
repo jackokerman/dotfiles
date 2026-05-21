@@ -45,6 +45,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
 - The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the managed `tmux-agent-bar` checkout under `~/.local/share/tmux-agent-bar/repo` unless a local override path is set.
+- `home/.config/tmux/session-status-left.sh` owns the current-session label path, while `session-status.sh` still owns the right-side background session list and `agent-status-hook.sh` owns explicit state writes.
 - Managed runtime checkouts live under `~/.local/share/`; `tmux-agent-bar` and `tuicr` use that pattern.
 - Keep dotty-owned runtime checkouts separate from manual development clones. For `tuicr`, the managed checkout at `~/.local/share/tuicr/repo` is for install/use, not for personal fork remotes or long-lived branches.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.

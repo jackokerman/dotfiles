@@ -4,6 +4,7 @@ set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 SESSION_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status.sh"
+LEFT_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status-left.sh"
 HOOK_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/agent-status-hook.sh"
 TEST_PREFIX="tmux-agent-bar-wrapper-test"
 
@@ -18,7 +19,11 @@ make_fake_runtime() {
   cat > "${runtime_dir}/bin/tmux-agent-bar" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
-printf 'session:%s\n' "$*"
+if [[ "${1:-}" == "current-state" ]]; then
+  printf '%s\n' "${TMUX_AGENT_BAR_FAKE_CURRENT_STATE:-}"
+else
+  printf 'session:%s\n' "$*"
+fi
 EOF
 
   cat > "${runtime_dir}/bin/tmux-agent-bar-hook" <<'EOF'
@@ -52,6 +57,64 @@ run_hook_wrapper_case() {
   rm -rf "${tmp_dir}"
 }
 
+run_left_wrapper_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  mkdir -p "${tmp_dir}/bin"
+
+  cat > "${tmp_dir}/bin/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "display-message" && "${2:-}" == "-p" ]]; then
+  printf '%s\n' "${TMUX_FAKE_CURRENT_SESSION:-}"
+  exit 0
+fi
+exit 1
+EOF
+  chmod +x "${tmp_dir}/bin/tmux"
+
+  actual=$(
+    PATH="${tmp_dir}/bin:${PATH}" \
+    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_FAKE_CURRENT_STATE="working" \
+    TMUX_FAKE_CURRENT_SESSION="notes" \
+    "${LEFT_WRAPPER}"
+  )
+  assert_equal "left wrapper renders the current session with state-aware styling" "#[fg=#82aaff] notes#[fg=default] " "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_left_wrapper_fallback_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  mkdir -p "${tmp_dir}/bin"
+
+  cat > "${tmp_dir}/bin/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "display-message" && "${2:-}" == "-p" ]]; then
+  printf '%s\n' "${TMUX_FAKE_CURRENT_SESSION:-}"
+  exit 0
+fi
+exit 1
+EOF
+  chmod +x "${tmp_dir}/bin/tmux"
+
+  actual=$(
+    PATH="${tmp_dir}/bin:${PATH}" \
+    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_FAKE_CURRENT_STATE="" \
+    TMUX_FAKE_CURRENT_SESSION="notes" \
+    "${LEFT_WRAPPER}"
+  )
+  assert_equal "left wrapper falls back to the plain session label style when there is no state" "#[fg=#f78c6c]⠶ #[fg=#82aaff]notes#[fg=default] " "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
 run_missing_runtime_case() {
   local tmp_dir="" actual=""
 
@@ -63,4 +126,6 @@ run_missing_runtime_case() {
 
 run_session_wrapper_case
 run_hook_wrapper_case
+run_left_wrapper_case
+run_left_wrapper_fallback_case
 run_missing_runtime_case
