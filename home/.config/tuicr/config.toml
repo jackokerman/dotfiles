@@ -1,2 +1,4 @@
 theme = "tokyo-night-storm"
 transparent_background = true
+diff_view = "side-by-side"
+wrap = true
