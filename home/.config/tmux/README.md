@@ -4,11 +4,12 @@ This directory now owns the tmux-side wrappers and path resolution for the exter
 
 ## Ownership
 
-- `session-status-left.sh`: stable tmux entrypoint for the current-session label; it resolves the active `tmux-agent-bar` checkout and asks it for the current session state before formatting the left-side label.
+- `session-status-left.sh`: stable tmux entrypoint for the current-session state prefix; tmux renders the session name itself so local session switches update immediately.
 - `session-status.sh`: stable tmux entrypoint that resolves the active `tmux-agent-bar` checkout and execs its renderer.
+- `session-status-refresh.sh`: stable tmux entrypoint that refreshes the session-scoped cached `status-right` value from the active `tmux-agent-bar` checkout.
 - `agent-status-hook.sh`: stable hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its explicit-state writer.
 - `tmux-agent-bar-path.sh`: shared path-resolution helper for the wrappers.
-- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, and passes the tmux-expanded session target through the `#()` command so each status job stays aligned with the active session.
+- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, keeps the session name tmux-native on the left, and stores the visible right side in a session-scoped tmux option so session switches update immediately.
 
 The generic parser, collector, renderer, and prompt heuristics live in the managed `tmux-agent-bar` repo, not in this repo.
 

@@ -11,7 +11,7 @@
 
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
-- `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, and `home/.config/tmux/agent-status-hook.sh` are stable wrappers around the managed `tmux-agent-bar` runtime
+- `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, `home/.config/tmux/session-status-refresh.sh`, and `home/.config/tmux/agent-status-hook.sh` are stable wrappers around the managed `tmux-agent-bar` runtime
 - `home/.config/tmux/tmux-agent-bar-path.sh` resolves the runtime checkout in this order:
   - `TMUX_AGENT_BAR_DIR`
   - `~/.config/tmux-agent-bar/path.local`

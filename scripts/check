@@ -23,6 +23,7 @@ run_bash_syntax() {
         ".githooks/pre-commit"
         "home/.config/tmux/agent-status-hook.sh"
         "home/.config/tmux/session-status-left.sh"
+        "home/.config/tmux/session-status-refresh.sh"
         "home/.config/tmux/session-status.sh"
         "home/.config/tmux/tmux-agent-bar-path.sh"
         "home/.local/bin/git-delta-diff-filter"
@@ -79,6 +80,7 @@ assert_expected_executables() {
         "scripts/macos.sh"
         "home/.local/bin/slack-rich-text"
         "home/.config/tmux/session-status-left.sh"
+        "home/.config/tmux/session-status-refresh.sh"
         "tests/tuicr/test-setup.sh"
     )
     local file
