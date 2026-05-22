@@ -17,9 +17,9 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 
 ## Technical Identifiers
 
-- Wrap exact technical identifiers in backticks when the surface supports markdown. This includes file paths, commands, feature flags, package names, component names, hooks, functions, classes, and literal prop or field names.
+- Wrap exact technical identifiers in backticks when the surface supports markdown. This includes file paths, commands, feature flags, package names, component names, hooks, functions, classes, exact operators such as `??`, and literal prop or field names.
 - Do not treat issue or ticket IDs as code identifiers. When the surface supports hyperlinks, prefer semantic links like `[ABC-123: Short title](...)` or `[ABC-123](...)` over backticks.
-- Skip backticks for generic concepts rather than exact identifiers, and skip them on plain-text surfaces such as commit subjects. PR titles support markdown, so use backticks there too when they improve precision.
+- Skip backticks for generic concepts rather than exact identifiers, and skip them on plain-text surfaces such as commit messages. PR titles support markdown, so use backticks there too when they improve precision.
 - Use the full identifier instead of shorthand when precision matters.
 
 ## Formatting
