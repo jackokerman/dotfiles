@@ -20,6 +20,9 @@ make_fake_runtime() {
 #!/usr/bin/env bash
 set -euo pipefail
 if [[ "${1:-}" == "current-state" ]]; then
+  if [[ -n "${TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET:-}" ]] && [[ "${2:-}" != "${TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET}" ]]; then
+    exit 1
+  fi
   printf '%s\n' "${TMUX_AGENT_BAR_FAKE_CURRENT_STATE:-}"
 else
   printf 'session:%s\n' "$*"
@@ -67,6 +70,10 @@ run_left_wrapper_case() {
   cat > "${tmp_dir}/bin/tmux" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
+if [[ "${1:-}" == "display-message" && "${2:-}" == "-p" && "${3:-}" == "-t" ]]; then
+  printf '%s\n' "${TMUX_FAKE_TARGET_SESSION:-}"
+  exit 0
+fi
 if [[ "${1:-}" == "display-message" && "${2:-}" == "-p" ]]; then
   printf '%s\n' "${TMUX_FAKE_CURRENT_SESSION:-}"
   exit 0
@@ -78,11 +85,12 @@ EOF
   actual=$(
     PATH="${tmp_dir}/bin:${PATH}" \
     TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET='$23' \
     TMUX_AGENT_BAR_FAKE_CURRENT_STATE="working" \
-    TMUX_FAKE_CURRENT_SESSION="notes" \
-    "${LEFT_WRAPPER}"
+    TMUX_FAKE_TARGET_SESSION="notes" \
+    "${LEFT_WRAPPER}" '$23'
   )
-  assert_equal "left wrapper renders the current session with state-aware styling" "#[fg=#82aaff] notes#[fg=default] " "${actual}"
+  assert_equal "left wrapper renders the targeted current session with state-aware styling" "#[fg=#82aaff] notes#[fg=default] " "${actual}"
   rm -rf "${tmp_dir}"
 }
 

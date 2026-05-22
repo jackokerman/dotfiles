@@ -8,7 +8,7 @@ This directory now owns the tmux-side wrappers and path resolution for the exter
 - `session-status.sh`: stable tmux entrypoint that resolves the active `tmux-agent-bar` checkout and execs its renderer.
 - `agent-status-hook.sh`: stable hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its explicit-state writer.
 - `tmux-agent-bar-path.sh`: shared path-resolution helper for the wrappers.
-- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`.
+- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, and passes the tmux-expanded session target through the `#()` command so each status job stays aligned with the active session.
 
 The generic parser, collector, renderer, and prompt heuristics live in the managed `tmux-agent-bar` repo, not in this repo.
 

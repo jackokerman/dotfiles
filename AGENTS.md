@@ -23,6 +23,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Read `home/.config/tmux/README.md` before making tmux agent-status changes.
 - Keep generic parser, collector, renderer, prompt heuristics, and source registration in the external `tmux-agent-bar` repo, not in this repo.
 - Use this repo for `tmux-agent-bar` checkout management, wrapper stability, and runtime path resolution only.
+- Preserve the tmux-expanded session target flow from `tmux.conf` into the wrappers so `#()` jobs do not reuse stale output after a session switch.
 - Keep wrapper and sync tests behavior-first. Assert path precedence, wrapper exec behavior, and safe update behavior instead of helper boundaries.
 - When a tmux status bug comes from a real session, reduce it to the smallest reproducer in `tmux-agent-bar`; only add a dotfiles test when the bug is specifically about wrapper or checkout behavior.
 - Do not change tmux agent-status behavior without running `./scripts/check`.
