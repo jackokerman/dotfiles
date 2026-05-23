@@ -20,6 +20,10 @@
 - Do not add features, alternate flows, or edge-case handling that were not requested.
 - Prefer fixing the actual boundary where data is consumed instead of pre-validating or transforming inputs earlier "just in case."
 - Keep the happy path readable and direct. If extra complexity is necessary, make the reason concrete.
+- Prefer strict equality checks over loose `==` or `!=` comparisons. Use explicit `=== null` and `=== undefined` checks when nullish handling matters.
+- Prefer early returns and straightforward conditional blocks over non-trivial ternaries. Simple boolean checks such as `if (!value)` and short `&&` conditions are fine when they read clearly.
+- Avoid deeply nested conditionals. When branching starts to nest, use guard clauses, a small helper, or a named boolean to keep the control flow easy to scan.
+- Add concise multi-line JSDoc for exported functions, hooks, components, and types when it improves editor hints or clarifies a non-obvious contract.
 
 ## Tooling
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
