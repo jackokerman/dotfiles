@@ -54,6 +54,10 @@ Use this skill for clearly React or frontend work, including cleanup or simplifi
 - Use `useEffect` only for synchronization with systems outside React: subscriptions, timers, browser APIs, analytics, storage, URL state, network lifecycles, or third-party widgets.
 - Never use `useEffect` to derive state or render data. Do not mirror props into state or handle work in an effect that belongs in render or an event handler.
 - Before adding an effect, check whether the logic belongs in render, a handler, a reducer, or a key-based reset.
+- For browser or library subscriptions that expose a current snapshot, prefer `useSyncExternalStore` over `useEffect` plus local mirrored state. Put setup and teardown in the subscribe function when that fits the external-store contract.
+- Do not use an effect only to copy a prop or memoized value into state. Derive it during render, reset with a `key`, update it in the event handler that changed the source, or use React's guarded "previous render value" state-update pattern when you truly need to remember the previous input.
+- For imperative DOM, measurement, focus, or third-party widget updates that must happen before paint, prefer `useLayoutEffect` over `useEffect`. Keep it narrow, and do not use it as a blanket fix for derived state.
+- If an effect schedules `requestAnimationFrame`, first check whether the work should be a layout effect, an event-handler update, or a library callback. Keep RAF effects for cases that intentionally wait for a browser paint or library commit.
 - For new internal abstractions, prefer custom hooks over HOCs or render-prop wrappers unless the surrounding library already dictates the pattern.
 
 ## Context And Shared State
