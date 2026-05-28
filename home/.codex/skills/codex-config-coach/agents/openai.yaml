@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Config Coach"
+  short_description: "Turn session friction into durable Codex steering."
+  default_prompt: "Use $codex-config-coach to inspect this session's friction, decide whether Codex steering should change, and route any update to the right dotty-managed config source."

@@ -50,7 +50,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Managed runtime checkouts live under `~/.local/share/`; `tmux-agent-bar` and `tuicr` use that pattern.
 - Keep dotty-owned runtime checkouts separate from manual development clones. For `tuicr`, the managed checkout at `~/.local/share/tuicr/repo` is for install/use, not for personal fork remotes or long-lived branches.
 - Put generic always-on Codex behavior, including simplicity and anti-overengineering guidance, in `home/.codex/AGENTS.md`.
-- Keep reusable generic Codex skills in `home/.codex/skills/`, including `godspeed-tasks` for Godspeed inbox triage and `nvim-config-coach` for incremental Neovim config work, and split them by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
+- Keep reusable generic Codex skills in `home/.codex/skills/`, including `codex-config-coach` for turning session friction into durable steering, `godspeed-tasks` for Godspeed inbox triage, and `nvim-config-coach` for incremental Neovim config work. Split skills by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across the dotty chain.
 - Keep pinned Codex theme reference submodules under `home/.codex/references/` and regenerate derived theme assets in `home/.codex/themes/` with `scripts/sync-codex-nightfly-theme.ts` instead of hand-editing them.
 

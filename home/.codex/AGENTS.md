@@ -56,6 +56,10 @@
 - For personal Neovim config changes, plugin selection, keymap design, or requests to grow the editor setup incrementally, use the native `nvim-config-coach` skill before substantial edits.
 - Keep the generic Neovim workflow guidance in tracked Codex skills under `home/.codex/skills/`, not in `AGENTS.md`.
 
+## Codex Config Workflow
+- For requests to improve Codex behavior, convert session corrections into durable steering, inspect previous Codex sessions for repeated friction, or decide where Codex config belongs in the dotty chain, use the native `codex-config-coach` skill.
+- Keep generic reusable Codex steering in this repo. Route private, machine-specific, or overlay-specific guidance to the later dotty-chain repo that owns it.
+
 ## Dotfiles Workflow
 - In personal dotty-managed repos, the task is not done until changes are committed and pushed to `main`.
 - Use conventional commits.
