@@ -89,6 +89,7 @@ export function useSession() {
 - Avoid accidental `0` or empty-string rendering. When the left side of `&&` is not already boolean, coerce it or use a ternary.
 - Do not keep large conditional or derivation blocks above `return`. Simplify them or extract a pure helper, local hook, or component.
 - Do not park large JSX fragments in `const content = ...` style variables. Use early returns, a helper, or a named component instead.
+- When the same content needs an optional shell, prefer a small wrapper/container component that accepts `children` and conditionally wraps them instead of duplicating the subtree or assigning the rendered JSX to a local value.
 - Use a short JSX comment only when a branch or block encodes non-obvious product, domain, or accessibility constraints. Do not narrate straightforward markup.
 - In component files, prefer the main exported component before hoisted helper functions.
 - Below the main component, prefer top-down ordering from higher-level local hooks to the lower-level helpers they call.
