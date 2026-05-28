@@ -1,5 +1,6 @@
 require("config.options")
 require("config.keymaps")
 require("config.packages")
+require("config.navigation")
 require("config.lsp")
 require("config.format")

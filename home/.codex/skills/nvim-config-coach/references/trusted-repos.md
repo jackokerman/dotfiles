@@ -29,5 +29,7 @@ Use these repos as inspiration after checking official plugin docs and current c
 ## How To Use Them
 
 - Use these repos as tie-breakers and inspiration, not as the source of truth.
+- For picker, file explorer, search, and navigation tasks, inspect the current Neovim config in the trusted repos before recommending a direction.
+- Compare what the repos are currently using for plugin choice, keymap shape, and workflow fit; do not preserve stale summaries of their choices in this reference.
 - Translate ideas into the current small `vim.pack` config instead of importing a repo's full style.
 - Prefer borrowing a narrow pattern such as a keymap, module boundary, or plugin option over borrowing an entire stack.
