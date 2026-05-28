@@ -118,10 +118,48 @@ run_with_extra_entries_case() {
 
   assert_equal "sesh-pick exits cleanly with extra entries on bash 3.2" "" "${actual}"
   assert_matches "sesh-pick adds the remote bind when extra entries exist" \
-    'ctrl-x:change-prompt\(📦  \)\+reload\(.*/home/\.local/bin/sesh-pick --extra\)' \
+    'ctrl-x:change-prompt\(📦  \)\+reload\(.*/home/\.local/bin/sesh-pick --refresh-extra\)' \
     "$(cat "${tmp_dir}/fzf-with-extra.log")"
+  assert_matches "sesh-pick reloads once through refreshed entries" \
+    'load:reload\(.*/home/\.local/bin/sesh-pick --refresh-all\)\+unbind\(load\)' \
+    "$(cat "${tmp_dir}/fzf-with-extra.log")"
+  rm -rf "${tmp_dir}"
+}
+
+run_refresh_extra_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual="" extra_file="" refresh_hook=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+  extra_file="${cache_dir}/sesh-extra-entries"
+  refresh_hook="${config_dir}/sesh/hooks/refresh.d/remote"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}/sesh/hooks/refresh.d" "${bin_dir}"
+  printf '📦 stale-remote\n' > "${extra_file}"
+  write_stub_commands "${bin_dir}"
+
+  cat > "${refresh_hook}" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf '📦 fresh-remote\n' > "${XDG_CACHE_HOME}/sesh-extra-entries"
+EOF
+  chmod +x "${refresh_hook}"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      bash "${PICKER}" --refresh-extra
+  )
+
+  assert_equal "sesh-pick --refresh-extra refreshes before printing extra entries" "📦 fresh-remote" "${actual}"
   rm -rf "${tmp_dir}"
 }
 
 run_without_extra_entries_case
 run_with_extra_entries_case
+run_refresh_extra_case

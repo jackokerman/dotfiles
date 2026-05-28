@@ -11,13 +11,23 @@ EXTRA="${XDG_CACHE_HOME:-$HOME/.cache}/sesh-extra-entries"
 HOOKS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/connect.d"
 REFRESH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sesh/hooks/refresh.d"
 
-# Kick off background refresh hooks (SWR: show stale entries, revalidate for next open).
-# setsid detaches hooks from this process group so they survive tmux popup closure.
-if [[ -d "$REFRESH_DIR" ]]; then
+run_refresh_hooks() {
+  local mode="$1"
+  local hook
+
+  [[ -d "$REFRESH_DIR" ]] || return 0
+
   for hook in "$REFRESH_DIR"/*; do
-    [[ -x "$hook" ]] && setsid "$hook" </dev/null &>/dev/null &
+    [[ -x "$hook" ]] || continue
+
+    if [[ "$mode" == "sync" ]]; then
+      SESH_PICK_FORCE_REFRESH=1 "$hook" </dev/null &>/dev/null || true
+    else
+      # setsid detaches hooks from this process group so they survive tmux popup closure.
+      setsid "$hook" </dev/null &>/dev/null &
+    fi
   done
-fi
+}
 
 # Filter extra entries that already have a tmux session (avoids duplicates).
 # Each extra entry is "icon name" — we strip the prefix and check tmux.
@@ -38,6 +48,13 @@ _all() { sesh list -it; _extra_entries; sesh list -ic; sesh list -iz; }
 # Sub-commands for fzf reload (fzf can't call bash functions directly)
 if [[ "${1:-}" == "--all" ]]; then _all; exit 0; fi
 if [[ "${1:-}" == "--extra" ]]; then _extra_entries; exit 0; fi
+if [[ "${1:-}" == "--refresh-all" ]]; then run_refresh_hooks sync; _all; exit 0; fi
+if [[ "${1:-}" == "--refresh-extra" ]]; then run_refresh_hooks sync; _extra_entries; exit 0; fi
+
+# Kick off background refresh hooks (SWR: show stale entries first, then fzf
+# reloads once through the synchronous refresh subcommand when the initial input
+# has loaded).
+run_refresh_hooks async
 
 pick_session() {
   local header="$1"
@@ -48,7 +65,8 @@ pick_session() {
     --border-label=" sesh " --prompt="⚡  " \
     --header="$header" \
     --bind "tab:down,btab:up" \
-    --bind "ctrl-a:change-prompt(⚡  )+reload($0 --all)" \
+    --bind "load:reload($0 --refresh-all)+unbind(load)" \
+    --bind "ctrl-a:change-prompt(⚡  )+reload($0 --refresh-all)" \
     --bind "ctrl-t:change-prompt(🪟  )+reload(sesh list -it)" \
     --bind "ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .git -E node_modules)" \
     --bind "ctrl-d:execute-silent(tmux kill-session -t {2..}; rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob)+change-prompt(⚡  )+reload($0 --all)" \
@@ -57,7 +75,7 @@ pick_session() {
 
 if [[ -s "$EXTRA" ]]; then
   header="  ^a all ^t tmux ^x remote ^d kill ^f find"
-  session=$(pick_session "$header" --bind "ctrl-x:change-prompt(📦  )+reload($0 --extra)")
+  session=$(pick_session "$header" --bind "ctrl-x:change-prompt(📦  )+reload($0 --refresh-extra)")
 else
   header="  ^a all ^t tmux ^d kill ^f find"
   session=$(pick_session "$header")
