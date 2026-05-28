@@ -20,6 +20,12 @@ Use these repos as inspiration after checking official plugin docs and current c
 - Best for beginner-friendly community defaults and approachable examples of popular plugins such as Telescope, which-key, and Treesitter.
 - Use this repo when you need to sanity-check whether a plugin is broadly adopted or easy for a newer user to learn.
 
+## `nvim-lua/kickstart.nvim`
+
+- Repo: `https://github.com/nvim-lua/kickstart.nvim`
+- Best for readable, mainstream Neovim defaults and small config option examples.
+- Use this repo when adding a new option, keymap, autocmd, or plugin setup to check whether there is a simple baseline pattern before reaching for a more customized dotfiles example.
+
 ## `sodiumjoe/dotfiles`
 
 - Repo: `https://github.com/sodiumjoe/dotfiles`
