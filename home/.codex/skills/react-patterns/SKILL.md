@@ -66,6 +66,7 @@ Use this skill for clearly React or frontend work, including cleanup or simplifi
 - Scope providers as narrowly as possible.
 - Export a provider and a `useX` hook. Callers should not touch the raw context object.
 - Prefer no default context value. Throw a clear error when the hook is used outside its provider.
+- Prefer a project `createContext` helper that throws outside a provider when one exists. Raw `React.createContext` defaults can hide provider wiring bugs by silently returning fallback values.
 - Split contexts by responsibility or change frequency. Avoid omnibus app-wide context objects.
 - Keep server state out of bespoke context when the real need is caching, invalidation, or request lifecycle management. Prefer framework loaders or a dedicated server-state library.
 - Fetch data near the component that owns the responsibility for displaying or mutating it unless the framework has a stronger route-level pattern.

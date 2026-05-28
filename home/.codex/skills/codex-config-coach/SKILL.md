@@ -21,6 +21,7 @@ Help improve Codex behavior by turning real session friction into small, durable
    - Use an existing skill when the behavior applies only to that workflow.
    - Add or update a helper script only when deterministic inspection or repeated command logic is needed.
    - Avoid broad new policy, speculative guardrails, fallback paths, or duplicate guidance.
+   - When auditing later dotty-chain repos, check for skill-name overlap with the base dotfiles skills and for generic guidance nested inside host-specific skills.
 4. Propose before mutating unless the user explicitly asked to apply the update.
    - State the observed friction, the proposed steering change, and the target file or skill.
    - If multiple targets are plausible, recommend one and explain the routing briefly.
