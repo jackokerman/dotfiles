@@ -120,9 +120,10 @@ run_with_extra_entries_case() {
   assert_matches "sesh-pick adds the remote bind when extra entries exist" \
     'ctrl-x:change-prompt\(📦  \)\+reload\(.*/home/\.local/bin/sesh-pick --refresh-extra\)' \
     "$(cat "${tmp_dir}/fzf-with-extra.log")"
-  assert_matches "sesh-pick reloads once through refreshed entries" \
-    'load:reload\(.*/home/\.local/bin/sesh-pick --refresh-all\)\+unbind\(load\)' \
-    "$(cat "${tmp_dir}/fzf-with-extra.log")"
+  if [[ "$(cat "${tmp_dir}/fzf-with-extra.log")" =~ load:reload ]]; then
+    fail "sesh-pick does not mutate the active picker after load"
+  fi
+  pass "sesh-pick does not mutate the active picker after load"
   rm -rf "${tmp_dir}"
 }
 

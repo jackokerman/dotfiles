@@ -51,9 +51,9 @@ if [[ "${1:-}" == "--extra" ]]; then _extra_entries; exit 0; fi
 if [[ "${1:-}" == "--refresh-all" ]]; then run_refresh_hooks sync; _all; exit 0; fi
 if [[ "${1:-}" == "--refresh-extra" ]]; then run_refresh_hooks sync; _extra_entries; exit 0; fi
 
-# Kick off background refresh hooks (SWR: show stale entries first, then fzf
-# reloads once through the synchronous refresh subcommand when the initial input
-# has loaded).
+# Kick off background refresh hooks (SWR: show stale entries now, refresh for
+# the next open). Do not mutate the active fzf list; that can move the selection
+# while the user is navigating it.
 run_refresh_hooks async
 
 pick_session() {
@@ -65,7 +65,6 @@ pick_session() {
     --border-label=" sesh " --prompt="⚡  " \
     --header="$header" \
     --bind "tab:down,btab:up" \
-    --bind "load:reload($0 --refresh-all)+unbind(load)" \
     --bind "ctrl-a:change-prompt(⚡  )+reload($0 --refresh-all)" \
     --bind "ctrl-t:change-prompt(🪟  )+reload(sesh list -it)" \
     --bind "ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .git -E node_modules)" \
