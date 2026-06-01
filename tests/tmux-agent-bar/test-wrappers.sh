@@ -3,6 +3,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+TMUX_CONF="${PROJECT_ROOT}/home/.config/tmux/tmux.conf"
 SESSION_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status.sh"
 LEFT_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status-left.sh"
 REFRESH_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status-refresh.sh"
@@ -143,6 +144,52 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_refresh_wrapper_client_refresh_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  mkdir -p "${tmp_dir}/bin"
+
+  cat > "${tmp_dir}/bin/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+case "${1:-}" in
+  set-option)
+    if [[ "${2:-}" == "-q" && "${3:-}" == "-t" ]]; then
+      printf 'set\t%s\t%s\t%s\n' "${4:-}" "${5:-}" "${6:-}" >> "${TMUX_FAKE_INVOCATIONS_FILE}"
+      exit 0
+    fi
+    ;;
+  refresh-client)
+    if [[ "${2:-}" == "-S" && "${3:-}" == "-t" ]]; then
+      printf 'refresh\t%s\n' "${4:-}" >> "${TMUX_FAKE_INVOCATIONS_FILE}"
+      exit 0
+    fi
+    ;;
+esac
+exit 1
+EOF
+  chmod +x "${tmp_dir}/bin/tmux"
+
+  actual=$(
+    PATH="${tmp_dir}/bin:${PATH}" \
+    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='PR review 🔎' \
+    TMUX_AGENT_BAR_FAKE_RENDER_CACHED="#[fg=#82aaff] PR review 🔎#[fg=default] " \
+    TMUX_FAKE_INVOCATIONS_FILE="${tmp_dir}/tmux-invocations" \
+    "${REFRESH_WRAPPER}" 'PR review 🔎' --cached --refresh-client --client /dev/ttys001
+    cat "${tmp_dir}/tmux-invocations"
+  )
+
+  assert_equal \
+    "refresh wrapper redraws the hook client after updating a named session option" \
+    $'set\tPR review 🔎\t@tmux_agent_bar_status_right\t#[fg=#82aaff] PR review 🔎#[fg=default] \nrefresh\t/dev/ttys001' \
+    "${actual}"
+
+  rm -rf "${tmp_dir}"
+}
+
 run_refresh_wrapper_full_case() {
   local tmp_dir="" actual=""
 
@@ -179,6 +226,21 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_session_switch_hook_case() {
+  local actual=""
+
+  actual=$(grep -E '^set-hook -g client-(session-changed|attached)' "${TMUX_CONF}" || true)
+
+  assert_matches \
+    "session switch hook targets the changed client's session name" \
+    'client-session-changed.*#\{q:client_session\}.*--refresh-client.*#\{q:hook_client\}' \
+    "${actual}"
+  assert_matches \
+    "client attach hook targets the attached client's session name" \
+    'client-attached.*#\{q:client_session\}.*--refresh-client.*#\{q:hook_client\}' \
+    "${actual}"
+}
+
 run_missing_runtime_case() {
   local tmp_dir="" actual=""
 
@@ -193,5 +255,7 @@ run_hook_wrapper_case
 run_left_wrapper_case
 run_left_wrapper_fallback_case
 run_refresh_wrapper_cached_case
+run_refresh_wrapper_client_refresh_case
 run_refresh_wrapper_full_case
+run_session_switch_hook_case
 run_missing_runtime_case
