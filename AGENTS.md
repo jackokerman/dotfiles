@@ -6,6 +6,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 
 - Keep private or machine-specific behavior out of this repo. Put it in local overrides or another repo in the dotty chain.
 - When editing public prose in this repo, keep terminology generic. Avoid employer-specific product names, environment names, internal links, or private repo structure; describe them as `local overrides`, `later repos in the dotty chain`, or `host-specific setup` instead.
+- If a public-repo sensitive-content guard blocks a commit, treat it as a routing failure. Do not sanitize private or host-specific content just to land it publicly; move the artifact to the appropriate later repo unless the user explicitly wants a generic public version.
 - Keep changes concrete and incremental so the generated `~/.codex` state remains easy to understand.
 
 ## Workflow
