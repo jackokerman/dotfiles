@@ -8,6 +8,7 @@ SESSION_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status.sh"
 LEFT_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status-left.sh"
 REFRESH_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/session-status-refresh.sh"
 HOOK_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/agent-status-hook.sh"
+CODEX_HOOK_WRAPPER="${PROJECT_ROOT}/home/.config/tmux/codex-agent-status-hook.sh"
 TEST_PREFIX="tmux-agent-bar-wrapper-test"
 
 # shellcheck source=/dev/null
@@ -52,7 +53,16 @@ set -euo pipefail
 printf 'hook:%s\n' "$*"
 EOF
 
-  chmod +x "${runtime_dir}/bin/tmux-agent-bar" "${runtime_dir}/bin/tmux-agent-bar-hook"
+  cat > "${runtime_dir}/bin/tmux-agent-bar-codex-hook" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'codex-hook:%s\n' "$*"
+EOF
+
+  chmod +x \
+    "${runtime_dir}/bin/tmux-agent-bar" \
+    "${runtime_dir}/bin/tmux-agent-bar-hook" \
+    "${runtime_dir}/bin/tmux-agent-bar-codex-hook"
 }
 
 run_session_wrapper_case() {
@@ -74,6 +84,29 @@ run_hook_wrapper_case() {
 
   actual=$(TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" "${HOOK_WRAPPER}" working codex)
   assert_equal "hook wrapper execs the managed runtime entrypoint" "hook:working codex" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_codex_hook_wrapper_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+
+  actual=$(TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" "${CODEX_HOOK_WRAPPER}" PostToolUse)
+  assert_equal "Codex hook wrapper execs the managed runtime adapter" "codex-hook:PostToolUse" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_codex_hook_missing_runtime_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  rm "${tmp_dir}/runtime/bin/tmux-agent-bar-codex-hook"
+
+  actual=$(TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" "${CODEX_HOOK_WRAPPER}" PermissionRequest)
+  assert_equal "Codex hook wrapper exits cleanly when the runtime adapter is missing" "" "${actual}"
   rm -rf "${tmp_dir}"
 }
 
@@ -252,6 +285,8 @@ run_missing_runtime_case() {
 
 run_session_wrapper_case
 run_hook_wrapper_case
+run_codex_hook_wrapper_case
+run_codex_hook_missing_runtime_case
 run_left_wrapper_case
 run_left_wrapper_fallback_case
 run_refresh_wrapper_cached_case

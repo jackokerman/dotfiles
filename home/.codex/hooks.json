@@ -1,11 +1,51 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/codex-agent-status-hook.sh SessionStart"
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/agent-status-hook.sh working codex"
+            "command": "~/.config/tmux/codex-agent-status-hook.sh UserPromptSubmit"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/codex-agent-status-hook.sh PreToolUse"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/codex-agent-status-hook.sh PostToolUse"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/codex-agent-status-hook.sh PermissionRequest"
           }
         ]
       }
@@ -15,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/agent-status-hook.sh done codex"
+            "command": "~/.config/tmux/codex-agent-status-hook.sh Stop"
           }
         ]
       }

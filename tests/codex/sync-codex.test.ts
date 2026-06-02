@@ -5,6 +5,7 @@ import { join, resolve } from "node:path";
 
 const repoRoot = resolve(import.meta.dir, "../..");
 const syncScript = join(repoRoot, "scripts", "sync-codex.ts");
+const hooksSource = join(repoRoot, "home", ".codex", "hooks.json");
 
 function withTempDir(run: (dir: string) => void) {
   const dir = mkdtempSync(join(tmpdir(), "codex-sync-"));
@@ -77,5 +78,36 @@ describe("sync-codex config", () => {
         "use [features].hooks instead of [features].codex_hooks",
       );
     });
+  });
+});
+
+describe("tracked Codex hooks", () => {
+  test("wire tmux status lifecycle events through the Codex adapter wrapper", () => {
+    const tracked = JSON.parse(readFileSync(hooksSource, "utf8")) as {
+      hooks: Record<string, Array<{ hooks: Array<{ command?: string; type: string }> }>>;
+    };
+    const expectedEvents = [
+      "SessionStart",
+      "UserPromptSubmit",
+      "PreToolUse",
+      "PostToolUse",
+      "PermissionRequest",
+      "Stop",
+    ];
+
+    expect(Object.keys(tracked.hooks).sort()).toEqual([...expectedEvents].sort());
+
+    for (const eventName of expectedEvents) {
+      expect(tracked.hooks[eventName]).toEqual([
+        {
+          hooks: [
+            {
+              type: "command",
+              command: `~/.config/tmux/codex-agent-status-hook.sh ${eventName}`,
+            },
+          ],
+        },
+      ]);
+    }
   });
 });
