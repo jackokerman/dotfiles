@@ -25,6 +25,12 @@
 - Avoid deeply nested conditionals. When branching starts to nest, use guard clauses, a small helper, or a named boolean to keep the control flow easy to scan.
 - Add concise multi-line JSDoc for exported functions, hooks, components, and types when it improves editor hints or clarifies a non-obvious contract.
 
+## Execution Workflow
+- For non-trivial implementation work, translate the request into the smallest verifiable outcome before editing.
+- When a request has materially different interpretations, state the choice or ask before editing instead of silently taking the broadest interpretation.
+- For bug fixes or behavior changes, prefer a focused reproduction or failing test first, then make it pass when practical.
+- Before finishing, run the smallest verification that covers the change and report what was and was not verified.
+
 ## Tooling
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
 - Use another runtime only when it has a clear operational advantage.
