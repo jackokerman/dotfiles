@@ -32,6 +32,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 
 - Avoid validation-heavy filler.
 - Avoid stiff corporate phrasing.
+- Use contractions when they sound natural in the user's voice. Avoid expanding them just to sound more formal.
 - In collaborative suggestions or review comments, prefer `we` over `you` when natural.
 - Casual does not mean sloppy. Keep the writing readable and grammatical.
 
