@@ -43,3 +43,4 @@ printf '%s' "$MESSAGE" | ~/.local/bin/slack-rich-text --paste
 - Treat the helper as generic markdown-to-Slack conversion. Do not add standup-specific parsing or rewrite the content during copy.
 - Trim only surrounding blank lines before copying.
 - Do not mutate the clipboard or trigger a paste unless the user clearly asked for that side effect.
+- For Slack-facing links, use plain semantic link labels instead of code-formatted labels. Prefer `[useGetMerchantId](...)` over ``[`useGetMerchantId`](...)`` because Slack, especially on mobile, already distinguishes links and nested code styling adds noise.
