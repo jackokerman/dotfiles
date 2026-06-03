@@ -18,18 +18,25 @@ function runHelper(command: "paste-script" | "render" | "select" | "trim", paylo
 }
 
 describe("slack rich text renderer", () => {
-  test("renders headings as plain paragraphs", () => {
+  test("renders final headings as plain inline text", () => {
     const html = runHelper("render", { input: "## Updates:" }) as string;
 
-    expect(html).toContain("<p>Updates:</p>");
+    expect(html).toContain("<span>Updates:</span>");
     expect(html).not.toContain("<h2>");
     expect(html).not.toContain("<strong>Updates:</strong>");
+  });
+
+  test("renders the final paragraph inline to avoid trailing Slack blank lines", () => {
+    const html = runHelper("render", { input: "First paragraph\n\nSecond paragraph" }) as string;
+
+    expect(html).toContain("<p>First paragraph</p><p><br/></p><span>Second paragraph</span>");
+    expect(html).not.toContain("<p>Second paragraph</p></body>");
   });
 
   test("preserves blank lines between blocks as Slack spacers", () => {
     const html = runHelper("render", { input: "First paragraph\n\nSecond paragraph" }) as string;
 
-    expect(html).toContain("<p>First paragraph</p><p><br/></p><p>Second paragraph</p>");
+    expect(html).toContain("<p>First paragraph</p><p><br/></p><span>Second paragraph</span>");
   });
 
   test("renders nested unordered and ordered lists", () => {

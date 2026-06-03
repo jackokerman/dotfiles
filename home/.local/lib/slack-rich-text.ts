@@ -173,8 +173,13 @@ function renderInlineTokens(tokens: InlineToken[]): string {
     .join("");
 }
 
-function renderParagraph(token: BlockToken): string {
-  return `<p>${renderInlineTokens(asInlineTokens(token))}</p>`;
+function renderParagraph(token: BlockToken, options: { inline?: boolean } = {}): string {
+  const content = renderInlineTokens(asInlineTokens(token));
+  if (options.inline) {
+    return `<span>${content}</span>`;
+  }
+
+  return `<p>${content}</p>`;
 }
 
 function renderCodeBlock(token: BlockToken): string {
@@ -224,18 +229,18 @@ function renderBlockquote(token: BlockToken): string {
   return `<blockquote>${blocks.map(renderBlock).join("")}</blockquote>`;
 }
 
-function renderBlock(token: BlockToken): string {
+function renderBlock(token: BlockToken, options: { isLast?: boolean } = {}): string {
   switch (token.type) {
     case "blockquote":
       return renderBlockquote(token);
     case "code":
       return renderCodeBlock(token);
     case "heading":
-      return renderParagraph(token);
+      return renderParagraph(token, { inline: options.isLast });
     case "list":
       return renderList(token);
     case "paragraph":
-      return renderParagraph(token);
+      return renderParagraph(token, { inline: options.isLast });
     case "space":
       return "<p><br/></p>";
     default:
@@ -248,7 +253,9 @@ export function renderSlackRichTextHtml(markdown: string): string {
   const tokens = marked.lexer(trimmed, {
     gfm: true,
   }) as BlockToken[];
-  return `<!doctype html><html><body>${tokens.map(renderBlock).join("")}</body></html>`;
+  return `<!doctype html><html><body>${tokens
+    .map((token, index) => renderBlock(token, { isLast: index === tokens.length - 1 }))
+    .join("")}</body></html>`;
 }
 
 function hasPipedStdin(): boolean {
