@@ -32,7 +32,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 
 - Avoid validation-heavy filler.
 - Avoid stiff corporate phrasing.
-- Use contractions when they sound natural in the user's voice. Avoid expanding them just to sound more formal.
+- Use ordinary contractions in the user's voice, especially for Slack messages, comments, and conversational drafts. Prefer `don't`, `I'm`, `it's`, `we're`, `that's`, and `wouldn't` over expanded forms unless the surface is formal, legal, or needs extra clarity.
 - In collaborative suggestions or review comments, prefer `we` over `you` when natural.
 - Casual does not mean sloppy. Keep the writing readable and grammatical.
 
@@ -55,6 +55,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 
 - Does every sentence still have a clear subject and verb?
 - Did I keep the user's actual meaning and level of certainty?
+- Did I use natural contractions where the user would use them?
 - Did I use backticks for technical identifiers where they help?
 - Did I avoid em dashes, filler, and overcompression?
 - Would this sound natural in Slack, a PR, a review comment, or a short status update?
