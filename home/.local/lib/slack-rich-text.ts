@@ -312,13 +312,8 @@ pasteboard.setStringForType($(payload.plainText), $.NSPasteboardTypeString);
   }
 }
 
-function queuePaste(): void {
-  const child = spawn("/usr/bin/osascript", ["-"], {
-    detached: true,
-    stdio: ["pipe", "ignore", "ignore"],
-  });
-
-  child.stdin.end(`set maxAttempts to 20
+export function buildQueuedPasteScript(): string {
+  return `set maxAttempts to 150
 set currentFrontmostApp to ""
 
 repeat maxAttempts times
@@ -342,7 +337,16 @@ delay 0.05
 tell application "System Events"
     keystroke "v" using command down
 end tell
-`);
+`;
+}
+
+function queuePaste(): void {
+  const child = spawn("/usr/bin/osascript", ["-"], {
+    detached: true,
+    stdio: ["pipe", "ignore", "ignore"],
+  });
+
+  child.stdin.end(buildQueuedPasteScript());
   child.unref();
 }
 

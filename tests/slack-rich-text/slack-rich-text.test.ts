@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const helperScript = resolve(import.meta.dir, "run-helper.ts");
 
-function runHelper(command: "render" | "select" | "trim", payload: Record<string, string | null>) {
+function runHelper(command: "paste-script" | "render" | "select" | "trim", payload: Record<string, string | null>) {
   const result = spawnSync("bun", ["--install=auto", helperScript, command, JSON.stringify(payload)], {
     cwd: resolve(import.meta.dir, "../.."),
     encoding: "utf8",
@@ -79,5 +79,15 @@ describe("slack rich text input helpers", () => {
       plainText: "",
       source: "stdin",
     });
+  });
+});
+
+describe("slack rich text paste helper", () => {
+  test("waits for Raycast to stop being frontmost before pasting", () => {
+    const script = runHelper("paste-script", {}) as string;
+
+    expect(script).toContain("set maxAttempts to 150");
+    expect(script).toContain('if currentFrontmostApp is not "Raycast" then');
+    expect(script).toContain('keystroke "v" using command down');
   });
 });
