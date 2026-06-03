@@ -68,6 +68,7 @@
 - For requests to improve Codex behavior, convert session corrections into durable steering, inspect previous Codex sessions for repeated friction, or decide where Codex config belongs in the dotty chain, use the native `codex-config-coach` skill.
 - After several turns of user correction around drafting style, review phrasing, implementation style, or workflow, proactively use `codex-config-coach` before finishing to decide whether a small durable steering update belongs in config.
 - Keep generic reusable Codex steering in this repo. Route private, machine-specific, or overlay-specific guidance to the later dotty-chain repo that owns it.
+- Keep always-loaded `AGENTS.md` guidance thin: durable routing, safety, and universal behavior belong here; detailed workflow procedure belongs in skills or deferred reference files.
 
 ## Dotfiles Workflow
 - In personal dotty-managed repos, the task is not done until changes are committed and pushed to `main`.

@@ -10,3 +10,6 @@ hooks = true
 
 [tui]
 theme = "nightfly"
+
+[plugins."plugin-eval@openai-curated"]
+enabled = true

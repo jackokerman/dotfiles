@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cache_root="${CODEX_HOME:-$HOME/.codex}/plugins/cache/openai-curated/plugin-eval"
+marketplace_root="${CODEX_HOME:-$HOME/.codex}/.tmp/plugins/plugins/plugin-eval"
+
+plugin_root=""
+if [[ -d "$cache_root" ]]; then
+  shopt -s nullglob
+  versions=("$cache_root"/*)
+  shopt -u nullglob
+  if (( ${#versions[@]} > 0 )); then
+    IFS=$'\n' versions=($(printf '%s\n' "${versions[@]}" | sort))
+    unset IFS
+    plugin_root="${versions[-1]}"
+  fi
+fi
+
+if [[ -z "$plugin_root" && -d "$marketplace_root" ]]; then
+  plugin_root="$marketplace_root"
+fi
+
+if [[ -z "$plugin_root" || ! -f "$plugin_root/scripts/plugin-eval.js" ]]; then
+  printf 'plugin-eval is not installed. Run: codex plugin add plugin-eval@openai-curated\n' >&2
+  exit 1
+fi
+
+exec node "$plugin_root/scripts/plugin-eval.js" "$@"

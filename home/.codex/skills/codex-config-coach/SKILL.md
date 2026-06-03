@@ -1,11 +1,11 @@
 ---
 name: codex-config-coach
-description: Use when the user wants to improve Codex steering, turn corrections or "why did you do that?" moments into durable config, decide where guidance belongs in a dotty-managed setup, inspect current or explicitly requested previous Codex sessions for reusable patterns, or update tracked Codex skills, agents, AGENTS.md, hooks, or config.
+description: Use when improving Codex steering, auditing skill/config token use, turning repeated corrections into durable config, or choosing AGENTS, skill, plugin, hook, or config surfaces in a dotty-managed setup.
 ---
 
 # Codex Config Coach
 
-Help improve Codex behavior by turning real session friction into small, durable steering updates. Keep this generic and setup-aware: understand dotty-managed layered config, but do not embed private overlay policy in this skill.
+Help improve Codex behavior by turning real session friction into measured, durable steering updates. Keep this generic and setup-aware: understand dotty-managed layered config, but do not embed private overlay policy in this skill.
 
 ## Workflow
 
@@ -17,17 +17,28 @@ Help improve Codex behavior by turning real session friction into small, durable
    - Read the relevant repo's `AGENTS.md`, `README.md`, tracked `home/.codex/` sources, and nearby skill files before editing.
    - In dotty-managed repos, treat tracked sources under `home/` as authoritative and live `~/.codex` files as generated runtime state unless local instructions say otherwise.
    - Route generic personal behavior to the public base dotfiles repo. Route private, machine-specific, employer-specific, or overlay-only behavior to the later dotty-chain repo that owns those concerns.
-3. Pick the narrowest durable surface.
+3. Measure the candidate surface when practical.
+   - For a Codex skill or plugin, run `plugin-eval analyze <path> --format markdown` before recommending structural changes.
+   - When token usage is part of the concern, also run `plugin-eval explain-budget <path> --format markdown`.
+   - Use the report as evidence, not as a replacement for judgment. Classify findings as structural, trigger/routing, token budget, behavioral, or context-layering issues.
+   - Do not optimize for static token score alone. A longer skill can be correct if it improves first-pass success, avoids risky behavior, or prevents repeated user correction.
+4. Pick the narrowest durable surface.
    - Use `AGENTS.md` for always-on preferences and broad routing rules.
    - Use an existing skill when the behavior applies only to that workflow.
+   - Use deferred reference files for detailed procedures, examples, or context that should not load on every turn.
    - Add or update a helper script only when deterministic inspection or repeated command logic is needed.
    - Avoid broad new policy, speculative guardrails, fallback paths, or duplicate guidance.
    - When auditing later dotty-chain repos, check for skill-name overlap with the base dotfiles skills and for generic guidance nested inside host-specific skills.
-4. Propose before mutating unless the user explicitly asked to apply the update.
+5. Use a measurement ladder for high-impact changes.
+   - Light: static `plugin-eval analyze` and `plugin-eval explain-budget` reports.
+   - Medium: define two or three pressure scenarios that should pass after the steering change and fail or require correction before it.
+   - Heavy: initialize and run `plugin-eval` benchmarks only with explicit approval, because they create `.plugin-eval/` artifacts and run real Codex sessions.
+   - When comparing alternatives, prefer blind before/after comparison and keep the simpler version if outcomes are equivalent.
+6. Propose before mutating unless the user explicitly asked to apply the update.
    - State the observed friction, the proposed steering change, and the target file or skill.
    - If multiple targets are plausible, recommend one and explain the routing briefly.
    - When the user has authorized direct config updates, still apply only changes backed by concrete session evidence, local config inspection, and a clear reason they should make future agent behavior more reliable or deterministic.
-5. Apply and finish using the target repo's workflow.
+7. Apply and finish using the target repo's workflow.
    - Use tracked sources, not generated runtime files.
    - Run `dotty update` after tracked Codex config, skill, agent, or hook changes when the repo instructions require it.
    - Run the repo's checks, commit with a conventional commit, and push when the repo requires that for completion.
@@ -50,6 +61,8 @@ Use helper output as evidence, not as a replacement for judgment. Pull only the 
 - Add one sentence to a workflow skill after the same correction happened twice.
 - Move a generic preference from an overlay into the base dotfiles repo when it is reusable outside work.
 - Add a short routing rule when agents repeatedly edit generated `~/.codex` state instead of tracked sources.
+- Split a large skill by moving examples or detailed procedure into a reference file when `plugin-eval` shows excessive invoke budget and the detail is not needed on every use.
+- Add pressure scenarios before changing a high-impact skill whose purpose is behavioral compliance rather than static reference lookup.
 - Decline to edit config when the correction is specific to one task or already covered by existing instructions.
 
 ## Response Shape

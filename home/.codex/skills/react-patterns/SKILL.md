@@ -1,6 +1,6 @@
 ---
 name: react-patterns
-description: Use for React or frontend work that needs guidance on cleanup and simplification, component boundaries, hooks, context, rendering, testing, and modern React defaults.
+description: Use when React or frontend work needs guidance on cleanup and simplification, component boundaries, hooks, context, rendering, testing, or modern React defaults.
 ---
 
 # React Patterns
