@@ -46,6 +46,14 @@ vim.keymap.set("n", "<leader>sk", function()
   snacks.picker.keymaps()
 end, { desc = "Search keymaps", silent = true })
 
+vim.keymap.set("n", "<leader>sC", function()
+  snacks.picker.commands()
+end, { desc = "Search commands", silent = true })
+
+vim.keymap.set("n", "<leader>sh", function()
+  snacks.picker.help()
+end, { desc = "Search help", silent = true })
+
 vim.keymap.set("n", "<leader>sd", function()
   snacks.picker.diagnostics()
 end, { desc = "Search diagnostics", silent = true })
