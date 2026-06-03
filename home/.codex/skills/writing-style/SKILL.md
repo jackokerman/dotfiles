@@ -28,6 +28,10 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 - When the surface supports hyperlinks, prefer descriptive linked text inside the sentence instead of dropping naked URLs into the prose.
 - Use a standalone link only when the link itself should be the focal artifact, such as a PR or doc the reader should open next.
 
+## Status Updates
+
+- Include the work, artifacts, decisions, blockers, and next steps that the audience can use. Omit meta-process, tooling, or automation details unless the audience needs to act on them.
+
 ## Tone
 
 - Avoid validation-heavy filler.

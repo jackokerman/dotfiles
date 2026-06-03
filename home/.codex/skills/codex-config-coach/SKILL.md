@@ -26,6 +26,7 @@ Help improve Codex behavior by turning real session friction into small, durable
 4. Propose before mutating unless the user explicitly asked to apply the update.
    - State the observed friction, the proposed steering change, and the target file or skill.
    - If multiple targets are plausible, recommend one and explain the routing briefly.
+   - When the user has authorized direct config updates, still apply only changes backed by concrete session evidence, local config inspection, and a clear reason they should make future agent behavior more reliable or deterministic.
 5. Apply and finish using the target repo's workflow.
    - Use tracked sources, not generated runtime files.
    - Run `dotty update` after tracked Codex config, skill, agent, or hook changes when the repo instructions require it.
