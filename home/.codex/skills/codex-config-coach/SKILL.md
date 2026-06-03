@@ -47,11 +47,11 @@ Help improve Codex behavior by turning real session friction into measured, dura
 
 Default to the current visible session. Do not read stored Codex sessions unless the user explicitly asks for previous, latest, or historical session context.
 
-When explicit lookup is useful, run the bundled helper from this skill directory:
+When explicit lookup is useful, run the tracked transcript helper:
 
 ```bash
-bun run scripts/codex-session-snippets.ts --latest
-bun run scripts/codex-session-snippets.ts --thread <thread-id> --query "why did you"
+codex-session-snippets --latest
+codex-session-snippets --thread <thread-id> --query "why did you"
 ```
 
 Use helper output as evidence, not as a replacement for judgment. Pull only the relevant snippets into context and avoid dumping full transcripts.

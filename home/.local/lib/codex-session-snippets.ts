@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 import { Database } from "bun:sqlite";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -22,12 +21,24 @@ const DEFAULT_PATTERN =
 
 function usage(): never {
   console.error(`Usage:
-  bun run scripts/codex-session-snippets.ts --latest [--query <text>] [--limit <n>]
-  bun run scripts/codex-session-snippets.ts --thread <thread-id> [--query <text>] [--limit <n>]`);
+  codex-session-snippets --latest [--query <text>] [--limit <n>]
+  codex-session-snippets --thread <thread-id> [--query <text>] [--limit <n>]`);
   process.exit(2);
 }
 
-function parseArgs(argv: string[]) {
+function valueAfter(argv: string[], index: number): string {
+  return argv[index + 1] ?? "";
+}
+
+function parseLimit(value: string): number {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    usage();
+  }
+  return parsed;
+}
+
+export function parseArgs(argv: string[]) {
   let latest = false;
   let threadId = "";
   let query = "";
@@ -35,30 +46,25 @@ function parseArgs(argv: string[]) {
 
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
-    if (token === "--latest") {
-      latest = true;
-      continue;
-    }
-    if (token === "--thread") {
-      threadId = argv[index + 1] ?? "";
-      index += 1;
-      continue;
-    }
-    if (token === "--query") {
-      query = argv[index + 1] ?? "";
-      index += 1;
-      continue;
-    }
-    if (token === "--limit") {
-      const parsed = Number(argv[index + 1] ?? "");
-      if (!Number.isInteger(parsed) || parsed < 1) {
+    switch (token) {
+      case "--latest":
+        latest = true;
+        break;
+      case "--thread":
+        threadId = valueAfter(argv, index);
+        index += 1;
+        break;
+      case "--query":
+        query = valueAfter(argv, index);
+        index += 1;
+        break;
+      case "--limit":
+        limit = parseLimit(valueAfter(argv, index));
+        index += 1;
+        break;
+      default:
         usage();
-      }
-      limit = parsed;
-      index += 1;
-      continue;
     }
-    usage();
   }
 
   if (latest === (threadId.length > 0)) {
@@ -101,7 +107,7 @@ function selectThread(db: Database, latest: boolean, threadId: string): ThreadRo
   return row;
 }
 
-function textFromContent(content: unknown): string {
+export function textFromContent(content: unknown): string {
   if (typeof content === "string") {
     return content;
   }
@@ -126,7 +132,7 @@ function textFromContent(content: unknown): string {
     .join("\n");
 }
 
-function entryText(entry: RolloutEntry): string {
+export function entryText(entry: RolloutEntry): string {
   const payload = entry.payload;
   if (!payload || typeof payload !== "object") {
     return "";
@@ -154,7 +160,7 @@ function entryText(entry: RolloutEntry): string {
   return "";
 }
 
-function entryRole(entry: RolloutEntry): string {
+export function entryRole(entry: RolloutEntry): string {
   const payload = entry.payload;
   if (!payload || typeof payload !== "object") {
     return "unknown";
@@ -181,7 +187,7 @@ function readEntries(path: string): RolloutEntry[] {
     });
 }
 
-function truncate(text: string) {
+export function truncate(text: string) {
   const normalized = text.replace(/\s+/g, " ").trim();
   if (normalized.length <= 600) {
     return normalized;
@@ -189,7 +195,7 @@ function truncate(text: string) {
   return `${normalized.slice(0, 597)}...`;
 }
 
-function shouldSearch(role: string, text: string, explicitQuery: boolean) {
+export function shouldSearch(role: string, text: string, explicitQuery: boolean) {
   if (role !== "user" && (!explicitQuery || role !== "assistant")) {
     return false;
   }
@@ -207,7 +213,10 @@ function main() {
   const thread = selectThread(db, args.latest, args.threadId);
   const entries = readEntries(thread.rollout_path);
   const explicitQuery = args.query.length > 0;
-  const matcher = args.query.length > 0 ? new RegExp(args.query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i") : DEFAULT_PATTERN;
+  const matcher =
+    args.query.length > 0
+      ? new RegExp(args.query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")
+      : DEFAULT_PATTERN;
   const matches: Array<{ index: number; role: string; text: string; timestamp?: string }> = [];
 
   entries.forEach((entry, index) => {
@@ -242,4 +251,6 @@ function main() {
   }
 }
 
-main();
+if (import.meta.main) {
+  main();
+}

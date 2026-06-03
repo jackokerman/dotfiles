@@ -13,7 +13,7 @@ if [[ -d "$cache_root" ]]; then
   if (( ${#versions[@]} > 0 )); then
     IFS=$'\n' versions=($(printf '%s\n' "${versions[@]}" | sort))
     unset IFS
-    plugin_root="${versions[-1]}"
+    plugin_root="${versions[$((${#versions[@]} - 1))]}"
   fi
 fi
 
