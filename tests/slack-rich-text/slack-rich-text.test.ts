@@ -87,6 +87,7 @@ describe("slack rich text paste helper", () => {
     const script = runHelper("paste-script", {}) as string;
 
     expect(script).toContain("set maxAttempts to 150");
+    expect(script).toContain('set visible of application process "Raycast" to false');
     expect(script).toContain('if currentFrontmostApp is not "Raycast" then');
     expect(script).toContain('keystroke "v" using command down');
   });

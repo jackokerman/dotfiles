@@ -316,6 +316,14 @@ export function buildQueuedPasteScript(): string {
   return `set maxAttempts to 150
 set currentFrontmostApp to ""
 
+tell application "System Events"
+    set currentFrontmostApp to name of first application process whose frontmost is true
+    if currentFrontmostApp is "Raycast" then
+        set visible of application process "Raycast" to false
+        delay 0.1
+    end if
+end tell
+
 repeat maxAttempts times
     tell application "System Events"
         set currentFrontmostApp to name of first application process whose frontmost is true
