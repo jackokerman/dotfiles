@@ -12,6 +12,7 @@ Help improve Codex behavior by turning real session friction into small, durable
 1. Identify the behavior to improve.
    - Look for concrete correction signals: "why did you do X?", "can we do Y instead?", repeated user redirection, rejected assumptions, or a manual workaround the user had to explain.
    - Separate reusable steering from one-off task feedback. Do not add config for a single unusual case.
+   - When token or tool efficiency is part of the ask, audit avoidable tool usage separately: blocked commands, reversed tool choices, duplicate reads/checks, unnecessary API calls, and polling that did not change a decision. Prefer updating the specific workflow skill that caused the waste; add broad guidance only when the pattern is reusable across workflows.
 2. Inspect the local routing context before choosing a target.
    - Read the relevant repo's `AGENTS.md`, `README.md`, tracked `home/.codex/` sources, and nearby skill files before editing.
    - In dotty-managed repos, treat tracked sources under `home/` as authoritative and live `~/.codex` files as generated runtime state unless local instructions say otherwise.
@@ -59,3 +60,4 @@ For config-improvement analysis, use this shape:
 3. Target location.
 4. Proposed edit or applied change.
 5. Validation and follow-up workflow.
+6. Tool-use audit and token-saving opportunities.
