@@ -34,6 +34,7 @@
 ## Tooling
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
 - Use another runtime only when it has a clear operational advantage.
+- For Raycast Script Commands, check the official Raycast Script Commands docs and `raycast/script-commands` examples before changing metadata, output modes, or UI behavior. Choose modes by documented semantics: `fullOutput` for long-running/log output, `compact` or `silent` for simple last-line results, and `inline` for dashboard/status items with `refreshTime`; Extension API functions such as `closeMainWindow` are not available inside Bash Script Commands.
 
 ## Research Workflow
 - For questions about tool behavior, configuration, library or framework semantics, APIs, or documented workflows, prefer deterministic verification over inference.
