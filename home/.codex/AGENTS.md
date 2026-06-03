@@ -39,6 +39,7 @@
 ## Research Workflow
 - For questions about tool behavior, configuration, library or framework semantics, APIs, or documented workflows, prefer deterministic verification over inference.
 - Check the strongest available sources first: official docs, local CLI help, tracked config, local types, project usages, tests, or repo sources.
+- In large repositories, start searches from the narrowest known path and identifiers, especially when an error already provides a file, line, symbol, or test name. Avoid broad searches for common terms until scoped searches fail.
 - Use official documentation as the primary source of truth for public product, library, framework, and API behavior.
 - If the docs are unclear or incomplete and source code is available, inspect the relevant implementation, schema, types, examples, or tests before answering.
 - Be explicit about what was confirmed from docs, source, or local usage and what remains uncertain. Avoid conjecture when verification is possible.
