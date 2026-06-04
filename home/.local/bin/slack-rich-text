@@ -5,4 +5,6 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 lib_path="${script_dir%/bin}/lib/slack-rich-text.ts"
 
+export PATH="${HOME}/.bun/bin:${PATH}"
+
 exec bun --install=auto "$lib_path" "$@"
