@@ -28,6 +28,7 @@
 ## Execution Workflow
 - For non-trivial implementation work, translate the request into the smallest verifiable outcome before editing.
 - When a request has materially different interpretations, state the choice or ask before editing instead of silently taking the broadest interpretation.
+- For local machine, shell, or environment debugging, remove or disable the upstream source first. Add a tracked startup workaround only after reproducing the need in a fresh process and confirming the source fix is insufficient.
 - For bug fixes or behavior changes, prefer a focused reproduction or failing test first, then make it pass when practical.
 - Before finishing, run the smallest verification that covers the change and report what was and was not verified.
 
