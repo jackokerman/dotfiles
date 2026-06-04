@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const helperScript = resolve(import.meta.dir, "run-helper.ts");
 
-function runHelper(command: "paste-script" | "render" | "select" | "trim", payload: Record<string, string | null>) {
+function runHelper(command: "paste-script" | "payload" | "render" | "select" | "trim", payload: Record<string, string | null>) {
   const result = spawnSync("bun", ["--install=auto", helperScript, command, JSON.stringify(payload)], {
     cwd: resolve(import.meta.dir, "../.."),
     encoding: "utf8",
@@ -15,6 +15,14 @@ function runHelper(command: "paste-script" | "render" | "select" | "trim", paylo
   }
 
   return JSON.parse(result.stdout) as unknown;
+}
+
+function runCli(args: string[], input: string) {
+  return spawnSync("bun", ["--install=auto", "home/.local/lib/slack-rich-text.ts", ...args], {
+    cwd: resolve(import.meta.dir, "../.."),
+    encoding: "utf8",
+    input,
+  });
 }
 
 describe("slack rich text renderer", () => {
@@ -59,6 +67,34 @@ describe("slack rich text renderer", () => {
     expect(html).toContain("<strong>bold</strong>");
     expect(html).toContain("<em>italics</em>");
     expect(html).toContain("<s>gone</s>");
+  });
+
+  test("builds a prepared clipboard payload without macOS clipboard access", () => {
+    const payload = runHelper("payload", { input: "\n\nhello **Slack**\n\n" }) as {
+      html: string;
+      plainText: string;
+    };
+
+    expect(payload.plainText).toBe("hello **Slack**");
+    expect(payload.html).toContain("<strong>Slack</strong>");
+  });
+
+  test("render payload mode writes prepared JSON to stdout", () => {
+    const result = runCli(["--render-payload"], "\n\nhello [Slack](https://slack.com)\n\n");
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      plainText: "hello [Slack](https://slack.com)",
+    });
+    expect(JSON.parse(result.stdout).html).toContain('<a href="https://slack.com">Slack</a>');
+  });
+
+  test("render payload mode cannot be combined with paste mode", () => {
+    const result = runCli(["--render-payload", "--paste"], "hello");
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("--render-payload cannot be combined with --paste");
   });
 });
 

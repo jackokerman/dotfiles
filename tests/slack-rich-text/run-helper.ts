@@ -1,16 +1,17 @@
 import {
+  buildSlackRichTextPayload,
   buildQueuedPasteScript,
   renderSlackRichTextHtml,
   selectPlainTextInput,
   trimSurroundingBlankLines,
 } from "../../home/.local/lib/slack-rich-text";
 
-type Command = "paste-script" | "render" | "select" | "trim";
+type Command = "paste-script" | "payload" | "render" | "select" | "trim";
 
 function main() {
   const [command, payloadJson] = process.argv.slice(2) as [Command | undefined, string | undefined];
   if (!command || !payloadJson) {
-    throw new Error("Usage: run-helper.ts <paste-script|render|select|trim> <payload-json>");
+    throw new Error("Usage: run-helper.ts <paste-script|payload|render|select|trim> <payload-json>");
   }
 
   const payload = JSON.parse(payloadJson) as Record<string, string | null>;
@@ -18,6 +19,9 @@ function main() {
   switch (command) {
     case "render":
       console.log(JSON.stringify(renderSlackRichTextHtml(String(payload.input ?? ""))));
+      return;
+    case "payload":
+      console.log(JSON.stringify(buildSlackRichTextPayload(String(payload.input ?? ""))));
       return;
     case "select":
       console.log(

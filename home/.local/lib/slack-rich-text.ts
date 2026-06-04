@@ -44,9 +44,10 @@ export type InputSelection = {
 type CliOptions = {
   help: boolean;
   paste: boolean;
+  renderPayload: boolean;
 };
 
-const HELP_TEXT = `Usage: slack-rich-text [--paste]
+const HELP_TEXT = `Usage: slack-rich-text [--paste] [--render-payload]
 
 Convert markdown-ish text into the HTML + plain-text clipboard payload that
 Slack preserves as rich text on paste.
@@ -56,6 +57,7 @@ Input priority:
 2. the current clipboard contents
 
 Options:
+  --render-payload  write the prepared JSON payload to stdout without copying
   --paste   queue a Cmd+V after copying rich text to the clipboard
   --help    show this help text
 `;
@@ -258,6 +260,19 @@ export function renderSlackRichTextHtml(markdown: string): string {
     .join("")}</body></html>`;
 }
 
+export type SlackRichTextPayload = {
+  html: string;
+  plainText: string;
+};
+
+export function buildSlackRichTextPayload(markdown: string): SlackRichTextPayload {
+  const plainText = trimSurroundingBlankLines(markdown);
+  return {
+    html: renderSlackRichTextHtml(plainText),
+    plainText,
+  };
+}
+
 function hasPipedStdin(): boolean {
   try {
     return !fstatSync(0).isCharacterDevice();
@@ -369,6 +384,7 @@ function parseCliArgs(args: string[]): CliOptions {
   const options: CliOptions = {
     help: false,
     paste: false,
+    renderPayload: false,
   };
 
   for (const arg of args) {
@@ -380,9 +396,16 @@ function parseCliArgs(args: string[]): CliOptions {
       case "--paste":
         options.paste = true;
         break;
+      case "--render-payload":
+        options.renderPayload = true;
+        break;
       default:
         throw new Error(`Unknown argument: ${arg}`);
     }
+  }
+
+  if (options.renderPayload && options.paste) {
+    throw new Error("--render-payload cannot be combined with --paste");
   }
 
   return options;
@@ -405,7 +428,14 @@ export async function runCli(args: string[]): Promise<void> {
     throw new Error(`${selection.source} input is empty`);
   }
 
-  copyRichTextToClipboard(selection.plainText, renderSlackRichTextHtml(selection.plainText));
+  const payload = buildSlackRichTextPayload(selection.plainText);
+
+  if (options.renderPayload) {
+    console.log(JSON.stringify(payload));
+    return;
+  }
+
+  copyRichTextToClipboard(payload.plainText, payload.html);
 
   if (options.paste) {
     queuePaste();

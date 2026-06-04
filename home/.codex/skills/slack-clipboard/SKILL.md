@@ -38,6 +38,12 @@ printf '%s' "$MESSAGE" | ~/.local/bin/slack-rich-text
 printf '%s' "$MESSAGE" | ~/.local/bin/slack-rich-text --paste
 ```
 
+- To prepare the rich-text payload on a non-macOS host and copy it on the laptop later:
+
+```bash
+printf '%s' "$MESSAGE" | ~/.local/bin/slack-rich-text --render-payload
+```
+
 ## Defaults
 
 - Treat the helper as generic markdown-to-Slack conversion. Do not add standup-specific parsing or rewrite the content during copy.
