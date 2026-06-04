@@ -14,6 +14,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 - Be concise and direct, but do not compress text into fragments.
 - Prefer conversational prose over heavy bulleting. Use lists only when the structure materially helps.
 - Preserve the user's intended level of certainty. Do not overstate, soften, or pad claims unless the user asks.
+- When the user iterates aloud on phrasing, treat their latest wording as the source of truth. Return one lightly cleaned-up version, and avoid adding new labels, framing, or structure unless they asked for it.
 
 ## Technical Identifiers
 
