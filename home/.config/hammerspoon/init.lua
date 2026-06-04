@@ -1,6 +1,8 @@
 -- This spoon is used to automatically download and install other spoons so the
 -- SpoonInstall spoon itself is the only spoon that needs to be downloaded and
 -- installed manually. 
+hs.allowAppleScript(true)
+
 hs.loadSpoon("SpoonInstall")
 -- Ensure that all spoons are installed synchronously and can be used
 -- immediately on first use.
