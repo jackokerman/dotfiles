@@ -42,6 +42,8 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - User-installed completions live under `~/.local/share/zsh/site-functions`, and Homebrew completions under `/opt/homebrew/share/zsh/site-functions`.
 - Keep the generic sesh picker and one-shot launcher helpers in `home/.local/bin/`; session definitions that use them belong in the appropriate repo later in the dotty chain.
 - Keep generic Raycast script commands in `home/.raycast-scripts/`. When changing Script Command metadata, output mode, or UI behavior, check Raycast's official Script Commands docs and examples first; use `fullOutput` for long-running/log-style output, `compact` or `silent` for simple last-line results, and `inline` only for dashboard/status items with `refreshTime`. Reach for Hammerspoon only when the workflow needs an always-on hotkey, app watcher, or other resident automation.
+- When debugging local GUI automation, verify behavior through the same app runtime that owns the workflow. For Hammerspoon, prefer AppleScript or `hs.task` probes and scoped app logs over terminal-only reproduction.
+- When searching logs or caches, start from known app log paths, recent timestamps, or narrow predicates. Do not run broad recursive searches over `~/Library/Logs` or cache roots unless narrower paths fail.
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
 - Keep generic Hunk defaults in `home/.config/hunk/`; host-specific install routing belongs in later repos in the dotty chain.
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
