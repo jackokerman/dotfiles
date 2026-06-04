@@ -89,4 +89,4 @@ end
 
 -- Start spoons after configuration
 spoon.RichLinkCopy:start()
-spoon.SmartLinkManager:start()
+spoon.SmartLinkManager:start(false)
