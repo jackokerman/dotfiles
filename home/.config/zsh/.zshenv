@@ -23,8 +23,10 @@ export SHELL_SESSIONS_DISABLE=1
 case "${SSH_AUTH_SOCK-}" in
   "$HOME"/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock)
     launchd_ssh_auth_sock="$(launchctl getenv SSH_AUTH_SOCK 2>/dev/null)"
-    if [[ -n "$launchd_ssh_auth_sock" ]]; then
+    if [[ -n "$launchd_ssh_auth_sock" && "$launchd_ssh_auth_sock" != "$SSH_AUTH_SOCK" ]]; then
       export SSH_AUTH_SOCK="$launchd_ssh_auth_sock"
+    else
+      unset SSH_AUTH_SOCK
     fi
     unset launchd_ssh_auth_sock
     ;;
