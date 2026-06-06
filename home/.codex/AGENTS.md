@@ -30,6 +30,8 @@
 - When a request has materially different interpretations, state the choice or ask before editing instead of silently taking the broadest interpretation.
 - For local machine, shell, or environment debugging, remove or disable the upstream source first. Add a tracked startup workaround only after reproducing the need in a fresh process and confirming the source fix is insufficient.
 - For bug fixes or behavior changes, prefer a focused reproduction or failing test first, then make it pass when practical.
+- When a command, browser auth flow, or external tool requires user interaction, state the needed action explicitly and stop polling or retrying until the user confirms it is complete.
+- When debugging an external flow, distinguish clearly between “I need your intervention now” and “I’m still fixing this locally” so the user does not have to infer which state you are in.
 - Before finishing, run the smallest verification that covers the change and report what was and was not verified.
 
 ## Tooling
