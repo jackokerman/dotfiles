@@ -38,6 +38,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `tests/tmux-agent-bar/` holds the wrapper and sync tests for the managed `tmux-agent-bar` runtime.
 - `tests/tuicr/` holds the managed-checkout tests for the dotty-owned `tuicr` runtime clone.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
+- Use `~/.zshenv.local` for machine-local env vars and path tweaks, including local API tokens needed by shell-backed agent workflows, unless a specific tool documents a different secret source.
 - Use `~/.zshrc.pre.local` for pre-`compinit` shell init and `~/.zshrc.local` for post-`compinit` interactive overrides. Do not reintroduce a tracked dependency on a real `~/.zshrc`.
 - Later repos that need Powerlevel10k changes before `home/.config/zsh/.p10k.zsh` loads should set the generic `DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE` array or `DOTFILES_P10K_DISABLE_GITSTATUS=true` in `~/.zshrc.pre.local` instead of writing `POWERLEVEL9K_*` directly.
 - User-installed completions live under `~/.local/share/zsh/site-functions`, and Homebrew completions under `/opt/homebrew/share/zsh/site-functions`.

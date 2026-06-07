@@ -79,7 +79,9 @@ dotty run macos-setup
 
 `~/.zshenv` is the only top-level zsh bootstrap in this setup. It points `ZDOTDIR` at `~/.config/zsh`, so tracked interactive shell config lives under `home/.config/zsh/` instead of a repo-managed `~/.zshrc`.
 
-Tracked zsh config exposes two local shell hooks for later repos or machine-local overrides:
+Tracked zsh config exposes three local shell hooks for later repos or machine-local overrides:
+
+- `~/.zshenv.local` runs during shell startup and is the right place for machine-local env vars and path tweaks, including local API tokens needed by shell-backed agent workflows.
 
 - `~/.zshrc.pre.local` runs before `compinit` and is the right place to add completion paths or source shell init that needs to run before completion registration.
 - `~/.zshrc.local` runs after `compinit` and plugin setup and is the right place for post-completion interactive shell config.

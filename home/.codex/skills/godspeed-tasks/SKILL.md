@@ -11,10 +11,10 @@ Use this skill to inspect Godspeed and triage the child inboxes under `🏢 Work
 
 ## Workflow
 
-1. Load the Godspeed token from `~/.codex/env.local` if the shell does not already have it:
+1. Load the Godspeed token from `~/.zshenv.local` if the shell does not already have it. This dotfiles setup uses `~/.zshenv.local` for machine-local env vars:
 
 ```bash
-source "$HOME/.codex/env.local"
+[[ -f "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"
 ```
 
 2. Discover the mirrored list structure before triaging anything:
