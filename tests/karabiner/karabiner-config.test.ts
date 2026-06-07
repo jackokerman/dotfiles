@@ -20,7 +20,10 @@ type KarabinerConfig = {
           to?: Array<{ key_code?: string; modifiers?: string[] }>;
           conditions?: Array<{
             type: string;
-            identifiers?: Array<{ is_built_in_keyboard?: boolean }>;
+            identifiers?: Array<{
+              is_built_in_keyboard?: boolean;
+              product_id?: number;
+            }>;
           }>;
         }>;
       }>;
@@ -52,7 +55,7 @@ function runKarabinerConfig(homeDir: string) {
 }
 
 describe("karabiner-config", () => {
-  test("creates the config file with built-in keyboard control and hyper remaps", () => {
+  test("creates the config file with built-in keyboard control and shared hyper remaps", () => {
     withTempHome((homeDir) => {
       const result = runKarabinerConfig(homeDir);
 
@@ -84,7 +87,7 @@ describe("karabiner-config", () => {
       );
 
       const hyperRule = profile?.complex_modifications.rules.find(
-        (rule) => rule.description === "Right Command: Hyper key (built-in keyboard only)",
+        (rule) => rule.description === "Right Command: Hyper key (all keyboards except Touch ID Magic Keyboard)",
       );
       expect(hyperRule).toBeDefined();
       expect(hyperRule?.manipulators).toContainEqual({
@@ -92,8 +95,8 @@ describe("karabiner-config", () => {
         from: { key_code: "right_command" },
         conditions: [
           {
-            type: "device_if",
-            identifiers: [{ is_built_in_keyboard: true }],
+            type: "device_unless",
+            identifiers: [{ product_id: 666 }],
           },
         ],
         to: [

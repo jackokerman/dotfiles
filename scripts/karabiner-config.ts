@@ -23,10 +23,11 @@ const builtInKeyboardCondition = {
   type: "device_if",
   identifiers: [{ is_built_in_keyboard: true }],
 } as const;
+const nonTouchIdMagicKeyboardCondition = ifDevice(appleMagicKeyboardWithTouchId).unless();
 
 /**
- * Configures built-in keyboard modifier remaps and disables all keys on an
- * Apple Magic Keyboard except Touch ID. Creates a default profile and config
+ * Configures shared keyboard modifier remaps and disables all keys on an Apple
+ * Magic Keyboard except Touch ID. Creates a default profile and config
  * directory if they don't exist.
  *
  * Run with: bun run karabiner-config.ts
@@ -74,9 +75,9 @@ async function main() {
       ]),
     ]),
     rule(
-      "Right Command: Hyper key (built-in keyboard only)",
+      "Right Command: Hyper key (all keyboards except Touch ID Magic Keyboard)",
     ).manipulators([
-      withCondition(builtInKeyboardCondition)([
+      withCondition(nonTouchIdMagicKeyboardCondition)([
         map("right_command").toHyper(),
       ]),
     ]),

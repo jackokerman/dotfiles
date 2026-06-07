@@ -53,7 +53,7 @@ If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after
 - Set Raycast's hotkey to `Cmd+Space`.
 - Disable Spotlight's `Cmd+Space` shortcut in System Settings.
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
-- The tracked built-in keyboard remaps keep `Caps Lock` as `Control` on hold and turn `Right Command` into a pure Hyper key (`Cmd+Ctrl+Opt+Shift`).
+- The tracked keyboard remaps keep the built-in keyboard `Caps Lock` as `Control` on hold and turn `Right Command` into a pure Hyper key (`Cmd+Ctrl+Opt+Shift`) on every keyboard except the reserved Touch ID Magic Keyboard.
 - Reserve `Hyper+Space` as the shared quick-entry shortcut and bind the machine-specific action in the relevant app, local override, or later repo in the dotty chain.
 
 Once the machine is bootstrapped, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and keeps managed runtime checkouts such as `~/.local/share/tuicr/repo` current.
