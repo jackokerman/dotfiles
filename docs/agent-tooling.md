@@ -55,15 +55,19 @@ Current managed defaults also:
 - use `approval_policy = "never"`
 - use `sandbox_mode = "danger-full-access"`
 
-For GitHub operations, local agents rely on your machine auth. On a new machine, run:
+For GitHub operations, local agents rely on your machine auth. On a new machine, install the tracked tools first with `dotty run brew-sync`, then run:
 
 ```bash
 gh auth login --web --git-protocol ssh
-gh auth setup-git
 gh auth status
+ssh -T git@github.com
 ```
 
-`gh auth login` uses a browser-based flow by default and stores credentials in the system keychain when available. `gh auth setup-git` configures git to use `gh` as the credential helper for authenticated hosts.
+`gh auth login` uses a browser-based flow by default and stores credentials in the system keychain when available. With `--git-protocol ssh`, it will detect an existing SSH key and prompt to create and upload one if needed.
+
+This repo no longer routes SSH through 1Password. It expects a normal machine-local SSH key setup, and it does not track `~/.ssh/`.
+
+After `dotty update`, the tracked Git config already uses `gh auth git-credential` for GitHub HTTPS, so `gh auth setup-git` is usually unnecessary in this repo.
 
 ## Validation
 

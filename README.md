@@ -9,25 +9,52 @@ git clone https://github.com/jackokerman/dotfiles.git ~/dotfiles
 cd ~/dotfiles && ./install.sh
 ```
 
-`./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook.
+`./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook. It does not install the Homebrew packages from `Brewfile`.
 
 Pinned repo submodules are synced during `./install.sh` and `dotty update`. If you want a fully populated checkout immediately after clone, use `git clone --recurse-submodules`.
 
-Once the repo is cloned, `dotty update` is the normal catch-up command. It refreshes the dotty chain and reruns the repo hook. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS, and `dotty run macos-setup` when you want to reapply tracked macOS defaults and related setup.
+## New Machine
 
-`dotty update` also keeps the managed `tuicr` runtime checkout current under `~/.local/share/tuicr/repo`. This repo currently builds `tuicr` from that checkout with Cargo instead of managing it through Homebrew.
+After `./install.sh`, this is the setup sequence that matters on a fresh macOS machine:
 
-If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after install. `dotty run macos-setup` will install it the next time you run it on macOS. Symbols Nerd Font is downloaded automatically.
+1. Install the tracked tools and apps:
 
-On a new machine, authenticate GitHub CLI before expecting Codex, Claude, or other local agents to perform GitHub operations on your behalf:
+```bash
+dotty run brew-sync
+```
+
+This installs the Homebrew-managed tools from `Brewfile`, including `gh`.
+
+2. Set up GitHub auth and SSH:
 
 ```bash
 gh auth login --web --git-protocol ssh
-gh auth setup-git
 gh auth status
+ssh -T git@github.com
 ```
 
-The default browser flow stores the token in the macOS credential store when available. If you need extra GitHub API scopes later, run `gh auth refresh --scopes ...`.
+`gh auth login --git-protocol ssh` will detect an existing SSH key and offer to create and upload one if needed. This repo no longer uses 1Password to manage SSH keys. It expects a normal machine-local SSH setup.
+
+This repo does not track `~/.ssh/`. If you need custom hosts, extra identities, or a non-default key layout, keep that in your local `~/.ssh/config` or in a later repo in the dotty chain.
+
+3. Reapply the tracked macOS setup:
+
+```bash
+dotty run macos-setup
+```
+
+That covers Touch ID for `sudo`, tracked macOS defaults, Karabiner config generation, and font installation.
+
+If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after `dotty run macos-setup`. Symbols Nerd Font is downloaded automatically.
+
+4. Finish the one-time GUI setup:
+
+- Grant accessibility permissions when prompted for Karabiner-Elements, AeroSpace, and Hammerspoon.
+- Set Raycast's hotkey to `Cmd+Space`.
+- Disable Spotlight's `Cmd+Space` shortcut in System Settings.
+- Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
+
+Once the machine is bootstrapped, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and keeps managed runtime checkouts such as `~/.local/share/tuicr/repo` current.
 
 ## Daily Use
 
@@ -48,7 +75,7 @@ dotty run macos-setup
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
 
-## Shell Completions
+## Shell Notes
 
 `~/.zshenv` is the only top-level zsh bootstrap in this setup. It points `ZDOTDIR` at `~/.config/zsh`, so tracked interactive shell config lives under `home/.config/zsh/` instead of a repo-managed `~/.zshrc`.
 
@@ -71,7 +98,7 @@ If you install a new tool and completion is not available in the current shell y
 reload-completions
 ```
 
-That deletes the current `compinit` dump, rebuilds completion registration in-place, and rehashes commands.
+That rebuilds completion registration in-place and rehashes commands.
 
 Temporary bypass for the repo-local pre-commit hook:
 
@@ -81,69 +108,23 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 
 `SKIP_CODEX_SYNC_VALIDATE=1` is still accepted as a legacy alias.
 
-## Repo Map
+## Layout
 
-- `AGENTS.md`: canonical repo-specific agent instructions for this repo (`CLAUDE.md` is a compatibility symlink)
-- `home/`: tracked source files that dotty links into `$HOME`
-- `.dotty/`: repo identity and post-link hook
-- `.dotty/commands/`: repo-defined dotty commands such as `brew-sync`, `macos-setup`, and `sync-tmux-agent-bar`
-- `scripts/`: setup, sync, and validation helpers
-- `tests/`: focused regression tests for repo-managed subsystems
-- `docs/layout.md`: layout, dotty chain, and source/runtime boundaries
-- `docs/agent-tooling.md`: tmux, Codex, and Claude operational notes
-- `docs/git-prompt-status.md`: Powerlevel10k git prompt symbol legend and cleanup guidance
-- `home/.config/tmux/README.md`: code-local tmux wrapper and `tmux-agent-bar` runtime guide
+- `home/` contains tracked source files that dotty links into `$HOME`.
+- `.dotty/` contains repo identity, commands, and the post-link hook.
+- `scripts/` contains setup, sync, and validation helpers.
+- `tests/` contains focused regression tests for repo-managed subsystems.
+- `docs/` contains deeper architecture and operational notes.
 
-## Where To Change Things
+Common places to edit:
 
 - Shell: `home/.zshenv` and `home/.config/zsh/`
-- Shell local hooks: `~/.zshrc.pre.local` for pre-`compinit` setup and `~/.zshrc.local` for post-`compinit` interactive overrides
-- Sesh picker and one-shot launcher helpers: `home/.local/bin/sesh-pick` and `home/.local/bin/sesh-one-shot`
-- Raycast script commands: `home/.raycast-scripts/`
-- Slack rich-text clipboard helper: `home/.local/bin/slack-rich-text`, `home/.local/lib/slack-rich-text.ts`, and the Raycast wrappers in `home/.raycast-scripts/`
+- Git defaults: `home/.config/git/config`, plus `~/.gitconfig.local` for machine-local overrides
+- SSH host and identity config: local `~/.ssh/config`
 - NeoVim: `home/.config/nvim/`
-- Hunk defaults: `home/.config/hunk/config.toml`
-- tuicr config: `home/.config/tuicr/config.toml`
-- NeoVim JS tool installer: `scripts/install-nvim-js-tools.sh` via `dotty run install-nvim-js-tools`
-- Git prompt legend in shell: run `git-prompt-help`
-- Git shared defaults: `home/.config/git/config` via `git config-shared`
-- Git local overrides: `~/.gitconfig.local` via `git config-local`
-- Do not use `git config --global` in this setup. It writes unmanaged `~/.gitconfig`.
-- tmux, Ghostty, AeroSpace, Hammerspoon: `home/.config/`
-- tmux agent status entrypoints: `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, `home/.config/tmux/session-status-refresh.sh`, and `home/.config/tmux/agent-status-hook.sh`
-- tmux agent status path helper: `home/.config/tmux/tmux-agent-bar-path.sh`
-- tmux agent status sync: `scripts/sync-tmux-agent-bar.sh` via `dotty run sync-tmux-agent-bar`
-- tmux wrapper and sync tests: `tests/tmux-agent-bar/`
-- tuicr runtime checkout management: `.dotty/run.sh` for `~/.local/share/tuicr/repo`, with tests in `tests/tuicr/`
-- Codex and Claude: `home/.codex/` and `home/.claude/`
-- Codex default behavior and always-on instruction bias: `home/.codex/AGENTS.md`
-- Codex Nightfly theme source submodules and generator: `home/.codex/references/nightfly/`, `scripts/sync-codex-nightfly-theme.ts`, and `home/.codex/themes/nightfly.tmTheme`
-- Codex-only local skill tokens: `~/.codex/env.local` (for example `GODSPEED_API_TOKEN`)
-- Install/update behavior: `install.sh`, `.dotty/run.sh`, `scripts/`, and `Brewfile`
-
-Reusable generic Codex skills belong under `home/.codex/skills/`. Current shared skills include `writing-style` for drafting, `codex-config-coach` for turning session friction into durable Codex steering, `godspeed-tasks` for read-only Godspeed inbox triage, `nvim-config-coach` for incremental personal Neovim config work, and the frontend-focused `react-patterns`, `typescript-style`, and `css-layout` skills. Tracked skills use the standard `SKILL.md` plus `agents/openai.yaml` layout, and the shared Codex validation path also checks extra frontend workflow manifests when they are present in the active dotty chain.
-
-The tracked NeoVim config intentionally stays minimal. For frontend work it currently relies on Neovim 0.12 built-in syntax highlighting, `nvim-lspconfig` for `ts_ls` and `eslint`, and `conform.nvim` for manual local-first formatting. Project-local `prettier` and `eslint` remain authoritative; the repo-managed helper installs only the editor-facing language server binaries.
-
-Mutable runtime state should not live under `home/`. Keep tracked config in the repo and runtime artifacts in XDG state/cache directories or app-managed directories. For Claude, `home/.claude/` is an allowlisted source tree for tracked config only; live runtime state stays in `~/.claude/`.
-
-Managed runtime checkouts are runtime state too. Keep the dotty-owned `tuicr` checkout at `~/.local/share/tuicr/repo` separate from any manual development clone you use for upstream contributions.
-
-Top-level `~/.zshrc` is intentionally not part of the tracked startup path here. If you need shell-local changes, use `~/.zshrc.pre.local`, `~/.zshrc.local`, or a later dotty repo instead of reintroducing a wrapper bootstrap.
-
-## Post-Install Notes
-
-Grant accessibility permissions when prompted for:
-
-1. Karabiner-Elements
-2. AeroSpace
-3. Hammerspoon
-
-Raycast still needs one-time manual setup:
-
-1. Set the hotkey to `Cmd+Space`
-2. Disable Spotlight's `Cmd+Space` shortcut in System Settings
-3. Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands
+- tmux and related wrappers: `home/.config/tmux/`
+- Raycast script commands: `home/.raycast-scripts/`
+- Codex and Claude tracked config: `home/.codex/` and `home/.claude/`
 
 ## More Detail
 

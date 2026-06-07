@@ -16,6 +16,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
 - Run `./scripts/check` before commit. It includes `tmux-agent-bar` and `tuicr` managed-checkout tests. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
 - The shared Codex validation path also checks tracked skill UI metadata and extra frontend workflow manifests when they are present in the active dotty chain.
+- Keep `README.md` focused on new-machine setup and daily-use entrypoints. Push deeper architecture and subsystem detail into `docs/`.
 - If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.
 - For Git config changes in this setup, use `git config-shared`, `git config-local`, or `git config --file ...`, not `git config --global`.
 
