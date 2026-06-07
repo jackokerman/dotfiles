@@ -73,6 +73,7 @@ dotty run macos-setup
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones, including personal-machine tools such as `hunk`.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
+- After changing tracked Karabiner or macOS-setup sources, use `bun run scripts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path. `dotty update` alone does not rerun `macos-setup`.
 - `./scripts/check` runs the fast local validation path for this repo, including `tmux-agent-bar` and `tuicr` managed-checkout tests.
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.

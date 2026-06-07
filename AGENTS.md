@@ -13,6 +13,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 
 - In this repo, changes are not done until they are committed and pushed to `main` with a conventional commit.
 - Use `dotty update` when catching a machine up to the repo state. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS, and `dotty run macos-setup` when you want to reapply tracked macOS defaults and related setup.
+- After changing tracked Karabiner or macOS-setup sources, do not assume `dotty update` reapplies them. Run `bun run scripts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path.
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
 - Run `./scripts/check` before commit. It includes `tmux-agent-bar` and `tuicr` managed-checkout tests. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
 - The shared Codex validation path also checks tracked skill UI metadata and extra frontend workflow manifests when they are present in the active dotty chain.
