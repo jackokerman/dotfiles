@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -11,6 +11,15 @@ type KarabinerConfig = {
   profiles: Array<{
     name: string;
     selected: boolean;
+    devices?: Array<{
+      identifiers?: {
+        is_keyboard?: boolean;
+        product_id?: number;
+        vendor_id?: number;
+      };
+      ignore?: boolean;
+      manipulate_caps_lock_led?: boolean;
+    }>;
     complex_modifications: {
       rules: Array<{
         description: string;
@@ -43,6 +52,12 @@ function withTempHome(run: (homeDir: string) => void) {
 
 function generatedConfigPath(homeDir: string) {
   return join(homeDir, ...configPathParts);
+}
+
+function writeKarabinerConfig(homeDir: string, contents: KarabinerConfig) {
+  const configPath = generatedConfigPath(homeDir);
+  mkdirSync(join(homeDir, ".config", "karabiner"), { recursive: true });
+  writeFileSync(configPath, `${JSON.stringify(contents, null, 2)}\n`);
 }
 
 function runKarabinerConfig(homeDir: string) {
@@ -106,6 +121,54 @@ describe("karabiner-config", () => {
           },
         ],
       });
+    });
+  });
+
+  test("re-enables ignored keyboards except the reserved Touch ID Magic Keyboard", () => {
+    withTempHome((homeDir) => {
+      writeKarabinerConfig(homeDir, {
+        profiles: [
+          {
+            name: "Default profile",
+            selected: true,
+            devices: [
+              {
+                identifiers: { is_keyboard: true, product_id: 4897, vendor_id: 17498 },
+                ignore: true,
+              },
+              {
+                identifiers: { is_keyboard: true, product_id: 666, vendor_id: 1452 },
+                manipulate_caps_lock_led: false,
+              },
+              {
+                identifiers: { is_keyboard: true, product_id: 834, vendor_id: 1452 },
+                ignore: true,
+              },
+            ],
+            complex_modifications: { rules: [] },
+          },
+        ],
+      });
+
+      const result = runKarabinerConfig(homeDir);
+
+      expect(result.exitCode).toBe(0);
+
+      const config = JSON.parse(readFileSync(generatedConfigPath(homeDir), "utf8")) as KarabinerConfig;
+      const profile = config.profiles.find((candidate) => candidate.name === "Default profile");
+
+      expect(profile?.devices).toEqual([
+        {
+          identifiers: { is_keyboard: true, product_id: 4897, vendor_id: 17498 },
+        },
+        {
+          identifiers: { is_keyboard: true, product_id: 666, vendor_id: 1452 },
+          manipulate_caps_lock_led: false,
+        },
+        {
+          identifiers: { is_keyboard: true, product_id: 834, vendor_id: 1452 },
+        },
+      ]);
     });
   });
 });

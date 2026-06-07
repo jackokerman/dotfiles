@@ -25,6 +25,48 @@ const builtInKeyboardCondition = {
 } as const;
 const nonTouchIdMagicKeyboardCondition = ifDevice(appleMagicKeyboardWithTouchId).unless();
 
+type KarabinerDevice = {
+  identifiers?: {
+    is_keyboard?: boolean;
+    product_id?: number;
+    vendor_id?: number;
+  };
+  ignore?: boolean;
+};
+
+type KarabinerProfile = {
+  name: string;
+  devices?: KarabinerDevice[];
+};
+
+type KarabinerConfig = {
+  profiles?: KarabinerProfile[];
+};
+
+function isTouchIdMagicKeyboard(device: KarabinerDevice) {
+  return device.identifiers?.product_id === appleMagicKeyboardWithTouchId.product_id
+    && device.identifiers?.vendor_id === 1452;
+}
+
+async function normalizeKeyboardDevices(configPath: string) {
+  const config = await Bun.file(configPath).json() as KarabinerConfig;
+  const profile = config.profiles?.find((candidate) => candidate.name === PROFILE_NAME);
+
+  if (!profile?.devices?.length) {
+    return;
+  }
+
+  for (const device of profile.devices) {
+    if (!device.identifiers?.is_keyboard || isTouchIdMagicKeyboard(device)) {
+      continue;
+    }
+
+    delete device.ignore;
+  }
+
+  await Bun.write(configPath, `${JSON.stringify(config, null, 2)}\n`);
+}
+
 /**
  * Configures shared keyboard modifier remaps and disables all keys on an Apple
  * Magic Keyboard except Touch ID. Creates a default profile and config
@@ -98,6 +140,8 @@ async function main() {
       ),
     ]),
   ]);
+
+  await normalizeKeyboardDevices(configPath);
 }
 
 // Execute main function if this script is run directly
