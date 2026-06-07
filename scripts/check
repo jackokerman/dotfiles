@@ -171,6 +171,11 @@ run_godspeed_tasks_tests() {
     bun test "$PROJECT_ROOT/tests/godspeed-tasks/godspeed-tasks.test.ts"
 }
 
+run_karabiner_config_tests() {
+    log "Running Karabiner config regression tests"
+    bun --install=auto test "$PROJECT_ROOT/tests/karabiner/karabiner-config.test.ts"
+}
+
 run_codex_sync_tests() {
     log "Running Codex sync regression tests"
     bun test "$PROJECT_ROOT/tests/codex/sync-codex.test.ts"
@@ -203,6 +208,7 @@ main() {
     run_sesh_tests
     run_zsh_prompt_tests
     run_godspeed_tasks_tests
+    run_karabiner_config_tests
     run_codex_sync_tests
     run_codex_config_coach_tests
     run_slack_rich_text_tests

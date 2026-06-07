@@ -19,11 +19,15 @@ import {
 
 const PROFILE_NAME = "Default profile";
 const appleMagicKeyboardWithTouchId: DeviceIdentifier = { product_id: 666 };
+const builtInKeyboardCondition = {
+  type: "device_if",
+  identifiers: [{ is_built_in_keyboard: true }],
+} as const;
 
 /**
- * Configures Karabiner-Elements to disable all keys on an Apple Magic Keyboard
- * except Touch ID. Creates a default profile and config directory if they don't
- * exist.
+ * Configures built-in keyboard modifier remaps and disables all keys on an
+ * Apple Magic Keyboard except Touch ID. Creates a default profile and config
+ * directory if they don't exist.
  *
  * Run with: bun run karabiner-config.ts
  */
@@ -63,10 +67,17 @@ async function main() {
     rule(
       "Caps Lock: Tap for Caps Lock, Hold for Control (built-in keyboard only)",
     ).manipulators([
-      withCondition({ type: "device_if", identifiers: [{ is_built_in_keyboard: true }] })([
+      withCondition(builtInKeyboardCondition)([
         map("caps_lock")
           .to("left_control")
           .toIfAlone("caps_lock"),
+      ]),
+    ]),
+    rule(
+      "Right Command: Hyper key (built-in keyboard only)",
+    ).manipulators([
+      withCondition(builtInKeyboardCondition)([
+        map("right_command").toHyper(),
       ]),
     ]),
     rule(
