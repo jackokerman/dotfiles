@@ -12,6 +12,7 @@ Help improve Codex behavior by turning real session friction into measured, dura
 1. Identify the behavior to improve.
    - Look for concrete correction signals: "why did you do X?", "can we do Y instead?", repeated user redirection, rejected assumptions, or a manual workaround the user had to explain.
    - Separate reusable steering from one-off task feedback. Do not add config for a single unusual case.
+   - For agent/tooling workflow adoption plans, look for repeated clarification around off-the-shelf versus custom structure, artifact ownership, global versus repo-local install scope, multi-machine support, opt-in and rollback behavior, day-to-day commands, and concrete verification. Treat those as planning-quality friction, not just implementation details.
    - When token or tool efficiency is part of the ask, audit avoidable tool usage separately: blocked commands, reversed tool choices, duplicate reads/checks, unnecessary API calls, and polling that did not change a decision. Prefer updating the specific workflow skill that caused the waste; add broad guidance only when the pattern is reusable across workflows.
 2. Inspect the local routing context before choosing a target.
    - Read the relevant repo's `AGENTS.md`, `README.md`, tracked `home/.codex/` sources, and nearby skill files before editing.
@@ -59,6 +60,7 @@ Use helper output as evidence, not as a replacement for judgment. Pull only the 
 ## Good Updates
 
 - Add one sentence to a workflow skill after the same correction happened twice.
+- Add a workflow-adoption checklist when planning repeatedly missed install scope, artifact ownership, reversibility, or day-to-day usage questions before implementation.
 - Move a generic preference from an overlay into the base dotfiles repo when it is reusable outside work.
 - Add a short routing rule when agents repeatedly edit generated `~/.codex` state instead of tracked sources.
 - Split a large skill by moving examples or detailed procedure into a reference file when `plugin-eval` shows excessive invoke budget and the detail is not needed on every use.
