@@ -2,6 +2,7 @@
 set -euo pipefail
 
 GSD_VERSION="${GSD_VERSION:-v1.4.0}"
+GSD_PROFILE="${GSD_PROFILE:-standard}"
 GSD_REPO_URL="${GSD_REPO_URL:-https://github.com/open-gsd/gsd-core.git}"
 GSD_INSTALL_ROOT="${GSD_INSTALL_ROOT:-$HOME/.local/share/gsd-core}"
 GSD_REPO_DIR="${GSD_REPO_DIR:-$GSD_INSTALL_ROOT/repo}"
@@ -169,7 +170,11 @@ EOF
 gsd_codex_install_is_current() {
     [[ -f "$HOME/.codex/gsd-core/VERSION" ]] || return 1
     [[ "$(sed -n '1p' "$HOME/.codex/gsd-core/VERSION" 2>/dev/null)" == "${GSD_VERSION#v}" ]] || return 1
+    [[ "$(sed -n '1p' "$HOME/.codex/.gsd-profile" 2>/dev/null)" == "$GSD_PROFILE" ]] || return 1
     [[ -f "$HOME/.codex/skills/gsd-new-project/SKILL.md" ]] || return 1
+    if [[ "$GSD_PROFILE" != "core" ]]; then
+        [[ -f "$HOME/.codex/agents/gsd-planner.toml" ]] || return 1
+    fi
     [[ -x "$HOME/.local/bin/gsd-tools" ]] || return 1
 }
 
@@ -187,7 +192,7 @@ install_gsd() {
     build_gsd
 
     log "Installing GSD Codex integration"
-    node "$GSD_REPO_DIR/bin/install.js" --codex --global --profile=core
+    node "$GSD_REPO_DIR/bin/install.js" --codex --global "--profile=$GSD_PROFILE"
     write_shims
     rm -f "$GSD_DISABLED_MARKER"
     printf '%s\n' "$GSD_VERSION" > "$GSD_ENABLED_MARKER"
@@ -210,11 +215,12 @@ uninstall_gsd() {
 
 print_status() {
     printf 'version=%s\n' "$GSD_VERSION"
+    printf 'profile=%s\n' "$GSD_PROFILE"
     printf 'repo=%s\n' "$GSD_REPO_DIR"
     printf 'enabled=%s\n' "$([[ -f "$GSD_ENABLED_MARKER" ]] && echo yes || echo no)"
     printf 'disabled=%s\n' "$([[ -f "$GSD_DISABLED_MARKER" ]] && echo yes || echo no)"
     printf 'gsd_tools=%s\n' "$([[ -x "$HOME/.local/bin/gsd-tools" ]] && echo yes || echo no)"
-    printf 'gsd_agents=%s\n' "$([[ -f "$HOME/.codex/agents/gsd-phase-planner.toml" ]] && echo yes || echo no)"
+    printf 'gsd_agents=%s\n' "$([[ -f "$HOME/.codex/agents/gsd-planner.toml" ]] && echo yes || echo no)"
 }
 
 case "$mode" in

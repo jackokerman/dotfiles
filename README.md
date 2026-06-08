@@ -73,7 +73,7 @@ dotty run macos-setup
 - `dotty update` refreshes symlinks, reruns setup hooks, syncs pinned repo submodules, and updates managed runtime checkouts such as `tmux-agent-bar` and `tuicr` without touching Homebrew.
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones, including personal-machine tools such as `hunk`.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
-- `dotty run install-gsd-core` installs the pinned GSD Core source checkout under `~/.local/share/gsd-core/repo`, installs its Codex integration with the core profile, and enables future `dotty update` runs to reapply it. Use `dotty run install-gsd-core --uninstall` to remove the Codex integration and disable automatic reapply.
+- `dotty run install-gsd-core` installs the pinned GSD Core source checkout under `~/.local/share/gsd-core/repo`, installs its Codex integration with the standard profile, and enables future `dotty update` runs to reapply it. Use `dotty run install-gsd-core --uninstall` to remove the Codex integration and disable automatic reapply.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
 - After changing tracked Karabiner or macOS-setup sources, use `bun run scripts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path. `dotty update` alone does not rerun `macos-setup`.
 - `./scripts/check` runs the fast local validation path for this repo, including `tmux-agent-bar` and `tuicr` managed-checkout tests.
@@ -142,7 +142,7 @@ GSD Core is optional and opt-in in the base dotfiles layer. Install it with:
 dotty run install-gsd-core
 ```
 
-The installer manages a pinned `v1.4.0` checkout at `~/.local/share/gsd-core/repo`, requires Node 22 or newer and npm 10 or newer, installs dependencies with the temporary npm package-age override, and then installs the Codex global integration with `--profile=core`. Once enabled, `dotty update` reapplies the integration after Codex config sync so generated runtime files stay present.
+The installer manages a pinned `v1.4.0` checkout at `~/.local/share/gsd-core/repo`, requires Node 22 or newer and npm 10 or newer, installs dependencies with the temporary npm package-age override, and then installs the Codex global integration with `--profile=standard`. Once enabled, `dotty update` reapplies the integration after Codex config sync so generated runtime files stay present.
 
 To remove it:
 
