@@ -462,6 +462,13 @@ setup_codex() {
     fi
 }
 
+setup_gsd_core() {
+    local install_script="$DOTFILES/scripts/install-gsd-core.sh"
+
+    [[ -x "$install_script" ]] || return 0
+    "$install_script" --auto-reapply
+}
+
 main() {
     setup_vscode
     setup_shell
@@ -489,6 +496,7 @@ main() {
     esac
 
     setup_codex
+    setup_gsd_core
     setup_tmux_agent_bar
 }
 
