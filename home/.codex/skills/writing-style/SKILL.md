@@ -28,6 +28,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 - Prefer prose over bullet-heavy formatting by default.
 - When the surface supports hyperlinks, prefer descriptive linked text inside the sentence instead of dropping naked URLs into the prose.
 - Use a standalone link only when the link itself should be the focal artifact, such as a PR or doc the reader should open next.
+- For shared or public-facing audiences, avoid mentioning private notes, local trackers, workflow artifacts, or internal process details unless the reader has that context or the user asks to include it.
 - For technical decision-request messages, lead with the concrete decision needed, then add only the context needed to answer it. When helpful, link exact PRs, files, symbols, or source lines, and offer compact options such as "A, B, or something else" instead of ending with several open-ended questions.
 
 ## Status Updates
