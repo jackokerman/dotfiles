@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { parse as parseToml } from "smol-toml@1.4.2";
-import { parse as parseYaml } from "yaml@2.8.1";
+import { parse as parseToml } from "smol-toml";
+import { parse as parseYaml } from "yaml";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 

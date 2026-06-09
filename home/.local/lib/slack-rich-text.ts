@@ -10,7 +10,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { marked } from "marked@18.0.3";
+import { marked } from "marked";
 
 type InlineToken = {
   type: string;
