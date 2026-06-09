@@ -379,7 +379,9 @@ setup_claude() {
 setup_codex() {
     local codex_dir="$HOME/.codex"
     local script="$DOTFILES/scripts/sync-codex.ts"
+    local ruler_script="$DOTFILES/scripts/sync-ruler.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
+    local ruler_agents_src="$DOTFILES/home/.ruler/AGENTS.md"
     local custom_agents_src_dir="$DOTFILES/home/.codex/agents"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"
@@ -393,7 +395,16 @@ setup_codex() {
 
     mkdir -p "$codex_dir"
 
-    if [[ -f "$agents_src" ]]; then
+    if [[ "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -f "$ruler_script" ]]; then
+        bun run "$ruler_script" codex-agents \
+            --validate-only \
+            --source "$ruler_agents_src" \
+            || die "Failed to validate Ruler-backed Codex instructions"
+        bun run "$ruler_script" codex-agents \
+            --output "$codex_dir/AGENTS.md" \
+            --source "$ruler_agents_src" \
+            || die "Failed to generate Ruler-backed Codex instructions"
+    elif [[ -f "$agents_src" ]]; then
         bun run "$script" agents \
             --validate-only \
             --source "$agents_src"

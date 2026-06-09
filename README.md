@@ -132,7 +132,7 @@ Common places to edit:
 - NeoVim: `home/.config/nvim/`
 - tmux and related wrappers: `home/.config/tmux/`
 - Raycast script commands: `home/.raycast-scripts/`
-- Codex and Claude tracked config: `home/.codex/` and `home/.claude/`
+- Codex and Claude tracked config: `home/.ruler/`, `home/.codex/`, and `home/.claude/`
 
 ## GSD Core
 

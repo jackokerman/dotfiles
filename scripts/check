@@ -179,6 +179,7 @@ run_karabiner_config_tests() {
 run_codex_sync_tests() {
     log "Running Codex sync regression tests"
     bun test "$PROJECT_ROOT/tests/codex/sync-codex.test.ts"
+    bun test "$PROJECT_ROOT/tests/codex/sync-ruler.test.ts"
 }
 
 run_codex_config_coach_tests() {
