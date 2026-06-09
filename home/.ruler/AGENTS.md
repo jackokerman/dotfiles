@@ -50,6 +50,10 @@
 - When adopting a tool with install profiles, feature tiers, or optional integrations, verify the selected surface exposes the specific commands and files the workflow will rely on.
 - Be explicit about what was confirmed from docs, source, or local usage and what remains uncertain. Avoid conjecture when verification is possible.
 
+## Tool Adoption Workflow
+- When adopting or configuring a new development tool, start with the smallest useful workflow that preserves the tool's core value. Keep optional automation, extra artifacts, and broad integrations off by default until repeated use shows they are worth the added ceremony.
+- Prefer a reversible, documented default path before adding custom wrappers or helper scripts. Add custom tooling only after the off-the-shelf workflow still causes repeated friction.
+
 ## Routing
 - Generic personal preferences and reusable non-work Codex setup belong in the public `dotfiles` repo.
 - Later configuration layers own their own workflow, permissions, and Codex setup.
