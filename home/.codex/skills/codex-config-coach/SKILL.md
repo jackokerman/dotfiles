@@ -35,10 +35,11 @@ Help improve Codex behavior by turning real session friction into measured, dura
    - Medium: define two or three pressure scenarios that should pass after the steering change and fail or require correction before it.
    - Heavy: initialize and run `plugin-eval` benchmarks only with explicit approval, because they create `.plugin-eval/` artifacts and run real Codex sessions.
    - When comparing alternatives, prefer blind before/after comparison and keep the simpler version if outcomes are equivalent.
-6. Propose before mutating unless the user explicitly asked to apply the update.
-   - State the observed friction, the proposed steering change, and the target file or skill.
+6. Apply narrow, low-risk updates directly when the user asks for recommended updates, asks to make the changes, or has already accepted the proposed direction.
+   - Propose instead of editing when the target is ambiguous, the change is high-impact, the evidence is weak, or the user explicitly asks to review the recommendation first.
+   - State the observed friction, the steering change, and the target file or skill.
    - If multiple targets are plausible, recommend one and explain the routing briefly.
-   - When the user has authorized direct config updates, still apply only changes backed by concrete session evidence, local config inspection, and a clear reason they should make future agent behavior more reliable or deterministic.
+   - Apply only changes backed by concrete session evidence, local config inspection, and a clear reason they should make future agent behavior more reliable or deterministic.
 7. Apply and finish using the target repo's workflow.
    - Use tracked sources, not generated runtime files.
    - Run `dotty update` after tracked Codex config, skill, agent, or hook changes when the repo instructions require it.
