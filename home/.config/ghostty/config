@@ -13,6 +13,8 @@ shell-integration-features = false
 # Keep Shift+Cmd+Click available for links when tmux mouse mode is on.
 mouse-shift-capture = false
 mouse-hide-while-typing = true
+working-directory = home
+window-inherit-working-directory = false
 
 # Theme
 theme = nightfly
