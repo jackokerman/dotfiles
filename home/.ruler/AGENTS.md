@@ -32,6 +32,7 @@
 - For bug fixes or behavior changes, prefer a focused reproduction or failing test first, then make it pass when practical.
 - When a command, browser auth flow, or external tool requires user interaction, state the needed action explicitly and stop polling or retrying until the user confirms it is complete.
 - When debugging an external flow, distinguish clearly between “I need your intervention now” and “I’m still fixing this locally” so the user does not have to infer which state you are in.
+- Before pushing, re-check `git status --short --branch` and the commits ahead of the upstream branch. If unexpected unpushed commits or unrelated dirty files are present, report them and confirm the push scope instead of silently including concurrent work.
 - Before finishing, run the smallest verification that covers the change and report what was and was not verified.
 
 ## Tooling
