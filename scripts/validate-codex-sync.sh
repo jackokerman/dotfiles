@@ -81,6 +81,39 @@ collect_sources() {
     printf '%s\n' "${sources[@]+"${sources[@]}"}"
 }
 
+collect_ruler_skill_sources() {
+    local env_name="$1"
+    local quiet="${2:-}"
+    local -a sources=()
+
+    if repo_in_registry "$PROJECT_ROOT"; then
+        while IFS='=' read -r _name repo_path; do
+            [[ -n "$_name" && -d "$repo_path" ]] || continue
+            local candidate="$repo_path/home/.ruler/skills"
+            local env_candidate="$repo_path/$env_name/home/.ruler/skills"
+
+            [[ -d "$candidate" ]] && sources+=("$candidate")
+            [[ -d "$env_candidate" ]] && sources+=("$env_candidate")
+        done < "$REGISTRY_PATH"
+
+        if [[ "$quiet" != "quiet" ]]; then
+            log "Validating Ruler skills across the current dotty chain"
+        fi
+    else
+        local local_candidate="$PROJECT_ROOT/home/.ruler/skills"
+        local env_candidate="$PROJECT_ROOT/$env_name/home/.ruler/skills"
+
+        [[ -d "$local_candidate" ]] && sources+=("$local_candidate")
+        [[ -d "$env_candidate" ]] && sources+=("$env_candidate")
+
+        if [[ "$quiet" != "quiet" ]]; then
+            log "Validating Ruler skills in the current repo only"
+        fi
+    fi
+
+    printf '%s\n' "${sources[@]+"${sources[@]}"}"
+}
+
 validate_kind() {
     local kind="$1"
     local mode="$2"
@@ -126,6 +159,10 @@ validate_custom_agents() {
         [[ -n "$source" ]] || continue
         skill_sources+=("$source")
     done < <(collect_sources "skills" "skills" "$env_name" "dir" "quiet")
+    while IFS= read -r source; do
+        [[ -n "$source" ]] || continue
+        skill_sources+=("$source")
+    done < <(collect_ruler_skill_sources "$env_name" "quiet")
 
     local -a args=("custom-agents" "--validate-only")
     for source in "${agent_sources[@]+"${agent_sources[@]}"}"; do
@@ -159,6 +196,10 @@ validate_frontend_workflow() {
         [[ -n "$source" ]] || continue
         skill_sources+=("$source")
     done < <(collect_sources "skills" "skills" "$env_name" "dir" "quiet")
+    while IFS= read -r source; do
+        [[ -n "$source" ]] || continue
+        skill_sources+=("$source")
+    done < <(collect_ruler_skill_sources "$env_name" "quiet")
 
     if [[ ${#skill_sources[@]} -eq 0 ]]; then
         return 0

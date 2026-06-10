@@ -5,7 +5,7 @@ import {
   discoverLists,
   getLocalEvidenceSignals,
   isLocallyVerifiableTask,
-} from "../../home/.codex/skills/godspeed-tasks/scripts/godspeed-tasks";
+} from "../../home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks";
 
 type GodspeedList = Parameters<typeof discoverLists>[0][number];
 type GodspeedTask = Parameters<typeof buildInboxSnapshot>[0]["workTasks"][number];

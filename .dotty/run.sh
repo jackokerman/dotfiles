@@ -463,8 +463,20 @@ setup_claude() {
 
     mkdir -p "$claude_dir"
 
-    # Symlink tracked config files
-    create_symlink "$src_dir/CLAUDE.md" "$claude_dir/CLAUDE.md"
+    # Remove stale base Claude sources that are now generated through Ruler.
+    rm -f "$claude_dir/CLAUDE.md"
+    rm -f "$claude_dir/rules/conventional-commits.md" "$claude_dir/rules/writing-style.md"
+    rm -rf \
+        "$claude_dir/skills/bash-style" \
+        "$claude_dir/skills/claudify" \
+        "$claude_dir/skills/nerd-font" \
+        "$claude_dir/skills/typescript-style"
+
+    # Symlink tracked config files when present. CLAUDE.md is normally generated
+    # later by the portable Ruler path.
+    if [[ -f "$src_dir/CLAUDE.md" ]]; then
+        create_symlink "$src_dir/CLAUDE.md" "$claude_dir/CLAUDE.md"
+    fi
 
     # Symlink tracked config directories as individual files so later
     # repos can add their own entries alongside without dotty needing
@@ -507,6 +519,7 @@ setup_codex() {
     local ruler_script="$DOTFILES/scripts/sync-ruler.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local ruler_agents_src="$DOTFILES/home/.ruler/AGENTS.md"
+    local portable_skills_src_dir="$DOTFILES/home/.ruler/skills"
     local custom_agents_src_dir="$DOTFILES/home/.codex/agents"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"
@@ -520,7 +533,12 @@ setup_codex() {
 
     mkdir -p "$codex_dir"
 
-    if [[ "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -f "$ruler_script" ]]; then
+    local use_portable_ruler=false
+    if [[ "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -d "$portable_skills_src_dir" && -f "$ruler_script" ]]; then
+        use_portable_ruler=true
+    fi
+
+    if [[ "$use_portable_ruler" != "true" && "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -f "$ruler_script" ]]; then
         bun run "$ruler_script" codex-agents \
             --validate-only \
             --source "$ruler_agents_src" \
@@ -575,6 +593,11 @@ setup_codex() {
                 --skill-source "$skills_src_dir"
             )
         fi
+        if [[ -d "$portable_skills_src_dir" ]]; then
+            custom_agent_args+=(
+                --skill-source "$portable_skills_src_dir"
+            )
+        fi
 
         bun run "$script" custom-agents \
             --validate-only \
@@ -583,6 +606,24 @@ setup_codex() {
             --output "$codex_dir/agents" \
             --skills-output "$codex_dir/skills" \
             "${custom_agent_args[@]}"
+    fi
+
+    if [[ "$use_portable_ruler" == "true" ]]; then
+        local claude_dir="$HOME/.claude"
+        mkdir -p "$claude_dir"
+        bun run "$ruler_script" portable \
+            --validate-only \
+            --source "$ruler_agents_src" \
+            --skill-source "$portable_skills_src_dir" \
+            || die "Failed to validate portable Ruler outputs"
+        bun run "$ruler_script" portable \
+            --codex-agents-output "$codex_dir/AGENTS.md" \
+            --claude-output "$claude_dir/CLAUDE.md" \
+            --codex-skills-output "$codex_dir/skills" \
+            --claude-skills-output "$claude_dir/skills" \
+            --source "$ruler_agents_src" \
+            --skill-source "$portable_skills_src_dir" \
+            || die "Failed to generate portable Ruler outputs"
     fi
 
     if [[ -d "$themes_src_dir" ]]; then
