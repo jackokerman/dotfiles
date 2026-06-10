@@ -35,7 +35,8 @@ Help improve Codex behavior by turning real session friction into measured, dura
    - Medium: define two or three pressure scenarios that should pass after the steering change and fail or require correction before it.
    - Heavy: initialize and run `plugin-eval` benchmarks only with explicit approval, because they create `.plugin-eval/` artifacts and run real Codex sessions.
    - When comparing alternatives, prefer blind before/after comparison and keep the simpler version if outcomes are equivalent.
-6. Apply narrow, low-risk updates directly when the user asks for recommended updates, asks to make the changes, or has already accepted the proposed direction.
+6. Apply narrow, low-risk updates directly when the user asks for recommended updates, asks to make the changes, invokes this skill after accepting a concrete recommendation, or has already accepted the proposed direction.
+   - Do not require a second approval pass for routine skill or config edits that match the user's accepted direction and the local routing rules.
    - Propose instead of editing when the target is ambiguous, the change is high-impact, the evidence is weak, or the user explicitly asks to review the recommendation first.
    - State the observed friction, the steering change, and the target file or skill.
    - If multiple targets are plausible, recommend one and explain the routing briefly.
