@@ -19,3 +19,5 @@ theme = nightfly
 # Codex inside tmux reliably treats LF as "insert newline". Bind the
 # canonical Shift+Enter shortcut directly to LF.
 keybind = shift+enter=text:\n
+# Toggle Ghostty's quick terminal with Cmd+Backquote.
+keybind = global:cmd+Backquote=toggle_quick_terminal
