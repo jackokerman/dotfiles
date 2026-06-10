@@ -48,6 +48,39 @@ sync_repo_submodules() {
     fi
 }
 
+replace_file_if_changed() {
+    local tmp_path="$1"
+    local target_path="$2"
+
+    if [[ -f "$target_path" && ! -L "$target_path" ]] && cmp -s "$tmp_path" "$target_path"; then
+        rm -f "$tmp_path"
+    else
+        mv "$tmp_path" "$target_path"
+    fi
+}
+
+later_repo_has_claude_settings() {
+    local registry_path="$HOME/.dotty/registry"
+    local name="" repo_path="" seen_current=false
+
+    [[ -f "$registry_path" ]] || return 1
+
+    while IFS='=' read -r name repo_path; do
+        [[ -n "$name" && -d "$repo_path" ]] || continue
+
+        if [[ "$repo_path" == "$DOTFILES" ]]; then
+            seen_current=true
+            continue
+        fi
+
+        if [[ "$seen_current" == "true" && -f "$repo_path/home/.claude/settings.json" ]]; then
+            return 0
+        fi
+    done < "$registry_path"
+
+    return 1
+}
+
 # VS Code / Cursor
 
 setup_vscode() {
@@ -61,13 +94,21 @@ setup_vscode() {
     mkdir -p "$cursor_user_dir"
 
     for target in "$vscode_user_dir/settings.json" "$cursor_user_dir/settings.json"; do
+        local tmp_target="$target.tmp"
         if ! command -v jq &>/dev/null; then
             warning "jq not found, copying settings instead of merging"
-            cp "$template_settings" "$target"
+            cp "$template_settings" "$tmp_target"
+            replace_file_if_changed "$tmp_target" "$target"
         elif [[ -f "$target" ]]; then
-            jq -s '.[0] * .[1]' "$target" "$template_settings" > "$target.tmp" && mv "$target.tmp" "$target"
+            if jq -s '.[0] * .[1]' "$target" "$template_settings" > "$tmp_target"; then
+                replace_file_if_changed "$tmp_target" "$target"
+            else
+                rm -f "$tmp_target"
+                warning "Failed to merge settings for $target"
+            fi
         else
-            cp "$template_settings" "$target"
+            cp "$template_settings" "$tmp_target"
+            replace_file_if_changed "$tmp_target" "$target"
         fi
     done
 
@@ -440,8 +481,9 @@ setup_claude() {
 
     # Copy settings (not symlink) so later repos can modify without
     # writing through into this repo's source tree.
-    if [[ -f "$src_dir/settings.json" ]]; then
-        cp "$src_dir/settings.json" "$claude_dir/settings.json"
+    if [[ -f "$src_dir/settings.json" ]] && ! later_repo_has_claude_settings; then
+        cp "$src_dir/settings.json" "$claude_dir/settings.json.tmp"
+        replace_file_if_changed "$claude_dir/settings.json.tmp" "$claude_dir/settings.json"
     fi
 
     # Set personal preferences in ~/.claude.json (runtime state file).
@@ -449,9 +491,10 @@ setup_claude() {
     local claude_json="$HOME/.claude.json"
     if command -v jq &>/dev/null && [[ -f "$claude_json" ]]; then
         jq '.hasCompletedOnboarding = true | .bypassPermissionsModeAccepted = true' \
-            "$claude_json" > "$claude_json.tmp" && mv "$claude_json.tmp" "$claude_json"
+            "$claude_json" > "$claude_json.tmp" && replace_file_if_changed "$claude_json.tmp" "$claude_json"
     elif command -v jq &>/dev/null; then
-        echo '{"hasCompletedOnboarding": true, "bypassPermissionsModeAccepted": true}' > "$claude_json"
+        echo '{"hasCompletedOnboarding": true, "bypassPermissionsModeAccepted": true}' > "$claude_json.tmp"
+        replace_file_if_changed "$claude_json.tmp" "$claude_json"
     fi
 }
 
