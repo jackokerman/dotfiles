@@ -95,6 +95,44 @@ migrate_legacy_zshrc_wrapper() {
     success "Moved stale ~/.zshrc wrapper to $backup_zshrc"
 }
 
+bat_cache_needs_build() {
+    local bat_bin="$1"
+    local config_dir=""
+    config_dir="$("$bat_bin" --config-dir 2>/dev/null)" || return 1
+
+    [[ -d "$config_dir/themes" ]] || return 1
+
+    local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/bat"
+    local metadata_path="$cache_dir/metadata.yaml"
+    if [[ ! -s "$cache_dir/themes.bin" || ! -s "$cache_dir/syntaxes.bin" || ! -s "$metadata_path" ]]; then
+        return 0
+    fi
+
+    local bat_version=""
+    local cached_version=""
+    bat_version="$("$bat_bin" --version 2>/dev/null | awk '{print $2; exit}')"
+    cached_version="$(awk '/^bat_version:/ {print $2; exit}' "$metadata_path" 2>/dev/null || true)"
+    if [[ -z "$bat_version" || "$cached_version" != "$bat_version" ]]; then
+        return 0
+    fi
+
+    local source_dir=""
+    local source_file=""
+    for source_dir in "$config_dir/themes" "$config_dir/syntaxes"; do
+        [[ -d "$source_dir" ]] || continue
+        if [[ "$source_dir" -nt "$metadata_path" ]]; then
+            return 0
+        fi
+        while IFS= read -r -d '' source_file; do
+            if [[ "$source_file" -nt "$metadata_path" ]]; then
+                return 0
+            fi
+        done < <(find "$source_dir" -type f -print0 2>/dev/null)
+    done
+
+    return 1
+}
+
 setup_shell() {
     title "Setting up shell"
 
@@ -102,7 +140,7 @@ setup_shell() {
 
     # bat cache (for custom themes used by delta)
     if command -v bat >/dev/null 2>&1 \
-        && [ -d "$(bat --config-dir)/themes" ]; then
+        && bat_cache_needs_build "$(command -v bat)"; then
         info "Setting up bat"
         bat cache --build
     fi
