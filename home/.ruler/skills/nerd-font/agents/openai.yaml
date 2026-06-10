@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nerd Font Glyphs"
+  short_description: "Safe edits for Nerd Font icons and PUA glyphs."
+  default_prompt: "Use $nerd-font for Nerd Font icons, PUA glyphs, prompts, tmux status bars, or CLI UI symbols."

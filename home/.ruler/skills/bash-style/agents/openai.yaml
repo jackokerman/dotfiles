@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bash Style"
+  short_description: "Generic Bash, shell, and zsh scripting style guidance."
+  default_prompt: "Use $bash-style when creating or editing Bash, shell, zsh, hooks, or CLI helper scripts."
