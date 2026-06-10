@@ -70,7 +70,7 @@ dotty run macos-setup
 ./scripts/install-git-hooks.sh
 ```
 
-- `dotty update` refreshes symlinks, reruns setup hooks, syncs pinned repo submodules, and updates managed runtime checkouts such as `tmux-agent-bar` and `tuicr` without touching Homebrew.
+- `dotty update` refreshes symlinks, reruns setup hooks, renders generated config such as `~/.config/sesh/sesh.toml`, syncs pinned repo submodules, and updates managed runtime checkouts such as `tmux-agent-bar` and `tuicr` without touching Homebrew.
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones, including personal-machine tools such as `hunk`.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
 - `dotty run install-gsd-core` installs the pinned GSD Core source checkout under `~/.local/share/gsd-core/repo`, installs its Codex integration with the standard profile, and enables future `dotty update` runs to reapply it. Use `dotty run install-gsd-core --uninstall` to remove the Codex integration and disable automatic reapply.
