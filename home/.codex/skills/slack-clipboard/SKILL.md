@@ -49,4 +49,6 @@ printf '%s' "$MESSAGE" | ~/.local/bin/slack-rich-text --render-payload
 - Treat the helper as generic markdown-to-Slack conversion. Do not add standup-specific parsing or rewrite the content during copy.
 - Trim only surrounding blank lines before copying.
 - Do not mutate the clipboard or trigger a paste unless the user clearly asked for that side effect.
+- After copying rich text, tell the user to focus the Slack composer and use `Cmd+V`; avoid `Cmd+Shift+V` because it may paste plain text.
+- Do not inspect Raycast, Hammerspoon, Karabiner, or other local shortcut configuration just to explain a prepared Slack clipboard. Only inspect shortcut config when the user asks to configure or debug that shortcut.
 - For Slack-facing links, use plain semantic link labels instead of code-formatted labels. Prefer `[useGetMerchantId](...)` over ``[`useGetMerchantId`](...)`` because Slack, especially on mobile, already distinguishes links and nested code styling adds noise. Keep backticks for unlinked exact technical identifiers.
