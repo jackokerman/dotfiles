@@ -33,6 +33,7 @@
 - When a command, browser auth flow, or external tool requires user interaction, state the needed action explicitly and stop polling or retrying until the user confirms it is complete.
 - When debugging an external flow, distinguish clearly between “I need your intervention now” and “I’m still fixing this locally” so the user does not have to infer which state you are in.
 - Before finishing, run the smallest verification that covers the change and report what was and was not verified.
+- For loud but routine verification commands, redirect output to a temp log and inspect or show the log only on failure. Use live output when diagnosing a failing command, monitoring meaningful progress, or when the user asks to see the full output.
 
 ## Tooling
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.

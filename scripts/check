@@ -3,6 +3,8 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+CHECK_MODE="full"
+STAGED_FILES=()
 
 log() {
     printf '[check] %s\n' "$*"
@@ -11,6 +13,62 @@ log() {
 fail() {
     printf '[check] %s\n' "$*" >&2
     exit 1
+}
+
+usage() {
+    cat <<'EOF'
+Usage: scripts/check [--full|--staged]
+
+  --full     Run the complete local regression suite. This is the default.
+  --staged   Run cheap checks plus tests for staged path groups.
+EOF
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --full)
+                CHECK_MODE="full"
+                ;;
+            --staged|--pre-commit)
+                CHECK_MODE="staged"
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            *)
+                fail "unknown argument: $1"
+                ;;
+        esac
+        shift
+    done
+}
+
+load_staged_files() {
+    local file
+
+    STAGED_FILES=()
+    while IFS= read -r file; do
+        [[ -n "$file" ]] || continue
+        STAGED_FILES+=("$file")
+    done < <(git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=ACMRT)
+}
+
+changed_any() {
+    local file pattern
+
+    for file in "${STAGED_FILES[@]+"${STAGED_FILES[@]}"}"; do
+        for pattern in "$@"; do
+            case "$file" in
+                $pattern)
+                    return 0
+                    ;;
+            esac
+        done
+    done
+
+    return 1
 }
 
 run_bash_syntax() {
@@ -197,12 +255,21 @@ run_codex_theme_sync_check() {
     bun --install=auto "$PROJECT_ROOT/scripts/sync-codex-nightfly-theme.ts" --check
 }
 
-main() {
+run_common_checks() {
     run_bash_syntax
     run_zsh_syntax
     assert_expected_executables
     assert_zsh_runtime_inputs_removed
     assert_zsh_bootstrap_boundary
+}
+
+run_codex_sync_validation() {
+    log "Validating Codex sync inputs"
+    "$PROJECT_ROOT/scripts/validate-codex-sync.sh"
+}
+
+run_full_checks() {
+    run_common_checks
     run_tmux_agent_bar_tests
     run_handy_tests
     run_tuicr_tests
@@ -214,9 +281,91 @@ main() {
     run_codex_config_coach_tests
     run_slack_rich_text_tests
     run_codex_theme_sync_check
+    run_codex_sync_validation
+}
 
-    log "Validating Codex sync inputs"
-    "$PROJECT_ROOT/scripts/validate-codex-sync.sh"
+run_staged_checks() {
+    load_staged_files
+
+    if [[ ${#STAGED_FILES[@]} -eq 0 ]]; then
+        log "No staged files; running common checks only"
+        run_common_checks
+        return
+    fi
+
+    if changed_any "scripts/check" ".githooks/pre-commit"; then
+        log "Check runner changed; running full suite"
+        run_full_checks
+        return
+    fi
+
+    run_common_checks
+
+    if changed_any \
+        ".dotty/commands/sync-tmux-agent-bar" \
+        "home/.config/tmux/*" \
+        "scripts/sync-tmux-agent-bar.sh" \
+        "tests/tmux-agent-bar/*" \
+        "tests/tmux-agent-status/*"; then
+        run_tmux_agent_bar_tests
+    fi
+
+    if changed_any "scripts/sync-handy-settings.sh" "tests/handy/*"; then
+        run_handy_tests
+    fi
+
+    if changed_any ".dotty/run.sh" "tests/tuicr/*"; then
+        run_tuicr_tests
+    fi
+
+    if changed_any "home/.local/bin/sesh-pick" "home/.local/bin/sesh-one-shot" "home/.config/zsh/sesh.zsh" "tests/sesh/*"; then
+        run_sesh_tests
+    fi
+
+    if changed_any "home/.config/zsh/*" "home/.zshenv" "tests/zsh/*"; then
+        run_zsh_prompt_tests
+    fi
+
+    if changed_any "home/.ruler/skills/godspeed-tasks/*" "tests/godspeed-tasks/*"; then
+        run_godspeed_tasks_tests
+    fi
+
+    if changed_any "scripts/karabiner-config.ts" "tests/karabiner/*"; then
+        run_karabiner_config_tests
+    fi
+
+    if changed_any "home/.codex/*" "home/.ruler/*" "scripts/sync-codex-*" "scripts/validate-codex-sync.sh" "tests/codex/*"; then
+        run_codex_sync_tests
+        run_codex_sync_validation
+    fi
+
+    if changed_any "home/.codex/skills/codex-config-coach/*" "home/.local/lib/codex-session-snippets.ts" "tests/codex-config-coach/*"; then
+        run_codex_config_coach_tests
+    fi
+
+    if changed_any "home/.local/bin/slack-rich-text" "home/.local/lib/slack-rich-text.ts" "home/.raycast-scripts/*slack-rich-text*" "tests/slack-rich-text/*"; then
+        run_slack_rich_text_tests
+    fi
+
+    if changed_any "scripts/sync-codex-nightfly-theme.ts" "home/.codex/references/nightfly/*"; then
+        run_codex_theme_sync_check
+    fi
+}
+
+main() {
+    parse_args "$@"
+
+    case "$CHECK_MODE" in
+        full)
+            run_full_checks
+            ;;
+        staged)
+            run_staged_checks
+            ;;
+        *)
+            fail "unknown check mode: $CHECK_MODE"
+            ;;
+    esac
 }
 
 main "$@"

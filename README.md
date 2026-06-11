@@ -67,6 +67,7 @@ dotty run install-nvim-js-tools
 dotty run install-gsd-core
 dotty run macos-setup
 ./scripts/check
+./scripts/check --staged
 ./scripts/install-git-hooks.sh
 ```
 
@@ -76,7 +77,8 @@ dotty run macos-setup
 - `dotty run install-gsd-core` installs the pinned GSD Core source checkout under `~/.local/share/gsd-core/repo`, installs its Codex integration with the standard profile, and enables future `dotty update` runs to reapply it. Use `dotty run install-gsd-core --uninstall` to remove the Codex integration and disable automatic reapply.
 - `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
 - After changing tracked Karabiner or macOS-setup sources, use `bun run scripts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path. `dotty update` alone does not rerun `macos-setup`.
-- `./scripts/check` runs the fast local validation path for this repo, including `tmux-agent-bar` and `tuicr` managed-checkout tests.
+- `./scripts/check` runs the full local validation suite for this repo, including `tmux-agent-bar` and `tuicr` managed-checkout tests.
+- `./scripts/check --staged` runs cheap common checks plus regression tests selected from staged path groups. The repo-local pre-commit hook uses this mode.
 - `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
 - After changing tracked config, run `dotty update` before testing the live setup.
 

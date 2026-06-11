@@ -16,7 +16,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - After changing tracked Karabiner or macOS-setup sources, do not assume `dotty update` reapplies them. Run `bun run scripts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path.
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
 - For dotty hook or generated-config changes, prefer committing the intended files before final live `dotty update` verification so Dotty does not test through an auto-stashed dirty worktree. If unrelated files are dirty, keep them unstaged and verify `git status --short` before any amend or push.
-- Run `./scripts/check` before commit. It includes `tmux-agent-bar` and `tuicr` managed-checkout tests. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
+- Run `./scripts/check` before pushing or when a change warrants the full suite. The repo-local pre-commit hook runs `./scripts/check --staged`, which keeps commits fast by running common checks plus regression tests for staged path groups. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
 - The shared Codex validation path also checks tracked skill UI metadata and extra frontend workflow manifests when they are present in the active dotty chain.
 - Keep `README.md` focused on new-machine setup and daily-use entrypoints. Push deeper architecture and subsystem detail into `docs/`.
 - If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.

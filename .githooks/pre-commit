@@ -8,4 +8,4 @@ fi
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 "$REPO_ROOT/scripts/check-sensitive-content.sh"
-exec "$REPO_ROOT/scripts/check"
+exec "$REPO_ROOT/scripts/check" --staged
