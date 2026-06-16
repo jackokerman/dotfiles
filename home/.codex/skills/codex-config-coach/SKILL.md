@@ -18,6 +18,7 @@ Help improve Codex behavior by turning real session friction into measured, dura
    - Read the relevant repo's `AGENTS.md`, `README.md`, tracked `home/.ruler/`, `home/.codex/`, and `home/.claude/` sources, and nearby skill files before editing.
    - In dotty-managed repos, treat tracked sources under `home/` as authoritative and live `~/.codex` files as generated runtime state unless local instructions say otherwise.
    - For generated skill outputs, inspect `.dotty-managed-skills.tsv` in the live skills directory or the tracked owner manifest before editing. Generic portable skills route to `home/.ruler/skills/<name>/`; Codex-native skills route to `home/.codex/skills/<name>/`; Claude-native adapters route to `home/.claude/skills/<name>/` if they exist.
+   - For live Codex startup/config debugging, start with `codex doctor` and exact config snippets; avoid searching `~/.codex/history.jsonl` unless transcript history matters, and inspect binaries with `file` or `strings`.
    - Route generic personal behavior to the public base dotfiles repo. Route private, machine-specific, employer-specific, or overlay-only behavior to the later dotty-chain repo that owns those concerns.
 3. Measure the candidate surface when practical.
    - For a Codex skill or plugin, run `plugin-eval analyze <path> --format markdown` before recommending structural changes.
