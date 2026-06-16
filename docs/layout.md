@@ -46,11 +46,14 @@ Current conventions:
 - `~/.zshrc.local` for interactive shell overrides
 - later repos in the dotty chain for machine-family-specific behavior
 
-For Git config changes in this setup, use `git config-shared`, `git config-local`, or explicit `git config --file ...`. Avoid `git config --global`, which writes unmanaged `~/.gitconfig`.
+For Git config changes in this setup, use `git config-shared`, `git config-local`, or explicit `git config --file ...`.
+Avoid `git config --global`, which writes unmanaged `~/.gitconfig`.
 
 This public base repo intentionally does not track `~/.ssh/` or SSH keys.
 
-`~/.zshenv` is the only top-level zsh bootstrap in this layout. It sets `ZDOTDIR=~/.config/zsh` and hands off to the tracked config there. Base `dotfiles` intentionally does not source a real `~/.zshrc`.
+`~/.zshenv` is the only top-level zsh bootstrap in this layout.
+It sets `ZDOTDIR=~/.config/zsh` and hands off to the tracked config there.
+Base `dotfiles` intentionally does not source a real `~/.zshrc`.
 
 ## Source vs Runtime State
 
@@ -67,7 +70,8 @@ Current zsh runtime paths:
 - completion cache: `~/.cache/zsh/.zcompcache/`
 - local shell session files: disabled
 
-The reason for this split is simple: dotty may link tracked paths directly into the live home directory, so writing mutable state into repo-backed config paths causes the repo clone to behave like application storage.
+The reason for this split is simple: dotty may link tracked paths directly into the live home directory.
+Writing mutable state into repo-backed config paths causes the repo clone to behave like application storage.
 
 ## Real Directories With Managed Contents
 

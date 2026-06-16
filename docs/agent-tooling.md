@@ -11,7 +11,8 @@
 
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
-- `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, `home/.config/tmux/session-status-refresh.sh`, and `home/.config/tmux/agent-status-hook.sh` are stable wrappers around the managed `tmux-agent-bar` runtime
+- `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, `home/.config/tmux/session-status-refresh.sh`,
+  and `home/.config/tmux/agent-status-hook.sh` are stable wrappers around the managed `tmux-agent-bar` runtime
 - `home/.config/tmux/tmux-agent-bar-path.sh` resolves the runtime checkout in this order:
   - `TMUX_AGENT_BAR_DIR`
   - `~/.config/tmux-agent-bar/path.local`
@@ -81,7 +82,8 @@ gh auth status
 ssh -T git@github.com
 ```
 
-`gh auth login` uses a browser-based flow by default and stores credentials in the system keychain when available. With `--git-protocol ssh`, it will detect an existing SSH key and prompt to create and upload one if needed.
+`gh auth login` uses a browser-based flow by default and stores credentials in the system keychain when available.
+With `--git-protocol ssh`, it will detect an existing SSH key and prompt to create and upload one if needed.
 
 This repo no longer routes SSH through 1Password. It expects a normal machine-local SSH key setup, and it does not track `~/.ssh/`.
 

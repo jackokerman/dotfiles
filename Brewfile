@@ -41,4 +41,5 @@ brew "oven-sh/bun/bun"              # JavaScript runtime
 brew "modem-dev/tap/hunk"           # review-first terminal diff viewer
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
+brew "vale"                         # prose linter for Markdown docs
 brew "zoxide"                       # smarter cd command (z/zi)

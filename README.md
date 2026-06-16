@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This repo is the public, generic layer for shared personal defaults.
+Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This is the public, generic layer for shared personal defaults.
 
 ## Install
 
@@ -9,21 +9,19 @@ git clone https://github.com/jackokerman/dotfiles.git ~/dotfiles
 cd ~/dotfiles && ./install.sh
 ```
 
-`./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook. It does not install the Homebrew packages from `Brewfile`.
+`./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook. It does not install Homebrew packages from `Brewfile`.
 
-Pinned repo submodules are synced during `./install.sh` and `dotty update`. If you want a fully populated checkout immediately after clone, use `git clone --recurse-submodules`.
+Pinned repo submodules are synced during `./install.sh` and `dotty update`. Use `git clone --recurse-submodules` if you want a fully populated checkout immediately after clone.
 
 ## New Machine
 
-After `./install.sh`, this is the setup sequence that matters on a fresh macOS machine:
+After `./install.sh`, run the fresh macOS setup in this order:
 
-1. Install the tracked tools and apps:
+1. Install tracked tools and apps:
 
 ```bash
 dotty run brew-sync
 ```
-
-This installs the Homebrew-managed tools from `Brewfile`, including `gh`.
 
 2. Set up GitHub auth and SSH:
 
@@ -33,30 +31,26 @@ gh auth status
 ssh -T git@github.com
 ```
 
-`gh auth login --git-protocol ssh` will detect an existing SSH key and offer to create and upload one if needed. This repo no longer uses 1Password to manage SSH keys. It expects a normal machine-local SSH setup.
+This repo does not track `~/.ssh/`. Keep custom hosts, identities, or non-default key layouts in local SSH config or a later repo in the dotty chain.
 
-This repo does not track `~/.ssh/`. If you need custom hosts, extra identities, or a non-default key layout, keep that in your local `~/.ssh/config` or in a later repo in the dotty chain.
-
-3. Reapply the tracked macOS setup:
+3. Reapply tracked macOS setup:
 
 ```bash
 dotty run macos-setup
 ```
 
-That covers Touch ID for `sudo`, tracked macOS defaults, Karabiner config generation, and font installation.
+This covers Touch ID for `sudo`, tracked macOS defaults, Karabiner config generation, and font installation.
+If you use MonoLisa, download the Complete ZIP to `~/Downloads/`; Symbols Nerd Font is downloaded automatically.
 
-If you use MonoLisa, download the Complete ZIP to `~/Downloads/` before or after `dotty run macos-setup`. Symbols Nerd Font is downloaded automatically.
-
-4. Finish the one-time GUI setup:
+4. Finish one-time GUI setup:
 
 - Grant accessibility permissions when prompted for Karabiner-Elements, AeroSpace, and Hammerspoon.
 - Set Raycast's hotkey to `Cmd+Space`.
 - Disable Spotlight's `Cmd+Space` shortcut in System Settings.
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
-- The tracked keyboard remaps keep the built-in keyboard `Caps Lock` as `Control` on hold and turn `Right Command` into a pure Hyper key (`Cmd+Ctrl+Opt+Shift`) on every keyboard except the reserved Touch ID Magic Keyboard.
-- Reserve `Hyper+Space` as the shared quick-entry shortcut and bind the machine-specific action in the relevant app, local override, or later repo in the dotty chain.
+- Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-Once the machine is bootstrapped, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and keeps managed runtime checkouts such as `~/.local/share/tuicr/repo` current.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and updates managed runtime checkouts.
 
 ## Daily Use
 
@@ -71,51 +65,17 @@ dotty run macos-setup
 ./scripts/install-git-hooks.sh
 ```
 
-- `dotty update` refreshes symlinks, reruns setup hooks, renders generated config such as `~/.config/sesh/sesh.toml`, syncs pinned repo submodules, and updates managed runtime checkouts such as `tmux-agent-bar` and `tuicr` without touching Homebrew.
-- `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS by installing missing formulae/casks and cleaning up unmanaged ones, including personal-machine tools such as `hunk`.
-- `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JS language-server toolchain used by the tracked editor config.
-- `dotty run install-gsd-core` installs the pinned GSD Core source checkout under `~/.local/share/gsd-core/repo`, installs its Codex integration with the standard profile, and enables future `dotty update` runs to reapply it. Use `dotty run install-gsd-core --uninstall` to remove the Codex integration and disable automatic reapply.
-- `dotty run macos-setup` reapplies the tracked macOS setup on macOS, including Touch ID for `sudo`, defaults, Karabiner config generation, and font installation.
-- After changing tracked Karabiner or macOS-setup sources, use `bun run scripts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path. `dotty update` alone does not rerun `macos-setup`.
-- `./scripts/check` runs the full local validation suite for this repo, including `tmux-agent-bar` and `tuicr` managed-checkout tests.
-- `./scripts/check --staged` runs cheap common checks plus regression tests selected from staged path groups. The repo-local pre-commit hook uses this mode.
-- `./scripts/install-git-hooks.sh` installs or repairs the repo-local Git hooks. These hooks are also auto-installed during `dotty install` and `dotty update`.
-- After changing tracked config, run `dotty update` before testing the live setup.
+- `dotty update` refreshes symlinks, reruns setup hooks, renders generated config, syncs pinned submodules, and updates managed runtime checkouts.
+- `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS.
+- `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JavaScript language-server toolchain.
+- `dotty run install-gsd-core` installs or reapplies the optional pinned GSD Core integration. Use `dotty run install-gsd-core --uninstall` to remove it.
+- `dotty run macos-setup` reapplies tracked macOS setup. After Karabiner-only changes, use `bun run scripts/karabiner-config.ts` for a narrower refresh.
+- `./scripts/check` runs the full local validation suite.
+- `./scripts/check --staged` runs cheap common checks plus tests selected from staged path groups.
+- `./scripts/check-prose.sh` runs advisory Vale-based prose checks for `README.md` and top-level docs.
+- `./scripts/install-git-hooks.sh` installs or repairs repo-local Git hooks.
 
-## Shell Notes
-
-`~/.zshenv` is the only top-level zsh bootstrap in this setup. It points `ZDOTDIR` at `~/.config/zsh`, so tracked interactive shell config lives under `home/.config/zsh/` instead of a repo-managed `~/.zshrc`.
-
-Tracked zsh config exposes three local shell hooks for later repos or machine-local overrides:
-
-- `~/.zshenv.local` runs during shell startup and is the right place for machine-local env vars and path tweaks, including local API tokens needed by shell-backed agent workflows.
-
-- `~/.zshrc.pre.local` runs before `compinit` and is the right place to add completion paths or source shell init that needs to run before completion registration.
-- `~/.zshrc.local` runs after `compinit` and plugin setup and is the right place for post-completion interactive shell config.
-
-`~/.zshrc.pre.local` is also where later repos should set early Powerlevel10k overrides that must land before `~/.config/zsh/.p10k.zsh` loads. The supported generic hooks are `DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE=(...)` and `DOTFILES_P10K_DISABLE_GITSTATUS=true`.
-
-Tracked zsh config loads completions from these standard locations in interactive shells:
-
-- `~/.local/share/zsh/site-functions` for user-installed tools such as `dotty`
-- `/opt/homebrew/share/zsh/site-functions` for Homebrew-installed tools
-- the bundled `zsh-users/zsh-completions` plugin for extra upstream definitions
-
-If you install a new tool and completion is not available in the current shell yet, run:
-
-```bash
-reload-completions
-```
-
-That rebuilds completion registration in-place and rehashes commands.
-
-Temporary bypass for the repo-local pre-commit hook:
-
-```bash
-SKIP_DOTFILES_CHECK=1 git commit -m "..."
-```
-
-`SKIP_CODEX_SYNC_VALIDATE=1` is still accepted as a legacy alias.
+After changing tracked config, run `dotty update` before testing the live setup.
 
 ## Layout
 
@@ -128,34 +88,17 @@ SKIP_DOTFILES_CHECK=1 git commit -m "..."
 Common places to edit:
 
 - Shell: `home/.zshenv` and `home/.config/zsh/`
-- Git defaults: `home/.config/git/config`, plus `~/.gitconfig.local` for machine-local overrides
+- Git defaults: `home/.config/git/config`; use `~/.gitconfig.local` for machine-local overrides.
 - SSH host and identity config: local `~/.ssh/config`
 - Keyboard remaps: `scripts/karabiner-config.ts`
-- NeoVim: `home/.config/nvim/`
+- Neovim: `home/.config/nvim/`
 - tmux and related wrappers: `home/.config/tmux/`
 - Raycast script commands: `home/.raycast-scripts/`
 - Codex and Claude tracked config: `home/.ruler/`, `home/.codex/`, and `home/.claude/`
 
-## GSD Core
-
-GSD Core is optional and opt-in in the base dotfiles layer. Install it with:
-
-```bash
-dotty run install-gsd-core
-```
-
-The installer manages a pinned `v1.4.0` checkout at `~/.local/share/gsd-core/repo`, requires Node 22 or newer and npm 10 or newer, installs dependencies with the temporary npm package-age override, and then installs the Codex global integration with `--profile=standard`. Once enabled, `dotty update` reapplies the integration after Codex config sync so generated runtime files stay present.
-
-To remove it:
-
-```bash
-dotty run install-gsd-core --uninstall
-```
-
-That uninstalls the Codex integration, removes local shims, and writes a disabled marker so automatic reapply stays off until `dotty run install-gsd-core` is run again.
-
 ## More Detail
 
 - [Layout and dotty chain](docs/layout.md)
+- [Shell setup](docs/shell.md)
 - [Agent tooling and managed config](docs/agent-tooling.md)
 - [Git prompt status legend](docs/git-prompt-status.md)
