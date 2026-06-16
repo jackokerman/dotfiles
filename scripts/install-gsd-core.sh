@@ -10,6 +10,14 @@ GSD_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/gsd-core"
 GSD_ENABLED_MARKER="$GSD_STATE_DIR/enabled"
 GSD_DISABLED_MARKER="$GSD_STATE_DIR/disabled"
 GSD_DEPENDENCY_STAMP="$GSD_STATE_DIR/package-lock.cksum"
+GSD_AGENT_NAMES=(
+    gsd-code-fixer
+    gsd-code-reviewer
+    gsd-executor
+    gsd-phase-researcher
+    gsd-plan-checker
+    gsd-planner
+)
 
 log() {
     printf '[install-gsd-core] %s\n' "$*"
@@ -167,18 +175,98 @@ EOF
     chmod +x "$bin_dir/gsd-core-install"
 }
 
+gsd_agent_files_exist() {
+    local agent_name=""
+
+    [[ "$GSD_PROFILE" != "core" ]] || return 0
+
+    for agent_name in "${GSD_AGENT_NAMES[@]}"; do
+        [[ -f "$HOME/.codex/agents/${agent_name}.toml" ]] || return 1
+    done
+}
+
+gsd_agent_config_paths_are_current() {
+    local agent_name=""
+    local config_path="$HOME/.codex/config.toml"
+    local expected_line=""
+
+    [[ "$GSD_PROFILE" != "core" ]] || return 0
+    [[ -f "$config_path" ]] || return 1
+
+    for agent_name in "${GSD_AGENT_NAMES[@]}"; do
+        expected_line="config_file = \"$HOME/.codex/agents/${agent_name}.toml\""
+        awk -v section="[agents.${agent_name}]" -v expected_line="$expected_line" '
+            $0 == section {
+                in_section = 1
+                next
+            }
+
+            in_section && /^\[/ {
+                exit 1
+            }
+
+            in_section && $0 == expected_line {
+                found = 1
+                exit 0
+            }
+
+            END {
+                if (!found) {
+                    exit 1
+                }
+            }
+        ' "$config_path" || return 1
+    done
+}
+
+repair_gsd_agent_config_paths() {
+    local agent_name=""
+    local config_path="$HOME/.codex/config.toml"
+    local expected_line=""
+    local tmp_path=""
+
+    [[ "$GSD_PROFILE" != "core" ]] || return 0
+    [[ -f "$config_path" ]] || return 0
+
+    for agent_name in "${GSD_AGENT_NAMES[@]}"; do
+        expected_line="config_file = \"$HOME/.codex/agents/${agent_name}.toml\""
+        tmp_path="${config_path}.gsd-agent-paths.$$"
+        awk -v section="[agents.${agent_name}]" -v expected_line="$expected_line" '
+            $0 == section {
+                in_section = 1
+                print
+                next
+            }
+
+            in_section && /^\[/ {
+                in_section = 0
+            }
+
+            in_section && /^config_file = "/ {
+                print expected_line
+                next
+            }
+
+            {
+                print
+            }
+        ' "$config_path" > "$tmp_path" && mv "$tmp_path" "$config_path"
+    done
+}
+
 gsd_codex_install_is_current() {
     [[ -f "$HOME/.codex/gsd-core/VERSION" ]] || return 1
     [[ "$(sed -n '1p' "$HOME/.codex/gsd-core/VERSION" 2>/dev/null)" == "${GSD_VERSION#v}" ]] || return 1
     [[ "$(sed -n '1p' "$HOME/.codex/.gsd-profile" 2>/dev/null)" == "$GSD_PROFILE" ]] || return 1
     [[ -f "$HOME/.codex/skills/gsd-new-project/SKILL.md" ]] || return 1
-    if [[ "$GSD_PROFILE" != "core" ]]; then
-        [[ -f "$HOME/.codex/agents/gsd-planner.toml" ]] || return 1
-    fi
+    gsd_agent_files_exist || return 1
+    gsd_agent_config_paths_are_current || return 1
     [[ -x "$HOME/.local/bin/gsd-tools" ]] || return 1
 }
 
 install_gsd() {
+    repair_gsd_agent_config_paths
+
     if gsd_codex_install_is_current; then
         rm -f "$GSD_DISABLED_MARKER"
         printf '%s\n' "$GSD_VERSION" > "$GSD_ENABLED_MARKER"
@@ -193,6 +281,7 @@ install_gsd() {
 
     log "Installing GSD Codex integration"
     node "$GSD_REPO_DIR/bin/install.js" --codex --global "--profile=$GSD_PROFILE"
+    repair_gsd_agent_config_paths
     write_shims
     rm -f "$GSD_DISABLED_MARKER"
     printf '%s\n' "$GSD_VERSION" > "$GSD_ENABLED_MARKER"
@@ -220,7 +309,8 @@ print_status() {
     printf 'enabled=%s\n' "$([[ -f "$GSD_ENABLED_MARKER" ]] && echo yes || echo no)"
     printf 'disabled=%s\n' "$([[ -f "$GSD_DISABLED_MARKER" ]] && echo yes || echo no)"
     printf 'gsd_tools=%s\n' "$([[ -x "$HOME/.local/bin/gsd-tools" ]] && echo yes || echo no)"
-    printf 'gsd_agents=%s\n' "$([[ -f "$HOME/.codex/agents/gsd-planner.toml" ]] && echo yes || echo no)"
+    printf 'gsd_agents=%s\n' "$(gsd_agent_files_exist && echo yes || echo no)"
+    printf 'gsd_agent_config_paths=%s\n' "$(gsd_agent_config_paths_are_current && echo current || echo stale)"
 }
 
 case "$mode" in
