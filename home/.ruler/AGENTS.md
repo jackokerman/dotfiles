@@ -44,6 +44,7 @@
 ## Research Workflow
 - For questions about tool behavior, configuration, library or framework semantics, APIs, or documented workflows, prefer deterministic verification over inference.
 - Check the strongest available sources first: official docs, local CLI help, tracked config, local types, project usages, tests, or repo sources.
+- For file and text discovery, prefer `rg` tools directly. Use `rg --hidden --files` for hidden dotfiles/config trees instead of raw `find`, and use `rg '<pattern>'` instead of `grep`; local hooks may block slower raw search commands and waste retries.
 - When a plan depends on a public tool's limitation, missing feature, workaround, or adoption path, check the upstream issue and PR tracker before concluding the path is unsupported or recommending custom tooling.
 - When the user provides a code permalink, file path, or line range, inspect that exact target before answering or broadening to surrounding context.
 - In large repositories, start searches from the narrowest known path and identifiers, especially when an error already provides a file, line, symbol, or test name. Avoid broad searches for common terms until scoped searches fail.
