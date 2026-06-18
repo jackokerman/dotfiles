@@ -23,8 +23,12 @@ run_refresh_hooks() {
     if [[ "$mode" == "sync" ]]; then
       SESH_PICK_FORCE_REFRESH=1 "$hook" </dev/null &>/dev/null || true
     else
-      # setsid detaches hooks from this process group so they survive tmux popup closure.
-      setsid "$hook" </dev/null &>/dev/null &
+      # Detach hooks so they can survive tmux popup closure.
+      if command -v setsid >/dev/null 2>&1; then
+        setsid "$hook" </dev/null &>/dev/null &
+      else
+        nohup "$hook" </dev/null &>/dev/null &
+      fi
     fi
   done
 }
@@ -72,13 +76,8 @@ pick_session() {
     "$@" || true
 }
 
-if [[ -s "$EXTRA" ]]; then
-  header="  ^a all ^t tmux ^x remote ^d kill ^f find"
-  session=$(pick_session "$header" --bind "ctrl-x:change-prompt(📦  )+reload($0 --refresh-extra)")
-else
-  header="  ^a all ^t tmux ^d kill ^f find"
-  session=$(pick_session "$header")
-fi
+header="  ^a all ^t tmux ^x remote ^d kill ^f find"
+session=$(pick_session "$header" --bind "ctrl-x:change-prompt(📦  )+reload($0 --refresh-extra)")
 
 [[ -z "$session" ]] && exit 0
 

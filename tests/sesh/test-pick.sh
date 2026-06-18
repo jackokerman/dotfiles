@@ -87,8 +87,8 @@ run_without_extra_entries_case() {
   )
 
   assert_equal "sesh-pick exits cleanly without extra entries on bash 3.2" "" "${actual}"
-  assert_matches "sesh-pick does not add the remote bind without extra entries" \
-    '--header=  \^a all \^t tmux \^d kill \^f find' \
+  assert_matches "sesh-pick keeps the remote refresh bind without extra entries" \
+    'ctrl-x:change-prompt\(📦  \)\+reload\(.*/home/\.local/bin/sesh-pick --refresh-extra\)' \
     "$(cat "${tmp_dir}/fzf-no-extra.log")"
   rm -rf "${tmp_dir}"
 }
@@ -161,6 +161,44 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_async_refresh_hook_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" refresh_hook="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+  refresh_hook="${config_dir}/sesh/hooks/refresh.d/remote"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}/sesh/hooks/refresh.d" "${bin_dir}"
+  write_stub_commands "${bin_dir}"
+
+  cat > "${refresh_hook}" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'ran\n' > "${XDG_CACHE_HOME}/async-refresh-ran"
+EOF
+  chmod +x "${refresh_hook}"
+
+  HOME="${home_dir}" \
+    PATH="${bin_dir}:${PATH}" \
+    XDG_CACHE_HOME="${cache_dir}" \
+    XDG_CONFIG_HOME="${config_dir}" \
+    FZF_ARGS_LOG="${tmp_dir}/fzf-async.log" \
+    bash "${PICKER}" >/dev/null
+
+  for _ in 1 2 3 4 5; do
+    [[ -f "${cache_dir}/async-refresh-ran" ]] && break
+    sleep 0.1
+  done
+
+  actual="$(cat "${cache_dir}/async-refresh-ran" 2>/dev/null || true)"
+  assert_equal "sesh-pick runs refresh hooks asynchronously when opened" "ran" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
 run_without_extra_entries_case
 run_with_extra_entries_case
 run_refresh_extra_case
+run_async_refresh_hook_case
