@@ -38,6 +38,7 @@ bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts task-snapshot --
 For explicit objective writes:
 
 ```bash
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts create-task --folder personal --state next-actions --title "Review the migration follow-up" --label server --due 2026-06-23
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts ensure-label --name server
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts set-task-labels --add-label server --task-id <task-id>
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts remove-task-labels --remove-label server --task-id <task-id>
@@ -73,8 +74,10 @@ Smart-list verification note:
 ## Mutation Rules
 
 - Direct writes are fine for explicit, objective operations on explicit targets.
+- For explicit follow-up capture, prefer the helper `create-task` command over ad hoc raw API calls.
 - Require a preview or approval step before bulk, heuristic, or subjective categorization changes.
 - When a category label already exists, discover it dynamically. When it does not exist and the user explicitly asked for it, create it through the API.
+- Use `--due YYYY-MM-DD` for date-only reminders. The helper stores that as a timeless due date.
 - Keep runtime criteria in the current session. Do not persist personal label names or matching rules into tracked repo config.
 
 ## Inbox Triage

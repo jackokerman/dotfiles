@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import {
   buildInboxSnapshot,
+  buildTaskCreationPlan,
   buildSmartListPlan,
   buildTaskSnapshot,
   discoverLists,
@@ -301,6 +302,41 @@ describe("buildSmartListPlan", () => {
     expect(plan.label.id).toBe("label-123");
     expect(plan.smartList.name).toBe("Server Tasks");
     expect(plan.smartList.query).toBe('folder:"personal-folder" label:"Home Server"');
+  });
+});
+
+describe("buildTaskCreationPlan", () => {
+  const resolvedLists = discoverLists(mirroredLists());
+
+  it("routes a new task to the requested GTD state and normalizes date-only due values", () => {
+    const plan = buildTaskCreationPlan({
+      folder: "personal",
+      notes: "  Check again after a couple of days.  ",
+      resolvedLists,
+      state: "nextActions",
+      timelessDueAt: "2026-06-23",
+      title: "  Remove the stopped rollback container  ",
+    });
+
+    expect(plan.folder.key).toBe("personal");
+    expect(plan.list.id).toBe("personal-next");
+    expect(plan.list.name).toBe("⚡ Next Actions");
+    expect(plan.state.key).toBe("nextActions");
+    expect(plan.task.title).toBe("Remove the stopped rollback container");
+    expect(plan.task.notes).toBe("Check again after a couple of days.");
+    expect(plan.task.timelessDueAt).toBe("2026-06-23");
+  });
+
+  it("rejects invalid timeless due dates", () => {
+    expect(() =>
+      buildTaskCreationPlan({
+        folder: "work",
+        resolvedLists,
+        state: "inbox",
+        timelessDueAt: "2026-02-30",
+        title: "Test task",
+      }),
+    ).toThrow("Timeless due date must be a valid calendar date in YYYY-MM-DD format");
   });
 });
 

@@ -227,6 +227,35 @@ type LabelMutationResult = {
   }>;
 };
 
+type TaskCreationPlan = {
+  folder: {
+    key: FolderKey;
+    name: string;
+  };
+  list: NormalizedList;
+  state: {
+    key: FolderStateKey;
+    name: string;
+  };
+  task: {
+    notes: string;
+    timelessDueAt: string | null;
+    title: string;
+  };
+};
+
+type TaskCreationResult = {
+  folder: FolderKey;
+  labelIds: string[];
+  labelNames: string[];
+  listId: string;
+  listName: string;
+  state: FolderStateKey;
+  taskId: string;
+  timelessDueAt: string | null;
+  title: string;
+};
+
 type ApiRequestOptions = {
   body?: unknown;
   method?: "DELETE" | "GET" | "PATCH" | "POST";
@@ -512,6 +541,65 @@ function getFolderStateList(resolvedLists: ResolvedFolderLists, state: FolderSta
   }
 
   return resolvedLists.someday;
+}
+
+function validateTimelessDate(value: string | undefined): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const trimmedValue = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmedValue)) {
+    throw new UsageError(
+      `Timeless due date must be a valid calendar date in YYYY-MM-DD format. Received: ${value}`,
+    );
+  }
+
+  const parsedDate = new Date(`${trimmedValue}T00:00:00.000Z`);
+  if (Number.isNaN(parsedDate.valueOf()) || parsedDate.toISOString().slice(0, 10) !== trimmedValue) {
+    throw new UsageError(
+      `Timeless due date must be a valid calendar date in YYYY-MM-DD format. Received: ${value}`,
+    );
+  }
+
+  return trimmedValue;
+}
+
+/**
+ * Resolves the destination list and normalized fields for a new task.
+ */
+export function buildTaskCreationPlan(params: {
+  folder: FolderKey;
+  notes?: string;
+  resolvedLists: DiscoverListsResult;
+  state: FolderStateKey;
+  timelessDueAt?: string;
+  title: string;
+}): TaskCreationPlan {
+  const title = params.title.trim();
+  if (!title) {
+    throw new UsageError("Task title cannot be empty");
+  }
+
+  const folderLists = params.folder === "personal" ? params.resolvedLists.personal : params.resolvedLists.work;
+  const list = getFolderStateList(folderLists, params.state);
+
+  return {
+    folder: {
+      key: params.folder,
+      name: folderNames[params.folder],
+    },
+    list,
+    state: {
+      key: params.state,
+      name: folderStateNames[params.state],
+    },
+    task: {
+      notes: params.notes?.trim() ?? "",
+      timelessDueAt: validateTimelessDate(params.timelessDueAt) ?? null,
+      title,
+    },
+  };
 }
 
 function buildFolderTaskSnapshot(params: {
@@ -850,6 +938,24 @@ async function createList(body: Record<string, unknown>): Promise<GodspeedList> 
   return response.list;
 }
 
+async function createTask(body: Record<string, unknown>): Promise<GodspeedTask> {
+  const response = await fetchJson<GodspeedTaskResponse>("/tasks", {
+    body,
+    method: "POST",
+  });
+
+  if (!response.success) {
+    throw new Error("Godspeed API reported an unsuccessful task creation response");
+  }
+
+  const task = response.task ?? response.todo_item;
+  if (!task) {
+    throw new Error("Godspeed API returned a task creation response without task data");
+  }
+
+  return task;
+}
+
 async function patchTask(taskId: string, body: Record<string, unknown>): Promise<GodspeedTask> {
   const response = await fetchJson<GodspeedTaskResponse>(`/tasks/${taskId}`, {
     body,
@@ -892,6 +998,24 @@ function validateLabelColor(color: string): string {
   }
 
   return color;
+}
+
+function normalizeLabelNames(labelNames: string[]): string[] {
+  const dedupedLabelNames = new Map<string, string>();
+
+  for (const labelName of labelNames) {
+    const trimmedLabelName = labelName.trim();
+    if (!trimmedLabelName) {
+      continue;
+    }
+
+    const normalizedKey = trimmedLabelName.toLowerCase();
+    if (!dedupedLabelNames.has(normalizedKey)) {
+      dedupedLabelNames.set(normalizedKey, trimmedLabelName);
+    }
+  }
+
+  return [...dedupedLabelNames.values()];
 }
 
 async function ensureLabel(params: { color?: string; name: string }): Promise<{ created: boolean; label: NormalizedLabel }> {
@@ -1019,6 +1143,57 @@ async function ensureSmartList(params: {
   };
 }
 
+async function createScopedTask(params: {
+  folder: FolderKey;
+  labelNames: string[];
+  notes?: string;
+  state: FolderStateKey;
+  timelessDueAt?: string;
+  title: string;
+}): Promise<TaskCreationResult> {
+  const resolvedLists = await loadResolvedLists();
+  const plan = buildTaskCreationPlan({
+    folder: params.folder,
+    notes: params.notes,
+    resolvedLists,
+    state: params.state,
+    timelessDueAt: params.timelessDueAt,
+    title: params.title,
+  });
+  const knownLabels = await loadLabels();
+  const normalizedLabelNames = normalizeLabelNames(params.labelNames);
+  const resolvedLabels = await Promise.all(
+    normalizedLabelNames.map(async (labelName) => {
+      const existingLabel = findLabelByName(knownLabels, labelName);
+      if (existingLabel) {
+        return existingLabel;
+      }
+
+      return (await ensureLabel({ name: labelName })).label;
+    }),
+  );
+  const task = await createTask({
+    id: crypto.randomUUID(),
+    label_ids: resolvedLabels.map((label) => label.id),
+    list_id: plan.list.id,
+    notes: plan.task.notes,
+    timeless_due_at: plan.task.timelessDueAt,
+    title: plan.task.title,
+  });
+
+  return {
+    folder: plan.folder.key,
+    labelIds: task.label_ids,
+    labelNames: resolvedLabels.map((label) => label.name),
+    listId: task.list_id,
+    listName: plan.list.name,
+    state: plan.state.key,
+    taskId: task.id,
+    timelessDueAt: task.timeless_due_at,
+    title: task.title,
+  };
+}
+
 async function loadScopeTasks(
   resolvedLists: DiscoverListsResult,
   scope: Scope,
@@ -1120,6 +1295,22 @@ function parseFolderKey(folder: string | undefined): FolderKey {
   throw new UsageError(`Unsupported folder: ${folder ?? "<missing>"}`);
 }
 
+function parseFolderStateKey(state: string | undefined): FolderStateKey {
+  if (state === "inbox") {
+    return "inbox";
+  }
+
+  if (state === "next-actions" || state === "nextActions") {
+    return "nextActions";
+  }
+
+  if (state === "someday") {
+    return "someday";
+  }
+
+  throw new UsageError(`Unsupported state: ${state ?? "<missing>"}`);
+}
+
 function collectCliArgs(argv: string[]): ParsedCliArgs {
   const [command, ...rest] = argv;
   if (!command) {
@@ -1202,6 +1393,7 @@ function buildUsageText(): string {
     "  discover-labels",
     "  inbox-snapshot [--scope work|personal|all]",
     "  task-snapshot [--scope work|personal|all]",
+    "  create-task --folder work|personal --state inbox|next-actions|someday --title <title> [--notes <text>] [--label <name> ...] [--due <YYYY-MM-DD>]",
     "  ensure-label --name <label-name> [--color <#rrggbb>]",
     "  set-task-labels --add-label <label-name> --task-id <id> [--task-id <id> ...]",
     "  remove-task-labels --remove-label <label-name> --task-id <id> [--task-id <id> ...]",
@@ -1250,6 +1442,18 @@ async function runCommand(parsedArgs: ParsedCliArgs): Promise<unknown> {
       resolvedLists,
       scope,
       workTasksByState: tasks.workTasksByState,
+    });
+  }
+
+  if (parsedArgs.command === "create-task") {
+    expectNoPositionals(parsedArgs);
+    return createScopedTask({
+      folder: parseFolderKey(getRequiredOption(parsedArgs.options, "folder")),
+      labelNames: getRepeatedOption(parsedArgs.options, "label"),
+      notes: getOption(parsedArgs.options, "notes"),
+      state: parseFolderStateKey(getRequiredOption(parsedArgs.options, "state")),
+      timelessDueAt: getOption(parsedArgs.options, "due"),
+      title: getRequiredOption(parsedArgs.options, "title"),
     });
   }
 
