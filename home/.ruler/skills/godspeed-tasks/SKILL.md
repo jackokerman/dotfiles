@@ -57,6 +57,9 @@ bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts smart-list-plan 
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts ensure-smart-list --folder personal --label server --smart-list-name "Server"
 ```
 
+Smart-list verification note:
+- Do not assume `GET /tasks?list_id=<smart-list-id>` reflects smart-list membership. In this setup the API can return an empty task array even for existing smart lists like `Today`. Verify smart-list creation from `/lists`, and treat in-app rendering as the reliable membership check unless the API behavior changes.
+
 ## Discovery Rules
 
 - Ignore the top-level default Godspeed Inbox. Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`.
