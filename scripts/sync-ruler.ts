@@ -198,7 +198,7 @@ function renderRulerAgentsSource(sourcePaths: string[]) {
   };
 }
 
-function rulerCommand(rulerBin: string) {
+export function rulerCommand(rulerBin: string) {
   if (rulerBin) {
     return {
       args: [rulerBin],
@@ -207,8 +207,8 @@ function rulerCommand(rulerBin: string) {
   }
 
   return {
-    args: ["npx", "-y", "@intellectronica/ruler"],
-    displayName: "npx -y @intellectronica/ruler",
+    args: [process.execPath, "x", "-y", "@intellectronica/ruler"],
+    displayName: "bun x -y @intellectronica/ruler",
   };
 }
 
@@ -259,6 +259,16 @@ function listDirectories(path: string) {
     .filter((entry) => entry.isDirectory())
     .map((entry) => resolve(path, entry.name))
     .sort((left, right) => left.localeCompare(right));
+}
+
+function firstExistingDirectory(paths: string[]) {
+  for (const path of paths) {
+    if (existsSync(path) && statSync(path).isDirectory()) {
+      return path;
+    }
+  }
+
+  return "";
 }
 
 function stageSkills(sourceRoots: string[], targetRoot: string) {
@@ -323,16 +333,20 @@ function sourceLooksPortable(sourceDir: string) {
 }
 
 function installGeneratedSkills(
-  generatedRoot: string,
+  generatedRoots: string[],
   outputRoot: string,
   stagedSkills: StagedSkill[],
+  label: string,
 ) {
   if (stagedSkills.length === 0) {
     return;
   }
 
-  if (!existsSync(generatedRoot) || !statSync(generatedRoot).isDirectory()) {
-    throw new Error(`Ruler did not generate skills at ${generatedRoot}`);
+  const generatedRoot = firstExistingDirectory(generatedRoots);
+  if (!generatedRoot) {
+    throw new Error(
+      `Ruler did not generate ${label} skills at any expected path:\n${generatedRoots.join("\n")}`,
+    );
   }
 
   mkdirSync(outputRoot, { recursive: true });
@@ -476,8 +490,18 @@ function syncPortable(
       "Edit one of these source files, then run `dotty update`.",
       ...sources.map((source) => `Source: ${source}`),
     ]);
-    installGeneratedSkills(join(stagingRoot, ".codex", "skills"), codexSkillsOutput, stagedSkills);
-    installGeneratedSkills(join(stagingRoot, ".claude", "skills"), claudeSkillsOutput, stagedSkills);
+    installGeneratedSkills(
+      [join(stagingRoot, ".agents", "skills"), join(stagingRoot, ".codex", "skills")],
+      codexSkillsOutput,
+      stagedSkills,
+      "Codex",
+    );
+    installGeneratedSkills(
+      [join(stagingRoot, ".claude", "skills")],
+      claudeSkillsOutput,
+      stagedSkills,
+      "Claude",
+    );
   } finally {
     rmSync(stagingRoot, { force: true, recursive: true });
   }
@@ -516,4 +540,6 @@ function main() {
   }
 }
 
-main();
+if (import.meta.main) {
+  main();
+}
