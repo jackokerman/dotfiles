@@ -432,6 +432,12 @@ setup_sesh() {
         sources+=("$current_source")
     fi
 
+    # Keep ~/.config/sesh as a real directory so the generated sesh.toml
+    # does not write back into tracked source fragments through a symlink.
+    if [[ -L "$target_dir" ]]; then
+        rm -f "$target_dir"
+    fi
+
     mkdir -p "$target_dir"
     tmp_target="$(mktemp "$target.XXXXXX")"
 
@@ -446,11 +452,7 @@ setup_sesh() {
         done
     } > "$tmp_target"
 
-    if [[ -f "$target" && ! -L "$target" ]] && cmp -s "$tmp_target" "$target"; then
-        rm -f "$tmp_target"
-    else
-        mv "$tmp_target" "$target"
-    fi
+    replace_file_if_changed "$tmp_target" "$target"
 }
 
 # Claude: create ~/.claude as a real directory and symlink tracked config.

@@ -93,6 +93,7 @@ Common places to edit:
 - Keyboard remaps: `scripts/karabiner-config.ts`
 - Neovim: `home/.config/nvim/`
 - tmux and related wrappers: `home/.config/tmux/`
+- sesh defaults: `home/.config/sesh/sesh.toml` for tracked fragments; `dotty update` renders the live `~/.config/sesh/sesh.toml` into a real `~/.config/sesh/` directory
 - Raycast script commands: `home/.raycast-scripts/`
 - Codex and Claude tracked config: `home/.ruler/`, `home/.codex/`, and `home/.claude/`
 
