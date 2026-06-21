@@ -37,6 +37,7 @@
 
 ## Tooling
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
+- For scripts and small CLIs we own, prefer Bun. For third-party tools we do not control, use the runtime they expect instead of adding local compatibility wrappers; install Node when upstream tooling depends on it.
 - Use another runtime only when it has a clear operational advantage.
 - For Raycast Script Commands, check the official Raycast Script Commands docs and `raycast/script-commands` examples before changing metadata, output modes, or UI behavior. Choose modes by documented semantics: `fullOutput` for long-running/log output, `compact` or `silent` for simple last-line results, and `inline` for dashboard/status items with `refreshTime`; Extension API functions such as `closeMainWindow` are not available inside Bash Script Commands.
 
