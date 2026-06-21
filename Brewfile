@@ -37,6 +37,7 @@ brew "ripgrep"                      # fast recursive search tool (`rg`)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
+brew "node"                         # broad JS CLI compatibility
 brew "oven-sh/bun/bun"              # JavaScript runtime
 brew "modem-dev/tap/hunk"           # review-first terminal diff viewer
 brew "tmux"                         # terminal multiplexer
