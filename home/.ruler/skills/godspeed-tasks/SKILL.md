@@ -54,6 +54,7 @@ For smart-list planning:
 
 ```bash
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts smart-list-plan --folder personal --label server
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts ensure-smart-list --folder personal --label server --smart-list-name "Server"
 ```
 
 ## Discovery Rules

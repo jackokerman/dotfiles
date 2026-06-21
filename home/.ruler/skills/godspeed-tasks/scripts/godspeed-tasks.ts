@@ -20,6 +20,11 @@ type GodspeedListsResponse = {
   success: boolean;
 };
 
+type GodspeedListResponse = {
+  list: GodspeedList;
+  success: boolean;
+};
+
 type GodspeedLabel = {
   color_hex_string: string;
   created_at: string;
@@ -57,7 +62,8 @@ type GodspeedTask = {
 
 type GodspeedTaskResponse = {
   success: boolean;
-  task: GodspeedTask;
+  task?: GodspeedTask;
+  todo_item?: GodspeedTask;
 };
 
 type GodspeedTasksResponse = {
@@ -177,7 +183,10 @@ type SmartListPlan = {
     name: string;
   };
   smartList: {
+    exists?: boolean;
+    id?: string;
     name: string;
+    orderIndex?: number;
     query: string;
   };
 };
@@ -387,6 +396,13 @@ function resolveOptionalChild(
   }
 
   return matches[0];
+}
+
+function resolveFolderChildren(lists: GodspeedList[], folder: FolderKey): GodspeedList[] {
+  const activeLists = selectActiveLists(lists);
+  const folderList = resolveNamedFolder(activeLists, folder);
+  const { childrenByFolderId } = collectChildrenByFolder(activeLists);
+  return childrenByFolderId.get(folderList.id) ?? [];
 }
 
 /**
@@ -616,6 +632,8 @@ export function buildSmartListPlan(params: {
   folder: FolderKey;
   labelId?: string;
   labelName: string;
+  existingSmartList?: { id: string; orderIndex: number };
+  orderIndex?: number;
   resolvedLists: DiscoverListsResult;
   smartListName?: string;
 }): SmartListPlan {
@@ -638,7 +656,10 @@ export function buildSmartListPlan(params: {
       name: labelName,
     },
     smartList: {
+      exists: params.existingSmartList !== undefined,
+      id: params.existingSmartList?.id,
       name: params.smartListName?.trim() || labelName,
+      orderIndex: params.existingSmartList?.orderIndex ?? params.orderIndex,
       query: `folder:"${escapeSmartListValue(folderLists.folder.id)}" label:"${escapeSmartListValue(labelName)}"`,
     },
   };
@@ -783,6 +804,15 @@ async function loadResolvedLists(): Promise<DiscoverListsResult> {
   return discoverLists(response.lists);
 }
 
+async function loadLists(): Promise<GodspeedList[]> {
+  const response = await fetchJson<GodspeedListsResponse>("/lists");
+  if (!response.success) {
+    throw new Error("Godspeed API reported an unsuccessful list response");
+  }
+
+  return response.lists;
+}
+
 async function loadLabels(): Promise<NormalizedLabel[]> {
   const response = await fetchJson<GodspeedLabelsResponse>("/labels");
   if (!response.success) {
@@ -807,6 +837,19 @@ async function loadIncompleteTasks(listId: string): Promise<GodspeedTask[]> {
   return response.tasks;
 }
 
+async function createList(body: Record<string, unknown>): Promise<GodspeedList> {
+  const response = await fetchJson<GodspeedListResponse>("/lists", {
+    body,
+    method: "POST",
+  });
+
+  if (!response.success) {
+    throw new Error("Godspeed API reported an unsuccessful list creation response");
+  }
+
+  return response.list;
+}
+
 async function patchTask(taskId: string, body: Record<string, unknown>): Promise<GodspeedTask> {
   const response = await fetchJson<GodspeedTaskResponse>(`/tasks/${taskId}`, {
     body,
@@ -817,7 +860,12 @@ async function patchTask(taskId: string, body: Record<string, unknown>): Promise
     throw new Error(`Godspeed API reported an unsuccessful task update for ${taskId}`);
   }
 
-  return response.task;
+  const task = response.task ?? response.todo_item;
+  if (!task) {
+    throw new Error(`Godspeed API returned a task update response without task data for ${taskId}`);
+  }
+
+  return task;
 }
 
 function findLabelByName(labels: NormalizedLabel[], name: string): NormalizedLabel | undefined {
@@ -872,6 +920,102 @@ async function ensureLabel(params: { color?: string; name: string }): Promise<{ 
   return {
     created: true,
     label: normalizeLabel(response.label),
+  };
+}
+
+function findSmartListByName(lists: GodspeedList[], name: string): GodspeedList | undefined {
+  const matches = selectActiveLists(lists).filter((list) => list.list_type === "smart" && list.name === name);
+  if (matches.length > 1) {
+    throw new Error(`Found multiple smart lists named "${name}"`);
+  }
+
+  return matches[0];
+}
+
+function computeSmartListOrderIndex(children: GodspeedList[]): number {
+  const orderedChildren = sortLists(children);
+  const today = resolveOptionalChild(orderedChildren, {
+    listType: "smart",
+    name: "Today",
+  });
+  if (today) {
+    const nextSibling = orderedChildren.find((list) => list.order_index > today.order_index);
+    if (nextSibling) {
+      return (today.order_index + nextSibling.order_index) / 2;
+    }
+
+    return today.order_index + 1;
+  }
+
+  if (orderedChildren.length >= 2) {
+    return (orderedChildren[0].order_index + orderedChildren[1].order_index) / 2;
+  }
+
+  if (orderedChildren.length === 1) {
+    return orderedChildren[0].order_index + 1;
+  }
+
+  return 1;
+}
+
+async function ensureSmartList(params: {
+  folder: FolderKey;
+  labelName: string;
+  smartListName?: string;
+}): Promise<{ created: boolean; smartList: SmartListPlan["smartList"] }> {
+  const lists = await loadLists();
+  const resolvedLists = discoverLists(lists);
+  const smartListName = params.smartListName?.trim() || params.labelName.trim();
+  const existingSmartList = findSmartListByName(lists, smartListName);
+  const labels = await loadLabels();
+  const existingLabel = findLabelByName(labels, params.labelName);
+  const folderChildren = resolveFolderChildren(lists, params.folder);
+
+  if (existingSmartList) {
+    const plan = buildSmartListPlan({
+      existingSmartList: {
+        id: existingSmartList.id,
+        orderIndex: existingSmartList.order_index,
+      },
+      folder: params.folder,
+      labelId: existingLabel?.id,
+      labelName: params.labelName,
+      resolvedLists,
+      smartListName,
+    });
+
+    return {
+      created: false,
+      smartList: plan.smartList,
+    };
+  }
+
+  const plan = buildSmartListPlan({
+    folder: params.folder,
+    labelId: existingLabel?.id,
+    labelName: params.labelName,
+    orderIndex: computeSmartListOrderIndex(folderChildren),
+    resolvedLists,
+    smartListName,
+  });
+
+  const createdList = await createList({
+    id: crypto.randomUUID(),
+    indent_level: 1,
+    list_type: "smart",
+    name: plan.smartList.name,
+    order_index: plan.smartList.orderIndex,
+    smart_list_query: plan.smartList.query,
+  });
+
+  return {
+    created: true,
+    smartList: {
+      ...plan.smartList,
+      exists: true,
+      id: createdList.id,
+      orderIndex: createdList.order_index,
+    },
   };
 }
 
@@ -1064,6 +1208,7 @@ function buildUsageText(): string {
     "  preview-bulk-labeling --label <label-name> --contains <term> [--contains <term> ...] [--scope work|personal|all]",
     "  apply-bulk-labeling --label <label-name> --task-id <id> [--task-id <id> ...]",
     "  smart-list-plan --folder work|personal --label <label-name> [--smart-list-name <name>]",
+    "  ensure-smart-list --folder work|personal --label <label-name> [--smart-list-name <name>]",
   ].join("\n");
 }
 
@@ -1182,6 +1327,15 @@ async function runCommand(parsedArgs: ParsedCliArgs): Promise<unknown> {
       labelId: existingLabel?.id,
       labelName,
       resolvedLists,
+      smartListName: getOption(parsedArgs.options, "smart-list-name"),
+    });
+  }
+
+  if (parsedArgs.command === "ensure-smart-list") {
+    expectNoPositionals(parsedArgs);
+    return ensureSmartList({
+      folder: parseFolderKey(getRequiredOption(parsedArgs.options, "folder")),
+      labelName: getRequiredOption(parsedArgs.options, "label"),
       smartListName: getOption(parsedArgs.options, "smart-list-name"),
     });
   }
