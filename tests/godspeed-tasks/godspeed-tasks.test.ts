@@ -2,6 +2,8 @@ import { describe, expect, it } from "bun:test";
 
 import {
   buildInboxSnapshot,
+  buildSmartListPlan,
+  buildTaskSnapshot,
   discoverLists,
   getLocalEvidenceSignals,
   isLocallyVerifiableTask,
@@ -30,6 +32,8 @@ function task(
     due_at: params.due_at ?? null,
     duration_minutes: params.duration_minutes ?? null,
     id: params.id,
+    label_ids: params.label_ids ?? [],
+    list_id: params.list_id ?? "test-list",
     notes: params.notes,
     starts_at: params.starts_at ?? null,
     timeless_due_at: params.timeless_due_at ?? null,
@@ -237,6 +241,66 @@ describe("buildInboxSnapshot", () => {
     expect(snapshot.inboxes.personal?.tasks).toEqual([]);
     expect(snapshot.inboxes.work).toBeUndefined();
     expect(snapshot.resolvedLists.work).toBeUndefined();
+  });
+});
+
+describe("buildTaskSnapshot", () => {
+  const resolvedLists = discoverLists(mirroredLists());
+
+  it("groups tasks by GTD state for the selected scope", () => {
+    const snapshot = buildTaskSnapshot({
+      personalTasksByState: {
+        inbox: [
+          task({
+            created_at: "2026-04-01T00:00:00.000Z",
+            id: "personal-inbox-task",
+            list_id: "personal-inbox",
+            notes: "",
+            title: "Personal inbox task",
+            updated_at: "2026-04-01T00:00:00.000Z",
+          }),
+        ],
+        nextActions: [
+          task({
+            created_at: "2026-04-02T00:00:00.000Z",
+            id: "personal-next-task",
+            label_ids: ["label-1"],
+            list_id: "personal-next",
+            notes: "Inspect ~/repo",
+            title: "Personal next action",
+            updated_at: "2026-04-02T00:00:00.000Z",
+          }),
+        ],
+      },
+      resolvedLists,
+      scope: "personal",
+    });
+
+    expect(snapshot.scope).toBe("personal");
+    expect(snapshot.folders.personal?.states.inbox.tasks.map((entry) => entry.id)).toEqual(["personal-inbox-task"]);
+    expect(snapshot.folders.personal?.states.nextActions.tasks[0]?.labelIds).toEqual(["label-1"]);
+    expect(snapshot.folders.personal?.states.someday.tasks).toEqual([]);
+    expect(snapshot.folders.work).toBeUndefined();
+  });
+});
+
+describe("buildSmartListPlan", () => {
+  const resolvedLists = discoverLists(mirroredLists());
+
+  it("builds a runtime smart-list query from folder and label inputs", () => {
+    const plan = buildSmartListPlan({
+      folder: "personal",
+      labelId: "label-123",
+      labelName: "Home Server",
+      resolvedLists,
+      smartListName: "Server Tasks",
+    });
+
+    expect(plan.folder.id).toBe("personal-folder");
+    expect(plan.label.exists).toBe(true);
+    expect(plan.label.id).toBe("label-123");
+    expect(plan.smartList.name).toBe("Server Tasks");
+    expect(plan.smartList.query).toBe('folder:"personal-folder" label:"Home Server"');
   });
 });
 

@@ -1,64 +1,93 @@
 ---
 name: godspeed-tasks
-description: Read-only Godspeed inbox triage and list discovery for a mirrored GTD setup with work and personal folders. Use when Codex needs to inspect Godspeed lists, summarize the work or personal inbox, recommend moving items to next actions or someday, or surface candidate-for-completion tasks based on quick local evidence.
+description: Generic Godspeed list and label discovery, inbox triage, and API-backed task organization for a mirrored GTD setup with work and personal folders. Use when Codex needs to inspect Godspeed lists, summarize inbox or active tasks, or apply explicit task updates through the Godspeed API without tracking personal taxonomy in the repo.
 ---
 
 # Godspeed Tasks
 
 ## Overview
 
-Use this skill to inspect Godspeed and triage the child inboxes under `🏢 Work` and `🏡 Personal`. Keep the workflow read-only in v1: do not call Godspeed write endpoints and do not mutate tracked files while investigating whether a task is already done.
+Use this skill for Godspeed work under the mirrored `🏢 Work` and `🏡 Personal` folders. The public repo owns only the generic mechanics and organization model:
 
-## Workflow
+- folders are top-level contexts,
+- GTD lists are state,
+- labels are categories or areas,
+- projects stay in task and subtask structure.
 
-1. Load the Godspeed token from `~/.zshenv.local` if the shell does not already have it. This dotfiles setup uses `~/.zshenv.local` for machine-local env vars:
+Do not track personal category names, keyword taxonomies, or smart-list definitions in this repo. Discover labels and categories at runtime through the API and the current prompt.
+
+## Authentication
+
+Load `GODSPEED_API_TOKEN` from the shell when needed. This dotfiles setup keeps machine-local env vars in `~/.zshenv.local`:
 
 ```bash
 [[ -f "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"
 ```
 
-2. Discover the mirrored list structure before triaging anything:
+## Core Commands
+
+Use the tracked helper directly:
 
 ```bash
-bun run scripts/godspeed-tasks.ts discover-lists
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts discover-lists
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts discover-labels
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts inbox-snapshot --scope personal
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts task-snapshot --scope work
 ```
 
-3. Fetch a normalized inbox snapshot for the requested scope:
+For explicit objective writes:
 
 ```bash
-bun run scripts/godspeed-tasks.ts inbox-snapshot --scope work
-bun run scripts/godspeed-tasks.ts inbox-snapshot --scope personal
-bun run scripts/godspeed-tasks.ts inbox-snapshot --scope all
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts ensure-label --name server
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts set-task-labels --add-label server --task-id <task-id>
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts remove-task-labels --remove-label server --task-id <task-id>
 ```
 
-4. Recommend exactly one outcome for each inbox task:
+For heuristic or bulk categorization:
+
+```bash
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts preview-bulk-labeling --label server --scope personal --contains docker --contains torrent
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts apply-bulk-labeling --label server --task-id <task-id> --task-id <task-id>
+```
+
+For smart-list planning:
+
+```bash
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts smart-list-plan --folder personal --label server
+```
+
+## Discovery Rules
+
+- Ignore the top-level default Godspeed Inbox. Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`.
+- Keep work and personal separate unless the user explicitly asks for cross-folder organization.
+- Resolve folder children dynamically by name and type:
+  - `📥 Inbox`
+  - `⚡ Next Actions`
+  - `🌱 Someday`
+- Use the API as the write surface. Do not mutate local Godspeed storage directly.
+
+## Mutation Rules
+
+- Direct writes are fine for explicit, objective operations on explicit targets.
+- Require a preview or approval step before bulk, heuristic, or subjective categorization changes.
+- When a category label already exists, discover it dynamically. When it does not exist and the user explicitly asked for it, create it through the API.
+- Keep runtime criteria in the current session. Do not persist personal label names or matching rules into tracked repo config.
+
+## Inbox Triage
+
+For inbox-review requests, keep using the normalized inbox snapshot and recommend exactly one outcome per task:
+
 - `candidate_for_completion`
 - `move_to_next_actions`
 - `move_to_someday`
 - `stay_in_inbox`
 
-## Discovery Rules
-
-- Ignore the top-level default Godspeed Inbox. Only use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`.
-- Keep work and personal separate. Do not recommend cross-folder moves in v1.
-- Resolve these child lists dynamically by name and type under each folder:
-  - `📥 Inbox`
-  - `⚡ Next Actions`
-  - `🌱 Someday`
-- Treat `Today` as out of scope for v1 triage, even if a smart list exists.
-
-## Triage Rules
-
-- Use `candidate_for_completion` only when strong local evidence suggests the task is already done, superseded, or no longer actionable.
-- Use `move_to_next_actions` for concrete, active tasks that belong in the current working set.
-- Use `move_to_someday` for valid tasks that are not active enough to stay in the working set.
-- Use `stay_in_inbox` for ambiguous, compound, or underspecified items, and for anything that still needs clarification.
-- Prefer `stay_in_inbox` over a weak or speculative recommendation.
+Use `candidate_for_completion` only when strong local evidence suggests the task is already done, superseded, or no longer actionable.
 
 ## Local Evidence Pass
 
 - Run local evidence gathering only when the helper marks a task as `localEvidenceEligible`.
-- Keep the evidence pass quick and non-mutating. Preferred commands:
+- Keep the pass quick and non-mutating. Preferred commands:
   - `rg`
   - `rg --files`
   - `find`
@@ -68,27 +97,5 @@ bun run scripts/godspeed-tasks.ts inbox-snapshot --scope all
   - `git status --short`
   - `git log --oneline`
   - `git grep`
-- Do not do broad web research as part of inbox triage.
-- Do not edit files, call Godspeed write endpoints, or run open-ended investigation loops.
+- Do not do broad web research as part of routine inbox triage.
 - If the evidence pass is inconclusive, fall back to normal triage and do not use `candidate_for_completion`.
-
-## Output Shape
-
-- Split the report into `Work` and `Personal`.
-- Within each folder, use these sections in this order:
-  - `Candidate for Completion`
-  - `Move to Next Actions`
-  - `Move to Someday`
-  - `Stay in Inbox`
-- Include for each task:
-  - title
-  - Godspeed task ID
-  - one short recommendation
-  - one short rationale
-  - an evidence note only if a local evidence pass actually ran
-
-## Limits
-
-- Keep v1 read-only.
-- Do not suggest due dates, start dates, metadata edits, or agent-execution tags in v1.
-- Do not mark tasks complete automatically. If the user wants actual writes later, treat that as a separate workflow.

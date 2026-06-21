@@ -65,7 +65,9 @@
 
 ## Godspeed Workflow
 - For Godspeed inbox triage, Godspeed task planning, or requests to organize the work or personal inbox, use the native `godspeed-tasks` skill.
-- Keep Godspeed triage read-only by default. Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`, not the top-level default inbox.
+- Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`, not the top-level default inbox.
+- Use the Godspeed API through `GODSPEED_API_TOKEN` for task mutation. Keep public repo guidance generic: do not track personal category names, matching rules, or smart-list definitions here.
+- Allow direct writes for explicit objective updates. Require preview or approval before bulk, heuristic, or subjective categorization changes.
 
 ## Neovim Workflow
 - For personal Neovim config changes, plugin selection, keymap design, or requests to grow the editor setup incrementally, use the native `nvim-config-coach` skill before substantial edits.
