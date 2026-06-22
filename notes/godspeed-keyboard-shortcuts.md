@@ -15,36 +15,36 @@ machine.
 
 ## Leader keys
 
-- Navigation/workspace leader: `ctrl+g`.
-- Move/triage leader: `ctrl+m`.
-- Reason: `ctrl+g` is mnemonic for Godspeed/GTD, low conflict with current
-  dotfiles, and app-local. `ctrl+m` matches Godspeed's own hotkey guide examples
+- Navigation/workspace leader: `ctrl + g`.
+- Move/triage leader: `ctrl + m`.
+- Reason: `ctrl + g` is mnemonic for Godspeed/GTD, low conflict with current
+  dotfiles, and app-local. `ctrl + m` matches Godspeed's own hotkey guide examples
   for move-to-list macros, so use it where the operation is specifically moving
   tasks.
-- Avoid `ctrl+t` because tmux uses it for `sesh-pick`.
-- Avoid `ctrl+a` because tmux uses it as prefix.
-- Avoid `space`/`ctrl+space` because Neovim already uses space as leader, and
+- Avoid `ctrl + t` because tmux uses it for `sesh-pick`.
+- Avoid `ctrl + a` because tmux uses it as prefix.
+- Avoid `space`/`ctrl + space` because Neovim already uses space as leader, and
   Space-like bindings are more likely to conflict with app text/input behavior.
-- Fallback if `ctrl+g` conflicts inside Godspeed: use `ctrl+m` for all Godspeed
+- Fallback if `ctrl + g` conflicts inside Godspeed: use `ctrl + m` for all Godspeed
   chords.
 
 ## Macro and shortcut map
 
 Navigation macros:
 
-- `ctrl+g w t`: expand Work, collapse Personal, jump to Work Today.
-- `ctrl+g p t`: expand Personal, collapse Work, jump to Personal Today.
-- `ctrl+g w i`: jump to Work Inbox.
-- `ctrl+g p i`: jump to Personal Inbox.
-- `ctrl+g w n`: jump to Work Next Actions.
-- `ctrl+g p n`: jump to Personal Next Actions.
-- `ctrl+g w s`: jump to Work Someday.
-- `ctrl+g p s`: jump to Personal Someday.
+- `ctrl + g w t`: expand Work, collapse Personal, jump to Work Today.
+- `ctrl + g p t`: expand Personal, collapse Work, jump to Personal Today.
+- `ctrl + g w i`: jump to Work Inbox.
+- `ctrl + g p i`: jump to Personal Inbox.
+- `ctrl + g w n`: jump to Work Next Actions.
+- `ctrl + g p n`: jump to Personal Next Actions.
+- `ctrl + g w s`: jump to Work Someday.
+- `ctrl + g p s`: jump to Personal Someday.
 
 Triage macros:
 
-- `ctrl+m n`: move selected task(s) to Next Actions in the same workspace.
-- `ctrl+m s`: move selected task(s) to Someday in the same workspace.
+- `ctrl + m n`: move selected task(s) to Next Actions in the same workspace.
+- `ctrl + m s`: move selected task(s) to Someday in the same workspace.
 - Keep `M` as the fallback for uncommon moves.
 
 ## List IDs
@@ -71,9 +71,9 @@ Personal:
 2. Confirm task/list cloud sync is enabled.
 3. Enable `Settings > Sync > hotkey sync`.
 4. Enable `Settings > Text > Key chords`.
-5. Open the Hotkey Editor with `?` and confirm `ctrl+g` chords synced.
+5. Open the Hotkey Editor with `?` and confirm `ctrl + g` chords synced.
 6. If macros did not sync, recreate them from this note.
-7. Test `ctrl+g w t` and one triage shortcut before relying on the setup.
+7. Test `ctrl + g w t` and one triage shortcut before relying on the setup.
 
 ## Workspace-aware move macro: Next Actions
 
@@ -164,9 +164,9 @@ const updateVariables = (currentVariables, state) => {
 ## Test plan
 
 - Press `?` and verify every new chord has no conflict.
-- Run `ctrl+g w t` and `ctrl+g p t`. Confirm the target Today opens and the
+- Run `ctrl + g w t` and `ctrl + g p t`. Confirm the target Today opens and the
   other workspace collapses.
-- From Work Inbox, run `ctrl+m n`. Confirm the task moves to Work Next Actions.
-- From Personal Inbox, run `ctrl+m s`. Confirm the task moves to Personal
+- From Work Inbox, run `ctrl + m n`. Confirm the task moves to Work Next Actions.
+- From Personal Inbox, run `ctrl + m s`. Confirm the task moves to Personal
   Someday.
 - Test multi-select with two inbox tasks.
