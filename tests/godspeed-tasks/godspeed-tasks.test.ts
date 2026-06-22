@@ -6,6 +6,7 @@ import {
   buildSmartListPlan,
   buildTaskSnapshot,
   discoverLists,
+  getGodspeedRetryDelayMs,
   getLocalEvidenceSignals,
   isLocallyVerifiableTask,
 } from "../../home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks";
@@ -13,7 +14,9 @@ import {
 type GodspeedList = Parameters<typeof discoverLists>[0][number];
 type GodspeedTask = Parameters<typeof buildInboxSnapshot>[0]["workTasks"][number];
 
-function list(params: Partial<GodspeedList> & Pick<GodspeedList, "id" | "indent_level" | "list_type" | "name">): GodspeedList {
+function list(
+  params: Partial<GodspeedList> & Pick<GodspeedList, "id" | "indent_level" | "list_type" | "name">,
+): GodspeedList {
   return {
     archived_at: null,
     id: params.id,
@@ -282,6 +285,40 @@ describe("buildTaskSnapshot", () => {
     expect(snapshot.folders.personal?.states.nextActions.tasks[0]?.labelIds).toEqual(["label-1"]);
     expect(snapshot.folders.personal?.states.someday.tasks).toEqual([]);
     expect(snapshot.folders.work).toBeUndefined();
+  });
+});
+
+describe("getGodspeedRetryDelayMs", () => {
+  it("parses Retry-After seconds", () => {
+    const headers = new Headers({
+      "Retry-After": "3",
+    });
+
+    expect(getGodspeedRetryDelayMs(headers, 0)).toBe(3000);
+  });
+
+  it("parses Retry-After dates", () => {
+    const headers = new Headers({
+      "Retry-After": "Thu, 01 Jan 1970 00:00:05 GMT",
+    });
+
+    expect(getGodspeedRetryDelayMs(headers, 1000)).toBe(4000);
+  });
+
+  it("parses RateLimit-Reset unix timestamps", () => {
+    const headers = new Headers({
+      "RateLimit-Reset": "1710000010",
+    });
+
+    expect(getGodspeedRetryDelayMs(headers, 1_710_000_000_000)).toBe(10_000);
+  });
+
+  it("parses RateLimit-Reset delta seconds", () => {
+    const headers = new Headers({
+      "RateLimit-Reset": "12",
+    });
+
+    expect(getGodspeedRetryDelayMs(headers, 0)).toBe(12_000);
   });
 });
 

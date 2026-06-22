@@ -1,9 +1,13 @@
 #!/usr/bin/env bun
 
+import PQueue from "p-queue";
+
 type Scope = "all" | "personal" | "work";
 type FolderKey = "personal" | "work";
 type FolderStateKey = "inbox" | "nextActions" | "someday";
 type GodspeedListType = "folder" | "inbox" | "list" | "smart";
+type ApiRequestMethod = "DELETE" | "GET" | "PATCH" | "POST";
+type GodspeedRateLimitKind = "read" | "write";
 
 type GodspeedList = {
   archived_at: string | null;
@@ -67,6 +71,8 @@ type GodspeedTaskResponse = {
 };
 
 type GodspeedTasksResponse = {
+  labels?: GodspeedLabel[];
+  lists?: GodspeedList[];
   success: boolean;
   tasks: GodspeedTask[];
 };
@@ -258,7 +264,7 @@ type TaskCreationResult = {
 
 type ApiRequestOptions = {
   body?: unknown;
-  method?: "DELETE" | "GET" | "PATCH" | "POST";
+  method?: ApiRequestMethod;
   params?: Record<string, string | undefined>;
 };
 
@@ -270,7 +276,43 @@ type ParsedCliArgs = {
 
 type FolderTaskStateMap = Partial<Record<FolderStateKey, GodspeedTask[]>>;
 
+type RateLimitWindow = {
+  intervalCap: number;
+  intervalMs: number;
+};
+
+type GodspeedQueueSet = {
+  hour: PQueue;
+  minute: PQueue;
+};
+
 class UsageError extends Error {}
+
+const godspeedReadMinuteWindow: RateLimitWindow = {
+  intervalCap: 10,
+  intervalMs: 60_000,
+};
+
+const godspeedReadHourWindow: RateLimitWindow = {
+  intervalCap: 200,
+  intervalMs: 60 * 60_000,
+};
+
+const godspeedWriteMinuteWindow: RateLimitWindow = {
+  intervalCap: 60,
+  intervalMs: 60_000,
+};
+
+const godspeedWriteHourWindow: RateLimitWindow = {
+  intervalCap: 1_000,
+  intervalMs: 60 * 60_000,
+};
+
+const maxGodspeedRequestAttempts = 4;
+const maxGodspeedRetryDelayMs = 60_000;
+
+let cachedListsPromise: Promise<GodspeedList[]> | undefined;
+let cachedLabelsPromise: Promise<NormalizedLabel[]> | undefined;
 
 const folderNames = {
   personal: "🏡 Personal",
@@ -284,6 +326,16 @@ const folderStateNames = {
 } satisfies Record<FolderStateKey, string>;
 
 const folderStateOrder: FolderStateKey[] = ["inbox", "nextActions", "someday"];
+
+const readQueues = createQueueSet({
+  hour: godspeedReadHourWindow,
+  minute: godspeedReadMinuteWindow,
+});
+
+const writeQueues = createQueueSet({
+  hour: godspeedWriteHourWindow,
+  minute: godspeedWriteMinuteWindow,
+});
 
 const localEvidenceMatchers: Array<{ regex: RegExp; signal: LocalEvidenceSignal }> = [
   {
@@ -317,6 +369,108 @@ function assertEnv(name: string): string {
   }
 
   return value;
+}
+
+function createQueueSet(windows: { hour: RateLimitWindow; minute: RateLimitWindow }): GodspeedQueueSet {
+  return {
+    hour: new PQueue({
+      concurrency: 1,
+      interval: windows.hour.intervalMs,
+      intervalCap: windows.hour.intervalCap,
+      strict: true,
+    }),
+    minute: new PQueue({
+      concurrency: 1,
+      interval: windows.minute.intervalMs,
+      intervalCap: windows.minute.intervalCap,
+      strict: true,
+    }),
+  };
+}
+
+function sleep(delayMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, delayMs);
+  });
+}
+
+function getApiRequestMethod(options: ApiRequestOptions): ApiRequestMethod {
+  return options.method ?? "GET";
+}
+
+function getGodspeedRateLimitKind(method: ApiRequestMethod): GodspeedRateLimitKind {
+  return method === "GET" ? "read" : "write";
+}
+
+function getGodspeedQueues(kind: GodspeedRateLimitKind): GodspeedQueueSet {
+  return kind === "read" ? readQueues : writeQueues;
+}
+
+async function scheduleGodspeedRequest<T>(
+  kind: GodspeedRateLimitKind,
+  task: () => Promise<T>,
+): Promise<T> {
+  const queues = getGodspeedQueues(kind);
+  return queues.hour.add(() => queues.minute.add(task));
+}
+
+function getExponentialRetryDelayMs(attemptNumber: number): number {
+  const rawDelayMs = 1_000 * 2 ** (attemptNumber - 1);
+  return Math.min(rawDelayMs, maxGodspeedRetryDelayMs);
+}
+
+/**
+ * Parses a Godspeed retry delay from the response headers when the server provides one.
+ */
+export function getGodspeedRetryDelayMs(
+  headers: Pick<Headers, "get">,
+  now: number = Date.now(),
+): number | undefined {
+  const retryAfter = headers.get("retry-after");
+  if (retryAfter) {
+    const retryAfterSeconds = Number(retryAfter);
+    if (Number.isFinite(retryAfterSeconds)) {
+      return Math.max(0, Math.ceil(retryAfterSeconds * 1000));
+    }
+
+    const retryAfterTimestamp = Date.parse(retryAfter);
+    if (!Number.isNaN(retryAfterTimestamp)) {
+      return Math.max(0, retryAfterTimestamp - now);
+    }
+  }
+
+  const rateLimitReset = headers.get("ratelimit-reset");
+  if (!rateLimitReset) {
+    return undefined;
+  }
+
+  const resetValue = Number(rateLimitReset);
+  if (Number.isFinite(resetValue)) {
+    if (resetValue >= 1_000_000_000) {
+      return Math.max(0, resetValue * 1000 - now);
+    }
+
+    return Math.max(0, Math.ceil(resetValue * 1000));
+  }
+
+  const resetTimestamp = Date.parse(rateLimitReset);
+  if (!Number.isNaN(resetTimestamp)) {
+    return Math.max(0, resetTimestamp - now);
+  }
+
+  return undefined;
+}
+
+function shouldRetryGodspeedResponse(status: number, attemptNumber: number): boolean {
+  return (status === 429 || status === 503) && attemptNumber < maxGodspeedRequestAttempts;
+}
+
+function clearListsCache(): void {
+  cachedListsPromise = undefined;
+}
+
+function clearLabelsCache(): void {
+  cachedLabelsPromise = undefined;
 }
 
 function normalizeList(list: GodspeedList): NormalizedList {
@@ -866,48 +1020,77 @@ async function fetchJson<T>(path: string, options: ApiRequestOptions = {}): Prom
     }
   }
 
-  const response = await fetch(url, {
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
-    },
-    method: options.method ?? "GET",
-  });
+  const method = getApiRequestMethod(options);
+  const rateLimitKind = getGodspeedRateLimitKind(method);
 
-  if (!response.ok) {
+  for (let attemptNumber = 1; attemptNumber <= maxGodspeedRequestAttempts; attemptNumber += 1) {
+    const response = await scheduleGodspeedRequest(rateLimitKind, () =>
+      fetch(url, {
+        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
+        },
+        method,
+      }),
+    );
+
+    if (response.ok) {
+      return (await response.json()) as T;
+    }
+
     const body = await response.text();
+    if (shouldRetryGodspeedResponse(response.status, attemptNumber)) {
+      const retryDelayMs =
+        getGodspeedRetryDelayMs(response.headers) ?? getExponentialRetryDelayMs(attemptNumber);
+      await sleep(retryDelayMs);
+      continue;
+    }
+
     throw new Error(`Godspeed API request failed: ${response.status} ${response.statusText} for ${url}\n${body}`);
   }
 
-  return (await response.json()) as T;
+  throw new Error(`Godspeed API request exhausted retries for ${url}`);
 }
 
 async function loadResolvedLists(): Promise<DiscoverListsResult> {
-  const response = await fetchJson<GodspeedListsResponse>("/lists");
-  if (!response.success) {
-    throw new Error("Godspeed API reported an unsuccessful list response");
-  }
-
-  return discoverLists(response.lists);
+  return discoverLists(await loadLists());
 }
 
 async function loadLists(): Promise<GodspeedList[]> {
-  const response = await fetchJson<GodspeedListsResponse>("/lists");
-  if (!response.success) {
-    throw new Error("Godspeed API reported an unsuccessful list response");
+  if (!cachedListsPromise) {
+    cachedListsPromise = (async () => {
+      const response = await fetchJson<GodspeedListsResponse>("/lists");
+      if (!response.success) {
+        throw new Error("Godspeed API reported an unsuccessful list response");
+      }
+
+      return response.lists;
+    })().catch((error) => {
+      clearListsCache();
+      throw error;
+    });
   }
 
-  return response.lists;
+  return cachedListsPromise;
 }
 
 async function loadLabels(): Promise<NormalizedLabel[]> {
-  const response = await fetchJson<GodspeedLabelsResponse>("/labels");
-  if (!response.success) {
-    throw new Error("Godspeed API reported an unsuccessful label response");
+  if (!cachedLabelsPromise) {
+    cachedLabelsPromise = (async () => {
+      const response = await fetchJson<GodspeedLabelsResponse>("/labels");
+      if (!response.success) {
+        throw new Error("Godspeed API reported an unsuccessful label response");
+      }
+
+      return selectActiveLabels(response.labels).map(normalizeLabel);
+    })().catch((error) => {
+      clearLabelsCache();
+      throw error;
+    });
   }
 
-  return selectActiveLabels(response.labels).map(normalizeLabel);
+  return cachedLabelsPromise;
 }
 
 async function loadIncompleteTasks(listId: string): Promise<GodspeedTask[]> {
@@ -935,6 +1118,7 @@ async function createList(body: Record<string, unknown>): Promise<GodspeedList> 
     throw new Error("Godspeed API reported an unsuccessful list creation response");
   }
 
+  clearListsCache();
   return response.list;
 }
 
@@ -1018,7 +1202,10 @@ function normalizeLabelNames(labelNames: string[]): string[] {
   return [...dedupedLabelNames.values()];
 }
 
-async function ensureLabel(params: { color?: string; name: string }): Promise<{ created: boolean; label: NormalizedLabel }> {
+async function ensureLabel(params: {
+  color?: string;
+  name: string;
+}): Promise<{ created: boolean; label: NormalizedLabel }> {
   const labels = await loadLabels();
   const existingLabel = findLabelByName(labels, params.name);
   if (existingLabel) {
@@ -1041,6 +1228,7 @@ async function ensureLabel(params: { color?: string; name: string }): Promise<{ 
     throw new Error(`Godspeed API reported an unsuccessful label creation for "${params.name}"`);
   }
 
+  clearLabelsCache();
   return {
     created: true,
     label: normalizeLabel(response.label),
