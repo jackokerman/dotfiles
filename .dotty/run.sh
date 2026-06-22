@@ -517,8 +517,8 @@ setup_claude() {
 # tracked source fragments.
 setup_codex() {
     local codex_dir="$HOME/.codex"
-    local script="$DOTFILES/scripts/sync-codex.ts"
-    local ruler_script="$DOTFILES/scripts/sync-ruler.ts"
+    local script="$DOTFILES/scripts/ts/sync-codex.ts"
+    local ruler_script="$DOTFILES/scripts/ts/sync-ruler.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local ruler_agents_src="$DOTFILES/home/.ruler/AGENTS.md"
     local portable_skills_src_dir="$DOTFILES/home/.ruler/skills"

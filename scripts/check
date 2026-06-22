@@ -256,7 +256,7 @@ run_slack_rich_text_tests() {
 
 run_codex_theme_sync_check() {
     log "Checking Codex Nightfly theme generation"
-    bun --install=auto "$PROJECT_ROOT/scripts/sync-codex-nightfly-theme.ts" --check
+    bun --install=auto "$PROJECT_ROOT/scripts/ts/sync-codex-nightfly-theme.ts" --check
 }
 
 run_common_checks() {
@@ -347,11 +347,11 @@ run_staged_checks() {
         run_godspeed_tasks_tests
     fi
 
-    if changed_any "scripts/karabiner-config.ts" "tests/karabiner/*"; then
+    if changed_any "scripts/ts/karabiner-config.ts" "tests/karabiner/*"; then
         run_karabiner_config_tests
     fi
 
-    if changed_any "home/.codex/*" "home/.ruler/*" "scripts/sync-codex-*" "scripts/sync-ruler.ts" "scripts/validate-codex-sync.sh" "tests/codex/*"; then
+    if changed_any "home/.codex/*" "home/.ruler/*" "scripts/ts/sync-codex-*" "scripts/ts/sync-ruler.ts" "scripts/validate-codex-sync.sh" "tests/codex/*"; then
         run_codex_sync_tests
         run_codex_sync_validation
     fi
@@ -364,7 +364,7 @@ run_staged_checks() {
         run_slack_rich_text_tests
     fi
 
-    if changed_any "scripts/sync-codex-nightfly-theme.ts" "home/.codex/references/nightfly/*"; then
+    if changed_any "scripts/ts/sync-codex-nightfly-theme.ts" "home/.codex/references/nightfly/*"; then
         run_codex_theme_sync_check
     fi
 

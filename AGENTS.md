@@ -13,7 +13,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 
 - In this repo, changes are not done until they are committed and pushed to `main` with a conventional commit.
 - Use `dotty update` when catching a machine up to the repo state. Use `dotty run brew-sync` when you want to reconcile tracked Homebrew packages on macOS, and `dotty run macos-setup` when you want to reapply tracked macOS defaults and related setup.
-- After changing tracked Karabiner or macOS-setup sources, do not assume `dotty update` reapplies them. Run `bun run scripts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path.
+- After changing tracked Karabiner or macOS-setup sources, do not assume `dotty update` reapplies them. Run `bun run scripts/ts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path.
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
 - For dotty hook or generated-config changes, prefer committing the intended files before final live `dotty update` verification so Dotty does not test through an auto-stashed dirty worktree. If unrelated files are dirty, keep them unstaged and verify `git status --short` before any amend or push.
 - Run `./scripts/check` before pushing or when a change warrants the full suite. The repo-local pre-commit hook runs `./scripts/check --staged`, which keeps commits fast by running common checks plus regression tests for staged path groups. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
@@ -62,7 +62,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Put generic always-on Codex instruction behavior, including simplicity and anti-overengineering guidance, in `home/.ruler/AGENTS.md`. Keep `home/.codex/AGENTS.md` as the rollback source for `DOTTY_CODEX_RULER=0` while that fallback remains supported.
 - Keep reusable generic Codex skills in `home/.codex/skills/`, including `codex-config-coach` for turning session friction into durable steering, `godspeed-tasks` for Godspeed inbox triage, and `nvim-config-coach` for incremental Neovim config work. Split skills by concern (`writing-style`, `react-patterns`, `typescript-style`, `css-layout`) so skill loading stays targeted.
 - Keep tracked Codex skills on the standard `SKILL.md` plus `agents/openai.yaml` layout so UI metadata and validation stay consistent across the dotty chain.
-- Keep pinned Codex theme reference submodules under `home/.codex/references/` and regenerate derived theme assets in `home/.codex/themes/` with `scripts/sync-codex-nightfly-theme.ts` instead of hand-editing them.
+- Keep pinned Codex theme reference submodules under `home/.codex/references/` and regenerate derived theme assets in `home/.codex/themes/` with `scripts/ts/sync-codex-nightfly-theme.ts` instead of hand-editing them.
 
 Tracked config belongs under `home/`. Mutable runtime state does not. Do not add shell history, completion caches, app session files, or similar runtime artifacts to the repo-backed tree. For Claude, treat `home/.claude/` as an allowlisted tracked-config source tree only; runtime state belongs in the live `~/.claude/` directory.
 

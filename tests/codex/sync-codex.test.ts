@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const repoRoot = resolve(import.meta.dir, "../..");
-const syncScript = join(repoRoot, "scripts", "sync-codex.ts");
+const syncScript = join(repoRoot, "scripts", "ts", "sync-codex.ts");
 const hooksSource = join(repoRoot, "home", ".codex", "hooks.json");
 
 function withTempDir(run: (dir: string) => void) {

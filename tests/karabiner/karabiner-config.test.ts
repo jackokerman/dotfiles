@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const repoRoot = resolve(import.meta.dir, "../..");
-const karabinerScript = join(repoRoot, "scripts", "karabiner-config.ts");
+const karabinerScript = join(repoRoot, "scripts", "ts", "karabiner-config.ts");
 const configPathParts = [".config", "karabiner", "karabiner.json"] as const;
 
 type KarabinerConfig = {

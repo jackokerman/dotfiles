@@ -72,7 +72,7 @@ async function normalizeKeyboardDevices(configPath: string) {
  * Magic Keyboard except Touch ID. Creates a default profile and config
  * directory if they don't exist.
  *
- * Run with: bun run karabiner-config.ts
+ * Run with: bun run scripts/ts/karabiner-config.ts
  */
 async function main() {
   const configPath = `${homedir()}/.config/karabiner/karabiner.json`;

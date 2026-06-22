@@ -10,10 +10,10 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { rulerCommand } from "../../scripts/sync-ruler";
+import { rulerCommand } from "../../scripts/ts/sync-ruler";
 
 const repoRoot = resolve(import.meta.dir, "../..");
-const syncScript = join(repoRoot, "scripts", "sync-ruler.ts");
+const syncScript = join(repoRoot, "scripts", "ts", "sync-ruler.ts");
 
 function withTempDir(run: (dir: string) => void) {
   const dir = mkdtempSync(join(tmpdir(), "ruler-sync-"));

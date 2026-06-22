@@ -65,7 +65,7 @@ run_macos_defaults() {
 }
 
 run_karabiner_generation() {
-    local script="$REPO_ROOT/scripts/karabiner-config.ts"
+    local script="$REPO_ROOT/scripts/ts/karabiner-config.ts"
 
     [[ -f "$script" ]] || return 0
 

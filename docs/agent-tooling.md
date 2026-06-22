@@ -43,12 +43,12 @@ Tracked Codex inputs live under `home/.codex/` and `home/.ruler/`.
 - `home/.ruler/ruler.toml` selects Codex as the current Ruler target
 - `home/.codex/config.toml` and `home/.codex/hooks.json` are source fragments
 - `home/.codex/AGENTS.md` is still tracked as the rollback source for the old dotty-only instruction path
-- `scripts/sync-ruler.ts` stages `.ruler` in a temporary directory, runs Ruler there, and writes live `~/.codex/AGENTS.md` with a dotty-generated header
-- `scripts/sync-codex.ts` validates and syncs the remaining Codex fragments into the live `~/.codex/` directory
+- `scripts/ts/sync-ruler.ts` stages `.ruler` in a temporary directory, runs Ruler there, and writes live `~/.codex/AGENTS.md` with a dotty-generated header
+- `scripts/ts/sync-codex.ts` validates and syncs the remaining Codex fragments into the live `~/.codex/` directory
 - tracked skills are synced into `~/.codex/skills/`
 - tracked agents are synced into `~/.codex/agents/`
 - pinned Codex theme reference submodules live under `home/.codex/references/`
-- `scripts/sync-codex-nightfly-theme.ts` regenerates the tracked `nightfly` theme from those pinned upstream files
+- `scripts/ts/sync-codex-nightfly-theme.ts` regenerates the tracked `nightfly` theme from those pinned upstream files
 - tracked themes are symlinked into `~/.codex/themes/`
 
 `~/.codex` stays a real directory so Codex can keep local runtime state there. Do not edit the generated live outputs when a tracked source file exists in this repo.

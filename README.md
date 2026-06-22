@@ -69,7 +69,7 @@ dotty run macos-setup
 - `dotty run brew-sync` reconciles the tracked `Brewfile` on macOS.
 - `dotty run install-nvim-js-tools` installs the minimal Bun-backed Neovim JavaScript language-server toolchain.
 - `dotty run install-gsd-core` installs or reapplies the optional pinned GSD Core integration. Use `dotty run install-gsd-core --uninstall` to remove it.
-- `dotty run macos-setup` reapplies tracked macOS setup. After Karabiner-only changes, use `bun run scripts/karabiner-config.ts` for a narrower refresh.
+- `dotty run macos-setup` reapplies tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh.
 - `./scripts/check` runs the full local validation suite.
 - `./scripts/check --staged` runs cheap common checks plus tests selected from staged path groups.
 - `./scripts/check-prose.sh` runs advisory Vale-based prose checks for `README.md` and top-level docs.
@@ -90,7 +90,7 @@ Common places to edit:
 - Shell: `home/.zshenv` and `home/.config/zsh/`
 - Git defaults: `home/.config/git/config`; use `~/.gitconfig.local` for machine-local overrides.
 - SSH host and identity config: local `~/.ssh/config`
-- Keyboard remaps: `scripts/karabiner-config.ts`
+- Keyboard remaps: `scripts/ts/karabiner-config.ts`
 - Neovim: `home/.config/nvim/`
 - tmux and related wrappers: `home/.config/tmux/`
 - sesh defaults: `home/.config/sesh/sesh.toml` for tracked fragments; `dotty update` renders the live `~/.config/sesh/sesh.toml` into a real `~/.config/sesh/` directory
