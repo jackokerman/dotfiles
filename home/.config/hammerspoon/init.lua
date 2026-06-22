@@ -22,6 +22,7 @@ spoon.SpoonInstall:andUse("URLDispatcher", {
 })
 
 -- Load your custom spoons
+hs.loadSpoon("NoTunes")
 hs.loadSpoon("RichLinkCopy")
 hs.loadSpoon("SmartLinkManager")
 
@@ -90,5 +91,6 @@ if hs.fs.attributes(localInit) then
 end
 
 -- Start spoons after configuration
+spoon.NoTunes:start()
 spoon.RichLinkCopy:start()
 spoon.SmartLinkManager:start(false)
