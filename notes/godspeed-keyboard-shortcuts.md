@@ -13,16 +13,20 @@ machine.
 - Configure macros and hotkeys through the Godspeed UI. Do not edit
   `~/Library/Application Support/Godspeed/godspeed-db.sqlite` directly.
 
-## Leader key
+## Leader keys
 
-- Primary leader: `ctrl+g`.
-- Reason: mnemonic for Godspeed/GTD, low conflict with current dotfiles, and
-  app-local.
+- Navigation/workspace leader: `ctrl+g`.
+- Move/triage leader: `ctrl+m`.
+- Reason: `ctrl+g` is mnemonic for Godspeed/GTD, low conflict with current
+  dotfiles, and app-local. `ctrl+m` matches Godspeed's own hotkey guide examples
+  for move-to-list macros, so use it where the operation is specifically moving
+  tasks.
 - Avoid `ctrl+t` because tmux uses it for `sesh-pick`.
 - Avoid `ctrl+a` because tmux uses it as prefix.
 - Avoid `space`/`ctrl+space` because Neovim already uses space as leader, and
   Space-like bindings are more likely to conflict with app text/input behavior.
-- Fallback if `ctrl+g` conflicts inside Godspeed: `ctrl+m`.
+- Fallback if `ctrl+g` conflicts inside Godspeed: use `ctrl+m` for all Godspeed
+  chords.
 
 ## Macro and shortcut map
 
@@ -39,8 +43,8 @@ Navigation macros:
 
 Triage macros:
 
-- `ctrl+g m n`: move selected task(s) to Next Actions in the same workspace.
-- `ctrl+g m s`: move selected task(s) to Someday in the same workspace.
+- `ctrl+m n`: move selected task(s) to Next Actions in the same workspace.
+- `ctrl+m s`: move selected task(s) to Someday in the same workspace.
 - Keep `M` as the fallback for uncommon moves.
 
 ## List IDs
@@ -162,8 +166,7 @@ const updateVariables = (currentVariables, state) => {
 - Press `?` and verify every new chord has no conflict.
 - Run `ctrl+g w t` and `ctrl+g p t`. Confirm the target Today opens and the
   other workspace collapses.
-- From Work Inbox, run `ctrl+g m n`. Confirm the task moves to Work Next
-  Actions.
-- From Personal Inbox, run `ctrl+g m s`. Confirm the task moves to Personal
+- From Work Inbox, run `ctrl+m n`. Confirm the task moves to Work Next Actions.
+- From Personal Inbox, run `ctrl+m s`. Confirm the task moves to Personal
   Someday.
 - Test multi-select with two inbox tasks.
