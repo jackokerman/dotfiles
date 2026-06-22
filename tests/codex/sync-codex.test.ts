@@ -104,6 +104,7 @@ describe("tracked Codex hooks", () => {
             {
               type: "command",
               command: `~/.config/tmux/codex-agent-status-hook.sh ${eventName}`,
+              timeout: 5,
             },
           ],
         },

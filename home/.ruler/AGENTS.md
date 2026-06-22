@@ -46,6 +46,7 @@
 - For questions about tool behavior, configuration, library or framework semantics, APIs, or documented workflows, prefer deterministic verification over inference.
 - Check the strongest available sources first: official docs, local CLI help, tracked config, local types, project usages, tests, or repo sources.
 - For file and text discovery, prefer `rg` tools directly. Use `rg --hidden --files` for hidden dotfiles/config trees instead of raw `find`, and use `rg '<pattern>'` instead of `grep`; local hooks may block slower raw search commands and waste retries.
+- For GitHub repository research, prefer local checkouts first, then authenticated `gh` CLI commands such as `gh search code`, `gh api`, `gh issue view`, and `gh pr view` over generic web fetch/search. Use web fetch only for exact known public URLs or when no authenticated/local source is available.
 - When a plan depends on a public tool's limitation, missing feature, workaround, or adoption path, check the upstream issue and PR tracker before concluding the path is unsupported or recommending custom tooling.
 - When the user provides a code permalink, file path, or line range, inspect that exact target before answering or broadening to surrounding context.
 - In large repositories, start searches from the narrowest known path and identifiers, especially when an error already provides a file, line, symbol, or test name. Avoid broad searches for common terms until scoped searches fail.
