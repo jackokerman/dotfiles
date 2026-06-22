@@ -626,6 +626,17 @@ setup_codex() {
             --source "$ruler_agents_src" \
             --skill-source "$portable_skills_src_dir" \
             || die "Failed to generate portable Ruler outputs"
+
+        if [[ -d "$skills_src_dir" ]]; then
+            bun run "$script" skills \
+                --validate-only \
+                --source "$portable_skills_src_dir" \
+                --source "$skills_src_dir"
+            bun run "$script" skills \
+                --output "$codex_dir/skills" \
+                --source "$portable_skills_src_dir" \
+                --source "$skills_src_dir"
+        fi
     fi
 
     if [[ -d "$themes_src_dir" ]]; then
