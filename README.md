@@ -96,7 +96,9 @@ Common places to edit:
 - sesh defaults: `home/.config/sesh/sesh.toml` for tracked fragments; `dotty update` renders the live `~/.config/sesh/sesh.toml` into a real `~/.config/sesh/` directory
 - Raycast script commands: `home/.raycast-scripts/`
 - Codex and Claude tracked config: `home/.ruler/`, `home/.codex/`, and `home/.claude/`
-  The tracked Godspeed helper and guidance stay generic here; personal labels, matching rules, and smart-list definitions should be discovered or supplied at runtime instead of committed to the public repo.
+  The tracked Godspeed helper and guidance stay generic here; personal labels,
+  matching rules, and smart-list definitions should be discovered or supplied at
+  runtime instead of committed to the public repo.
 
 ## More Detail
 
@@ -104,3 +106,4 @@ Common places to edit:
 - [Shell setup](docs/shell.md)
 - [Agent tooling and managed config](docs/agent-tooling.md)
 - [Git prompt status legend](docs/git-prompt-status.md)
+- [Godspeed keyboard shortcuts](docs/godspeed-keyboard-shortcuts.md)
