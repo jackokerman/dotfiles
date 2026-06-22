@@ -5,7 +5,7 @@ s[t]ripe
 c[o]rp\.s[t]ripe
 t[r]ailhead
 j[i]ra\.c[o]rp
-h[t]tps://go
+h[t]tps://go(/|$)
 d[e]vbox(es)?
 r[e]motedevbox
 d[e]vvy

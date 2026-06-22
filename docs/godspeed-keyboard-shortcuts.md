@@ -3,11 +3,11 @@
 This is the durable setup guide for my Godspeed desktop shortcuts. It documents
 the scheme, not the private account-specific list IDs.
 
-Official Godspeed references to check in the app/site:
+Official references:
 
-- Hotkeys
-- Macros
-- Update macro variables with JavaScript
+- [Hotkeys](https://godspeedapp.com/guides/hotkeys)
+- [Macros](https://godspeedapp.com/guides/macros)
+- [Update macro variables with JavaScript](https://godspeedapp.com/updating-macro-variables-with-javascript)
 
 ## Concepts
 
