@@ -1,11 +1,16 @@
 ---
 name: typescript-style
-description: Use for TypeScript or TSX work that needs guidance on API shape, function signatures, exported contracts, documentation, strict typing, and lint-safe escape hatches.
+description: Use when TypeScript or TSX work needs guidance on API shape, function signatures, exported contracts, strict typing, lint-safe escape hatches, or lightweight off-the-shelf library choices for JS/TS tools.
 ---
 
 # TypeScript Style
 
 Use this skill for generic TypeScript and TSX work. Keep React-specific rendering and hooks guidance in `react-patterns`, layout guidance in `css-layout`, and project-specific workflow guidance in the appropriate overlay skill when needed.
+
+## Tooling Defaults
+
+- When a non-temporary JS/TS tool needs a small off-the-shelf library choice, use [references/tooling-defaults.md](references/tooling-defaults.md).
+- Keep those defaults short and pragmatic. Prefer built-ins when they are already direct and sufficient.
 
 ## Code Shape And Defaults
 
