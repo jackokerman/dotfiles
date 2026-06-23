@@ -24,6 +24,7 @@ Keep shared tooling generic at the source, then update its dependents explicitly
    - Read its `AGENTS.md` or local contributor instructions first.
    - Check `git status --short --branch`; do not mix unrelated dirty work into the rollout.
    - Use the repo's package manager to bump the dependency and lockfile.
+   - For local pre-release JS/TS config probes, put any temporary config inside the dependent repo so module resolution matches the consumer, ignore the probe file itself, and remove it immediately after the check.
    - Run the smallest relevant verification first, usually lint, then the repo's full check if the dependency changes behavior.
    - Fix only fallout caused by the new shared package version. Let strict configs improve code, but keep edits scoped.
 
