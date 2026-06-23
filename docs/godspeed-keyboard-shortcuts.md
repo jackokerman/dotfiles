@@ -40,16 +40,15 @@ Avoid these:
 
 ## Bindings
 
-Navigation macros:
+Start with a small set of bindings. Add list-specific navigation only after the
+default workflow feels too slow.
 
-- `ctrl + g w t`: show Work and jump to Work Today.
-- `ctrl + g p t`: show Personal and jump to Personal Today.
-- `ctrl + g w i`: jump to Work Inbox.
-- `ctrl + g p i`: jump to Personal Inbox.
-- `ctrl + g w n`: jump to Work Next Actions.
-- `ctrl + g p n`: jump to Personal Next Actions.
-- `ctrl + g w s`: jump to Work Someday.
-- `ctrl + g p s`: jump to Personal Someday.
+Core navigation macros:
+
+- `ctrl + g w`: show Work and jump to Work Today.
+- `ctrl + g p`: show Personal and jump to Personal Today.
+- `ctrl + g t`: jump to the default Today view for this machine. On a work
+  machine, default this to Work Today.
 
 Move macros:
 
@@ -57,6 +56,13 @@ Move macros:
 - `ctrl + m s`: move selected task(s) to Someday in the same workspace.
 
 Keep `M` as the fallback for uncommon moves.
+
+Optional navigation macros:
+
+- `ctrl + g w i`, `ctrl + g w n`, `ctrl + g w s`: jump to Work Inbox, Next
+  Actions, or Someday.
+- `ctrl + g p i`, `ctrl + g p n`, `ctrl + g p s`: jump to Personal Inbox, Next
+  Actions, or Someday.
 
 ## Navigation Macro Pattern
 
@@ -70,8 +76,8 @@ Work navigation macros should use this shape:
 2. `Expand/collapse folder` -> `Collapse`.
 3. `Jump to list` -> Work folder.
 4. `Expand/collapse folder` -> `Expand`.
-5. `Jump to list` -> the target Work list, such as Today, Inbox, Next Actions,
-   or Someday.
+5. `Jump to list` -> the target Work list. Use Today for the core workspace
+   focus macro.
 
 Personal navigation macros should use the same shape with Work and Personal
 reversed.
@@ -86,7 +92,7 @@ reversed.
 6. Create the move macros with `Update macro variables with JavaScript`, then
    `Move to list` using `{{destinationListID}}`.
 7. Bind the shortcuts in the Hotkey Editor with `?`.
-8. Test one navigation shortcut and one move shortcut.
+8. Test `ctrl + g w`, `ctrl + g p`, `ctrl + g t`, and one move shortcut.
 
 ## Account-Specific IDs
 
@@ -99,12 +105,15 @@ The private note should include IDs for:
 
 - Work folder, Today, Inbox, Next Actions, and Someday.
 - Personal folder, Today, Inbox, Next Actions, and Someday.
+- Which workspace should be the default target for `ctrl + g t` on the current
+  machine.
 
 ## Test Plan
 
 - Press `?` and verify every new chord has no conflict.
-- Run `ctrl + g w t` and `ctrl + g p t`. Confirm the target Today opens and the
+- Run `ctrl + g w` and `ctrl + g p`. Confirm the target Today opens and the
   other workspace collapses.
+- Run `ctrl + g t`. Confirm it opens the machine's default Today view.
 - From Work Inbox, run `ctrl + m n`. Confirm the task moves to Work Next
   Actions.
 - From Personal Inbox, run `ctrl + m s`. Confirm the task moves to Personal
