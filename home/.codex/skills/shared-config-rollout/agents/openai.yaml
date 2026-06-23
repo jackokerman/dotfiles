@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shared Config Rollout"
+  short_description: "Roll out shared config package releases to downstream repos."
+  default_prompt: "Use $shared-config-rollout to roll out the latest shared config package release to downstream dependents."
