@@ -15,15 +15,15 @@ Pinned repo submodules are synced during `./install.sh` and `dotty update`. Use 
 
 ## New Machine
 
-After `./install.sh`, run the fresh macOS setup in this order:
+After `./install.sh`, run the fresh macOS setup in this order.
 
-1. Install tracked tools and apps:
+### 1. Install tracked tools and apps
 
 ```bash
 dotty run brew-sync
 ```
 
-2. Set up GitHub auth and SSH:
+### 2. Set up GitHub auth and SSH
 
 ```bash
 gh auth login --web --git-protocol ssh
@@ -33,7 +33,7 @@ ssh -T git@github.com
 
 This repo does not track `~/.ssh/`. Keep custom hosts, identities, or non-default key layouts in local SSH config or a later repo in the dotty chain.
 
-3. Reapply tracked macOS setup:
+### 3. Reapply tracked macOS setup
 
 ```bash
 dotty run macos-setup
@@ -42,7 +42,7 @@ dotty run macos-setup
 This covers Touch ID for `sudo`, tracked macOS defaults, Karabiner config generation, and font installation.
 If you use MonoLisa, download the Complete ZIP to `~/Downloads/`; Symbols Nerd Font is downloaded automatically.
 
-4. Finish one-time GUI setup:
+### 4. Finish one-time GUI setup
 
 - Grant accessibility permissions when prompted for Karabiner-Elements, AeroSpace, and Hammerspoon.
 - Set Raycast's hotkey to `Cmd+Space`.
