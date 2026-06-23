@@ -47,12 +47,10 @@ Workspace navigation macros:
 
 | Shortcut | Macro name | Behavior |
 | --- | --- | --- |
-| `ctrl + g w` | none | Reserved Work prefix; do not bind this to a command. |
 | `ctrl + g w t` | `Jump to Work Today` | Show Work and jump to Work Today. |
 | `ctrl + g w i` | `Jump to Work Inbox` | Show Work and jump to Work Inbox. |
 | `ctrl + g w n` | `Jump to Work Next Actions` | Show Work and jump to Work Next Actions. |
 | `ctrl + g w s` | `Jump to Work Someday` | Show Work and jump to Work Someday. |
-| `ctrl + g p` | none | Reserved Personal prefix; do not bind this to a command. |
 | `ctrl + g p t` | `Jump to Personal Today` | Show Personal and jump to Personal Today. |
 | `ctrl + g p i` | `Jump to Personal Inbox` | Show Personal and jump to Personal Inbox. |
 | `ctrl + g p n` | `Jump to Personal Next Actions` | Show Personal and jump to Personal Next Actions. |
