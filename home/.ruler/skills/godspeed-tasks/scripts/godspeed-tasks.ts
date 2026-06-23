@@ -500,6 +500,24 @@ function sortLabels(labels: GodspeedLabel[]): GodspeedLabel[] {
   return [...labels].sort((left, right) => left.name.localeCompare(right.name));
 }
 
+function canonicalizeListName(name: string): string {
+  const firstSpaceIndex = name.indexOf(" ");
+  if (firstSpaceIndex === -1) {
+    return name;
+  }
+
+  const prefix = name.slice(0, firstSpaceIndex);
+  if (/[\p{Letter}\p{Number}]/u.test(prefix)) {
+    return name;
+  }
+
+  return name.slice(firstSpaceIndex + 1);
+}
+
+function matchesListName(actualName: string, expectedName: string): boolean {
+  return canonicalizeListName(actualName) === canonicalizeListName(expectedName);
+}
+
 function selectActiveLists(lists: GodspeedList[]): GodspeedList[] {
   return sortLists(lists.filter((list) => list.archived_at === null));
 }
@@ -510,7 +528,7 @@ function selectActiveLabels(labels: GodspeedLabel[]): GodspeedLabel[] {
 
 function resolveNamedFolder(lists: GodspeedList[], folder: FolderKey): GodspeedList {
   const matches = lists.filter(
-    (list) => list.indent_level === 0 && list.list_type === "folder" && list.name === folderNames[folder],
+    (list) => list.indent_level === 0 && list.list_type === "folder" && matchesListName(list.name, folderNames[folder]),
   );
   if (matches.length !== 1) {
     throw new Error(`Expected exactly one folder named "${folderNames[folder]}", found ${matches.length}`);
@@ -557,7 +575,9 @@ function resolveRequiredChild(
   children: GodspeedList[],
   params: { listType: GodspeedListType; name: string },
 ): GodspeedList {
-  const matches = children.filter((list) => list.list_type === params.listType && list.name === params.name);
+  const matches = children.filter(
+    (list) => list.list_type === params.listType && matchesListName(list.name, params.name),
+  );
   if (matches.length !== 1) {
     throw new Error(
       `Expected exactly one child ${params.listType} list named "${params.name}", found ${matches.length}`,
@@ -571,7 +591,9 @@ function resolveOptionalChild(
   children: GodspeedList[],
   params: { listType: GodspeedListType; name: string },
 ): GodspeedList | undefined {
-  const matches = children.filter((list) => list.list_type === params.listType && list.name === params.name);
+  const matches = children.filter(
+    (list) => list.list_type === params.listType && matchesListName(list.name, params.name),
+  );
   if (matches.length > 1) {
     throw new Error(
       `Expected at most one child ${params.listType} list named "${params.name}", found ${matches.length}`,

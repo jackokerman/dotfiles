@@ -131,6 +131,19 @@ function mirroredLists(): GodspeedList[] {
   ];
 }
 
+function mirroredListsWithIconToday(): GodspeedList[] {
+  return mirroredLists().map((entry) => {
+    if (entry.id === "work-today" || entry.id === "personal-today") {
+      return {
+        ...entry,
+        name: "📅 Today",
+      };
+    }
+
+    return entry;
+  });
+}
+
 describe("discoverLists", () => {
   it("resolves the mirrored work and personal folders and ignores the root inbox", () => {
     const resolved = discoverLists(mirroredLists());
@@ -145,6 +158,13 @@ describe("discoverLists", () => {
     expect(resolved.personal.inbox.id).toBe("personal-inbox");
     expect(resolved.personal.nextActions.id).toBe("personal-next");
     expect(resolved.personal.someday.id).toBe("personal-someday");
+    expect(resolved.personal.today?.id).toBe("personal-today");
+  });
+
+  it("resolves icon-prefixed Today smart lists", () => {
+    const resolved = discoverLists(mirroredListsWithIconToday());
+
+    expect(resolved.work.today?.id).toBe("work-today");
     expect(resolved.personal.today?.id).toBe("personal-today");
   });
 
