@@ -11,6 +11,8 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 
 - When a non-temporary JS/TS tool needs a small off-the-shelf library choice, use [references/tooling-defaults.md](references/tooling-defaults.md).
 - Keep those defaults short and pragmatic. Prefer built-ins when they are already direct and sufficient.
+- For non-temporary JS/TS tools, prefer Bun, TypeScript, Oxlint, and `@jackokerman/oxlint-config` unless the surrounding project has a stronger established stack.
+- Put reusable lint style changes in `github.com/jackokerman/oxlint-config` first, release the config, and then update dependent projects to consume the new version.
 
 ## Code Shape And Defaults
 
