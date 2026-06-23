@@ -71,10 +71,10 @@ Move macros:
 
 | Shortcut | Macro name | Behavior |
 | --- | --- | --- |
-| `ctrl + m w t` | `Move to Work Today` | Move selected task(s) to Work Next Actions and set a start date of today. |
+| `ctrl + m w t` | Reserved for `Move to Work Today` | Not currently configured; Godspeed macros cannot reliably set a dynamic start date. |
 | `ctrl + m w n` | `Move to Work Next Actions` | Move selected task(s) to Work Next Actions. |
 | `ctrl + m w s` | `Move to Work Someday` | Move selected task(s) to Work Someday. |
-| `ctrl + m p t` | `Move to Personal Today` | Move selected task(s) to Personal Next Actions and set a start date of today. |
+| `ctrl + m p t` | Reserved for `Move to Personal Today` | Not currently configured; Godspeed macros cannot reliably set a dynamic start date. |
 | `ctrl + m p n` | `Move to Personal Next Actions` | Move selected task(s) to Personal Next Actions. |
 | `ctrl + m p s` | `Move to Personal Someday` | Move selected task(s) to Personal Someday. |
 
@@ -126,17 +126,21 @@ Someday macros:
 2. Select either Work `🌱 Someday` or Personal `🌱 Someday`.
 3. Set `Location` to `Top` or `Bottom`, whichever feels better during triage.
 
-Today macros should move to Next Actions and set the task's start date to today.
-Prefer start date over due date: a due date means the task is due today, while a
-start date means the task should become available in the Today smart list today.
+Today macros should move to Next Actions and set the task's start date to today,
+but do not configure these as Godspeed macros in the current app release.
 
-For Today, add:
+The shipped app macro implementation applies `{{variable}}` substitution for
+`Set due date` and `Set snooze date`, but not for `Set start date`. JavaScript
+macro variables such as `{{currentDate}}` or `{{currentISO}}` therefore cannot
+drive a dynamic start-date macro. Literal queries such as `today` also failed in
+the macro editor with `Date query didn't produce any results`, so there is no
+reliable in-app macro setup for `Move to Today` right now.
 
-1. `Move task to list` -> Work or Personal `⚡ Next Actions`.
-2. `Set start date` -> `today`.
-
-If Godspeed's macro editor only exposes a due-date action and not a start-date
-action, skip this macro instead of using due date as a substitute.
+Do not use a due-date macro as a substitute by default. A due date means the
+task is due today, while a start date means the task should become available in
+the Today smart list today. For now, use fixed-destination macros for Next
+Actions and Someday, and set start dates manually with Godspeed's start-date
+picker when needed.
 
 ## Setup
 
@@ -145,7 +149,8 @@ action, skip this macro instead of using due date as a substitute.
 3. Enable `Settings > Text > Key chords`.
 4. Enable `Settings > Sync > hotkey sync`.
 5. Create one navigation macro per table row in the Macro Editor.
-6. Create one fixed-destination move macro per move table row.
+6. Create fixed-destination move macros for the Next Actions and Someday move
+   table rows.
 7. Bind the shortcuts in the Hotkey Editor with `?`.
 8. Test `ctrl + g w t`, `ctrl + g w i`, one default-workspace alias, and one
    move shortcut.
@@ -173,8 +178,6 @@ IDs for:
   list opens and the other workspace collapses.
 - Run `ctrl + g t`, `ctrl + g i`, `ctrl + g n`, and `ctrl + g s`. Confirm each
   opens the machine's default workspace view.
-- From Work Inbox, run `ctrl + m w t`. Confirm the task moves to Work Next
-  Actions and appears in Work Today with a start date of today.
 - From Work Inbox, run `ctrl + m w n`. Confirm the task moves to Work Next
   Actions.
 - From Personal Inbox, run `ctrl + m p s`. Confirm the task moves to Personal
