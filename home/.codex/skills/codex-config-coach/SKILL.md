@@ -14,6 +14,7 @@ Help improve Codex behavior by turning real session friction into measured, dura
    - Separate reusable steering from one-off task feedback. Do not add config for a single unusual case.
    - For agent/tooling workflow adoption plans, look for repeated clarification around off-the-shelf versus custom structure, artifact ownership, global versus repo-local install scope, multi-machine support, opt-in and rollback behavior, day-to-day commands, and concrete verification.
    - Before treating a tool-adoption plan as settled, verify tool availability, provisioning source, and package-manager ownership across each relevant machine class.
+   - Treat package-manager cleanup, prune, uninstall, and sync modes that remove untracked tools as destructive. Before running them, inspect local skip env vars, later dotty-chain ownership, version-manager shims, and existing tool paths; prefer install-only repair unless removal was explicitly requested.
    - Treat those as planning-quality friction, not just implementation details.
    - When token or tool efficiency is part of the ask, audit avoidable tool usage separately: blocked commands, reversed tool choices, duplicate reads/checks, unnecessary API calls, and polling that did not change a decision. Prefer updating the specific workflow skill that caused the waste; add broad guidance only when the pattern is reusable across workflows.
 2. Inspect the local routing context before choosing a target.

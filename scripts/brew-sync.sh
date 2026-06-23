@@ -15,6 +15,37 @@ fi
 
 REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 BREWFILE="${REPO_ROOT}/Brewfile"
+CLEANUP=false
+
+usage() {
+    cat <<'EOF'
+Usage: scripts/brew-sync.sh [--cleanup]
+
+Installs packages from the tracked Brewfile. By default this does not remove
+untracked Homebrew packages, because later dotty-chain repos or local machine
+setup may own additional tools.
+
+Options:
+  --cleanup    Remove formulae and casks not present in the active Brewfile.
+  -h, --help   Show this help.
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --cleanup)
+            CLEANUP=true
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            die "Unknown argument: $1"
+            ;;
+    esac
+    shift
+done
 
 title "Installing Homebrew packages"
 
@@ -43,6 +74,10 @@ info "Installing packages from Brewfile"
 brew bundle --file "${BREWFILE}"
 success "Homebrew packages installed successfully"
 
-info "Removing formulae and casks not present in Brewfile"
-brew bundle cleanup --file "${BREWFILE}" --force --formula --cask
-success "Homebrew cleanup completed"
+if [[ "$CLEANUP" == "true" ]]; then
+    info "Removing formulae and casks not present in Brewfile"
+    brew bundle cleanup --file "${BREWFILE}" --force --formula --cask
+    success "Homebrew cleanup completed"
+else
+    info "Skipping Homebrew cleanup. Run dotty run brew-sync --cleanup to remove untracked packages."
+fi

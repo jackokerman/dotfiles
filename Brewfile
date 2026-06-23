@@ -38,6 +38,8 @@ brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
 brew "node"                         # broad JS CLI compatibility
+brew "nodenv"                       # Node.js version manager
+brew "node-build"                   # nodenv install definitions
 brew "oven-sh/bun/bun"              # JavaScript runtime
 brew "modem-dev/tap/hunk"           # review-first terminal diff viewer
 brew "tmux"                         # terminal multiplexer
