@@ -133,7 +133,7 @@ start date means the task should become available in the Today smart list today.
 For Today, add:
 
 1. `Move task to list` -> Work or Personal `⚡ Next Actions`.
-2. `Set start date` -> `today`.
+2. `Set start date` -> `{{currentDate}}`.
 
 If Godspeed's macro editor only exposes a due-date action and not a start-date
 action, skip this macro instead of using due date as a substitute.
