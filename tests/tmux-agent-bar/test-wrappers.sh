@@ -313,10 +313,64 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_refresh_wrapper_all_clients_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  mkdir -p "${tmp_dir}/bin"
+
+  cat > "${tmp_dir}/bin/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+case "${1:-}" in
+  list-clients)
+    if [[ "${2:-}" == "-F" ]]; then
+      printf '%s\t%s\n' "/dev/ttys001" "current one"
+      printf '%s\t%s\n' "/dev/ttys002" "current two"
+      exit 0
+    fi
+    ;;
+  set-option)
+    if [[ "${2:-}" == "-q" && "${3:-}" == "-t" ]]; then
+      printf 'set\t%s\t%s\t%s\n' "${4:-}" "${5:-}" "${6:-}" >> "${TMUX_FAKE_INVOCATIONS_FILE}"
+      exit 0
+    fi
+    ;;
+  refresh-client)
+    if [[ "${2:-}" == "-S" && "${3:-}" == "-t" ]]; then
+      printf 'refresh\t%s\n' "${4:-}" >> "${TMUX_FAKE_INVOCATIONS_FILE}"
+      exit 0
+    fi
+    ;;
+esac
+exit 1
+EOF
+  chmod +x "${tmp_dir}/bin/tmux"
+
+  actual=$(
+    PATH="${tmp_dir}/bin:${PATH}" \
+    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_FAKE_RENDER_CACHED="#[fg=#21c7a8] cached#[fg=default] " \
+    TMUX_AGENT_BAR_FAKE_RENDER="#[fg=#82aaff] fresh#[fg=default] " \
+    TMUX_AGENT_BAR_FAKE_INVOCATIONS_FILE="${tmp_dir}/tmux-invocations" \
+    TMUX_FAKE_INVOCATIONS_FILE="${tmp_dir}/tmux-invocations" \
+    "${REFRESH_WRAPPER}" --all-clients --force-refresh --refresh-client
+    cat "${tmp_dir}/tmux-invocations"
+  )
+
+  assert_equal \
+    "all-clients force refresh updates each attached client's current session" \
+    $'runtime\trender-cached\tcurrent one\tforce=\nset\tcurrent one\t@tmux_agent_bar_status_right\t#[fg=#21c7a8] cached#[fg=default] \nrefresh\t/dev/ttys001\nruntime\trender\tcurrent one\tforce=1\nset\tcurrent one\t@tmux_agent_bar_status_right\t#[fg=#82aaff] fresh#[fg=default] \nrefresh\t/dev/ttys001\nruntime\trender-cached\tcurrent two\tforce=\nset\tcurrent two\t@tmux_agent_bar_status_right\t#[fg=#21c7a8] cached#[fg=default] \nrefresh\t/dev/ttys002\nruntime\trender\tcurrent two\tforce=1\nset\tcurrent two\t@tmux_agent_bar_status_right\t#[fg=#82aaff] fresh#[fg=default] \nrefresh\t/dev/ttys002' \
+    "${actual}"
+
+  rm -rf "${tmp_dir}"
+}
+
 run_session_switch_hook_case() {
   local actual=""
 
-  actual=$(grep -E '^set-hook -g client-(session-changed|attached)' "${TMUX_CONF}" || true)
+  actual=$(grep -E '^set-hook -g (client-(session-changed|attached)|session-closed)' "${TMUX_CONF}" || true)
 
   assert_matches \
     "session switch hook targets the changed client's session name" \
@@ -325,6 +379,10 @@ run_session_switch_hook_case() {
   assert_matches \
     "client attach hook targets the attached client's session name" \
     'client-attached.*#\{q:client_session\}.*--force-refresh.*--refresh-client.*#\{q:hook_client\}' \
+    "${actual}"
+  assert_matches \
+    "session close hook refreshes all attached client sessions" \
+    'session-closed.*--all-clients.*--force-refresh.*--refresh-client' \
     "${actual}"
 }
 
@@ -347,5 +405,6 @@ run_refresh_wrapper_cached_case
 run_refresh_wrapper_client_refresh_case
 run_refresh_wrapper_full_case
 run_refresh_wrapper_force_case
+run_refresh_wrapper_all_clients_case
 run_session_switch_hook_case
 run_missing_runtime_case

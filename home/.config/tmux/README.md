@@ -10,7 +10,7 @@ This directory now owns the tmux-side wrappers and path resolution for the exter
 - `agent-status-hook.sh`: stable hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its explicit-state writer.
 - `codex-agent-status-hook.sh`: stable Codex hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its Codex lifecycle adapter.
 - `tmux-agent-bar-path.sh`: shared path-resolution helper for the wrappers.
-- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, keeps the session name tmux-native on the left, and stores the visible right side in a session-scoped tmux option so session switches update immediately.
+- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, keeps the session name tmux-native on the left, and stores the visible right side in a session-scoped tmux option so session switches and session closes update immediately.
 
 The generic parser, collector, renderer, prompt heuristics, and Codex event-to-state mapping live in the managed `tmux-agent-bar` repo, not in this repo.
 
