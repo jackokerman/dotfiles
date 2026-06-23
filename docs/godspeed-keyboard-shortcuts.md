@@ -58,6 +58,24 @@ Move macros:
 
 Keep `M` as the fallback for uncommon moves.
 
+## Navigation Macro Pattern
+
+The `Expand/collapse folder` action operates on the currently selected folder.
+To switch workspace context, first jump to the folder you want to hide, collapse
+it, then jump to the folder you want to use and expand it.
+
+Work navigation macros should use this shape:
+
+1. `Jump to list` -> Personal folder.
+2. `Expand/collapse folder` -> `Collapse`.
+3. `Jump to list` -> Work folder.
+4. `Expand/collapse folder` -> `Expand`.
+5. `Jump to list` -> the target Work list, such as Today, Inbox, Next Actions,
+   or Someday.
+
+Personal navigation macros should use the same shape with Work and Personal
+reversed.
+
 ## Setup
 
 1. Install and sign into the Godspeed desktop app.
