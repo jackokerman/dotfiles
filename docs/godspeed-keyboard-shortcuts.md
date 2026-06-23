@@ -71,9 +71,12 @@ Move macros:
 
 | Shortcut | Macro name | Behavior |
 | --- | --- | --- |
-| `ctrl + m t` | `Move to Same Workspace Today` | Move selected task(s) to Next Actions in the same workspace and set a start date of today. |
-| `ctrl + m n` | `Move to Same Workspace Next Actions` | Move selected task(s) to Next Actions in the same workspace. |
-| `ctrl + m s` | `Move to Same Workspace Someday` | Move selected task(s) to Someday in the same workspace. |
+| `ctrl + m w t` | `Move to Work Today` | Move selected task(s) to Work Next Actions and set a start date of today. |
+| `ctrl + m w n` | `Move to Work Next Actions` | Move selected task(s) to Work Next Actions. |
+| `ctrl + m w s` | `Move to Work Someday` | Move selected task(s) to Work Someday. |
+| `ctrl + m p t` | `Move to Personal Today` | Move selected task(s) to Personal Next Actions and set a start date of today. |
+| `ctrl + m p n` | `Move to Personal Next Actions` | Move selected task(s) to Personal Next Actions. |
+| `ctrl + m p s` | `Move to Personal Someday` | Move selected task(s) to Personal Someday. |
 
 Keep `M` as the fallback for uncommon moves.
 
@@ -103,71 +106,37 @@ Examples:
 
 ## Move Macro Pattern
 
-The move macros should route from the currently selected task's source list, not
-from a fixed default workspace. Use a first `Update macro variables with
-JavaScript` step to set `destinationListID`, then a `Move to list` step that
-uses `{{destinationListID}}`.
+Godspeed's `Move task to list` macro action uses a list picker. It does not
+accept `{{variable}}` text for the destination list, so a single dynamic
+same-workspace move macro is not possible inside the app's macro editor.
 
-Use real IDs from the private Godspeed note when creating the macros. Keep the
-placeholders below out of the app. For each move macro, paste the shared setup
-and that macro's `updateVariables` function into the same JavaScript field.
+Create one fixed-destination move macro per workspace and target state. This
+does not require copying account-specific list IDs: select the destination list
+from Godspeed's dropdown.
 
-```js
-const IDS = {
-  work: {
-    inbox: "WORK_INBOX_ID",
-    nextActions: "WORK_NEXT_ACTIONS_ID",
-    someday: "WORK_SOMEDAY_ID",
-  },
-  personal: {
-    inbox: "PERSONAL_INBOX_ID",
-    nextActions: "PERSONAL_NEXT_ACTIONS_ID",
-    someday: "PERSONAL_SOMEDAY_ID",
-  },
-};
+Next Actions macros:
 
-const workspaceForListID = (listID) => {
-  if (Object.values(IDS.work).includes(listID)) return "work";
-  if (Object.values(IDS.personal).includes(listID)) return "personal";
-  throw new Error(`Unknown Godspeed list ID: ${listID}`);
-};
-```
+1. Add `Move task to list`.
+2. Select either Work `⚡ Next Actions` or Personal `⚡ Next Actions`.
+3. Set `Location` to `Top` or `Bottom`, whichever feels better during triage.
 
-`Move to Same Workspace Next Actions` should use:
+Someday macros:
 
-```js
-const updateVariables = (currentVariables, state) => {
-  const sourceListID = state.selectedTasks[0]?.listID ?? state.selectedList?.id;
-  const workspace = workspaceForListID(sourceListID);
+1. Add `Move task to list`.
+2. Select either Work `🌱 Someday` or Personal `🌱 Someday`.
+3. Set `Location` to `Top` or `Bottom`, whichever feels better during triage.
 
-  return {
-    ...currentVariables,
-    destinationListID: IDS[workspace].nextActions,
-  };
-};
-```
+Today macros should move to Next Actions and set the task's start date to today.
+Prefer start date over due date: a due date means the task is due today, while a
+start date means the task should become available in the Today smart list today.
 
-`Move to Same Workspace Someday` is the same, except the destination is
-`someday`:
+For Today, add:
 
-```js
-const updateVariables = (currentVariables, state) => {
-  const sourceListID = state.selectedTasks[0]?.listID ?? state.selectedList?.id;
-  const workspace = workspaceForListID(sourceListID);
+1. `Move task to list` -> Work or Personal `⚡ Next Actions`.
+2. `Set start date` -> `today`, if Godspeed accepts natural language dates.
 
-  return {
-    ...currentVariables,
-    destinationListID: IDS[workspace].someday,
-  };
-};
-```
-
-`Move to Same Workspace Today` should move to same-workspace Next Actions and
-set the task's start date to today. Prefer start date over due date: a due date
-means the task is due today, while a start date means the task should become
-available in the Today smart list today.
-
-Use this variable step:
+If the start-date action does not accept `today`, add an `Update macro variables
+with JavaScript` step before `Set start date`:
 
 ```js
 const formatLocalDate = (date) => {
@@ -178,21 +147,14 @@ const formatLocalDate = (date) => {
 };
 
 const updateVariables = (currentVariables, state) => {
-  const sourceListID = state.selectedTasks[0]?.listID ?? state.selectedList?.id;
-  const workspace = workspaceForListID(sourceListID);
-
   return {
     ...currentVariables,
-    destinationListID: IDS[workspace].nextActions,
     todayDate: formatLocalDate(new Date()),
   };
 };
 ```
 
-Then add:
-
-1. `Move to list` -> `{{destinationListID}}`.
-2. `Set start date` -> `{{todayDate}}`.
+Then set `Set start date` to `{{todayDate}}`.
 
 If Godspeed's macro editor only exposes a due-date action and not a start-date
 action, skip this macro instead of using due date as a substitute.
@@ -204,19 +166,21 @@ action, skip this macro instead of using due date as a substitute.
 3. Enable `Settings > Text > Key chords`.
 4. Enable `Settings > Sync > hotkey sync`.
 5. Create one navigation macro per table row in the Macro Editor.
-6. Create the move macros with the pattern above.
+6. Create one fixed-destination move macro per move table row.
 7. Bind the shortcuts in the Hotkey Editor with `?`.
 8. Test `ctrl + g w t`, `ctrl + g w i`, one default-workspace alias, and one
    move shortcut.
 
 ## Account-Specific IDs
 
-The move macros need Godspeed list IDs to route tasks correctly. Do not commit
-those IDs to this public repo. Keep the current IDs in the private in-app
-Godspeed note named `Godspeed keyboard shortcuts`, or recopy them from Godspeed
-with `Copy list ID`.
+Navigation macros and fixed-destination move macros should be configured through
+Godspeed's list picker, not by committing account-specific list IDs. If a future
+macro or external script does need IDs, do not commit those IDs to this public
+repo. Keep them in the private in-app Godspeed note named `Godspeed keyboard
+shortcuts`, or recopy them from Godspeed with `Copy list ID`.
 
-The private note should include IDs for:
+If IDs are needed for future external scripts, the private note should include
+IDs for:
 
 - Work folder, Today, Inbox, Next Actions, and Someday.
 - Personal folder, Today, Inbox, Next Actions, and Someday.
@@ -230,10 +194,10 @@ The private note should include IDs for:
   list opens and the other workspace collapses.
 - Run `ctrl + g t`, `ctrl + g i`, `ctrl + g n`, and `ctrl + g s`. Confirm each
   opens the machine's default workspace view.
-- From Work Inbox, run `ctrl + m t`. Confirm the task moves to Work Next
+- From Work Inbox, run `ctrl + m w t`. Confirm the task moves to Work Next
   Actions and appears in Work Today with a start date of today.
-- From Work Inbox, run `ctrl + m n`. Confirm the task moves to Work Next
+- From Work Inbox, run `ctrl + m w n`. Confirm the task moves to Work Next
   Actions.
-- From Personal Inbox, run `ctrl + m s`. Confirm the task moves to Personal
+- From Personal Inbox, run `ctrl + m p s`. Confirm the task moves to Personal
   Someday.
 - Test multi-select with two inbox tasks.
