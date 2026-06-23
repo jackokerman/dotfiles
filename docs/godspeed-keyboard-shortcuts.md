@@ -45,30 +45,36 @@ aliases for the views used constantly on a given machine.
 
 Workspace navigation macros:
 
-- `ctrl + g w`: reserved Work prefix; do not bind this to a command.
-- `ctrl + g w t`: show Work and jump to Work Today.
-- `ctrl + g w i`: show Work and jump to Work Inbox.
-- `ctrl + g w n`: show Work and jump to Work Next Actions.
-- `ctrl + g w s`: show Work and jump to Work Someday.
-- `ctrl + g p`: reserved Personal prefix; do not bind this to a command.
-- `ctrl + g p t`: show Personal and jump to Personal Today.
-- `ctrl + g p i`: show Personal and jump to Personal Inbox.
-- `ctrl + g p n`: show Personal and jump to Personal Next Actions.
-- `ctrl + g p s`: show Personal and jump to Personal Someday.
+| Shortcut | Macro name | Behavior |
+| --- | --- | --- |
+| `ctrl + g w` | none | Reserved Work prefix; do not bind this to a command. |
+| `ctrl + g w t` | `Jump to Work Today` | Show Work and jump to Work Today. |
+| `ctrl + g w i` | `Jump to Work Inbox` | Show Work and jump to Work Inbox. |
+| `ctrl + g w n` | `Jump to Work Next Actions` | Show Work and jump to Work Next Actions. |
+| `ctrl + g w s` | `Jump to Work Someday` | Show Work and jump to Work Someday. |
+| `ctrl + g p` | none | Reserved Personal prefix; do not bind this to a command. |
+| `ctrl + g p t` | `Jump to Personal Today` | Show Personal and jump to Personal Today. |
+| `ctrl + g p i` | `Jump to Personal Inbox` | Show Personal and jump to Personal Inbox. |
+| `ctrl + g p n` | `Jump to Personal Next Actions` | Show Personal and jump to Personal Next Actions. |
+| `ctrl + g p s` | `Jump to Personal Someday` | Show Personal and jump to Personal Someday. |
 
 Default-workspace aliases:
 
-- `ctrl + g t`: default Today.
-- `ctrl + g i`: default Inbox.
-- `ctrl + g n`: default Next Actions.
-- `ctrl + g s`: default Someday.
+| Shortcut | Macro name | Behavior |
+| --- | --- | --- |
+| `ctrl + g t` | `Jump to Default Today` | Jump to the default workspace Today. |
+| `ctrl + g i` | `Jump to Default Inbox` | Jump to the default workspace Inbox. |
+| `ctrl + g n` | `Jump to Default Next Actions` | Jump to the default workspace Next Actions. |
+| `ctrl + g s` | `Jump to Default Someday` | Jump to the default workspace Someday. |
 
 On a work machine, the default workspace should be Work.
 
 Move macros:
 
-- `ctrl + m n`: move selected task(s) to Next Actions in the same workspace.
-- `ctrl + m s`: move selected task(s) to Someday in the same workspace.
+| Shortcut | Macro name | Behavior |
+| --- | --- | --- |
+| `ctrl + m n` | `Move to Same Workspace Next Actions` | Move selected task(s) to Next Actions in the same workspace. |
+| `ctrl + m s` | `Move to Same Workspace Someday` | Move selected task(s) to Someday in the same workspace. |
 
 Keep `M` as the fallback for uncommon moves.
 
@@ -102,7 +108,7 @@ Examples:
 2. Enable task/list cloud sync.
 3. Enable `Settings > Text > Key chords`.
 4. Enable `Settings > Sync > hotkey sync`.
-5. Create one navigation macro per binding in the Macro Editor.
+5. Create one navigation macro per table row in the Macro Editor.
 6. Create the move macros with `Update macro variables with JavaScript`, then
    `Move to list` using `{{destinationListID}}`.
 7. Bind the shortcuts in the Hotkey Editor with `?`.
