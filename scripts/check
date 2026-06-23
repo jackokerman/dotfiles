@@ -89,6 +89,7 @@ run_bash_syntax() {
         "home/.local/bin/git-pager-delta"
         "home/.local/bin/codex-session-snippets"
         "home/.local/bin/plugin-eval"
+        "home/.local/bin/public-content-guard"
         "home/.local/bin/slack-rich-text"
         "home/.local/bin/sesh-pick"
         "home/.local/bin/sesh-one-shot"
@@ -114,6 +115,7 @@ run_bash_syntax() {
         "tests/tmux-agent-bar/test-sync.sh"
         "tests/tmux-agent-bar/test-wrappers.sh"
         "tests/tuicr/test-setup.sh"
+        "tests/public-content-guard/test-guard.sh"
         "tests/zsh/test-p10k-overrides.sh"
         "tests/tmux-agent-status/testlib.sh"
         "scripts/validate-codex-sync.sh"
@@ -145,6 +147,7 @@ assert_expected_executables() {
         "home/.local/bin/slack-rich-text"
         "home/.local/bin/codex-session-snippets"
         "home/.local/bin/plugin-eval"
+        "home/.local/bin/public-content-guard"
         "home/.config/tmux/codex-agent-status-hook.sh"
         "home/.config/tmux/session-status-left.sh"
         "home/.config/tmux/session-status-refresh.sh"
@@ -254,6 +257,11 @@ run_slack_rich_text_tests() {
     bun --install=auto test "$PROJECT_ROOT/tests/slack-rich-text/slack-rich-text.test.ts"
 }
 
+run_public_content_guard_tests() {
+    log "Running public content guard tests"
+    "$PROJECT_ROOT/tests/public-content-guard/test-guard.sh"
+}
+
 run_codex_theme_sync_check() {
     log "Checking Codex Nightfly theme generation"
     bun --install=auto "$PROJECT_ROOT/scripts/ts/sync-codex-nightfly-theme.ts" --check
@@ -289,6 +297,7 @@ run_full_checks() {
     run_codex_sync_tests
     run_codex_config_coach_tests
     run_slack_rich_text_tests
+    run_public_content_guard_tests
     run_codex_theme_sync_check
     run_codex_sync_validation
     run_prose_checks
@@ -362,6 +371,10 @@ run_staged_checks() {
 
     if changed_any "home/.local/bin/slack-rich-text" "home/.local/lib/slack-rich-text.ts" "home/.raycast-scripts/*slack-rich-text*" "tests/slack-rich-text/*"; then
         run_slack_rich_text_tests
+    fi
+
+    if changed_any "home/.local/bin/public-content-guard" "scripts/check-sensitive-content.sh" "tests/public-content-guard/*"; then
+        run_public_content_guard_tests
     fi
 
     if changed_any "scripts/ts/sync-codex-nightfly-theme.ts" "home/.codex/references/nightfly/*"; then
