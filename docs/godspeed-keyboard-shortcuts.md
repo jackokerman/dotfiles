@@ -133,28 +133,7 @@ start date means the task should become available in the Today smart list today.
 For Today, add:
 
 1. `Move task to list` -> Work or Personal `⚡ Next Actions`.
-2. `Set start date` -> `today`, if Godspeed accepts natural language dates.
-
-If the start-date action does not accept `today`, add an `Update macro variables
-with JavaScript` step before `Set start date`:
-
-```js
-const formatLocalDate = (date) => {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, "0");
-  const day = `${date.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
-const updateVariables = (currentVariables, state) => {
-  return {
-    ...currentVariables,
-    todayDate: formatLocalDate(new Date()),
-  };
-};
-```
-
-Then set `Set start date` to `{{todayDate}}`.
+2. `Set start date` -> `today`.
 
 If Godspeed's macro editor only exposes a due-date action and not a start-date
 action, skip this macro instead of using due date as a substitute.
