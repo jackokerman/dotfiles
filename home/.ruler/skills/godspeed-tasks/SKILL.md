@@ -77,6 +77,7 @@ Smart-list verification note:
 
 - Direct writes are fine for explicit, objective operations on explicit targets.
 - For explicit follow-up capture, prefer the helper `create-task` command over ad hoc raw API calls.
+- When capturing a new follow-up task and its priority is unclear, prefer `inbox` over guessing `next-actions` or `someday`. Let the user triage it during review.
 - When a needed Godspeed workflow is missing from the helper, extend the tracked `scripts/godspeed-tasks.ts` client surface and its tests before reaching for ad hoc Python or Node scripts.
 - Prefer direct API observation through the tracked helper or Bun probes over reverse engineering the desktop app bundle. Treat local bundle inspection as a last resort for undocumented behavior, and capture any confirmed contract back into the helper immediately.
 - Require a preview or approval step before bulk, heuristic, or subjective categorization changes.

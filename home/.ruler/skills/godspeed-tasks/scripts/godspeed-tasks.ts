@@ -1591,6 +1591,10 @@ async function patchTask(taskId: string, body: Record<string, unknown>): Promise
   return extractTaskFromResponse(response, `task update for ${taskId}`);
 }
 
+export function selectTaskUpdateTransport(body: Record<string, unknown>): "bulkUpdate" | "patch" {
+  return Object.hasOwn(body, "list_id") ? "bulkUpdate" : "patch";
+}
+
 async function loadTaskById(taskId: string): Promise<GodspeedTask> {
   const response = await fetchJson<GodspeedTaskResponse>(`/tasks/${taskId}`);
   return extractTaskFromResponse(response, `task lookup for ${taskId}`);
@@ -2036,6 +2040,25 @@ function buildTaskPatchBody(options: Map<string, string[]>): Record<string, unkn
   return body;
 }
 
+async function updateTaskById(taskId: string, body: Record<string, unknown>): Promise<GodspeedTask> {
+  if (selectTaskUpdateTransport(body) === "bulkUpdate") {
+    const [task] = await bulkUpdateTasks([
+      {
+        taskId,
+        updateBody: body,
+      },
+    ]);
+
+    if (!task) {
+      throw new Error(`Godspeed API did not return an updated task for ${taskId}`);
+    }
+
+    return task;
+  }
+
+  return patchTask(taskId, body);
+}
+
 async function repositionTaskBlock(params: {
   afterTaskId: string;
   beforeTaskId: string;
@@ -2297,7 +2320,7 @@ async function runCommand(parsedArgs: ParsedCliArgs): Promise<unknown> {
     expectNoPositionals(parsedArgs);
     const taskId = getRequiredOption(parsedArgs.options, "task-id");
     return {
-      task: await patchTask(taskId, buildTaskPatchBody(parsedArgs.options)),
+      task: await updateTaskById(taskId, buildTaskPatchBody(parsedArgs.options)),
     };
   }
 

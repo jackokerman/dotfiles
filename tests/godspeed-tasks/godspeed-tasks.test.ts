@@ -10,6 +10,7 @@ import {
   getGodspeedRetryDelayMs,
   getLocalEvidenceSignals,
   isLocallyVerifiableTask,
+  selectTaskUpdateTransport,
 } from "../../home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks";
 
 type GodspeedList = Parameters<typeof discoverLists>[0][number];
@@ -341,6 +342,17 @@ describe("buildTaskBlockRepositionPlan", () => {
         ],
       }),
     ).toThrow("The after boundary task must appear before the before boundary task");
+  });
+});
+
+describe("selectTaskUpdateTransport", () => {
+  it("uses bulk update when the task update changes list membership", () => {
+    expect(selectTaskUpdateTransport({ list_id: "personal-next" })).toBe("bulkUpdate");
+  });
+
+  it("uses direct patching for in-place task field updates", () => {
+    expect(selectTaskUpdateTransport({ notes: "Updated notes" })).toBe("patch");
+    expect(selectTaskUpdateTransport({ timeless_due_at: "2026-06-23", title: "Updated title" })).toBe("patch");
   });
 });
 
