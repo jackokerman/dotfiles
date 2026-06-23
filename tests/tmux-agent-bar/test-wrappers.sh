@@ -301,7 +301,7 @@ EOF
     TMUX_AGENT_BAR_FAKE_RENDER="#[fg=#82aaff] fresh#[fg=default] " \
     TMUX_AGENT_BAR_FAKE_INVOCATIONS_FILE="${tmp_dir}/tmux-invocations" \
     TMUX_FAKE_INVOCATIONS_FILE="${tmp_dir}/tmux-invocations" \
-    "${REFRESH_WRAPPER}" 'remote-one' --force-refresh --refresh-client --client /dev/ttys001
+    "${REFRESH_WRAPPER}" 'remote-one' --force-refresh --foreground-fresh --refresh-client --client /dev/ttys001
     cat "${tmp_dir}/tmux-invocations"
   )
 
@@ -355,7 +355,7 @@ EOF
     TMUX_AGENT_BAR_FAKE_RENDER="#[fg=#82aaff] fresh#[fg=default] " \
     TMUX_AGENT_BAR_FAKE_INVOCATIONS_FILE="${tmp_dir}/tmux-invocations" \
     TMUX_FAKE_INVOCATIONS_FILE="${tmp_dir}/tmux-invocations" \
-    "${REFRESH_WRAPPER}" --all-clients --force-refresh --refresh-client
+    "${REFRESH_WRAPPER}" --all-clients --force-refresh --foreground-fresh --refresh-client
     cat "${tmp_dir}/tmux-invocations"
   )
 
@@ -386,6 +386,21 @@ run_session_switch_hook_case() {
     "${actual}"
 }
 
+run_status_right_uses_cached_option_case() {
+  local actual=""
+
+  actual=$(grep -E 'status-right.*tmux_agent_bar_status_right' "${TMUX_CONF}" || true)
+
+  assert_matches \
+    "status-right reads the cached tmux option" \
+    'status-right.*#\{@tmux_agent_bar_status_right\}' \
+    "${actual}"
+
+  if grep -Eq 'status-right.*session-status-refresh\.sh' "${TMUX_CONF}"; then
+    fail "status-right should not poll session-status-refresh.sh"
+  fi
+}
+
 run_missing_runtime_case() {
   local tmp_dir="" actual=""
 
@@ -407,4 +422,5 @@ run_refresh_wrapper_full_case
 run_refresh_wrapper_force_case
 run_refresh_wrapper_all_clients_case
 run_session_switch_hook_case
+run_status_right_uses_cached_option_case
 run_missing_runtime_case
