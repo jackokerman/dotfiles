@@ -41,6 +41,7 @@ For explicit objective writes:
 
 ```bash
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts create-task --folder personal --state next-actions --title "Review the migration follow-up" --label server --due 2026-06-23
+bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts complete-task --task-id <task-id>
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts ensure-label --name server
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts set-task-labels --add-label server --task-id <task-id>
 bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts remove-task-labels --remove-label server --task-id <task-id>

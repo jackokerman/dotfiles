@@ -4,6 +4,7 @@ import {
   buildTaskBlockRepositionPlan,
   buildInboxSnapshot,
   buildTaskCreationPlan,
+  buildTaskCompletionPatchBody,
   buildSmartListPlan,
   buildTaskSnapshot,
   discoverLists,
@@ -350,9 +351,29 @@ describe("selectTaskUpdateTransport", () => {
     expect(selectTaskUpdateTransport({ list_id: "personal-next" })).toBe("bulkUpdate");
   });
 
+  it("uses bulk update when the task update completes a task", () => {
+    expect(selectTaskUpdateTransport({ completed_at: "2026-06-23T17:00:00.000Z" })).toBe(
+      "bulkUpdate",
+    );
+  });
+
   it("uses direct patching for in-place task field updates", () => {
     expect(selectTaskUpdateTransport({ notes: "Updated notes" })).toBe("patch");
     expect(selectTaskUpdateTransport({ timeless_due_at: "2026-06-23", title: "Updated title" })).toBe("patch");
+  });
+});
+
+describe("buildTaskCompletionPatchBody", () => {
+  it("builds a completion patch from an explicit timestamp", () => {
+    expect(buildTaskCompletionPatchBody("2026-06-23T17:00:00.000Z")).toEqual({
+      completed_at: "2026-06-23T17:00:00.000Z",
+    });
+  });
+
+  it("rejects invalid completion timestamps", () => {
+    expect(() => buildTaskCompletionPatchBody("tomorrow")).toThrow(
+      "--completed-at must be an ISO timestamp",
+    );
   });
 });
 

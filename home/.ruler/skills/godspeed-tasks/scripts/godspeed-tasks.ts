@@ -1592,7 +1592,7 @@ async function patchTask(taskId: string, body: Record<string, unknown>): Promise
 }
 
 export function selectTaskUpdateTransport(body: Record<string, unknown>): "bulkUpdate" | "patch" {
-  return Object.hasOwn(body, "list_id") ? "bulkUpdate" : "patch";
+  return Object.hasOwn(body, "list_id") || Object.hasOwn(body, "completed_at") ? "bulkUpdate" : "patch";
 }
 
 async function loadTaskById(taskId: string): Promise<GodspeedTask> {
@@ -2040,6 +2040,18 @@ function buildTaskPatchBody(options: Map<string, string[]>): Record<string, unkn
   return body;
 }
 
+export function buildTaskCompletionPatchBody(
+  completedAt: string = new Date().toISOString(),
+): Record<string, unknown> {
+  if (Number.isNaN(Date.parse(completedAt))) {
+    throw new UsageError("--completed-at must be an ISO timestamp");
+  }
+
+  return {
+    completed_at: completedAt,
+  };
+}
+
 async function updateTaskById(taskId: string, body: Record<string, unknown>): Promise<GodspeedTask> {
   if (selectTaskUpdateTransport(body) === "bulkUpdate") {
     const [task] = await bulkUpdateTasks([
@@ -2244,6 +2256,7 @@ function buildUsageText(): string {
     "  get-task --task-id <id>",
     "  create-task --folder work|personal --state inbox|next-actions|someday --title <title> [--notes <text>] [--label <name> ...] [--due <YYYY-MM-DD>]",
     "  update-task --task-id <id> [--title <title>] [--notes <text>] [--list-id <id>] [--due <YYYY-MM-DD|none>]",
+    "  complete-task --task-id <id> [--completed-at <ISO timestamp>]",
     "  delete-task --task-id <id>",
     "  ensure-label --name <label-name> [--color <#rrggbb>]",
     "  set-task-labels --add-label <label-name> --task-id <id> [--task-id <id> ...]",
@@ -2321,6 +2334,17 @@ async function runCommand(parsedArgs: ParsedCliArgs): Promise<unknown> {
     const taskId = getRequiredOption(parsedArgs.options, "task-id");
     return {
       task: await updateTaskById(taskId, buildTaskPatchBody(parsedArgs.options)),
+    };
+  }
+
+  if (parsedArgs.command === "complete-task") {
+    expectNoPositionals(parsedArgs);
+    const taskId = getRequiredOption(parsedArgs.options, "task-id");
+    return {
+      task: await updateTaskById(
+        taskId,
+        buildTaskCompletionPatchBody(getOption(parsedArgs.options, "completed-at")),
+      ),
     };
   }
 
