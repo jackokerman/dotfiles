@@ -11,6 +11,7 @@ Keep shared tooling generic at the source, then update its dependents explicitly
 
 1. Verify the source update is real.
    - Confirm the release, tag, registry version, or local package artifact that dependents should consume.
+   - Classify the release impact before touching dependents. Roll out downstream dependency bumps for exported config, runtime, API, or generated-output behavior changes. Do not churn dependents for docs-only, README-only, release-metadata, or source-repo check-tooling changes unless the user explicitly asks.
    - If the source package is dotty-managed config or generated Codex output, update tracked sources first and run `dotty update` before rolling it out.
 
 2. Discover downstream dependents.
@@ -34,7 +35,7 @@ Keep shared tooling generic at the source, then update its dependents explicitly
 
 5. Report the rollout state.
    - List the source version released or consumed.
-   - List each dependent updated, verification run, commit pushed, and any repo skipped.
+   - List each dependent updated, verification run, commit pushed, and any repo skipped. If the release was not rolled out because it did not affect consumers, say that explicitly.
    - If auth, CI, or package registry setup blocks rollout, state the exact blocker and the next action needed from the user.
 
 ## Boundaries

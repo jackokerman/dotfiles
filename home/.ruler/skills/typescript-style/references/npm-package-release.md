@@ -12,6 +12,8 @@ Use this reference when creating or publishing a reusable npm package, especiall
 
 ## Publish And Verify
 
+- Keep public package READMEs consumer-focused: what the package is, how to install it, and how to use it. Avoid encoding internal origin stories, local project names, change history, or exhaustive generated-rule summaries that will drift from source.
+- For public packages, run `public-content-guard --worktree` when it is available before publishing docs or package metadata changes. Keep host-specific pattern files outside public repos.
 - Make the initial release workflow manual until npm auth and package visibility are confirmed.
 - After a release run, verify both the workflow logs and the registry. npm can report a successful publish before package metadata is visible through the top-level package endpoint.
 - Check the exact version endpoint if top-level metadata lags: `https://registry.npmjs.org/<encoded-package>/<version>`.
