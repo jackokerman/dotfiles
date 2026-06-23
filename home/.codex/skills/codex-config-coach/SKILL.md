@@ -33,6 +33,7 @@ Help improve Codex behavior by turning real session friction into measured, dura
    - Use deferred reference files for detailed procedures, examples, or context that should not load on every turn.
    - Add or update a helper script only when deterministic inspection or repeated command logic is needed.
    - When a workflow already has a tracked helper or client, prefer extending that helper and its tests over teaching Codex more ad hoc fallback commands. Treat raw API probes and runtime bundle inspection as last-resort discovery steps, then capture the confirmed contract back into the helper immediately.
+   - When a repo-local helper grows its own runtime, dependency, verification, or release-cadence needs, evaluate extracting it into a standalone repo or package instead of continuing to expand dotfiles. Favor extraction when the helper is likely to back multiple surfaces such as a CLI, Raycast extension, or other automation entrypoints.
    - Avoid broad new policy, speculative guardrails, fallback paths, or duplicate guidance.
    - When auditing later dotty-chain repos, check for skill-name overlap with the base dotfiles skills and for generic guidance nested inside host-specific skills.
 5. Use a measurement ladder for high-impact changes.
@@ -71,6 +72,7 @@ Use helper output as evidence, not as a replacement for judgment. Pull only the 
 - Move a generic preference from an overlay into the base dotfiles repo when it is reusable outside work.
 - Add a short routing rule when agents repeatedly edit generated `~/.codex` state instead of tracked sources.
 - Split a large skill by moving examples or detailed procedure into a reference file when `plugin-eval` shows excessive invoke budget and the detail is not needed on every use.
+- Recommend extracting a helper from dotfiles when its tests, dependencies, or release needs create repo-wide drag that is unrelated to most dotfiles changes.
 - Add pressure scenarios before changing a high-impact skill whose purpose is behavioral compliance rather than static reference lookup.
 - Decline to edit config when the correction is specific to one task or already covered by existing instructions.
 

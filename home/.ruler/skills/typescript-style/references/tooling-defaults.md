@@ -5,7 +5,9 @@ Use this file only when the task includes choosing small reusable libraries for 
 ## Principles
 
 - Prefer the runtime and standard library first when the native surface is already direct.
+- For non-browser tools, helpers, and CLIs, do not overweight bundle-size concerns. Prefer a small vetted dependency when it materially improves semantics, correctness, or readability.
 - Add a dependency when it removes repeated boilerplate or common failure handling, not just because it exists.
+- Favor community-standard packages with narrow purpose and clear maintenance over custom glue code when both solve the same repeated problem.
 - Keep this defaults list short. Add a new default only after the same choice comes up repeatedly.
 
 ## HTTP And Request Pacing
