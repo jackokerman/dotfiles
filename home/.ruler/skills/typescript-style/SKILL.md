@@ -57,5 +57,6 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 - Treat external or untrusted data as `unknown` at the boundary, then narrow it deliberately.
 - For optional values, prefer explicit strict checks such as `=== undefined` or `!== undefined` over loose null checks.
 - Prefer optional chaining and nullish coalescing when they make fallback logic clearer.
+- Before weakening a shared lint config, verify the rule's documented options or local schema. If a legitimate exception has no narrow option and is domain-specific, prefer a small local suppression with a concrete reason over turning the rule off globally.
 - If an inline `eslint-disable` is necessary, add a short comment explaining why the escape hatch is safe.
 - If several nearby lines need the same rule disabled, prefer a single file-level disable with a clear explanation over repeated identical `eslint-disable-next-line` comments.
