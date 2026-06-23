@@ -21,6 +21,7 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 - Prefer small focused functions. Use guard clauses and early returns to flatten control flow instead of nesting conditionals when a branch can exit early.
 - Prefer `const` by default and `let` only when reassignment is part of the logic.
 - Prefer template literals over string concatenation when dynamic values are involved.
+- For broad naming or API-shape migrations, use symbol-aware TypeScript refactors when practical, then separately audit serialized boundaries such as config keys, CLI flags, env vars, JSON payload fields, database fields, and persisted state before changing them.
 
 ## API Shape And Types
 
