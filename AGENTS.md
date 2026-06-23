@@ -28,8 +28,11 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep generic parser, collector, renderer, prompt heuristics, and source registration in the external `tmux-agent-bar` repo, not in this repo.
 - Use this repo for `tmux-agent-bar` checkout management, wrapper stability, and runtime path resolution only.
 - Preserve the tmux-expanded session target flow from `tmux.conf` into the wrappers so `#()` jobs do not reuse stale output after a session switch.
+- Keep `status-right` event-driven. It should render cached tmux options only; do not reintroduce a polling `#()` renderer or refresher in `status-right` to fix freshness issues.
 - Keep wrapper and sync tests behavior-first. Assert path precedence, wrapper exec behavior, and safe update behavior instead of helper boundaries.
+- Before changing tmux status behavior, map the source of truth and trigger path first: local hook state, live pane tail, remote or later-repo source cache, cached tmux option, and the tmux hook that refreshes it. Fix the broken boundary instead of adding a special case for one visible symptom.
 - When a tmux status bug comes from a real session, reduce it to the smallest reproducer in `tmux-agent-bar`; only add a dotfiles test when the bug is specifically about wrapper or checkout behavior.
+- When a status regression crosses `tmux-agent-bar`, this repo, and a later dotty-chain overlay, update the paired tests/docs in every affected repo before pushing.
 - Do not change tmux agent-status behavior without running `./scripts/check`.
 
 ## Mental Model
