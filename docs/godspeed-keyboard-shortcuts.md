@@ -45,11 +45,13 @@ aliases for the views used constantly on a given machine.
 
 Workspace navigation macros:
 
-- `ctrl + g w`: show Work and jump to Work Today.
+- `ctrl + g w`: reserved Work prefix; do not bind this to a command.
+- `ctrl + g w t`: show Work and jump to Work Today.
 - `ctrl + g w i`: show Work and jump to Work Inbox.
 - `ctrl + g w n`: show Work and jump to Work Next Actions.
 - `ctrl + g w s`: show Work and jump to Work Someday.
-- `ctrl + g p`: show Personal and jump to Personal Today.
+- `ctrl + g p`: reserved Personal prefix; do not bind this to a command.
+- `ctrl + g p t`: show Personal and jump to Personal Today.
 - `ctrl + g p i`: show Personal and jump to Personal Inbox.
 - `ctrl + g p n`: show Personal and jump to Personal Next Actions.
 - `ctrl + g p s`: show Personal and jump to Personal Someday.
@@ -89,7 +91,7 @@ reversed.
 
 Examples:
 
-- Work Today (`ctrl + g w`): collapse Personal, expand Work, jump to Work
+- Work Today (`ctrl + g w t`): collapse Personal, expand Work, jump to Work
   Today.
 - Work Inbox (`ctrl + g w i`): collapse Personal, expand Work, jump to Work
   Inbox.
@@ -104,8 +106,8 @@ Examples:
 6. Create the move macros with `Update macro variables with JavaScript`, then
    `Move to list` using `{{destinationListID}}`.
 7. Bind the shortcuts in the Hotkey Editor with `?`.
-8. Test `ctrl + g w`, `ctrl + g w i`, one default-workspace alias, and one move
-   shortcut.
+8. Test `ctrl + g w t`, `ctrl + g w i`, one default-workspace alias, and one
+   move shortcut.
 
 ## Account-Specific IDs
 
@@ -124,8 +126,8 @@ The private note should include IDs for:
 ## Test Plan
 
 - Press `?` and verify every new chord has no conflict.
-- Run `ctrl + g w`, `ctrl + g w i`, and `ctrl + g p`. Confirm the target list
-  opens and the other workspace collapses.
+- Run `ctrl + g w t`, `ctrl + g w i`, and `ctrl + g p t`. Confirm the target
+  list opens and the other workspace collapses.
 - Run `ctrl + g t`, `ctrl + g i`, `ctrl + g n`, and `ctrl + g s`. Confirm each
   opens the machine's default workspace view.
 - From Work Inbox, run `ctrl + m n`. Confirm the task moves to Work Next
