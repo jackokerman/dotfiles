@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
 import {
+  buildTaskBlockRepositionPlan,
   buildInboxSnapshot,
   buildTaskCreationPlan,
   buildSmartListPlan,
@@ -13,6 +14,7 @@ import {
 
 type GodspeedList = Parameters<typeof discoverLists>[0][number];
 type GodspeedTask = Parameters<typeof buildInboxSnapshot>[0]["workTasks"][number];
+type OrderedGodspeedTask = Parameters<typeof buildTaskBlockRepositionPlan>[0]["tasks"][number];
 
 function list(
   params: Partial<GodspeedList> & Pick<GodspeedList, "id" | "indent_level" | "list_type" | "name">,
@@ -32,18 +34,41 @@ function task(
   params: Partial<GodspeedTask> & Pick<GodspeedTask, "created_at" | "id" | "notes" | "title" | "updated_at">,
 ): GodspeedTask {
   return {
+    cleared_at: params.cleared_at ?? null,
+    completed_at: params.completed_at ?? null,
     created_at: params.created_at,
     due_at: params.due_at ?? null,
     duration_minutes: params.duration_minutes ?? null,
     id: params.id,
+    indent_level: params.indent_level ?? 0,
     label_ids: params.label_ids ?? [],
     list_id: params.list_id ?? "test-list",
+    order_index: params.order_index ?? 0,
+    ordinal: params.ordinal ?? "100",
     notes: params.notes,
     starts_at: params.starts_at ?? null,
     timeless_due_at: params.timeless_due_at ?? null,
     timeless_starts_at: params.timeless_starts_at ?? null,
     title: params.title,
     updated_at: params.updated_at,
+  };
+}
+
+function orderedTask(
+  params: Partial<GodspeedTask> & Pick<GodspeedTask, "created_at" | "id" | "notes" | "title" | "updated_at">,
+): OrderedGodspeedTask {
+  const value = task(params);
+  if (value.indent_level === undefined || value.order_index === undefined || value.ordinal == null) {
+    throw new Error("Ordered task fixtures require indent_level, order_index, and ordinal");
+  }
+
+  return {
+    id: value.id,
+    indent_level: value.indent_level,
+    list_id: value.list_id,
+    order_index: value.order_index,
+    ordinal: value.ordinal,
+    title: value.title,
   };
 }
 
@@ -201,6 +226,121 @@ describe("discoverLists", () => {
       ...mirroredLists(),
     ];
     expect(() => discoverLists(lists)).toThrow('Found child list "📥 Inbox" without a preceding folder');
+  });
+});
+
+describe("buildTaskBlockRepositionPlan", () => {
+  it("creates evenly ordered updates between two boundary tasks", () => {
+    const afterTask = orderedTask({
+      created_at: "2026-04-01T00:00:00.000Z",
+      id: "after-task",
+      indent_level: 0,
+      list_id: "personal-next",
+      notes: "",
+      order_index: 3844,
+      ordinal: "100",
+      title: "After task",
+      updated_at: "2026-04-01T00:00:00.000Z",
+    });
+    const beforeTask = orderedTask({
+      created_at: "2026-04-01T00:00:00.000Z",
+      id: "before-task",
+      indent_level: 0,
+      list_id: "personal-next",
+      notes: "",
+      order_index: 7688,
+      ordinal: "200",
+      title: "Before task",
+      updated_at: "2026-04-01T00:00:00.000Z",
+    });
+    const parentTask = orderedTask({
+      created_at: "2026-04-01T00:00:00.000Z",
+      id: "parent-task",
+      indent_level: 0,
+      list_id: "personal-next",
+      notes: "",
+      order_index: 300,
+      ordinal: "300",
+      title: "Parent task",
+      updated_at: "2026-04-01T00:00:00.000Z",
+    });
+    const childTask = orderedTask({
+      created_at: "2026-04-01T00:00:00.000Z",
+      id: "child-task",
+      indent_level: 0,
+      list_id: "personal-next",
+      notes: "",
+      order_index: 400,
+      ordinal: "400",
+      title: "Child task",
+      updated_at: "2026-04-01T00:00:00.000Z",
+    });
+
+    const plan = buildTaskBlockRepositionPlan({
+      afterTask,
+      beforeTask,
+      entries: [
+        { indentLevel: 0, taskId: "parent-task" },
+        { indentLevel: 1, taskId: "child-task" },
+      ],
+      tasks: [parentTask, childTask],
+    });
+
+    expect(plan.listId).toBe("personal-next");
+    expect(plan.afterTaskId).toBe("after-task");
+    expect(plan.beforeTaskId).toBe("before-task");
+    expect(plan.updates).toHaveLength(2);
+    expect(plan.updates[0]?.indentLevel).toBe(0);
+    expect(plan.updates[1]?.indentLevel).toBe(1);
+    expect(plan.updates[0]?.orderIndex).toBeGreaterThan(afterTask.order_index ?? 0);
+    expect(plan.updates[1]?.orderIndex).toBeLessThan(beforeTask.order_index ?? Number.MAX_SAFE_INTEGER);
+    expect(plan.updates[0]?.orderIndex).toBeLessThan(plan.updates[1]?.orderIndex ?? 0);
+  });
+
+  it("rejects boundary tasks that are out of order", () => {
+    const afterTask = orderedTask({
+      created_at: "2026-04-01T00:00:00.000Z",
+      id: "after-task",
+      indent_level: 0,
+      list_id: "personal-next",
+      notes: "",
+      order_index: 7688,
+      ordinal: "200",
+      title: "After task",
+      updated_at: "2026-04-01T00:00:00.000Z",
+    });
+    const beforeTask = orderedTask({
+      created_at: "2026-04-01T00:00:00.000Z",
+      id: "before-task",
+      indent_level: 0,
+      list_id: "personal-next",
+      notes: "",
+      order_index: 3844,
+      ordinal: "100",
+      title: "Before task",
+      updated_at: "2026-04-01T00:00:00.000Z",
+    });
+
+    expect(() =>
+      buildTaskBlockRepositionPlan({
+        afterTask,
+        beforeTask,
+        entries: [{ indentLevel: 0, taskId: "task-1" }],
+        tasks: [
+          orderedTask({
+            created_at: "2026-04-01T00:00:00.000Z",
+            id: "task-1",
+            indent_level: 0,
+            list_id: "personal-next",
+            notes: "",
+            order_index: 300,
+            ordinal: "300",
+            title: "Task 1",
+            updated_at: "2026-04-01T00:00:00.000Z",
+          }),
+        ],
+      }),
+    ).toThrow("The after boundary task must appear before the before boundary task");
   });
 });
 

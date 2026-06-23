@@ -32,6 +32,7 @@ Help improve Codex behavior by turning real session friction into measured, dura
    - Use an existing skill when the behavior applies only to that workflow.
    - Use deferred reference files for detailed procedures, examples, or context that should not load on every turn.
    - Add or update a helper script only when deterministic inspection or repeated command logic is needed.
+   - When a workflow already has a tracked helper or client, prefer extending that helper and its tests over teaching Codex more ad hoc fallback commands. Treat raw API probes and runtime bundle inspection as last-resort discovery steps, then capture the confirmed contract back into the helper immediately.
    - Avoid broad new policy, speculative guardrails, fallback paths, or duplicate guidance.
    - When auditing later dotty-chain repos, check for skill-name overlap with the base dotfiles skills and for generic guidance nested inside host-specific skills.
 5. Use a measurement ladder for high-impact changes.

@@ -49,14 +49,19 @@ type GodspeedLabelsResponse = {
 };
 
 type GodspeedTask = {
+  cleared_at?: string | null;
+  completed_at?: string | null;
   created_at: string;
   due_at: string | null;
   duration_minutes: number | null;
   id: string;
+  indent_level?: number;
   label_ids: string[];
   list_id: string;
   metadata?: Record<string, unknown>;
   notes: string;
+  order_index?: number;
+  ordinal?: string | null;
   starts_at: string | null;
   timeless_due_at: string | null;
   timeless_starts_at: string | null;
@@ -75,6 +80,20 @@ type GodspeedTasksResponse = {
   lists?: GodspeedList[];
   success: boolean;
   tasks: GodspeedTask[];
+};
+
+type GodspeedTodoItemsResponse = {
+  success: boolean;
+  todo_items: GodspeedTask[];
+};
+
+type GodspeedBulkUpdateTasksResponse = {
+  success: boolean;
+  updated_todo_items: GodspeedTask[];
+};
+
+type GodspeedDeleteTaskResponse = {
+  success: boolean;
 };
 
 type NormalizedLabel = {
@@ -262,6 +281,36 @@ type TaskCreationResult = {
   title: string;
 };
 
+type OrderedGodspeedTask = Pick<
+  GodspeedTask,
+  "id" | "indent_level" | "list_id" | "order_index" | "ordinal" | "title"
+>;
+
+type TaskBlockEntry = {
+  indentLevel: number;
+  taskId: string;
+};
+
+type TaskBlockRepositionUpdate = {
+  indentLevel: number;
+  orderIndex: number;
+  ordinal: string;
+  taskId: string;
+  title: string;
+};
+
+type TaskBlockRepositionResult = {
+  afterTaskId: string;
+  beforeTaskId: string;
+  listId: string;
+  updates: TaskBlockRepositionUpdate[];
+};
+
+type OrdinalValue = {
+  fraction: number[];
+  whole: number[];
+};
+
 type ApiRequestOptions = {
   body?: unknown;
   method?: ApiRequestMethod;
@@ -310,6 +359,13 @@ const godspeedWriteHourWindow: RateLimitWindow = {
 
 const maxGodspeedRequestAttempts = 4;
 const maxGodspeedRetryDelayMs = 60_000;
+const godspeedApiBaseUrl = "https://api.godspeedapp.com";
+const godspeedClientId = crypto.randomUUID();
+const ordinalBase = 62;
+const orderedBase62Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const ordinalCharToValueMap = Object.fromEntries(
+  orderedBase62Chars.split("").map((character, index) => [character, index]),
+) satisfies Record<string, number>;
 
 let cachedListsPromise: Promise<GodspeedList[]> | undefined;
 let cachedLabelsPromise: Promise<NormalizedLabel[]> | undefined;
@@ -365,7 +421,9 @@ const localEvidenceMatchers: Array<{ regex: RegExp; signal: LocalEvidenceSignal 
 function assertEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    throw new Error(
+      `Missing required environment variable: ${name}. Prefer running Bun with --env-file "$HOME/.config/godspeed/tasks.env" or exporting ${name} before invoking godspeed-tasks.`,
+    );
   }
 
   return value;
@@ -463,6 +521,275 @@ export function getGodspeedRetryDelayMs(
 
 function shouldRetryGodspeedResponse(status: number, attemptNumber: number): boolean {
   return (status === 429 || status === 503) && attemptNumber < maxGodspeedRequestAttempts;
+}
+
+function dropLeadingZeroes(values: number[]): number[] {
+  let index = 0;
+  while (index < values.length && values[index] === 0) {
+    index += 1;
+  }
+
+  return values.slice(index);
+}
+
+function dropTrailingZeroes(values: number[]): number[] {
+  let index = values.length - 1;
+  while (index >= 0 && values[index] === 0) {
+    index -= 1;
+  }
+
+  return values.slice(0, index + 1);
+}
+
+function fromOrdinalString(value: string): OrdinalValue {
+  const [wholePart, fractionPart = ""] = value.split(".");
+  return {
+    fraction: fractionPart.split("").map((character) => ordinalCharToValueMap[character] ?? 0),
+    whole: wholePart.split("").map((character) => ordinalCharToValueMap[character] ?? 0),
+  };
+}
+
+function fromOrdinalNumber(value: number): OrdinalValue {
+  const whole: number[] = [];
+  let wholeValue = Math.floor(value);
+  while (wholeValue > 0) {
+    if (wholeValue < ordinalBase) {
+      whole.unshift(wholeValue);
+      break;
+    }
+
+    whole.unshift(wholeValue % ordinalBase);
+    wholeValue = Math.floor(wholeValue / ordinalBase);
+  }
+
+  const fraction: number[] = [];
+  let fractionalValue = value % 1;
+  for (let index = 0; index < 12 && fractionalValue !== 0; index += 1) {
+    const shiftedFraction = fractionalValue * ordinalBase;
+    const digit = Math.floor(shiftedFraction);
+    fractionalValue = shiftedFraction - digit;
+    fraction.push(digit);
+  }
+
+  return { fraction, whole };
+}
+
+function toOrdinalString(value: OrdinalValue): string {
+  const whole = dropLeadingZeroes(value.whole)
+    .map((digit) => orderedBase62Chars[digit] ?? "0")
+    .join("");
+  const fraction = dropTrailingZeroes(value.fraction)
+    .map((digit) => orderedBase62Chars[digit] ?? "0")
+    .join("");
+
+  return whole + (fraction.length === 0 ? "" : `.${fraction}`);
+}
+
+function toOrdinalNumber(value: OrdinalValue): number {
+  const whole = dropLeadingZeroes(value.whole)
+    .reverse()
+    .reduce((sum, digit, index) => sum + digit * ordinalBase ** index, 0);
+  const fraction = value.fraction.reduce(
+    (sum, digit, index) => sum + digit / ordinalBase ** (index + 1),
+    0,
+  );
+
+  return whole + fraction;
+}
+
+function addOrdinalDigits(left: number, right: number): { carry: number; sum: number } {
+  const sum = left + right;
+  if (sum >= ordinalBase) {
+    return {
+      carry: 1,
+      sum: sum - ordinalBase,
+    };
+  }
+
+  return {
+    carry: 0,
+    sum,
+  };
+}
+
+function addOrdinals(left: OrdinalValue, right: OrdinalValue): OrdinalValue {
+  let carry = 0;
+  const fraction = Array(Math.max(left.fraction.length, right.fraction.length)).fill(0);
+  for (let index = fraction.length - 1; index >= 0; index -= 1) {
+    const result = addOrdinalDigits((left.fraction[index] ?? 0) + carry, right.fraction[index] ?? 0);
+    fraction[index] = result.sum;
+    carry = result.carry;
+  }
+
+  const whole = Array(Math.max(left.whole.length, right.whole.length) + 1).fill(0);
+  for (let index = 0; index < whole.length - 1; index += 1) {
+    const result = addOrdinalDigits((left.whole.at(-1 - index) ?? 0) + carry, right.whole.at(-1 - index) ?? 0);
+    whole[whole.length - 1 - index] = result.sum;
+    carry = result.carry;
+  }
+
+  if (carry !== 0) {
+    whole[0] = carry;
+  }
+
+  return {
+    fraction,
+    whole: whole[0] === 0 ? whole.slice(1) : whole,
+  };
+}
+
+function subtractOrdinalDigits(left: number, right: number): { borrow: number; difference: number } {
+  const difference = left - right;
+  if (difference < 0) {
+    return {
+      borrow: 1,
+      difference: difference + ordinalBase,
+    };
+  }
+
+  return {
+    borrow: 0,
+    difference,
+  };
+}
+
+function subtractOrdinals(left: OrdinalValue, right: OrdinalValue): OrdinalValue {
+  let borrow = 0;
+  const fraction = Array(Math.max(left.fraction.length, right.fraction.length)).fill(0);
+  for (let index = 0; index < fraction.length; index += 1) {
+    const result = subtractOrdinalDigits(
+      (left.fraction[fraction.length - 1 - index] ?? 0) - borrow,
+      right.fraction[fraction.length - 1 - index] ?? 0,
+    );
+    fraction[fraction.length - 1 - index] = result.difference;
+    borrow = result.borrow;
+  }
+
+  const whole = Array(Math.max(left.whole.length, right.whole.length)).fill(0);
+  for (let index = 0; index < whole.length; index += 1) {
+    const result = subtractOrdinalDigits(
+      (left.whole.at(-1 - index) ?? 0) - borrow,
+      right.whole.at(-1 - index) ?? 0,
+    );
+    whole[whole.length - 1 - index] = result.difference;
+    borrow = result.borrow;
+  }
+
+  if (borrow !== 0) {
+    whole[0] -= borrow;
+  }
+
+  return { fraction, whole };
+}
+
+function shiftOrdinalRadixPointLeft(value: OrdinalValue, distance: number): OrdinalValue {
+  const digits = [...value.whole, ...value.fraction];
+  const whole = Array(Math.max(value.whole.length - distance, 0)).fill(0);
+  const fraction = Array(value.fraction.length + distance).fill(0);
+
+  for (let index = 0; index < whole.length; index += 1) {
+    whole[index] = digits[index];
+  }
+
+  for (let index = 0; index < fraction.length; index += 1) {
+    fraction[fraction.length - 1 - index] = digits[digits.length - 1 - index] ?? 0;
+  }
+
+  return { fraction, whole };
+}
+
+function multiplyOrdinals(left: OrdinalValue, right: OrdinalValue): OrdinalValue {
+  const leftDigits = [...left.whole, ...left.fraction];
+  const rightDigits = [...right.whole, ...right.fraction];
+  const rowLength = leftDigits.length + rightDigits.length;
+  const rows = Array.from({ length: rightDigits.length }, () => Array(rowLength).fill(0));
+
+  for (let rightIndex = 0; rightIndex < rightDigits.length; rightIndex += 1) {
+    const rightDigit = rightDigits[rightDigits.length - 1 - rightIndex] ?? 0;
+    let carry = 0;
+    let leftIndex = 0;
+
+    for (; leftIndex < leftDigits.length; leftIndex += 1) {
+      const leftDigit = leftDigits[leftDigits.length - 1 - leftIndex] ?? 0;
+      const value = rightDigit * leftDigit + carry;
+      rows[rightIndex][rowLength - 1 - leftIndex - rightIndex] = value % ordinalBase;
+      carry = Math.floor(value / ordinalBase);
+    }
+
+    if (carry > 0) {
+      rows[rightIndex][rowLength - 1 - leftIndex - rightIndex] = carry;
+    }
+  }
+
+  let sum: OrdinalValue = { fraction: [], whole: [] };
+  for (const row of rows) {
+    sum = addOrdinals(sum, {
+      fraction: [],
+      whole: row,
+    });
+  }
+
+  return shiftOrdinalRadixPointLeft(sum, left.fraction.length + right.fraction.length);
+}
+
+function compareOrdinals(left: OrdinalValue, right: OrdinalValue): number {
+  const wholeLength = Math.max(left.whole.length, right.whole.length);
+  for (let index = 0; index < wholeLength; index += 1) {
+    const leftDigit = left.whole[index - (wholeLength - left.whole.length)] ?? 0;
+    const rightDigit = right.whole[index - (wholeLength - right.whole.length)] ?? 0;
+    if (leftDigit !== rightDigit) {
+      return leftDigit < rightDigit ? -1 : 1;
+    }
+  }
+
+  const fractionLength = Math.max(left.fraction.length, right.fraction.length);
+  for (let index = 0; index < fractionLength; index += 1) {
+    const leftDigit = left.fraction[index] ?? 0;
+    const rightDigit = right.fraction[index] ?? 0;
+    if (leftDigit !== rightDigit) {
+      return leftDigit < rightDigit ? -1 : 1;
+    }
+  }
+
+  return 0;
+}
+
+const defaultOrdinalDistance: OrdinalValue = {
+  fraction: [],
+  whole: [1, 0, 0],
+};
+
+function generateOrdinalsInRange(count: number, start: OrdinalValue | null, end: OrdinalValue | null): OrdinalValue[] {
+  if (count === 0) {
+    return [];
+  }
+
+  if (start === null) {
+    return generateOrdinalsInRange(count, { fraction: [], whole: [0] }, end);
+  }
+
+  if (end === null) {
+    return generateOrdinalsInRange(count, start, addOrdinals(start, multiplyOrdinals(defaultOrdinalDistance, fromOrdinalNumber(count))));
+  }
+
+  const difference = subtractOrdinals(end, start);
+  const scale = count === 1 ? 1 : Math.ceil(Math.log(count) / Math.log(ordinalBase));
+  const shiftedDifference = shiftOrdinalRadixPointLeft(difference, scale);
+  const stepScale = Math.floor(ordinalBase ** scale / (count + 1));
+  const step = multiplyOrdinals(shiftedDifference, fromOrdinalNumber(stepScale));
+  const randomOffset = multiplyOrdinals(
+    shiftOrdinalRadixPointLeft(shiftedDifference, 5),
+    fromOrdinalNumber(Math.random()),
+  );
+  const ordinals = Array<OrdinalValue>(count);
+  let current = start;
+
+  for (let index = 0; index < ordinals.length; index += 1) {
+    current = addOrdinals(current, step);
+    ordinals[index] = addOrdinals(current, randomOffset);
+  }
+
+  return ordinals;
 }
 
 function clearListsCache(): void {
@@ -1035,7 +1362,7 @@ export function buildBulkLabelPreview(params: {
 
 async function fetchJson<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
   const token = assertEnv("GODSPEED_API_TOKEN");
-  const url = new URL(`https://api.godspeedapp.com${path}`);
+  const url = new URL(`${godspeedApiBaseUrl}${path}`);
   for (const [key, value] of Object.entries(options.params ?? {})) {
     if (value !== undefined) {
       url.searchParams.set(key, value);
@@ -1073,6 +1400,108 @@ async function fetchJson<T>(path: string, options: ApiRequestOptions = {}): Prom
   }
 
   throw new Error(`Godspeed API request exhausted retries for ${url}`);
+}
+
+function extractTaskFromResponse(response: GodspeedTaskResponse, context: string): GodspeedTask {
+  if (!response.success) {
+    throw new Error(`Godspeed API reported an unsuccessful task response for ${context}`);
+  }
+
+  const task = response.task ?? response.todo_item;
+  if (!task) {
+    throw new Error(`Godspeed API returned a task response without task data for ${context}`);
+  }
+
+  return task;
+}
+
+function normalizeOrderedTask(task: GodspeedTask): OrderedGodspeedTask {
+  if (task.indent_level === undefined) {
+    throw new Error(`Task ${task.id} is missing indent_level`);
+  }
+
+  if (task.order_index === undefined) {
+    throw new Error(`Task ${task.id} is missing order_index`);
+  }
+
+  if (!task.ordinal) {
+    throw new Error(`Task ${task.id} is missing ordinal`);
+  }
+
+  return {
+    id: task.id,
+    indent_level: task.indent_level,
+    list_id: task.list_id,
+    order_index: task.order_index,
+    ordinal: task.ordinal,
+    title: task.title,
+  };
+}
+
+function compareOrdinalStrings(left: string, right: string): number {
+  return compareOrdinals(fromOrdinalString(left), fromOrdinalString(right));
+}
+
+/**
+ * Builds a deterministic reposition plan for a contiguous task block between two existing tasks.
+ */
+export function buildTaskBlockRepositionPlan(params: {
+  afterTask: OrderedGodspeedTask;
+  beforeTask: OrderedGodspeedTask;
+  entries: TaskBlockEntry[];
+  tasks: OrderedGodspeedTask[];
+}): TaskBlockRepositionResult {
+  if (params.entries.length === 0) {
+    throw new UsageError("At least one task entry is required to reposition a task block");
+  }
+
+  if (params.afterTask.id === params.beforeTask.id) {
+    throw new UsageError("The after and before boundary tasks must be different");
+  }
+
+  if (params.afterTask.list_id !== params.beforeTask.list_id) {
+    throw new UsageError("The after and before boundary tasks must belong to the same list");
+  }
+
+  if (compareOrdinalStrings(params.afterTask.ordinal, params.beforeTask.ordinal) !== -1) {
+    throw new UsageError("The after boundary task must appear before the before boundary task");
+  }
+
+  const boundaryTaskIds = new Set([params.afterTask.id, params.beforeTask.id]);
+  const tasksById = new Map(params.tasks.map((task) => [task.id, task]));
+  const ordinals = generateOrdinalsInRange(
+    params.entries.length,
+    fromOrdinalString(params.afterTask.ordinal),
+    fromOrdinalString(params.beforeTask.ordinal),
+  );
+
+  return {
+    afterTaskId: params.afterTask.id,
+    beforeTaskId: params.beforeTask.id,
+    listId: params.afterTask.list_id,
+    updates: params.entries.map((entry, index) => {
+      if (boundaryTaskIds.has(entry.taskId)) {
+        throw new UsageError("Task block entries cannot include the after or before boundary task");
+      }
+
+      const task = tasksById.get(entry.taskId);
+      if (!task) {
+        throw new UsageError(`Task ${entry.taskId} was not returned by the Godspeed API`);
+      }
+
+      if (task.list_id !== params.afterTask.list_id) {
+        throw new UsageError(`Task ${entry.taskId} is not in the same list as the boundary tasks`);
+      }
+
+      return {
+        indentLevel: entry.indentLevel,
+        orderIndex: toOrdinalNumber(ordinals[index]),
+        ordinal: toOrdinalString(ordinals[index]),
+        taskId: task.id,
+        title: task.title,
+      };
+    }),
+  };
 }
 
 async function loadResolvedLists(): Promise<DiscoverListsResult> {
@@ -1150,16 +1579,7 @@ async function createTask(body: Record<string, unknown>): Promise<GodspeedTask> 
     method: "POST",
   });
 
-  if (!response.success) {
-    throw new Error("Godspeed API reported an unsuccessful task creation response");
-  }
-
-  const task = response.task ?? response.todo_item;
-  if (!task) {
-    throw new Error("Godspeed API returned a task creation response without task data");
-  }
-
-  return task;
+  return extractTaskFromResponse(response, "task creation");
 }
 
 async function patchTask(taskId: string, body: Record<string, unknown>): Promise<GodspeedTask> {
@@ -1168,16 +1588,66 @@ async function patchTask(taskId: string, body: Record<string, unknown>): Promise
     method: "PATCH",
   });
 
+  return extractTaskFromResponse(response, `task update for ${taskId}`);
+}
+
+async function loadTaskById(taskId: string): Promise<GodspeedTask> {
+  const response = await fetchJson<GodspeedTaskResponse>(`/tasks/${taskId}`);
+  return extractTaskFromResponse(response, `task lookup for ${taskId}`);
+}
+
+async function loadTasksByIds(taskIds: string[]): Promise<GodspeedTask[]> {
+  const uniqueTaskIds = [...new Set(taskIds)];
+  if (uniqueTaskIds.length === 0) {
+    return [];
+  }
+
+  const response = await fetchJson<GodspeedTodoItemsResponse>("/todo_items/with_ids", {
+    params: {
+      item_ids: uniqueTaskIds.join(","),
+    },
+  });
+
   if (!response.success) {
-    throw new Error(`Godspeed API reported an unsuccessful task update for ${taskId}`);
+    throw new Error("Godspeed API reported an unsuccessful bulk task lookup response");
   }
 
-  const task = response.task ?? response.todo_item;
-  if (!task) {
-    throw new Error(`Godspeed API returned a task update response without task data for ${taskId}`);
+  return response.todo_items;
+}
+
+async function deleteTaskById(taskId: string): Promise<void> {
+  const response = await fetchJson<GodspeedDeleteTaskResponse>(`/tasks/${taskId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.success) {
+    throw new Error(`Godspeed API reported an unsuccessful task deletion for ${taskId}`);
+  }
+}
+
+async function bulkUpdateTasks(
+  updates: Array<{ taskId: string; updateBody: Record<string, unknown> }>,
+): Promise<GodspeedTask[]> {
+  if (updates.length === 0) {
+    return [];
   }
 
-  return task;
+  const response = await fetchJson<GodspeedBulkUpdateTasksResponse>("/todo_items/bulk_update", {
+    body: {
+      client_id: godspeedClientId,
+      update_bodies: updates.map(({ taskId, updateBody }) => ({
+        todo_item_id: taskId,
+        update_body: updateBody,
+      })),
+    },
+    method: "POST",
+  });
+
+  if (!response.success) {
+    throw new Error("Godspeed API reported an unsuccessful bulk task update response");
+  }
+
+  return response.updated_todo_items;
 }
 
 function findLabelByName(labels: NormalizedLabel[], name: string): NormalizedLabel | undefined {
@@ -1489,6 +1959,151 @@ async function applyLabelToTaskIds(params: {
   };
 }
 
+function parseNonNegativeInteger(value: string, context: string): number {
+  const parsedValue = Number(value);
+  if (!Number.isInteger(parsedValue) || parsedValue < 0) {
+    throw new UsageError(`${context} must be a non-negative integer. Received: ${value}`);
+  }
+
+  return parsedValue;
+}
+
+function parseTaskBlockEntry(value: string): TaskBlockEntry {
+  const separatorIndex = value.lastIndexOf(":");
+  if (separatorIndex <= 0 || separatorIndex === value.length - 1) {
+    throw new UsageError(`Task block entries must look like <task-id>:<indent-level>. Received: ${value}`);
+  }
+
+  return {
+    indentLevel: parseNonNegativeInteger(
+      value.slice(separatorIndex + 1),
+      `Indent level for task ${value.slice(0, separatorIndex)}`,
+    ),
+    taskId: value.slice(0, separatorIndex),
+  };
+}
+
+function parseTaskBlockEntries(values: string[]): TaskBlockEntry[] {
+  if (values.length === 0) {
+    throw new UsageError("At least one --task entry is required");
+  }
+
+  const entries = values.map(parseTaskBlockEntry);
+  const uniqueTaskIds = new Set(entries.map((entry) => entry.taskId));
+  if (uniqueTaskIds.size !== entries.length) {
+    throw new UsageError("Duplicate task ids are not allowed in --task entries");
+  }
+
+  return entries;
+}
+
+function buildTaskPatchBody(options: Map<string, string[]>): Record<string, unknown> {
+  const body: Record<string, unknown> = {};
+  const title = getOption(options, "title");
+  if (title !== undefined) {
+    const trimmedTitle = title.trim();
+    if (trimmedTitle.length === 0) {
+      throw new UsageError("--title cannot be empty");
+    }
+
+    body.title = trimmedTitle;
+  }
+
+  const notes = getOption(options, "notes");
+  if (notes !== undefined) {
+    body.notes = notes.trim();
+  }
+
+  const listId = getOption(options, "list-id");
+  if (listId !== undefined) {
+    body.list_id = listId;
+  }
+
+  const due = getOption(options, "due");
+  if (due !== undefined) {
+    if (due === "none") {
+      body.due_at = null;
+      body.timeless_due_at = null;
+    } else {
+      body.timeless_due_at = validateTimelessDate(due) ?? null;
+    }
+  }
+
+  if (Object.keys(body).length === 0) {
+    throw new UsageError("update-task requires at least one of --title, --notes, --list-id, or --due");
+  }
+
+  return body;
+}
+
+async function repositionTaskBlock(params: {
+  afterTaskId: string;
+  beforeTaskId: string;
+  entries: TaskBlockEntry[];
+}): Promise<TaskBlockRepositionResult> {
+  const tasks = await loadTasksByIds([
+    params.afterTaskId,
+    params.beforeTaskId,
+    ...params.entries.map((entry) => entry.taskId),
+  ]);
+  const tasksById = new Map(tasks.map((task) => [task.id, normalizeOrderedTask(task)]));
+  const afterTask = tasksById.get(params.afterTaskId);
+  const beforeTask = tasksById.get(params.beforeTaskId);
+
+  if (!afterTask) {
+    throw new UsageError(`Task ${params.afterTaskId} was not returned for --after-task-id`);
+  }
+
+  if (!beforeTask) {
+    throw new UsageError(`Task ${params.beforeTaskId} was not returned for --before-task-id`);
+  }
+
+  const plan = buildTaskBlockRepositionPlan({
+    afterTask,
+    beforeTask,
+    entries: params.entries,
+    tasks: params.entries.map((entry) => {
+      const task = tasksById.get(entry.taskId);
+      if (!task) {
+        throw new UsageError(`Task ${entry.taskId} was not returned for --task`);
+      }
+
+      return task;
+    }),
+  });
+  const updatedTasks = await bulkUpdateTasks(
+    plan.updates.map((update) => ({
+      taskId: update.taskId,
+      updateBody: {
+        indent_level: update.indentLevel,
+        order_index: update.orderIndex,
+        ordinal: update.ordinal,
+      },
+    })),
+  );
+  const updatedTasksById = new Map(updatedTasks.map((task) => [task.id, normalizeOrderedTask(task)]));
+
+  return {
+    afterTaskId: plan.afterTaskId,
+    beforeTaskId: plan.beforeTaskId,
+    listId: plan.listId,
+    updates: plan.updates.map((update) => {
+      const updatedTask = updatedTasksById.get(update.taskId);
+      if (!updatedTask) {
+        throw new Error(`Godspeed API did not return updated task ${update.taskId}`);
+      }
+
+      return {
+        indentLevel: updatedTask.indent_level,
+        orderIndex: updatedTask.order_index,
+        ordinal: updatedTask.ordinal,
+        taskId: updatedTask.id,
+        title: updatedTask.title,
+      };
+    }),
+  };
+}
+
 function parseScope(scope: string | undefined): Scope {
   if (!scope || scope === "all" || scope === "personal" || scope === "work") {
     return (scope ?? "all") as Scope;
@@ -1603,10 +2218,14 @@ function buildUsageText(): string {
     "  discover-labels",
     "  inbox-snapshot [--scope work|personal|all]",
     "  task-snapshot [--scope work|personal|all]",
+    "  get-task --task-id <id>",
     "  create-task --folder work|personal --state inbox|next-actions|someday --title <title> [--notes <text>] [--label <name> ...] [--due <YYYY-MM-DD>]",
+    "  update-task --task-id <id> [--title <title>] [--notes <text>] [--list-id <id>] [--due <YYYY-MM-DD|none>]",
+    "  delete-task --task-id <id>",
     "  ensure-label --name <label-name> [--color <#rrggbb>]",
     "  set-task-labels --add-label <label-name> --task-id <id> [--task-id <id> ...]",
     "  remove-task-labels --remove-label <label-name> --task-id <id> [--task-id <id> ...]",
+    "  reposition-task-block --task <id>:<indent-level> [--task <id>:<indent-level> ...] --after-task-id <id> --before-task-id <id>",
     "  preview-bulk-labeling --label <label-name> --contains <term> [--contains <term> ...] [--scope work|personal|all]",
     "  apply-bulk-labeling --label <label-name> --task-id <id> [--task-id <id> ...]",
     "  smart-list-plan --folder work|personal --label <label-name> [--smart-list-name <name>]",
@@ -1655,6 +2274,13 @@ async function runCommand(parsedArgs: ParsedCliArgs): Promise<unknown> {
     });
   }
 
+  if (parsedArgs.command === "get-task") {
+    expectNoPositionals(parsedArgs);
+    return {
+      task: await loadTaskById(getRequiredOption(parsedArgs.options, "task-id")),
+    };
+  }
+
   if (parsedArgs.command === "create-task") {
     expectNoPositionals(parsedArgs);
     return createScopedTask({
@@ -1665,6 +2291,23 @@ async function runCommand(parsedArgs: ParsedCliArgs): Promise<unknown> {
       timelessDueAt: getOption(parsedArgs.options, "due"),
       title: getRequiredOption(parsedArgs.options, "title"),
     });
+  }
+
+  if (parsedArgs.command === "update-task") {
+    expectNoPositionals(parsedArgs);
+    const taskId = getRequiredOption(parsedArgs.options, "task-id");
+    return {
+      task: await patchTask(taskId, buildTaskPatchBody(parsedArgs.options)),
+    };
+  }
+
+  if (parsedArgs.command === "delete-task") {
+    expectNoPositionals(parsedArgs);
+    const taskId = getRequiredOption(parsedArgs.options, "task-id");
+    await deleteTaskById(taskId);
+    return {
+      taskId,
+    };
   }
 
   if (parsedArgs.command === "ensure-label") {
@@ -1691,6 +2334,15 @@ async function runCommand(parsedArgs: ParsedCliArgs): Promise<unknown> {
       labelName: getRequiredOption(parsedArgs.options, "remove-label"),
       remove: true,
       taskIds: getRepeatedOption(parsedArgs.options, "task-id"),
+    });
+  }
+
+  if (parsedArgs.command === "reposition-task-block") {
+    expectNoPositionals(parsedArgs);
+    return repositionTaskBlock({
+      afterTaskId: getRequiredOption(parsedArgs.options, "after-task-id"),
+      beforeTaskId: getRequiredOption(parsedArgs.options, "before-task-id"),
+      entries: parseTaskBlockEntries(getRepeatedOption(parsedArgs.options, "task")),
     });
   }
 
