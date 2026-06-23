@@ -24,7 +24,7 @@
 - Prefer strict equality checks over loose `==` or `!=` comparisons. Use explicit `=== null` and `=== undefined` checks when nullish handling matters.
 - Prefer early returns and straightforward conditional blocks over non-trivial ternaries. Simple boolean checks such as `if (!value)` and short `&&` conditions are fine when they read clearly.
 - Avoid deeply nested conditionals. When branching starts to nest, use guard clauses, a small helper, or a named boolean to keep the control flow easy to scan.
-- Add concise multi-line JSDoc for exported functions, hooks, components, and types when it improves editor hints or clarifies a non-obvious contract.
+- Prefer concise multi-line JSDoc descriptions for exported functions, hooks, components, and types so editor hints and agents see the public contract.
 
 ## Execution Workflow
 - For non-trivial implementation work, translate the request into the smallest verifiable outcome before editing.
