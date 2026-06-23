@@ -40,15 +40,28 @@ Avoid these:
 
 ## Bindings
 
-Start with a small set of bindings. Add list-specific navigation only after the
-default workflow feels too slow.
+Use workspace-first chords for predictable navigation, plus default-workspace
+aliases for the views used constantly on a given machine.
 
-Core navigation macros:
+Workspace navigation macros:
 
 - `ctrl + g w`: show Work and jump to Work Today.
+- `ctrl + g w i`: show Work and jump to Work Inbox.
+- `ctrl + g w n`: show Work and jump to Work Next Actions.
+- `ctrl + g w s`: show Work and jump to Work Someday.
 - `ctrl + g p`: show Personal and jump to Personal Today.
-- `ctrl + g t`: jump to the default Today view for this machine. On a work
-  machine, default this to Work Today.
+- `ctrl + g p i`: show Personal and jump to Personal Inbox.
+- `ctrl + g p n`: show Personal and jump to Personal Next Actions.
+- `ctrl + g p s`: show Personal and jump to Personal Someday.
+
+Default-workspace aliases:
+
+- `ctrl + g t`: default Today.
+- `ctrl + g i`: default Inbox.
+- `ctrl + g n`: default Next Actions.
+- `ctrl + g s`: default Someday.
+
+On a work machine, the default workspace should be Work.
 
 Move macros:
 
@@ -56,13 +69,6 @@ Move macros:
 - `ctrl + m s`: move selected task(s) to Someday in the same workspace.
 
 Keep `M` as the fallback for uncommon moves.
-
-Optional navigation macros:
-
-- `ctrl + g w i`, `ctrl + g w n`, `ctrl + g w s`: jump to Work Inbox, Next
-  Actions, or Someday.
-- `ctrl + g p i`, `ctrl + g p n`, `ctrl + g p s`: jump to Personal Inbox, Next
-  Actions, or Someday.
 
 ## Navigation Macro Pattern
 
@@ -76,11 +82,17 @@ Work navigation macros should use this shape:
 2. `Expand/collapse folder` -> `Collapse`.
 3. `Jump to list` -> Work folder.
 4. `Expand/collapse folder` -> `Expand`.
-5. `Jump to list` -> the target Work list. Use Today for the core workspace
-   focus macro.
+5. `Jump to list` -> the target Work list.
 
 Personal navigation macros should use the same shape with Work and Personal
 reversed.
+
+Examples:
+
+- Work Today (`ctrl + g w`): collapse Personal, expand Work, jump to Work
+  Today.
+- Work Inbox (`ctrl + g w i`): collapse Personal, expand Work, jump to Work
+  Inbox.
 
 ## Setup
 
@@ -88,11 +100,12 @@ reversed.
 2. Enable task/list cloud sync.
 3. Enable `Settings > Text > Key chords`.
 4. Enable `Settings > Sync > hotkey sync`.
-5. Create the navigation macros in the Macro Editor.
+5. Create one navigation macro per binding in the Macro Editor.
 6. Create the move macros with `Update macro variables with JavaScript`, then
    `Move to list` using `{{destinationListID}}`.
 7. Bind the shortcuts in the Hotkey Editor with `?`.
-8. Test `ctrl + g w`, `ctrl + g p`, `ctrl + g t`, and one move shortcut.
+8. Test `ctrl + g w`, `ctrl + g w i`, one default-workspace alias, and one move
+   shortcut.
 
 ## Account-Specific IDs
 
@@ -105,15 +118,16 @@ The private note should include IDs for:
 
 - Work folder, Today, Inbox, Next Actions, and Someday.
 - Personal folder, Today, Inbox, Next Actions, and Someday.
-- Which workspace should be the default target for `ctrl + g t` on the current
-  machine.
+- Which workspace should be the default target for `ctrl + g t/i/n/s` on the
+  current machine.
 
 ## Test Plan
 
 - Press `?` and verify every new chord has no conflict.
-- Run `ctrl + g w` and `ctrl + g p`. Confirm the target Today opens and the
-  other workspace collapses.
-- Run `ctrl + g t`. Confirm it opens the machine's default Today view.
+- Run `ctrl + g w`, `ctrl + g w i`, and `ctrl + g p`. Confirm the target list
+  opens and the other workspace collapses.
+- Run `ctrl + g t`, `ctrl + g i`, `ctrl + g n`, and `ctrl + g s`. Confirm each
+  opens the machine's default workspace view.
 - From Work Inbox, run `ctrl + m n`. Confirm the task moves to Work Next
   Actions.
 - From Personal Inbox, run `ctrl + m s`. Confirm the task moves to Personal
