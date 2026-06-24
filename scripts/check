@@ -3,7 +3,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
-CHECK_MODE="full"
+CHECK_MODE="core"
 CHECK_QUIET=0
 STAGED_FILES=()
 
@@ -18,19 +18,27 @@ fail() {
 
 usage() {
     cat <<'EOF'
-Usage: scripts/check [--full|--staged] [--quiet]
+Usage: scripts/check [--core|--extended|--full|--staged] [--quiet]
 
-  --full     Run the complete local regression suite. This is the default.
-  --staged   Run cheap checks plus tests for staged path groups.
-  --quiet    Print one summary line per successful phase and full output only on failure.
+  --core      Run the default core validation lane. This is the default.
+  --extended  Run core checks plus helper and integration regressions.
+  --full      Alias for --extended.
+  --staged    Run common checks plus tests for staged path groups.
+  --quiet     Print one summary line per successful phase and full output only on failure.
 EOF
 }
 
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
+            --core)
+                CHECK_MODE="core"
+                ;;
+            --extended)
+                CHECK_MODE="extended"
+                ;;
             --full)
-                CHECK_MODE="full"
+                CHECK_MODE="extended"
                 ;;
             --staged|--pre-commit)
                 CHECK_MODE="staged"
@@ -334,7 +342,20 @@ run_codex_sync_validation() {
 }
 
 run_full_checks() {
+    run_extended_checks
+}
+
+run_core_checks() {
     run_common_checks
+    run_phase "Codex sync regression tests" 0 run_codex_sync_tests
+    run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
+    run_phase "Codex sync input validation" 0 run_codex_sync_validation
+    run_phase "public content guard tests" 0 run_public_content_guard_tests
+    run_phase "advisory prose checks" 1 run_prose_checks
+}
+
+run_extended_checks() {
+    run_core_checks
     run_phase "tmux-agent-bar wrapper and sync tests" 0 run_tmux_agent_bar_tests
     run_phase "Handy sync regression tests" 0 run_handy_tests
     run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
@@ -342,13 +363,8 @@ run_full_checks() {
     run_phase "zsh prompt regression tests" 0 run_zsh_prompt_tests
     run_phase "Godspeed task helper tests" 0 run_godspeed_tasks_tests
     run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
-    run_phase "Codex sync regression tests" 0 run_codex_sync_tests
     run_phase "Codex config coach helper tests" 0 run_codex_config_coach_tests
     run_phase "Slack rich-text helper tests" 0 run_slack_rich_text_tests
-    run_phase "public content guard tests" 0 run_public_content_guard_tests
-    run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
-    run_phase "Codex sync input validation" 0 run_codex_sync_validation
-    run_phase "advisory prose checks" 1 run_prose_checks
 }
 
 run_staged_checks() {
@@ -361,8 +377,8 @@ run_staged_checks() {
     fi
 
     if changed_any "scripts/check" ".githooks/pre-commit"; then
-        log "Check runner changed; running full suite"
-        run_full_checks
+        log "Check runner changed; running extended suite"
+        run_extended_checks
         return
     fi
 
@@ -438,8 +454,11 @@ main() {
     parse_args "$@"
 
     case "$CHECK_MODE" in
-        full)
-            run_full_checks
+        core)
+            run_core_checks
+            ;;
+        extended)
+            run_extended_checks
             ;;
         staged)
             run_staged_checks

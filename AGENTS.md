@@ -16,7 +16,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - After changing tracked Karabiner or macOS-setup sources, do not assume `dotty update` reapplies them. Run `bun run scripts/ts/karabiner-config.ts` for a narrow keyboard-remap refresh or `dotty run macos-setup` for the broader macOS setup path.
 - Run `dotty update` after tracked config changes so the live home directory reflects the repo state.
 - For dotty hook or generated-config changes, prefer committing the intended files before final live `dotty update` verification so Dotty does not test through an auto-stashed dirty worktree. If unrelated files are dirty, keep them unstaged and verify `git status --short` before any amend or push.
-- Run `./scripts/check --quiet` before pushing or when a change warrants the full suite. The repo-local pre-commit hook runs `./scripts/check --staged --quiet`, which keeps commits fast and output low by running common checks plus regression tests for staged path groups. For commit-like validation, prefer `./scripts/check --staged --quiet` and rely on the hook result instead of manually rerunning the same staged path after commit. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
+- Run `./scripts/check --quiet` for routine broad validation. Use `./scripts/check --extended --quiet` before pushing helper, integration, tmux, generated-config, or check-runner changes that warrant the extended regression lane. The repo-local pre-commit hook runs `./scripts/check --staged --quiet`, which keeps commits fast and output low by running common checks plus regression tests for staged path groups. For commit-like validation, prefer `./scripts/check --staged --quiet` and rely on the hook result instead of manually rerunning the same staged path after commit. Repo-local Git hooks auto-install on `dotty install` and `dotty update`; use `./scripts/install-git-hooks.sh` to repair them manually.
 - The shared Codex validation path also checks tracked skill UI metadata and extra frontend workflow manifests when they are present in the active dotty chain.
 - Keep `README.md` focused on new-machine setup and daily-use entrypoints. Push deeper architecture and subsystem detail into `docs/`.
 - If a change affects setup, commands, or configuration architecture, update `README.md` and `AGENTS.md` in the same change.
@@ -33,7 +33,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Before changing tmux status behavior, map the source of truth and trigger path first: local hook state, live pane tail, remote or later-repo source cache, cached tmux option, and the tmux hook that refreshes it. Fix the broken boundary instead of adding a special case for one visible symptom.
 - When a tmux status bug comes from a real session, reduce it to the smallest reproducer in `tmux-agent-bar`; only add a dotfiles test when the bug is specifically about wrapper or checkout behavior.
 - When a status regression crosses `tmux-agent-bar`, this repo, and a later dotty-chain overlay, update the paired tests/docs in every affected repo before pushing.
-- Do not change tmux agent-status behavior without running `./scripts/check`.
+- Do not change tmux agent-status behavior without running `./scripts/check --extended --quiet`.
 
 ## Mental Model
 
