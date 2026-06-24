@@ -2,19 +2,26 @@
 
 ## Tool Adoption And Helper Extraction
 
-For agent/tooling workflow adoption plans, look for repeated clarification around off-the-shelf versus custom structure, artifact ownership, global versus repo-local install scope, multi-machine support, opt-in and rollback behavior, day-to-day commands, and concrete verification.
+For tooling adoption plans, settle off-the-shelf versus custom structure, ownership, global versus repo-local scope, multi-machine support, opt-in and rollback behavior, day-to-day commands, and verification.
 
-For helper extraction or new public-repo plans, explicitly settle publication privacy, reachable Git history, install/update ownership, dirty-worktree handling for setup commands, rollback, and downstream rollout before implementation.
-
-Before treating a tool-adoption plan as settled, verify tool availability, provisioning source, and package-manager ownership across each relevant machine class.
-
-Treat package-manager cleanup, prune, uninstall, and sync modes that remove untracked tools as destructive. Before running them, inspect local skip env vars, later dotty-chain ownership, version-manager shims, and existing tool paths; prefer install-only repair unless removal was explicitly requested.
-
-Treat those as planning-quality friction, not just implementation details.
+For helper extraction or public-repo plans, also settle publication privacy, reachable Git history, install/update ownership, dirty-worktree handling, rollback, and downstream rollout. Verify tool availability and package-manager ownership on each relevant machine class. Treat package-manager cleanup, prune, uninstall, and sync modes that remove untracked tools as destructive.
 
 When a workflow already has a tracked helper or client, prefer extending that helper and its tests over teaching Codex more ad hoc fallback commands. Treat raw API probes and runtime bundle inspection as last-resort discovery steps, then capture the confirmed contract back into the helper immediately.
 
 When a repo-local helper grows its own runtime, dependency, verification, or release-cadence needs, evaluate extracting it into a standalone repo or package instead of continuing to expand dotfiles. Favor extraction when the helper is likely to back multiple surfaces such as a CLI, Raycast extension, or other automation entrypoints.
+
+## Context Surface Audit
+
+When a session exposes token or latency pressure, inspect always-loaded instructions, invoked skills, enabled plugins, configured MCP servers, runtime-injected MCP servers, and repeated tool sequences.
+
+Prefer lower-context alternatives when they preserve the workflow:
+
+- A CLI or tracked helper beats an always-on MCP for repeatable command-like work.
+- A skill-triggered or deferred tool beats an always-loaded plugin when the workflow is occasional.
+- A repo-local source module beats generic runtime logic when the concept is tied to one launcher, company, machine class, or private workflow.
+- A short routing rule beats broad examples in `AGENTS.md`; detailed examples belong in deferred references.
+
+For MCP/plugin changes, compare tracked fragments, `codex doctor`, runtime launcher behavior, and CLI equivalents. Recommend disabling or deferring a surface only with a clear replacement path and evidence it is not needed in most sessions.
 
 ## Measurement Ladder
 
