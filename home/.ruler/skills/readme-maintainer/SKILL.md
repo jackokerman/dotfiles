@@ -33,6 +33,7 @@ There is no universal off-the-shelf tool that keeps arbitrary repo READMEs well-
    - Keep rare, explanatory, subsystem, troubleshooting, and architecture detail in `docs/`; link to it from the README.
 4. Edit for scanability.
    - Put each command block next to the reason to run it.
+   - When a fenced command quick-reference block uses trailing `#` descriptions, align the `#` comments consistently across the whole block; if a command is too long for the comment column, put its description on the following aligned `#` line.
    - Use bullets for peer items and short tables only when comparison matters.
    - Avoid an undifferentiated command block unless the section is explicitly a quick reference.
    - Keep headings concrete and sentence case unless the repo uses another convention.
