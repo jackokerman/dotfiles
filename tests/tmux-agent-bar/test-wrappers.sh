@@ -104,6 +104,14 @@ run_codex_hook_wrapper_case() {
   rm -rf "${tmp_dir}"
 }
 
+run_codex_hook_detaches_refresh_case() {
+  if ! grep -q 'nohup "${_refresh_command\[@\]}" </dev/null >/dev/null 2>&1 &' "${CODEX_HOOK_WRAPPER}"; then
+    fail "Codex hook wrapper should detach status refresh with nohup and closed stdin"
+  fi
+
+  pass "Codex hook wrapper detaches status refresh from hook stdin"
+}
+
 run_codex_hook_missing_runtime_case() {
   local tmp_dir="" actual=""
 
@@ -454,6 +462,7 @@ run_missing_runtime_case() {
 run_session_wrapper_case
 run_hook_wrapper_case
 run_codex_hook_wrapper_case
+run_codex_hook_detaches_refresh_case
 run_codex_hook_missing_runtime_case
 run_left_wrapper_case
 run_left_wrapper_fallback_case
