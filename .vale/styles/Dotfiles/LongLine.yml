@@ -1,6 +1,0 @@
-extends: existence
-message: "This line is long. Consider wrapping prose or moving detail into a linked doc."
-level: suggestion
-scope: raw
-tokens:
-  - '.{181,}'

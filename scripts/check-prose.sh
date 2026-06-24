@@ -13,8 +13,8 @@ usage() {
     cat <<'EOF'
 Usage: scripts/check-prose.sh [--advisory|--strict] [path ...]
 
-Runs Vale with the dotfiles prose style. Advisory mode is the default and never
-fails the command.
+Runs paragraph-density checks and any configured Vale styles. Advisory mode is
+the default and never fails the command.
 EOF
 }
 

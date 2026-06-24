@@ -1,18 +1,12 @@
 # Dotfiles
 
-Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty).
-This is the public, generic layer for shared defaults; local overrides and later
-repos in the dotty chain add machine-specific behavior.
+Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This is the public, generic layer for shared defaults; local overrides and later repos in the dotty chain add machine-specific behavior.
 
-This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner,
-Codex and Claude defaults, and a few small runtime checkouts under
-`~/.local/share/`. Tracked source lives under `home/`, and `dotty` links or
-renders it into `$HOME`.
+This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, Codex and Claude defaults, and a few small runtime checkouts under `~/.local/share/`. Tracked source lives under `home/`, and `dotty` links or renders it into `$HOME`.
 
 ## Install
 
-Requirements for the first install are `git`, `curl`, and a POSIX shell.
-macOS-specific tooling is installed in the next section.
+Requirements for the first install are `git`, `curl`, and a POSIX shell. macOS-specific tooling is installed in the next section.
 
 ```bash
 git clone https://github.com/jackokerman/dotfiles.git ~/dotfiles
@@ -20,12 +14,9 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-`./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`,
-and runs the repo hook. It does not install Homebrew packages from `Brewfile`.
+`./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook. It does not install Homebrew packages from `Brewfile`.
 
-Pinned repo submodules are synced during `./install.sh` and `dotty update`.
-Use `git clone --recurse-submodules` if you want a fully populated checkout
-immediately after clone.
+Pinned repo submodules are synced during `./install.sh` and `dotty update`. Use `git clone --recurse-submodules` if you want a fully populated checkout immediately after clone.
 
 ## New Machine
 
@@ -37,8 +28,7 @@ After `./install.sh`, run these steps on a fresh macOS machine.
 dotty run brew-sync
 ```
 
-This installs packages from the tracked `Brewfile`. It does not remove untracked
-Homebrew packages unless you explicitly pass `--cleanup`.
+This installs packages from the tracked `Brewfile`. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`.
 
 ### 2. Set up GitHub auth and SSH
 
@@ -56,10 +46,7 @@ This repo does not track `~/.ssh/`. Keep custom hosts, identities, or non-defaul
 dotty run macos-setup
 ```
 
-This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config
-generation, Handy settings, and font installation. If you use MonoLisa,
-download the Complete ZIP to `~/Downloads/`; Symbols Nerd Font is downloaded
-automatically.
+This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config generation, Handy settings, and font installation. If you use MonoLisa, download the Complete ZIP to `~/Downloads/`; Symbols Nerd Font is downloaded automatically.
 
 ### 4. Finish one-time GUI setup
 
@@ -69,9 +56,7 @@ automatically.
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the
-dotty chain, reruns the repo hook, syncs pinned submodules, and updates managed
-runtime checkouts.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and updates managed runtime checkouts.
 
 ## Daily Use
 
@@ -93,17 +78,14 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 | --- | --- |
 | `./scripts/check` | Run the full local validation suite. |
 | `./scripts/check --staged` | Run cheap common checks plus tests selected from staged path groups. |
-| `./scripts/check-prose.sh` | Run advisory Vale-based prose checks for `README.md` and top-level docs. |
+| `./scripts/check-prose.sh` | Run advisory prose checks for `README.md` and top-level docs. |
 | `./scripts/install-git-hooks.sh` | Install or repair repo-local Git hooks. |
 
 After changing tracked config, run `dotty update` before testing the live setup.
 
 ## Making Changes
 
-Edit tracked source in this repo, not the generated live output in `$HOME`.
-For example, change `home/.config/zsh/.zshrc` instead of
-`~/.config/zsh/.zshrc`, and change tracked Codex sources under `home/.codex/`
-or `home/.ruler/` instead of generated files under `~/.codex/`.
+Edit tracked source in this repo, not the generated live output in `$HOME`. For example, change `home/.config/zsh/.zshrc` instead of `~/.config/zsh/.zshrc`, and change tracked Codex sources under `home/.codex/` or `home/.ruler/` instead of generated files under `~/.codex/`.
 
 For local verification:
 
@@ -113,9 +95,7 @@ For local verification:
 dotty update
 ```
 
-Use `./scripts/check --staged` for the fast pre-commit path, `./scripts/check`
-before pushing broader config or hook changes, and `dotty update` when you need
-the live home directory to reflect the repo state.
+Use `./scripts/check --staged` for the fast pre-commit path, `./scripts/check` before pushing broader config or hook changes, and `dotty update` when you need the live home directory to reflect the repo state.
 
 ## Layout
 
