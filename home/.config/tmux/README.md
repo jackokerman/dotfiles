@@ -24,6 +24,8 @@ The wrappers resolve the runtime checkout in this order:
 
 `dotty update` manages the default checkout under `~/.local/share/tmux-agent-bar/repo`.
 
+Optional runtime config, such as `~/.config/tmux-agent-bar/one-shot.tsv`, is owned by the current dotty layer or by local user config. The base `dotfiles` repo installs and updates the runtime but does not hardcode private launcher labels or remote transports.
+
 ## Change rules
 
 - Keep generic status-bar logic in `tmux-agent-bar`, not here.
