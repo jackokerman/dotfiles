@@ -661,13 +661,6 @@ setup_codex() {
     fi
 }
 
-setup_gsd_core() {
-    local install_script="$DOTFILES/scripts/install-gsd-core.sh"
-
-    [[ -x "$install_script" ]] || return 0
-    "$install_script" --auto-reapply
-}
-
 setup_jackie_plan() {
     local sync_script="$DOTFILES/scripts/sync-jackie-plan.sh"
 
@@ -704,7 +697,6 @@ main() {
 
     setup_jackie_plan
     setup_codex
-    setup_gsd_core
     setup_tmux_agent_bar
 }
 

@@ -69,7 +69,6 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 | `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, and update managed runtime checkouts. |
 | `dotty run brew-sync` | Install packages from the tracked `Brewfile` on macOS. Use `dotty run brew-sync --cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
-| `dotty run install-gsd-core` | Install or reapply the optional pinned GSD Core integration. Use `dotty run install-gsd-core --uninstall` to remove it. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |
 
 ### Validation
