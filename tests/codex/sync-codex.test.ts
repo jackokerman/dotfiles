@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -77,6 +77,42 @@ describe("sync-codex config", () => {
       expect(new TextDecoder().decode(result.stderr)).toContain(
         "use [features].hooks instead of [features].codex_hooks",
       );
+    });
+  });
+});
+
+describe("sync-codex skills", () => {
+  test("removes stale staging dirs before syncing skills", () => {
+    withTempDir((dir) => {
+      const sourceRoot = join(dir, "source-skills");
+      const sourceSkillDir = join(sourceRoot, "example-skill");
+      const outputPath = join(dir, "out", "skills");
+      const staleStagingDir = join(outputPath, ".tmp-codex-skill-stale", "partial-skill");
+      const unrelatedHiddenDir = join(outputPath, ".not-a-codex-staging-dir");
+
+      mkdirSync(sourceSkillDir, { recursive: true });
+      mkdirSync(staleStagingDir, { recursive: true });
+      mkdirSync(unrelatedHiddenDir, { recursive: true });
+      writeFileSync(
+        join(sourceSkillDir, "SKILL.md"),
+        [
+          "---",
+          "name: example-skill",
+          "description: Example skill for sync tests.",
+          "---",
+          "",
+          "# Example Skill",
+          "",
+        ].join("\n"),
+      );
+      writeFileSync(join(staleStagingDir, "SKILL.md"), "# Partial Skill\n");
+
+      const result = runSync(["skills", "--output", outputPath, "--source", sourceRoot]);
+      expect(result.exitCode).toBe(0);
+
+      expect(existsSync(join(outputPath, "example-skill", "SKILL.md"))).toBe(true);
+      expect(existsSync(join(outputPath, ".tmp-codex-skill-stale"))).toBe(false);
+      expect(existsSync(unrelatedHiddenDir)).toBe(true);
     });
   });
 });

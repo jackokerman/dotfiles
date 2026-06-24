@@ -248,10 +248,21 @@ function replaceDirectory(targetDir: string, sourceDir: string) {
   const stagingRoot = mkdtempSync(join(dirname(targetDir), ".tmp-ruler-skill-"));
   const stagingDir = join(stagingRoot, basename(targetDir));
 
-  cpSync(sourceDir, stagingDir, { recursive: true });
-  rmSync(targetDir, { force: true, recursive: true });
-  renameSync(stagingDir, targetDir);
-  rmSync(stagingRoot, { force: true, recursive: true });
+  try {
+    cpSync(sourceDir, stagingDir, { recursive: true });
+    rmSync(targetDir, { force: true, recursive: true });
+    renameSync(stagingDir, targetDir);
+  } finally {
+    rmSync(stagingRoot, { force: true, recursive: true });
+  }
+}
+
+function removeStaleSkillStagingDirs(targetRoot: string) {
+  for (const entry of readdirSync(targetRoot, { withFileTypes: true })) {
+    if (entry.isDirectory() && entry.name.startsWith(".tmp-ruler-skill-")) {
+      rmSync(resolve(targetRoot, entry.name), { force: true, recursive: true });
+    }
+  }
 }
 
 function listDirectories(path: string) {
@@ -276,6 +287,7 @@ function stageSkills(sourceRoots: string[], targetRoot: string) {
   const skills = new Map<string, StagedSkill>();
 
   mkdirSync(targetRoot, { recursive: true });
+  removeStaleSkillStagingDirs(targetRoot);
 
   for (const root of roots) {
     for (const sourceDir of listDirectories(root)) {
@@ -350,6 +362,7 @@ function installGeneratedSkills(
   }
 
   mkdirSync(outputRoot, { recursive: true });
+  removeStaleSkillStagingDirs(outputRoot);
 
   const indexPath = resolve(outputRoot, ".dotty-managed-skills.tsv");
   const currentNames = new Set(stagedSkills.map((skill) => skill.name));

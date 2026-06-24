@@ -334,10 +334,21 @@ function replaceDirectory(targetDir: string, sourceDir: string) {
   const stagingRoot = mkdtempSync(join(dirname(targetDir), ".tmp-codex-skill-"));
   const stagingDir = join(stagingRoot, basename(targetDir));
 
-  cpSync(sourceDir, stagingDir, { recursive: true });
-  rmSync(targetDir, { force: true, recursive: true });
-  renameSync(stagingDir, targetDir);
-  rmSync(stagingRoot, { force: true, recursive: true });
+  try {
+    cpSync(sourceDir, stagingDir, { recursive: true });
+    rmSync(targetDir, { force: true, recursive: true });
+    renameSync(stagingDir, targetDir);
+  } finally {
+    rmSync(stagingRoot, { force: true, recursive: true });
+  }
+}
+
+function removeStaleSkillStagingDirs(outputPath: string) {
+  for (const entry of readdirSync(outputPath, { withFileTypes: true })) {
+    if (entry.isDirectory() && entry.name.startsWith(".tmp-codex-skill-")) {
+      rmSync(resolve(outputPath, entry.name), { force: true, recursive: true });
+    }
+  }
 }
 
 function syncSkills(outputPath: string, sourceRoots: string[], validateOnly: boolean) {
@@ -348,6 +359,7 @@ function syncSkills(outputPath: string, sourceRoots: string[], validateOnly: boo
   }
 
   mkdirSync(outputPath, { recursive: true });
+  removeStaleSkillStagingDirs(outputPath);
   const indexPath = resolve(outputPath, ".dotty-managed-skills.tsv");
   const previousRows = parseManagedIndex(indexPath);
   const currentNames = new Set<string>();

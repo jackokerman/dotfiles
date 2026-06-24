@@ -211,4 +211,49 @@ describe("sync-ruler codex-agents", () => {
       );
     });
   });
+
+  test("portable mode removes stale Ruler staging dirs before syncing skills", () => {
+    withTempDir((dir) => {
+      const ruler = writeFakeRuler(dir);
+      const sourcePath = join(dir, "AGENTS.md");
+      const skillSourceRoot = join(dir, "skills");
+      const skillSourceDir = join(skillSourceRoot, "example-skill");
+      const codexAgentsOutput = join(dir, "out", "AGENTS.md");
+      const claudeOutput = join(dir, "out", "CLAUDE.md");
+      const codexSkillsOutput = join(dir, "out", "codex-skills");
+      const claudeSkillsOutput = join(dir, "out", "claude-skills");
+      const staleStagingDir = join(codexSkillsOutput, ".tmp-ruler-skill-stale", "partial-skill");
+      const unrelatedHiddenDir = join(codexSkillsOutput, ".not-a-ruler-staging-dir");
+
+      writeFileSync(sourcePath, "# Rules\n\n- Prefer focused output.\n");
+      mkdirSync(skillSourceDir, { recursive: true });
+      mkdirSync(staleStagingDir, { recursive: true });
+      mkdirSync(unrelatedHiddenDir, { recursive: true });
+      writeFileSync(join(skillSourceDir, "SKILL.md"), "# Example Skill\n");
+      writeFileSync(join(staleStagingDir, "SKILL.md"), "# Partial Skill\n");
+
+      const result = runSync([
+        "portable",
+        "--ruler-bin",
+        ruler,
+        "--codex-agents-output",
+        codexAgentsOutput,
+        "--claude-output",
+        claudeOutput,
+        "--codex-skills-output",
+        codexSkillsOutput,
+        "--claude-skills-output",
+        claudeSkillsOutput,
+        "--source",
+        sourcePath,
+        "--skill-source",
+        skillSourceRoot,
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(existsSync(join(codexSkillsOutput, "example-skill", "SKILL.md"))).toBe(true);
+      expect(existsSync(join(codexSkillsOutput, ".tmp-ruler-skill-stale"))).toBe(false);
+      expect(existsSync(unrelatedHiddenDir)).toBe(true);
+    });
+  });
 });
