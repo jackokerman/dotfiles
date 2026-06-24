@@ -4,6 +4,7 @@ set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 CHECK_MODE="full"
+CHECK_QUIET=0
 STAGED_FILES=()
 
 log() {
@@ -17,10 +18,11 @@ fail() {
 
 usage() {
     cat <<'EOF'
-Usage: scripts/check [--full|--staged]
+Usage: scripts/check [--full|--staged] [--quiet]
 
   --full     Run the complete local regression suite. This is the default.
   --staged   Run cheap checks plus tests for staged path groups.
+  --quiet    Print one summary line per successful phase and full output only on failure.
 EOF
 }
 
@@ -33,6 +35,9 @@ parse_args() {
             --staged|--pre-commit)
                 CHECK_MODE="staged"
                 ;;
+            --quiet)
+                CHECK_QUIET=1
+                ;;
             -h|--help)
                 usage
                 exit 0
@@ -43,6 +48,49 @@ parse_args() {
         esac
         shift
     done
+}
+
+print_advisory_lines() {
+    local output_file="$1"
+
+    awk '
+        /0 errors, 0 warnings/ { next }
+        /long paragraph|warning|warnings|error|errors|suggestion|suggestions/ { print }
+    ' "$output_file"
+}
+
+run_phase() {
+    local label="$1"
+    local advisory="${2:-0}"
+    local output_file=""
+    local exit_code=0
+
+    shift 2
+
+    if [[ "$CHECK_QUIET" -eq 0 ]]; then
+        "$@"
+        return
+    fi
+
+    output_file="$(mktemp "${TMPDIR:-/tmp}/dotfiles-check.XXXXXX")"
+    set +e
+    ( set -euo pipefail; "$@" ) >"$output_file" 2>&1
+    exit_code=$?
+    set -e
+
+    if [[ "$exit_code" -eq 0 ]]; then
+        printf '[check] ok: %s\n' "$label"
+        if [[ "$advisory" -eq 1 ]]; then
+            print_advisory_lines "$output_file"
+        fi
+        rm -f "$output_file"
+        return
+    fi
+
+    printf '[check] failed: %s\n' "$label" >&2
+    cat "$output_file" >&2
+    rm -f "$output_file"
+    return "$exit_code"
 }
 
 load_staged_files() {
@@ -268,11 +316,11 @@ run_codex_theme_sync_check() {
 }
 
 run_common_checks() {
-    run_bash_syntax
-    run_zsh_syntax
-    assert_expected_executables
-    assert_zsh_runtime_inputs_removed
-    assert_zsh_bootstrap_boundary
+    run_phase "bash syntax" 0 run_bash_syntax
+    run_phase "zsh syntax" 0 run_zsh_syntax
+    run_phase "expected executable files" 0 assert_expected_executables
+    run_phase "zsh source/runtime boundary" 0 assert_zsh_runtime_inputs_removed
+    run_phase "zsh bootstrap boundary" 0 assert_zsh_bootstrap_boundary
 }
 
 run_prose_checks() {
@@ -287,20 +335,20 @@ run_codex_sync_validation() {
 
 run_full_checks() {
     run_common_checks
-    run_tmux_agent_bar_tests
-    run_handy_tests
-    run_tuicr_tests
-    run_sesh_tests
-    run_zsh_prompt_tests
-    run_godspeed_tasks_tests
-    run_karabiner_config_tests
-    run_codex_sync_tests
-    run_codex_config_coach_tests
-    run_slack_rich_text_tests
-    run_public_content_guard_tests
-    run_codex_theme_sync_check
-    run_codex_sync_validation
-    run_prose_checks
+    run_phase "tmux-agent-bar wrapper and sync tests" 0 run_tmux_agent_bar_tests
+    run_phase "Handy sync regression tests" 0 run_handy_tests
+    run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
+    run_phase "sesh regression tests" 0 run_sesh_tests
+    run_phase "zsh prompt regression tests" 0 run_zsh_prompt_tests
+    run_phase "Godspeed task helper tests" 0 run_godspeed_tasks_tests
+    run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
+    run_phase "Codex sync regression tests" 0 run_codex_sync_tests
+    run_phase "Codex config coach helper tests" 0 run_codex_config_coach_tests
+    run_phase "Slack rich-text helper tests" 0 run_slack_rich_text_tests
+    run_phase "public content guard tests" 0 run_public_content_guard_tests
+    run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
+    run_phase "Codex sync input validation" 0 run_codex_sync_validation
+    run_phase "advisory prose checks" 1 run_prose_checks
 }
 
 run_staged_checks() {
@@ -326,15 +374,15 @@ run_staged_checks() {
         "scripts/sync-tmux-agent-bar.sh" \
         "tests/tmux-agent-bar/*" \
         "tests/tmux-agent-status/*"; then
-        run_tmux_agent_bar_tests
+        run_phase "tmux-agent-bar wrapper and sync tests" 0 run_tmux_agent_bar_tests
     fi
 
     if changed_any "scripts/sync-handy-settings.sh" "tests/handy/*"; then
-        run_handy_tests
+        run_phase "Handy sync regression tests" 0 run_handy_tests
     fi
 
     if changed_any ".dotty/run.sh" "tests/tuicr/*"; then
-        run_tuicr_tests
+        run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
     fi
 
     if changed_any \
@@ -345,44 +393,44 @@ run_staged_checks() {
         "home/.local/bin/sesh-one-shot" \
         "home/.config/zsh/sesh.zsh" \
         "tests/sesh/*"; then
-        run_sesh_tests
+        run_phase "sesh regression tests" 0 run_sesh_tests
     fi
 
     if changed_any "home/.config/zsh/*" "home/.zshenv" "tests/zsh/*"; then
-        run_zsh_prompt_tests
+        run_phase "zsh prompt regression tests" 0 run_zsh_prompt_tests
     fi
 
     if changed_any "home/.ruler/skills/godspeed-tasks/*" "tests/godspeed-tasks/*"; then
-        run_godspeed_tasks_tests
+        run_phase "Godspeed task helper tests" 0 run_godspeed_tasks_tests
     fi
 
     if changed_any "scripts/ts/karabiner-config.ts" "tests/karabiner/*"; then
-        run_karabiner_config_tests
+        run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
     fi
 
     if changed_any "home/.codex/*" "home/.ruler/*" "scripts/ts/sync-codex-*" "scripts/ts/sync-ruler.ts" "scripts/validate-codex-sync.sh" "tests/codex/*"; then
-        run_codex_sync_tests
-        run_codex_sync_validation
+        run_phase "Codex sync regression tests" 0 run_codex_sync_tests
+        run_phase "Codex sync input validation" 0 run_codex_sync_validation
     fi
 
     if changed_any "home/.codex/skills/codex-config-coach/*" "home/.local/lib/codex-session-snippets.ts" "tests/codex-config-coach/*"; then
-        run_codex_config_coach_tests
+        run_phase "Codex config coach helper tests" 0 run_codex_config_coach_tests
     fi
 
     if changed_any "home/.local/bin/slack-rich-text" "home/.local/lib/slack-rich-text.ts" "home/.raycast-scripts/*slack-rich-text*" "tests/slack-rich-text/*"; then
-        run_slack_rich_text_tests
+        run_phase "Slack rich-text helper tests" 0 run_slack_rich_text_tests
     fi
 
     if changed_any "home/.local/bin/public-content-guard" "scripts/check-sensitive-content.sh" "tests/public-content-guard/*"; then
-        run_public_content_guard_tests
+        run_phase "public content guard tests" 0 run_public_content_guard_tests
     fi
 
     if changed_any "scripts/ts/sync-codex-nightfly-theme.ts" "home/.codex/references/nightfly/*"; then
-        run_codex_theme_sync_check
+        run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
     fi
 
     if changed_any "README.md" "docs/*.md" ".vale.ini" ".vale/*" "scripts/check-prose.sh"; then
-        run_prose_checks
+        run_phase "advisory prose checks" 1 run_prose_checks
     fi
 }
 

@@ -76,8 +76,8 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 | Command | Use |
 | --- | --- |
-| `./scripts/check` | Run the full local validation suite. |
-| `./scripts/check --staged` | Run cheap common checks plus tests selected from staged path groups. |
+| `./scripts/check` | Run the full local validation suite. Add `--quiet` for pass/fail phase summaries. |
+| `./scripts/check --staged` | Run cheap common checks plus tests selected from staged path groups. Add `--quiet` for hook-style output. |
 | `./scripts/check-prose.sh` | Run advisory prose checks for `README.md` and top-level docs. |
 | `./scripts/install-git-hooks.sh` | Install or repair repo-local Git hooks. |
 
@@ -90,12 +90,12 @@ Edit tracked source in this repo, not the generated live output in `$HOME`. For 
 For local verification:
 
 ```bash
-./scripts/check --staged
-./scripts/check
+./scripts/check --staged --quiet
+./scripts/check --quiet
 dotty update
 ```
 
-Use `./scripts/check --staged` for the fast pre-commit path, `./scripts/check` before pushing broader config or hook changes, and `dotty update` when you need the live home directory to reflect the repo state.
+Use `./scripts/check --staged --quiet` for the fast pre-commit path, `./scripts/check --quiet` before pushing broader config or hook changes, and `dotty update` when you need the live home directory to reflect the repo state.
 
 ## Layout
 
