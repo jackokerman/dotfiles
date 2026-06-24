@@ -10,6 +10,8 @@ When a workflow already has a tracked helper or client, prefer extending that he
 
 When a repo-local helper grows its own runtime, dependency, verification, or release-cadence needs, evaluate extracting it into a standalone repo or package instead of continuing to expand dotfiles. Favor extraction when the helper is likely to back multiple surfaces such as a CLI, Raycast extension, or other automation entrypoints.
 
+When a standalone tool still needs dotty integration, keep dotfiles to bootstrap and routing glue, then audit the full dotty chain for later overlays that regenerate the same live outputs. After `dotty update`, verify generated indexes such as `~/.codex/skills/.dotty-managed-skills.tsv` and `~/.claude/skills/.dotty-managed-skills.tsv` point at the standalone source, not a copied dotfiles source.
+
 ## Context Surface Audit
 
 When a session exposes token or latency pressure, inspect always-loaded instructions, invoked skills, enabled plugins, configured MCP servers, runtime-injected MCP servers, and repeated tool sequences.
