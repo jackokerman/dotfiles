@@ -24,7 +24,7 @@ Use this skill for clearly React or frontend work, including cleanup or simplifi
 - State: keep state minimal and close to its owner, derive during render when possible, lift only for shared ownership, and pass intentful handlers instead of raw setters by default.
 - Effects: use `useEffect` only for synchronization with systems outside React. Do not mirror props into state or derive render data in an effect.
 - Context: use context for shared subtree state, not as the default answer to prop drilling. Scope providers narrowly and expose a provider plus a `useX` hook.
-- Rendering: prefer early returns, named helpers/components, and boolean-safe conditionals. Avoid nested ternaries, large JSX variables, and large derivation blocks above `return`.
+- Rendering: prefer early returns, named helpers/components, and boolean-safe conditionals. Avoid nested ternaries, large JSX variables, JSX-valued render helpers for substantial subtrees, and large derivation blocks above `return`.
 - Performance: measure before trading readability for speed. Reach for memoization or concurrent APIs only for measured expensive work, stable identity requirements, responsiveness, or established local convention.
 - Testing: test behavior and user outcomes. Prefer meaningful assertions and async queries such as `findBy*` over snapshots, implementation details, or broad `waitFor` blocks.
 

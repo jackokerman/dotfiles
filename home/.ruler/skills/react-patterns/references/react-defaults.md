@@ -52,6 +52,7 @@ Detailed React defaults for `react-patterns`. Apply only the sections relevant t
 - Avoid accidental `0` or empty-string rendering. Coerce non-boolean `&&` conditions or use a ternary.
 - Do not keep large conditional, derivation, or JSX blocks above `return`. Simplify them or extract a helper, hook, or component.
 - When content needs an optional shell, prefer a small wrapper component with `children` over duplicating the subtree or assigning JSX to a local value.
+- Treat JSX-valued local variables and `renderFoo()` helpers as readability smells for substantial subtrees, not automatic lifecycle bugs. React still reconciles returned elements, but component or wrapper boundaries composed in JSX scale better when the subtree later needs hooks, state, effects, DevTools identity, or focused tests.
 - Use JSX comments only for non-obvious product, domain, or accessibility constraints.
 - In component files, put the main exported component first, then local hooks and helpers in top-down order.
 - Use error boundaries at route or independently useful widget boundaries. Do not wrap every component mechanically.
