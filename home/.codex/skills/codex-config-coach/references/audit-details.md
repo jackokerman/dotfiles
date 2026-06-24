@@ -23,9 +23,12 @@ Prefer lower-context alternatives when they preserve the workflow:
 
 For MCP/plugin changes, compare tracked fragments, `codex doctor`, runtime launcher behavior, and CLI equivalents. Recommend disabling or deferring a surface only with a clear replacement path and evidence it is not needed in most sessions.
 
+When an MCP server can report its tools cheaply, quantify the surface area instead of relying only on config diffs: enabled server count, exposed tool count, raw `tools/list` bytes, and schema/description bytes are useful before/after proxies for model-facing context. If a generator or config file can reintroduce a broad MCP surface, add a regression check that proves the default stays empty, deferred, or opt-in.
+
 ## Measurement Ladder
 
 - Light: static `plugin-eval analyze` and `plugin-eval explain-budget` reports.
+- MCP-specific light: compare `codex mcp list` output plus `tools/list` tool counts and schema bytes for any changed MCP servers.
 - Medium: define two or three pressure scenarios that should pass after the steering change and fail or require correction before it.
 - Heavy: initialize and run `plugin-eval` benchmarks only with explicit approval, because they create `.plugin-eval/` artifacts and run real Codex sessions.
 - When comparing alternatives, prefer blind before/after comparison and keep the simpler version if outcomes are equivalent.
@@ -52,6 +55,7 @@ Use helper output as evidence, not as a replacement for judgment. Pull only the 
 - Split a large skill by moving examples or detailed procedure into a reference file when `plugin-eval` shows excessive invoke budget and the detail is not needed on every use.
 - Recommend extracting a helper from dotfiles when its tests, dependencies, or release needs create repo-wide drag that is unrelated to most dotfiles changes.
 - Add pressure scenarios before changing a high-impact skill whose purpose is behavioral compliance rather than static reference lookup.
+- Add a cheap regression test when removing a broad default MCP/plugin surface, especially if a generated fragment or sync hook could bring it back.
 - Decline to edit config when the correction is specific to one task or already covered by existing instructions.
 
 ## Response Shape
