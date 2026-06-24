@@ -1,5 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-exec "${REPO_ROOT}/scripts/sync-jackie-plan.sh" "$@"
+readonly JACKIE_PLAN_REPO_URL="${JACKIE_PLAN_REPO_URL:-https://github.com/jackokerman/jackie-plan.git}"
+readonly JACKIE_PLAN_BRANCH="${JACKIE_PLAN_BRANCH:-main}"
+readonly JACKIE_PLAN_INSTALL_ROOT="${JACKIE_PLAN_INSTALL_ROOT:-$HOME/.local/share/jackie-plan}"
+readonly JACKIE_PLAN_REPO_DIR="${JACKIE_PLAN_REPO_DIR:-${JACKIE_PLAN_INSTALL_ROOT}/repo}"
+
+log() {
+  printf '[jackie-plan] %s\n' "$*"
+}
+
+warn() {
+  printf '[jackie-plan] warning: %s\n' "$*" >&2
+}
+
+if [[ ! -e "${JACKIE_PLAN_REPO_DIR}" ]]; then
+  mkdir -p "${JACKIE_PLAN_INSTALL_ROOT}"
+  if ! git clone --branch "${JACKIE_PLAN_BRANCH}" "${JACKIE_PLAN_REPO_URL}" "${JACKIE_PLAN_REPO_DIR}"; then
+    warn "Skipping install because ${JACKIE_PLAN_REPO_URL} could not be cloned"
+    exit 0
+  fi
+  log "Cloned Jackie Plan"
+fi
+
+if [[ -d "${JACKIE_PLAN_REPO_DIR}/.git" && ! -x "${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" ]]; then
+  git -C "${JACKIE_PLAN_REPO_DIR}" fetch origin "${JACKIE_PLAN_BRANCH}" >/dev/null 2>&1 || true
+  git -C "${JACKIE_PLAN_REPO_DIR}" merge --ff-only "origin/${JACKIE_PLAN_BRANCH}" >/dev/null 2>&1 || true
+fi
+
+if [[ ! -x "${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" ]]; then
+  warn "Skipping install because ${JACKIE_PLAN_REPO_DIR}/scripts/install.sh is missing or not executable"
+  exit 0
+fi
+
+exec "${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" "$@"

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Jackie Plan"
-  short_description: "Durable coding-agent plan memory through the jp CLI."
-  default_prompt: "Use $jackie-plan when saving, capturing, resuming, checkpointing, listing, or updating durable plans and follow-ups through the jp CLI."

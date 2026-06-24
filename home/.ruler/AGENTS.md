@@ -60,6 +60,7 @@
 ## Tool Adoption Workflow
 - When adopting or configuring a new development tool, start with the smallest useful workflow that preserves the tool's core value. Keep optional automation, extra artifacts, and broad integrations off by default until repeated use shows they are worth the added ceremony.
 - Prefer a reversible, documented default path before adding custom wrappers or helper scripts. Add custom tooling only after the off-the-shelf workflow still causes repeated friction.
+- For standalone tools or plugins, keep implementation code, tests, skills, plugin metadata, and installer/update logic in that tool's own repository. Dotfiles should provide only thin bootstrap glue, machine-specific config, or routing needed to make the standalone tool available.
 
 ## Routing
 - Generic personal preferences and reusable non-work Codex setup belong in the public `dotfiles` repo.

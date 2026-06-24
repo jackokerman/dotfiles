@@ -522,11 +522,14 @@ setup_codex() {
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local ruler_agents_src="$DOTFILES/home/.ruler/AGENTS.md"
     local portable_skills_src_dir="$DOTFILES/home/.ruler/skills"
+    local jackie_plan_skills_src_dir="${JACKIE_PLAN_REPO_DIR:-$HOME/.local/share/jackie-plan/repo}/skills"
     local custom_agents_src_dir="$DOTFILES/home/.codex/agents"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"
     local skills_src_dir="$DOTFILES/home/.codex/skills"
     local themes_src_dir="$DOTFILES/home/.codex/themes"
+    local -a portable_skill_source_args=()
+    local -a generated_skill_source_args=()
 
     if ! command -v bun >/dev/null 2>&1; then
         warning "Bun not found. Skipping Codex config sync."
@@ -534,6 +537,16 @@ setup_codex() {
     fi
 
     mkdir -p "$codex_dir"
+
+    if [[ -d "$portable_skills_src_dir" ]]; then
+        portable_skill_source_args+=(--skill-source "$portable_skills_src_dir")
+        generated_skill_source_args+=(--source "$portable_skills_src_dir")
+    fi
+
+    if [[ -d "$jackie_plan_skills_src_dir" ]]; then
+        portable_skill_source_args+=(--skill-source "$jackie_plan_skills_src_dir")
+        generated_skill_source_args+=(--source "$jackie_plan_skills_src_dir")
+    fi
 
     local use_portable_ruler=false
     if [[ "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -d "$portable_skills_src_dir" && -f "$ruler_script" ]]; then
@@ -595,11 +608,7 @@ setup_codex() {
                 --skill-source "$skills_src_dir"
             )
         fi
-        if [[ -d "$portable_skills_src_dir" ]]; then
-            custom_agent_args+=(
-                --skill-source "$portable_skills_src_dir"
-            )
-        fi
+        custom_agent_args+=("${portable_skill_source_args[@]}")
 
         bun run "$script" custom-agents \
             --validate-only \
@@ -616,7 +625,7 @@ setup_codex() {
         bun run "$ruler_script" portable \
             --validate-only \
             --source "$ruler_agents_src" \
-            --skill-source "$portable_skills_src_dir" \
+            "${portable_skill_source_args[@]}" \
             || die "Failed to validate portable Ruler outputs"
         bun run "$ruler_script" portable \
             --codex-agents-output "$codex_dir/AGENTS.md" \
@@ -624,17 +633,17 @@ setup_codex() {
             --codex-skills-output "$codex_dir/skills" \
             --claude-skills-output "$claude_dir/skills" \
             --source "$ruler_agents_src" \
-            --skill-source "$portable_skills_src_dir" \
+            "${portable_skill_source_args[@]}" \
             || die "Failed to generate portable Ruler outputs"
 
         if [[ -d "$skills_src_dir" ]]; then
             bun run "$script" skills \
                 --validate-only \
-                --source "$portable_skills_src_dir" \
+                "${generated_skill_source_args[@]}" \
                 --source "$skills_src_dir"
             bun run "$script" skills \
                 --output "$codex_dir/skills" \
-                --source "$portable_skills_src_dir" \
+                "${generated_skill_source_args[@]}" \
                 --source "$skills_src_dir"
         fi
     fi
@@ -693,8 +702,8 @@ main() {
             ;;
     esac
 
-    setup_codex
     setup_jackie_plan
+    setup_codex
     setup_gsd_core
     setup_tmux_agent_bar
 }
