@@ -19,6 +19,17 @@ _rendered=""
 
 [[ -x "${_tmux_agent_bar_bin}" ]] || exit 0
 
+render_status() {
+  local mode="$1"
+
+  if command -v timeout >/dev/null 2>&1; then
+    timeout 2s "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null || true
+    return 0
+  fi
+
+  "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null || true
+}
+
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
     --all-clients)
@@ -66,7 +77,7 @@ refresh_client() {
 }
 
 store_fresh_status() {
-  _rendered="$(TMUX_AGENT_BAR_FORCE_REFRESH=1 "${_tmux_agent_bar_bin}" render "${_target}" 2>/dev/null || true)"
+  _rendered="$(TMUX_AGENT_BAR_FORCE_REFRESH=1 render_status render)"
   tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
 }
 
@@ -74,7 +85,7 @@ store_rendered_status() {
   local mode="$1"
 
   if [[ "${mode}" == "cached" ]]; then
-    _rendered="$("${_tmux_agent_bar_bin}" render-cached "${_target}" 2>/dev/null || true)"
+    _rendered="$(render_status render-cached)"
   else
     store_fresh_status
     return 0
@@ -103,10 +114,10 @@ refresh_target() {
     refresh_fresh_later
     return 0
   elif (( _mode_cached )); then
-    _rendered="$("${_tmux_agent_bar_bin}" render-cached "${_target}" 2>/dev/null || true)"
+    _rendered="$(render_status render-cached)"
     tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
   else
-    _rendered="$("${_tmux_agent_bar_bin}" render "${_target}" 2>/dev/null || true)"
+    _rendered="$(render_status render)"
     tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
   fi
 

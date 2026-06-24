@@ -15,5 +15,11 @@ _refresh_wrapper="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/session-status-r
 "${_tmux_agent_bar_bin}" "$@"
 
 if [[ -x "${_refresh_wrapper}" ]]; then
-  "${_refresh_wrapper}" --all-clients --cached --refresh-client >/dev/null 2>&1 || true
+  (
+    if command -v timeout >/dev/null 2>&1; then
+      timeout 2s "${_refresh_wrapper}" --all-clients --cached --refresh-client
+    else
+      "${_refresh_wrapper}" --all-clients --cached --refresh-client
+    fi
+  ) >/dev/null 2>&1 &
 fi
