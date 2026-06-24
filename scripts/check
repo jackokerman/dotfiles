@@ -131,6 +131,7 @@ run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/commands/brew-sync"
+        ".dotty/commands/install-jackie-plan"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
         ".dotty/commands/sync-tmux-agent-bar"
@@ -161,6 +162,7 @@ run_bash_syntax() {
         "scripts/check-prose.sh"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
+        "scripts/sync-jackie-plan.sh"
         "scripts/macos-setup.sh"
         "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
@@ -185,6 +187,7 @@ assert_expected_executables() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/commands/brew-sync"
+        ".dotty/commands/install-jackie-plan"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
         ".dotty/commands/sync-tmux-agent-bar"
@@ -196,6 +199,7 @@ assert_expected_executables() {
         "scripts/install-nvim-js-tools.sh"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
+        "scripts/sync-jackie-plan.sh"
         "scripts/macos-setup.sh"
         "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"

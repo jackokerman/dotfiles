@@ -659,6 +659,13 @@ setup_gsd_core() {
     "$install_script" --auto-reapply
 }
 
+setup_jackie_plan() {
+    local sync_script="$DOTFILES/scripts/sync-jackie-plan.sh"
+
+    [[ -x "$sync_script" ]] || return 0
+    "$sync_script"
+}
+
 main() {
     setup_vscode
     setup_shell
@@ -687,6 +694,7 @@ main() {
     esac
 
     setup_codex
+    setup_jackie_plan
     setup_gsd_core
     setup_tmux_agent_bar
 }
