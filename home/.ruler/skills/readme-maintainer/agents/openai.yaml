@@ -1,4 +1,4 @@
 interface:
   display_name: "README Maintainer"
-  short_description: "Restructure and keep repo READMEs clear."
-  default_prompt: "Use $readme-maintainer to audit and improve this repo README."
+  short_description: "Write, restructure, and keep repo READMEs clear."
+  default_prompt: "Use $readme-maintainer to write, audit, or update this repo README from repo truth."
