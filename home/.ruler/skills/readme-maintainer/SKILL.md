@@ -31,6 +31,7 @@ For command-heavy README patterns, template/generator limits, and a large CLI st
    - Put each command block next to why or when to run it.
    - Avoid giant command dumps unless the section is intentionally a quick reference.
    - Split trailing-comment command blocks by workflow or move explanation into prose when they would be too wide in a normal GitHub viewport.
+   - Do not hard-wrap Markdown prose solely to satisfy line-length checks. Treat long-line lint as a reason to inspect paragraph density, not as an automatic wrapping instruction.
    - Use bullets for peer items and tables only for comparison or reference.
    - Keep headings concrete and sentence case unless the repo uses another convention.
    - Wrap exact commands, paths, files, packages, flags, and code identifiers in backticks.
