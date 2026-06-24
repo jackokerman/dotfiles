@@ -16,6 +16,7 @@ _refresh_client=0
 _background_fresh=1
 _client=""
 _rendered=""
+_current_state=""
 
 [[ -x "${_tmux_agent_bar_bin}" ]] || exit 0
 
@@ -28,6 +29,30 @@ render_status() {
   fi
 
   "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null
+}
+
+current_state_cache_file() {
+  local safe_target="${_target//\//%2F}"
+
+  printf '%s/tmux-agent-bar/current-state/%s\n' "${XDG_CACHE_HOME:-$HOME/.cache}" "${safe_target}"
+}
+
+store_current_state() {
+  local mode="${1:-current-state-cached}"
+  local state_file=""
+
+  [[ -n "${_target}" ]] || return 0
+  if ! _current_state="$(render_status "${mode}")"; then
+    return 1
+  fi
+
+  state_file=$(current_state_cache_file)
+  if [[ -n "${_current_state}" ]]; then
+    mkdir -p "$(dirname "${state_file}")"
+    printf '%s\n' "${_current_state}" > "${state_file}"
+  else
+    rm -f "${state_file}" 2>/dev/null || true
+  fi
 }
 
 while [[ "$#" -gt 0 ]]; do
@@ -82,6 +107,7 @@ store_fresh_status() {
   fi
 
   tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
+  store_current_state current-state || true
 }
 
 store_rendered_status() {
@@ -97,6 +123,7 @@ store_rendered_status() {
   fi
 
   tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
+  store_current_state || true
 }
 
 refresh_fresh_later() {
@@ -123,11 +150,13 @@ refresh_target() {
       return 0
     fi
     tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
+    store_current_state || true
   else
     if ! _rendered="$(render_status render)"; then
       return 0
     fi
     tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
+    store_current_state current-state || true
   fi
 
   refresh_client

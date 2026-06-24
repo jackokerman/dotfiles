@@ -27,7 +27,11 @@ case "${1:-}" in
     if [[ -n "${TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET:-}" ]] && [[ "${2:-}" != "${TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET}" ]]; then
       exit 1
     fi
-    printf '%s\n' "${TMUX_AGENT_BAR_FAKE_CURRENT_STATE:-}"
+    if [[ "${1:-}" == "current-state-cached" ]]; then
+      printf '%s\n' "${TMUX_AGENT_BAR_FAKE_CURRENT_STATE_CACHED:-${TMUX_AGENT_BAR_FAKE_CURRENT_STATE:-}}"
+    else
+      printf '%s\n' "${TMUX_AGENT_BAR_FAKE_CURRENT_STATE:-}"
+    fi
     ;;
   render)
     if [[ -n "${TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET:-}" ]] && [[ "${2:-}" != "${TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET}" ]]; then
@@ -143,6 +147,38 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_left_wrapper_current_state_cache_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  mkdir -p "${tmp_dir}/cache/tmux-agent-bar/current-state"
+  printf '%s\n' "done" > "${tmp_dir}/cache/tmux-agent-bar/current-state/remote-session"
+
+  actual=$(
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
+    "${LEFT_WRAPPER}" "remote-session"
+  )
+  assert_equal "left wrapper renders cached current-session state when no hook state exists" "#[fg=#21c7a8] " "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_left_wrapper_explicit_state_precedence_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  mkdir -p "${tmp_dir}/state" "${tmp_dir}/cache/tmux-agent-bar/current-state"
+  printf '%s\n' $'codex\tworking' > "${tmp_dir}/state/remote-session"
+  printf '%s\n' "done" > "${tmp_dir}/cache/tmux-agent-bar/current-state/remote-session"
+
+  actual=$(
+    STATE_DIR="${tmp_dir}/state" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
+    "${LEFT_WRAPPER}" "remote-session"
+  )
+  assert_equal "left wrapper prefers explicit hook state over cached current-session state" "#[fg=#82aaff] " "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
 run_left_wrapper_fallback_case() {
   local tmp_dir="" actual=""
 
@@ -178,6 +214,7 @@ EOF
 
   actual=$(
     PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
     TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
     TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='$23' \
     TMUX_AGENT_BAR_FAKE_RENDER_CACHED="#[fg=#21c7a8] other#[fg=default] " \
@@ -189,6 +226,81 @@ EOF
   assert_equal \
     "refresh wrapper stores the cached rendered right side in the session option" \
     $'$23\t@tmux_agent_bar_status_right\t#[fg=#21c7a8] other#[fg=default] ' \
+    "${actual}"
+
+  rm -rf "${tmp_dir}"
+}
+
+run_refresh_wrapper_current_state_cache_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  mkdir -p "${tmp_dir}/bin"
+
+  cat > "${tmp_dir}/bin/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "set-option" && "${2:-}" == "-q" && "${3:-}" == "-t" ]]; then
+  exit 0
+fi
+exit 1
+EOF
+  chmod +x "${tmp_dir}/bin/tmux"
+
+  actual=$(
+    PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
+    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='nav/query' \
+    TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET='nav/query' \
+    TMUX_AGENT_BAR_FAKE_RENDER_CACHED="#[fg=#21c7a8] other#[fg=default] " \
+    TMUX_AGENT_BAR_FAKE_CURRENT_STATE="done" \
+    "${REFRESH_WRAPPER}" 'nav/query' --cached
+    cat "${tmp_dir}/cache/tmux-agent-bar/current-state/nav%2Fquery"
+  )
+
+  assert_equal \
+    "refresh wrapper caches the resolved current-session state for status-left" \
+    "done" \
+    "${actual}"
+
+  rm -rf "${tmp_dir}"
+}
+
+run_refresh_wrapper_fresh_current_state_cache_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  mkdir -p "${tmp_dir}/bin"
+
+  cat > "${tmp_dir}/bin/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "set-option" && "${2:-}" == "-q" && "${3:-}" == "-t" ]]; then
+  exit 0
+fi
+exit 1
+EOF
+  chmod +x "${tmp_dir}/bin/tmux"
+
+  actual=$(
+    PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
+    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='nav-query' \
+    TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET='nav-query' \
+    TMUX_AGENT_BAR_FAKE_RENDER="#[fg=#21c7a8] other#[fg=default] " \
+    TMUX_AGENT_BAR_FAKE_CURRENT_STATE="done" \
+    TMUX_AGENT_BAR_FAKE_CURRENT_STATE_CACHED="working" \
+    "${REFRESH_WRAPPER}" 'nav-query'
+    cat "${tmp_dir}/cache/tmux-agent-bar/current-state/nav-query"
+  )
+
+  assert_equal \
+    "fresh refresh caches the fresh current-session state" \
+    "done" \
     "${actual}"
 
   rm -rf "${tmp_dir}"
@@ -224,6 +336,7 @@ EOF
 
   actual=$(
     PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
     TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
     TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='PR review 🔎' \
     TMUX_AGENT_BAR_FAKE_RENDER_CACHED="#[fg=#82aaff] PR review 🔎#[fg=default] " \
@@ -260,6 +373,7 @@ EOF
 
   actual=$(
     PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
     TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
     TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='$23' \
     TMUX_AGENT_BAR_FAKE_RENDER="#[fg=#82aaff] other#[fg=default] " \
@@ -296,6 +410,7 @@ EOF
 
   actual=$(
     PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
     TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
     TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='different-target' \
     TMUX_AGENT_BAR_FAKE_RENDER_CACHED="" \
@@ -344,6 +459,7 @@ EOF
 
   actual=$(
     PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
     TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
     TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='remote-one' \
     TMUX_AGENT_BAR_FAKE_RENDER_CACHED="#[fg=#21c7a8] cached#[fg=default] " \
@@ -399,6 +515,7 @@ EOF
 
   actual=$(
     PATH="${tmp_dir}/bin:${PATH}" \
+    XDG_CACHE_HOME="${tmp_dir}/cache" \
     TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
     TMUX_AGENT_BAR_FAKE_RENDER_CACHED="#[fg=#21c7a8] cached#[fg=default] " \
     TMUX_AGENT_BAR_FAKE_RENDER="#[fg=#82aaff] fresh#[fg=default] " \
@@ -465,8 +582,12 @@ run_codex_hook_wrapper_case
 run_codex_hook_detaches_refresh_case
 run_codex_hook_missing_runtime_case
 run_left_wrapper_case
+run_left_wrapper_current_state_cache_case
+run_left_wrapper_explicit_state_precedence_case
 run_left_wrapper_fallback_case
 run_refresh_wrapper_cached_case
+run_refresh_wrapper_current_state_cache_case
+run_refresh_wrapper_fresh_current_state_cache_case
 run_refresh_wrapper_client_refresh_case
 run_refresh_wrapper_full_case
 run_refresh_wrapper_render_failure_preserves_case
