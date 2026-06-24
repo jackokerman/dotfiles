@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-_tmux_agent_bar_path_helper="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tmux-agent-bar-path.sh"
+_session_name="${1:-}"
+_state_dir="${STATE_DIR:-/tmp/tmux-agent-$(id -u)}"
+_safe_name="${_session_name//\//%2F}"
+_state_file="${_state_dir}/${_safe_name}"
+_agent=""
+_state=""
 
-# shellcheck source=/dev/null
-source "${_tmux_agent_bar_path_helper}"
-
-_tmux_agent_bar_repo="$(tmux_agent_bar_runtime_repo_path)"
-_tmux_agent_bar_bin="${_tmux_agent_bar_repo}/bin/tmux-agent-bar"
-_current_target="${1:-}"
-
-[[ -x "${_tmux_agent_bar_bin}" ]] || exit 0
-
-_state="$("${_tmux_agent_bar_bin}" current-state-cached "${_current_target}" 2>/dev/null || true)"
+if [[ -n "${_session_name}" && -f "${_state_file}" ]]; then
+  IFS=$'\t' read -r _agent _state < "${_state_file}" || true
+  if [[ -z "${_state}" ]]; then
+    _state="${_agent}"
+  fi
+fi
 
 case "${_state}" in
   waiting)

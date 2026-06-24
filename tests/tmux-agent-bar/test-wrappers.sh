@@ -123,12 +123,15 @@ run_left_wrapper_case() {
   make_fake_runtime "${tmp_dir}/runtime"
 
   actual=$(
-    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
-    TMUX_AGENT_BAR_EXPECTED_CURRENT_TARGET='$23' \
-    TMUX_AGENT_BAR_FAKE_CURRENT_STATE="working" \
-    "${LEFT_WRAPPER}" '$23'
+    STATE_DIR="${tmp_dir}/state" \
+    "${BASH}" <<EOF
+set -euo pipefail
+mkdir -p "${tmp_dir}/state"
+printf '%s\n' \$'codex\tworking' > "${tmp_dir}/state/project"
+"${LEFT_WRAPPER}" "project"
+EOF
   )
-  assert_equal "left wrapper renders the targeted current-state prefix" "#[fg=#82aaff] " "${actual}"
+  assert_equal "left wrapper renders the current session state-file prefix" "#[fg=#82aaff] " "${actual}"
   rm -rf "${tmp_dir}"
 }
 

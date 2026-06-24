@@ -4,13 +4,13 @@ This directory now owns the tmux-side wrappers and path resolution for the exter
 
 ## Ownership
 
-- `session-status-left.sh`: stable tmux entrypoint for the current-session state prefix; tmux renders the session name itself so local session switches update immediately.
+- `session-status-left.sh`: stable tmux entrypoint for the current-session state prefix; it reads the explicit state file directly and never calls back into tmux while tmux is evaluating `status-left`.
 - `session-status.sh`: stable tmux entrypoint that resolves the active `tmux-agent-bar` checkout and execs its renderer.
 - `session-status-refresh.sh`: stable tmux entrypoint that refreshes the session-scoped cached `status-right` value from the active `tmux-agent-bar` checkout. Forced refreshes draw cached state first and refresh fresh remote/source state in the background.
 - `agent-status-hook.sh`: stable hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its explicit-state writer.
 - `codex-agent-status-hook.sh`: stable Codex hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its Codex lifecycle adapter.
 - `tmux-agent-bar-path.sh`: shared path-resolution helper for the wrappers.
-- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, keeps the session name tmux-native on the left, and renders only the session-scoped cached right-side option. Hooks update that option on session switches, session closes, and agent state changes.
+- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, passes the session name to the left prefix helper, keeps the visible session name tmux-native, and renders only the session-scoped cached right-side option. Hooks update that option on session switches, session closes, and agent state changes.
 
 The generic parser, collector, renderer, prompt heuristics, and Codex event-to-state mapping live in the managed `tmux-agent-bar` repo, not in this repo.
 
