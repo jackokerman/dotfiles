@@ -69,6 +69,17 @@ describe("slack rich text renderer", () => {
     expect(html).toContain("<s>gone</s>");
   });
 
+  test("renders link labels as plain text so Slack preserves anchors", () => {
+    const html = runHelper("render", {
+      input: "Merged [`settingsOverview`](https://example.com/pr) and [**bold label**](https://example.com/bold).",
+    }) as string;
+
+    expect(html).toContain('<a href="https://example.com/pr">settingsOverview</a>');
+    expect(html).toContain('<a href="https://example.com/bold">bold label</a>');
+    expect(html).not.toContain('<a href="https://example.com/pr"><code>');
+    expect(html).not.toContain('<a href="https://example.com/bold"><strong>');
+  });
+
   test("builds a prepared clipboard payload without macOS clipboard access", () => {
     const payload = runHelper("payload", { input: "\n\nhello **Slack**\n\n" }) as {
       html: string;

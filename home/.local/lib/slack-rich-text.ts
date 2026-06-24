@@ -153,7 +153,7 @@ function renderInlineTokens(tokens: InlineToken[]): string {
         case "image":
           return escapeInlineText(token.text ?? token.href ?? "");
         case "link": {
-          const label = renderInlineTokens(
+          const label = renderPlainInlineTokens(
             token.tokens ?? [{ type: "text", text: token.text ?? token.href ?? "" }],
           );
           if (!isSafeHref(token.href)) {
@@ -168,6 +168,37 @@ function renderInlineTokens(tokens: InlineToken[]): string {
             return renderInlineTokens(token.tokens);
           }
           return escapeInlineText(token.text ?? token.raw ?? "");
+        default:
+          return escapeInlineText(token.text ?? token.raw ?? "");
+      }
+    })
+    .join("");
+}
+
+function renderPlainInlineTokens(tokens: InlineToken[]): string {
+  return tokens
+    .map((token) => {
+      switch (token.type) {
+        case "br":
+          return "<br/>";
+        case "del":
+        case "em":
+        case "strong":
+        case "text":
+          if (Array.isArray(token.tokens) && token.tokens.length > 0) {
+            return renderPlainInlineTokens(token.tokens);
+          }
+          return escapeInlineText(token.text ?? token.raw ?? "");
+        case "escape":
+        case "html":
+        case "tag":
+          return escapeInlineText(token.raw ?? token.text ?? "");
+        case "image":
+          return escapeInlineText(token.text ?? token.href ?? "");
+        case "link":
+          return renderPlainInlineTokens(
+            token.tokens ?? [{ type: "text", text: token.text ?? token.href ?? "" }],
+          );
         default:
           return escapeInlineText(token.text ?? token.raw ?? "");
       }
