@@ -23,11 +23,11 @@ render_status() {
   local mode="$1"
 
   if command -v timeout >/dev/null 2>&1; then
-    timeout 2s "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null || true
-    return 0
+    timeout 2s "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null
+    return "$?"
   fi
 
-  "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null || true
+  "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null
 }
 
 while [[ "$#" -gt 0 ]]; do
@@ -77,7 +77,10 @@ refresh_client() {
 }
 
 store_fresh_status() {
-  _rendered="$(TMUX_AGENT_BAR_FORCE_REFRESH=1 render_status render)"
+  if ! _rendered="$(TMUX_AGENT_BAR_FORCE_REFRESH=1 render_status render)"; then
+    return 1
+  fi
+
   tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
 }
 
@@ -85,7 +88,9 @@ store_rendered_status() {
   local mode="$1"
 
   if [[ "${mode}" == "cached" ]]; then
-    _rendered="$(render_status render-cached)"
+    if ! _rendered="$(render_status render-cached)"; then
+      return 1
+    fi
   else
     store_fresh_status
     return 0
@@ -97,27 +102,31 @@ store_rendered_status() {
 refresh_fresh_later() {
   if (( _background_fresh )); then
     (
-      store_fresh_status
+      store_fresh_status || true
       refresh_client
     ) >/dev/null 2>&1 &
     return 0
   fi
 
-  store_fresh_status
+  store_fresh_status || true
   refresh_client
 }
 
 refresh_target() {
   if (( _force_refresh )); then
-    store_rendered_status "cached"
+    store_rendered_status "cached" || true
     refresh_client
     refresh_fresh_later
     return 0
   elif (( _mode_cached )); then
-    _rendered="$(render_status render-cached)"
+    if ! _rendered="$(render_status render-cached)"; then
+      return 0
+    fi
     tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
   else
-    _rendered="$(render_status render)"
+    if ! _rendered="$(render_status render)"; then
+      return 0
+    fi
     tmux set-option -q -t "${_target}" @tmux_agent_bar_status_right "${_rendered}" 2>/dev/null || true
   fi
 

@@ -268,6 +268,44 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_refresh_wrapper_render_failure_preserves_case() {
+  local tmp_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  make_fake_runtime "${tmp_dir}/runtime"
+  mkdir -p "${tmp_dir}/bin"
+
+  cat > "${tmp_dir}/bin/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "set-option" && "${2:-}" == "-q" && "${3:-}" == "-t" ]]; then
+  printf '%s\t%s\t%s\n' "${4:-}" "${5:-}" "${6:-}" >> "${TMUX_FAKE_SET_OPTION_FILE}"
+  exit 0
+fi
+exit 1
+EOF
+  chmod +x "${tmp_dir}/bin/tmux"
+
+  actual=$(
+    PATH="${tmp_dir}/bin:${PATH}" \
+    TMUX_AGENT_BAR_DIR="${tmp_dir}/runtime" \
+    TMUX_AGENT_BAR_EXPECTED_RENDER_TARGET='different-target' \
+    TMUX_AGENT_BAR_FAKE_RENDER_CACHED="" \
+    TMUX_FAKE_SET_OPTION_FILE="${tmp_dir}/set-option" \
+    "${REFRESH_WRAPPER}" '$23' --cached
+    if [[ -f "${tmp_dir}/set-option" ]]; then
+      cat "${tmp_dir}/set-option"
+    fi
+  )
+
+  assert_equal \
+    "refresh wrapper preserves the previous status when rendering fails" \
+    "" \
+    "${actual}"
+
+  rm -rf "${tmp_dir}"
+}
+
 run_refresh_wrapper_force_case() {
   local tmp_dir="" actual=""
 
@@ -422,6 +460,7 @@ run_left_wrapper_fallback_case
 run_refresh_wrapper_cached_case
 run_refresh_wrapper_client_refresh_case
 run_refresh_wrapper_full_case
+run_refresh_wrapper_render_failure_preserves_case
 run_refresh_wrapper_force_case
 run_refresh_wrapper_all_clients_case
 run_session_switch_hook_case
