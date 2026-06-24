@@ -101,6 +101,40 @@ run_dirty_skip_case() {
   rm -rf "${tmp_dir}"
 }
 
+run_diverged_skip_case() {
+  local tmp_dir="" actual="" head=""
+
+  tmp_dir=$(mktemp -d)
+  create_remote_repo "${tmp_dir}"
+
+  TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+    TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
+    "${TARGET_SCRIPT}" >/dev/null 2>&1
+
+  (
+    cd "${tmp_dir}/install/repo"
+    git config user.name "Test User"
+    git config user.email "test@example.com"
+    printf 'local\n' >> README.md
+    git commit -am "local" >/dev/null 2>&1
+  )
+  head=$(git -C "${tmp_dir}/install/repo" rev-parse --short HEAD)
+
+  append_remote_commit "${tmp_dir}"
+
+  actual=$(
+    TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+      TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
+      "${TARGET_SCRIPT}" 2>&1
+  )
+
+  assert_matches "sync script warns instead of failing on a diverged checkout" 'cannot be fast-forwarded' "${actual}"
+  assert_equal "sync script keeps the local diverged checkout intact" "local" "$(tail -n 1 "${tmp_dir}/install/repo/README.md")"
+  assert_matches "sync script leaves the local diverged commit checked out" "${head}" "$(git -C "${tmp_dir}/install/repo" rev-parse --short HEAD)"
+  rm -rf "${tmp_dir}"
+}
+
 run_clone_case
 run_update_case
 run_dirty_skip_case
+run_diverged_skip_case

@@ -55,11 +55,21 @@ tmux_agent_bar_checkout_branch() {
   git -C "${TMUX_AGENT_BAR_REPO_DIR}" symbolic-ref --quiet --short HEAD 2>/dev/null || true
 }
 
+tmux_agent_bar_checkout_can_fast_forward() {
+  git -C "${TMUX_AGENT_BAR_REPO_DIR}" merge-base --is-ancestor HEAD "origin/${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
+}
+
 update_tmux_agent_bar() {
   local before="" after=""
 
-  before=$(git -C "${TMUX_AGENT_BAR_REPO_DIR}" rev-parse HEAD)
   git -C "${TMUX_AGENT_BAR_REPO_DIR}" fetch origin "${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
+
+  if ! tmux_agent_bar_checkout_can_fast_forward; then
+    warning_log "Skipping tmux-agent-bar update because the checkout cannot be fast-forwarded to origin/${TMUX_AGENT_BAR_BRANCH}"
+    return 0
+  fi
+
+  before=$(git -C "${TMUX_AGENT_BAR_REPO_DIR}" rev-parse HEAD)
   git -C "${TMUX_AGENT_BAR_REPO_DIR}" merge --ff-only "origin/${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
   after=$(git -C "${TMUX_AGENT_BAR_REPO_DIR}" rev-parse HEAD)
 
