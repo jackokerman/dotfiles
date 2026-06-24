@@ -93,4 +93,4 @@
 ## Dotfiles Workflow
 - In personal dotty-managed repos, the task is not done until changes are committed and pushed to `main`.
 - Use conventional commits.
-- After changing linked config, hooks, or generated Codex sources, run `dotty update` before finishing.
+- After changing linked config, hooks, or generated Codex sources, apply local dirty source with `dotty link` when you need immediate live verification. Prefer committing the intended tracked files before a final `dotty update`, because `dotty update` can pull, relink, and test through managed repo state. If unrelated files are dirty, keep them unstaged and re-check `git status --short --branch` before any amend or push.
