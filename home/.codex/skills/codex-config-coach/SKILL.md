@@ -15,7 +15,8 @@ Turn real session friction into measured, durable steering updates. Keep this sk
 4. Measure when practical. For skills or plugins, run `plugin-eval analyze <path> --format markdown`; add `plugin-eval explain-budget <path> --format markdown` when token cost is part of the concern. Use scores as evidence, not as the only objective.
 5. Pick the narrowest durable surface: `AGENTS.md` for broad routing, an existing skill for workflow-specific behavior, deferred references for detailed procedure, and helper scripts for deterministic repeated command logic.
 6. Apply narrow, low-risk updates directly when the user asks for recommended updates or has accepted the direction. Propose first when ownership is ambiguous, impact is high, or evidence is weak.
-7. Finish through the target repo workflow: edit tracked sources, run required regeneration such as `dotty update`, run checks, and commit/push when repo instructions require it.
+7. Call out clear token, supervision, or workflow simplification opportunities when they appear, even if they are not the main requested change. Keep the note brief and actionable.
+8. Finish through the target repo workflow: edit tracked sources, run required regeneration such as `dotty update`, run checks, and commit/push when repo instructions require it.
 
 Load `references/audit-details.md` for tool adoption, helper extraction, MCP/plugin surface audits, transcript lookup, high-impact measurement, or response templates.
 
