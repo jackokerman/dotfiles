@@ -1,11 +1,13 @@
 ---
 name: readme-maintainer
-description: Use when writing a new README from scratch, creating, auditing, or updating README/repo landing pages, setup docs, CLI docs, contributor notes, or README drift checks.
+description: Use when writing a new README from scratch, creating, auditing, or updating README/repo landing pages, setup docs, CLI docs, contributor notes, AGENTS/repo steering docs, or docs drift checks.
 ---
 
 # README Maintainer
 
 Treat the README as the repo landing page, not the complete manual. Make the first useful path obvious and push deep reference material into linked docs when the repo supports that shape.
+
+Use this skill as the repo documentation freshness pass, not only as prose style guidance. When a behavior change affects setup, commands, generated outputs, repo layout, validation, or contributor workflow, audit the README plus the adjacent docs and repo steering surfaces that describe that behavior, such as `AGENTS.md`, `CONTRIBUTING.md`, `docs/`, examples, CLI help, completions, and test maps.
 
 ## Paved Path
 
@@ -32,8 +34,8 @@ package metadata, CLI help, tests, docs, and scripts over generic section names.
 ## Workflow
 
 1. Inspect repo truth before editing.
-   - Read `README.md`, `AGENTS.md`, nearby docs, package manifests, scripts, CLI help, tests, and existing check commands.
-   - Look specifically for README drift checks, such as tests that assert documented flags, generated help, install commands, or setup paths.
+   - Read `README.md`, `AGENTS.md`, nearby docs, package manifests, scripts, CLI help, completions, examples, tests, and existing check commands.
+   - Look specifically for docs drift checks, such as tests that assert documented flags, generated help, install commands, setup paths, command lists, or test maps.
    - Preserve stronger local conventions when they conflict with generic README templates.
 2. Identify the README job.
    - Decide whether the README primarily serves first install, daily use, CLI usage, contribution, operations, library consumption, or repo navigation.
@@ -54,7 +56,7 @@ package metadata, CLI help, tests, docs, and scripts over generic section names.
 5. Validate and finish.
    - Verify documented commands against their source of truth before rewriting around them.
    - Run the smallest repo check that covers the README claim; include markdown/prose checks when available.
-   - If commands, setup, generated config, or repo layout changed, update the README or linked docs in the same change.
+   - If commands, setup, generated config, repo layout, validation, or contributor workflow changed, update the README, linked docs, and repo steering surfaces in the same change.
    - If a code change intentionally leaves the README unchanged, briefly state why it did not affect the repo landing page, setup path, daily commands, or documented behavior.
    - Summarize the structural change and what was verified.
 
@@ -69,4 +71,5 @@ package metadata, CLI help, tests, docs, and scripts over generic section names.
 - Lists contain parallel items at the same level of detail.
 - The README does not duplicate large chunks of docs that will drift.
 - The documented commands exist and still mean what the README says.
+- Adjacent docs and steering surfaces that describe the same behavior were checked and updated or explicitly ruled out.
 - Repo-local README freshness checks are preserved and run when relevant.
