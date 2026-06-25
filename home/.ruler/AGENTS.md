@@ -38,6 +38,7 @@
 - Before pushing, re-check `git status --short --branch` and the commits ahead of the upstream branch. If unexpected unpushed commits or unrelated dirty files are present, report them and confirm the push scope instead of silently including concurrent work.
 - Before finishing, run the smallest verification that covers the change and report what was and was not verified.
 - For loud but routine verification commands, redirect output to a temp log and inspect or show the log only on failure. Use live output when diagnosing a failing command, monitoring meaningful progress, or when the user asks to see the full output.
+- When composing one-off zsh command wrappers, avoid assigning to zsh special parameters such as `status`; use names like `rc` or `exit_code` for captured exit codes.
 
 ## Tooling
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
