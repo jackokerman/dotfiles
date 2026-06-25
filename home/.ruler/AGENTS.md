@@ -14,6 +14,7 @@
 - For reusable Slack paste workflows where the message is already drafted and the goal is rich-text clipboard copy or direct paste into a focused composer, use the native `slack-clipboard` skill. Prefer authenticated Slack tools when the user wants actual delivery.
 - Keep universal writing invariants that should always apply in `AGENTS.md`. Keep richer examples and drafting guidance in the `writing-style` skill.
 - On markdown-capable surfaces, wrap exact technical identifiers in backticks. Use this for literal code-facing names such as files, paths, commands, components, hooks, functions, flags, operators, and packages. Skip generic concepts, issue or ticket IDs that should be linked semantically, and plain-text surfaces such as commit messages. PR titles and descriptions support markdown, so use backticks there when they improve precision.
+- Do not add artificial hard line breaks to Markdown prose solely for line length. Leave prose as natural paragraphs unless a formatter or required local style changes it.
 
 ## Engineering Style
 - Default to the simplest implementation that fully solves the stated problem.
