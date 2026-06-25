@@ -81,7 +81,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 | `./scripts/check --quiet` | Run the default core validation lane with pass/fail phase summaries. |
 | `./scripts/check --extended --quiet` | Run core checks plus helper and integration regressions. |
 | `./scripts/check --staged --quiet` | Run cheap common checks plus tests selected from staged path groups with hook-style output. |
-| `./scripts/check-prose.sh` | Run advisory prose checks for `README.md` and top-level docs. |
+| `./scripts/check-prose.sh` | Run advisory Markdown prose-density checks for `README.md` and top-level docs. |
 | `./scripts/install-git-hooks.sh` | Install or repair repo-local Git hooks. |
 
 After changing tracked config, run `dotty update` before testing the live setup.

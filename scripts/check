@@ -454,7 +454,7 @@ run_staged_checks() {
         run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
     fi
 
-    if changed_any "README.md" "docs/*.md" ".vale.ini" ".vale/*" "scripts/check-prose.sh"; then
+    if changed_any "README.md" "docs/*.md" "scripts/check-prose.sh"; then
         run_phase "advisory prose checks" 1 run_prose_checks
     fi
 }

@@ -13,8 +13,8 @@ usage() {
     cat <<'EOF'
 Usage: scripts/check-prose.sh [--advisory|--strict] [path ...]
 
-Runs paragraph-density checks and any configured Vale styles. Advisory mode is
-the default and never fails the command.
+Runs Markdown prose-density checks. Advisory mode is the default and never
+fails the command.
 EOF
 }
 
@@ -95,25 +95,6 @@ run_density_summary() {
     done
 }
 
-run_vale() {
-    if ! command -v vale >/dev/null 2>&1; then
-        log "Vale is not installed; skipping advisory prose checks. Run dotty run brew-sync on macOS to install it."
-        return 0
-    fi
-
-    if [[ ${#PROSE_PATHS[@]} -eq 0 ]]; then
-        log "No Markdown files selected for prose checks"
-        return 0
-    fi
-
-    log "Running Vale"
-    if "$STRICT"; then
-        vale --config "$PROJECT_ROOT/.vale.ini" "${PROSE_PATHS[@]}"
-    else
-        vale --config "$PROJECT_ROOT/.vale.ini" --no-exit "${PROSE_PATHS[@]}"
-    fi
-}
-
 PROSE_PATHS=()
 parse_args "$@"
 
@@ -122,4 +103,3 @@ if [[ ${#PROSE_PATHS[@]} -eq 0 ]]; then
 fi
 
 run_density_summary
-run_vale
