@@ -55,6 +55,12 @@ Tracked Codex inputs live under `home/.codex/` and `home/.ruler/`.
 
 Ruler-generated output is never committed. Dotty invokes Ruler only in a temporary staging root and remains the owner of the live `~/.codex/AGENTS.md` file.
 
+## Development checkouts
+
+`.dotty/dev-checkouts.tsv` lists public development repos that should exist under `~/src` on every machine. `dotty update` and `dotty run sync-dev-checkouts` clone missing entries and fast-forward existing checkouts only when they are clean, on the configured branch, and still point at the configured origin URL.
+
+Use this for reusable personal tools that are both part of the dotfiles workflow and likely to be iterated on directly, such as lint configs, Codex-adjacent tools, or small CLIs. Keep runtime-only clones under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace.
+
 ## Jackie Plan
 
 `dotty update` installs Jackie Plan from `~/src/jackie-plan`, cloning `https://github.com/jackokerman/jackie-plan.git` there when the checkout is missing. The checkout is intentionally a normal development clone so Jackie Plan can be improved in place.

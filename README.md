@@ -2,7 +2,7 @@
 
 Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This is the public, generic layer for shared defaults; local overrides and later repos in the dotty chain add machine-specific behavior.
 
-This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, Codex and Claude defaults, a few small runtime checkouts under `~/.local/share/`, and a development checkout for Jackie Plan under `~/src/jackie-plan`. Tracked source lives under `home/`, and `dotty` links or renders it into `$HOME`.
+This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, Codex and Claude defaults, a few small runtime checkouts under `~/.local/share/`, and selected development checkouts under `~/src`. Tracked source lives under `home/`, and `dotty` links or renders it into `$HOME`.
 
 ## Install
 
@@ -56,7 +56,7 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, updates managed runtime checkouts, and installs Jackie Plan from `~/src/jackie-plan`.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` development checkouts exist, updates managed runtime checkouts, and installs Jackie Plan from `~/src/jackie-plan`.
 
 ## Daily Use
 
@@ -66,10 +66,11 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 | Command | Use |
 | --- | --- |
-| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, and update managed runtime checkouts. |
+| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, ensure selected `~/src` development checkouts exist, and update managed runtime checkouts. |
 | `dotty run brew-sync` | Install packages from the tracked `Brewfile` on macOS. Use `dotty run brew-sync --cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |
+| `dotty run sync-dev-checkouts` | Clone or conservatively fast-forward public development repos listed in `.dotty/dev-checkouts.tsv` under `~/src`. |
 
 ### Validation
 
@@ -120,6 +121,7 @@ Common places to edit:
 | sesh defaults | `home/.config/sesh/sesh.toml`; `dotty update` renders the live `~/.config/sesh/sesh.toml` into a real `~/.config/sesh/` directory. |
 | Raycast script commands | `home/.raycast-scripts/` |
 | Codex and Claude tracked config | `home/.ruler/`, `home/.codex/`, and `home/.claude/` |
+| Public development checkouts | `.dotty/dev-checkouts.tsv` |
 
 Keep the tracked Godspeed helper and guidance generic. Personal labels, matching rules, and smart-list definitions should be discovered or supplied at runtime.
 

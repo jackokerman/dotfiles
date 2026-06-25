@@ -637,6 +637,13 @@ setup_jackie_plan() {
     "$install_script"
 }
 
+setup_dev_checkouts() {
+    local sync_script="$DOTFILES/scripts/sync-dev-checkouts.sh"
+
+    [[ -x "$sync_script" ]] || return 0
+    "$sync_script"
+}
+
 main() {
     setup_vscode
     setup_shell
@@ -664,6 +671,7 @@ main() {
             ;;
     esac
 
+    setup_dev_checkouts
     setup_jackie_plan
     setup_codex
     setup_tmux_agent_bar

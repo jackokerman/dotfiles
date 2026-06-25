@@ -59,6 +59,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the managed `tmux-agent-bar` checkout under `~/.local/share/tmux-agent-bar/repo` unless a local override path is set.
 - `home/.config/tmux/session-status-left.sh` owns the current-session prefix path, `session-status-refresh.sh` owns the cached visible `status-right` refresh path, `session-status.sh` remains the stable renderer wrapper, and `agent-status-hook.sh` owns explicit state writes.
 - Managed runtime checkouts live under `~/.local/share/`; `tmux-agent-bar` and `tuicr` use that pattern.
+- Development checkouts for reusable public tools live under `~/src` and are listed in `.dotty/dev-checkouts.tsv`; `dotty update` clones missing entries and conservatively fast-forwards clean checkouts on their configured branch.
 - Keep dotty-owned runtime checkouts separate from manual development clones. For `tuicr`, the managed checkout at `~/.local/share/tuicr/repo` is for install/use, not for personal fork remotes or long-lived branches.
 - Do not assume a dotty-managed runtime checkout under `~/.local/share/*/repo` is the right upstream contribution clone. Check for an existing development clone first; if only the managed checkout exists, ask before committing there.
 - Jackie Plan is an exception to the runtime-checkout pattern: `dotty update` installs it from the normal development checkout at `~/src/jackie-plan`, and Codex skill generation reads `~/src/jackie-plan/skills`.
