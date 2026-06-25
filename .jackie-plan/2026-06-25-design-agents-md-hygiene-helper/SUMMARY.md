@@ -4,7 +4,7 @@ title: Design AGENTS.md hygiene helper
 state: inbox
 priority: normal
 createdAt: 2026-06-25T19:28:25.578Z
-updatedAt: 2026-06-25T19:28:25.604Z
+updatedAt: 2026-06-25T23:56:16.755Z
 ---
 
 # Summary
