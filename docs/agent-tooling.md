@@ -57,7 +57,7 @@ Ruler-generated output is never committed. Dotty invokes Ruler only in a tempora
 
 ## Development checkouts
 
-`.dotty/dev-checkouts.tsv` lists public development repos that should exist under `~/src` on every machine. `dotty update` and `dotty run sync-dev-checkouts` clone missing entries and fast-forward existing checkouts only when they are clean, on the configured branch, and still point at the configured origin URL.
+`.dotty/dev-checkouts.tsv` lists tracked development repos that should exist under `~/src` on every machine. `dotty update` and `dotty run sync-dev-checkouts` clone missing entries and fast-forward existing checkouts only when they are clean, on the configured branch, and still point at the configured origin URL. Private entries rely on machine GitHub auth, and the clone and fetch paths stay non-interactive so hook runs warn and skip instead of hanging on prompts.
 
 Use this for reusable personal tools that are both part of the dotfiles workflow and likely to be iterated on directly, such as lint configs, Codex-adjacent tools, or small CLIs. Keep runtime-only clones under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace.
 
@@ -99,7 +99,7 @@ With `--git-protocol ssh`, it will detect an existing SSH key and prompt to crea
 
 This repo no longer routes SSH through 1Password. It expects a normal machine-local SSH key setup, and it does not track `~/.ssh/`.
 
-After `dotty update`, the tracked Git config already uses `gh auth git-credential` for GitHub HTTPS, so `gh auth setup-git` is usually unnecessary in this repo.
+After a successful `dotty update`, the tracked Git config already uses `gh auth git-credential` for GitHub HTTPS, so `gh auth setup-git` is usually only useful before the first successful `dotty update` or when bootstrapping a machine by hand.
 
 ## Validation
 

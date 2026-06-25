@@ -40,6 +40,10 @@ warning_log() {
   printf '[dev-checkouts] warning: %s\n' "$*" >&2
 }
 
+git_no_prompt() {
+  GIT_TERMINAL_PROMPT=0 git "$@"
+}
+
 checkout_is_dirty() {
   local repo_dir="$1" status=""
 
@@ -72,7 +76,7 @@ sync_checkout() {
 
   if [[ ! -e "${repo_dir}" ]]; then
     mkdir -p "${DEV_CHECKOUTS_SRC_ROOT}"
-    if git clone --branch "${branch}" "${repo_url}" "${repo_dir}" >/dev/null 2>&1; then
+    if git_no_prompt clone --branch "${branch}" "${repo_url}" "${repo_dir}" >/dev/null 2>&1; then
       success_log "Cloned ${name} into ${repo_dir}"
     else
       warning_log "Skipping ${name} because ${repo_url} could not be cloned"
@@ -102,7 +106,7 @@ sync_checkout() {
     return 0
   fi
 
-  if ! git -C "${repo_dir}" fetch origin "${branch}" >/dev/null 2>&1; then
+  if ! git_no_prompt -C "${repo_dir}" fetch origin "${branch}" >/dev/null 2>&1; then
     warning_log "Skipping ${name} update because fetch failed"
     return 0
   fi

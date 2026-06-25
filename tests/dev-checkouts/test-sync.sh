@@ -47,6 +47,20 @@ write_manifest() {
   printf 'demo\t%s\tmain\n' "${repo_url}" > "${manifest}"
 }
 
+write_git_wrapper() {
+  local wrapper="$1" log_file="$2" real_git=""
+
+  real_git="$(command -v git)"
+  cat > "${wrapper}" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+printf '%s\t%s\n' "\${GIT_TERMINAL_PROMPT:-unset}" "\$*" >> "${log_file}"
+exec "${real_git}" "\$@"
+EOF
+  chmod +x "${wrapper}"
+}
+
 run_clone_case() {
   local tmp_dir="" actual=""
 
@@ -60,6 +74,35 @@ run_clone_case() {
 
   actual=$(git -C "${tmp_dir}/src/demo" rev-parse --abbrev-ref HEAD)
   assert_equal "sync script clones a missing development checkout" "main" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_non_interactive_git_case() {
+  local tmp_dir="" actual="" git_log=""
+
+  tmp_dir=$(mktemp -d)
+  create_remote_repo "${tmp_dir}"
+  write_manifest "${tmp_dir}/dev-checkouts.tsv" "${tmp_dir}/remote.git"
+  mkdir -p "${tmp_dir}/bin"
+
+  git_log="${tmp_dir}/git.log"
+  write_git_wrapper "${tmp_dir}/bin/git" "${git_log}"
+
+  PATH="${tmp_dir}/bin:${PATH}" \
+    DEV_CHECKOUTS_MANIFEST="${tmp_dir}/dev-checkouts.tsv" \
+    DEV_CHECKOUTS_SRC_ROOT="${tmp_dir}/src" \
+    "${TARGET_SCRIPT}" >/dev/null 2>&1
+
+  append_remote_commit "${tmp_dir}"
+
+  PATH="${tmp_dir}/bin:${PATH}" \
+    DEV_CHECKOUTS_MANIFEST="${tmp_dir}/dev-checkouts.tsv" \
+    DEV_CHECKOUTS_SRC_ROOT="${tmp_dir}/src" \
+    "${TARGET_SCRIPT}" >/dev/null 2>&1
+
+  actual=$(cat "${git_log}")
+  assert_matches "sync script clones without terminal Git prompts" $'0\tclone --branch main ' "${actual}"
+  assert_matches "sync script fetches updates without terminal Git prompts" $'0\t-C .* fetch origin main' "${actual}"
   rm -rf "${tmp_dir}"
 }
 
@@ -133,6 +176,7 @@ run_origin_mismatch_skip_case() {
 }
 
 run_clone_case
+run_non_interactive_git_case
 run_update_case
 run_dirty_skip_case
 run_origin_mismatch_skip_case

@@ -38,6 +38,8 @@ gh auth status
 ssh -T git@github.com
 ```
 
+Private HTTPS checkouts in this repo, including `jackie-plan`, rely on GitHub credentials being available to Git. After `dotty update`, the tracked Git config routes GitHub HTTPS through `gh auth git-credential`. If you want that wiring before the first successful `dotty update`, run `gh auth setup-git`.
+
 This repo does not track `~/.ssh/`. Keep custom hosts, identities, or non-default key layouts in local SSH config or a later repo in the dotty chain.
 
 ### 3. Reapply tracked macOS setup
@@ -70,7 +72,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 | `dotty run brew-sync` | Install packages from the tracked `Brewfile` on macOS. Use `dotty run brew-sync --cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |
-| `dotty run sync-dev-checkouts` | Clone or conservatively fast-forward public development repos listed in `.dotty/dev-checkouts.tsv` under `~/src`. |
+| `dotty run sync-dev-checkouts` | Clone or conservatively fast-forward tracked development repos listed in `.dotty/dev-checkouts.tsv` under `~/src`. Private entries rely on your machine GitHub auth. |
 
 ### Validation
 

@@ -15,9 +15,13 @@ warn() {
   printf '[jackie-plan] warning: %s\n' "$*" >&2
 }
 
+git_no_prompt() {
+  GIT_TERMINAL_PROMPT=0 git "$@"
+}
+
 if [[ ! -e "${JACKIE_PLAN_REPO_DIR}" ]]; then
   mkdir -p "$(dirname "${JACKIE_PLAN_REPO_DIR}")"
-  if ! git clone --branch "${JACKIE_PLAN_BRANCH}" "${JACKIE_PLAN_REPO_URL}" "${JACKIE_PLAN_REPO_DIR}"; then
+  if ! git_no_prompt clone --branch "${JACKIE_PLAN_BRANCH}" "${JACKIE_PLAN_REPO_URL}" "${JACKIE_PLAN_REPO_DIR}"; then
     warn "Skipping install because ${JACKIE_PLAN_REPO_URL} could not be cloned"
     exit 0
   fi
@@ -25,7 +29,7 @@ if [[ ! -e "${JACKIE_PLAN_REPO_DIR}" ]]; then
 fi
 
 if [[ -d "${JACKIE_PLAN_REPO_DIR}/.git" && ! -x "${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" ]]; then
-  git -C "${JACKIE_PLAN_REPO_DIR}" fetch origin "${JACKIE_PLAN_BRANCH}" >/dev/null 2>&1 || true
+  git_no_prompt -C "${JACKIE_PLAN_REPO_DIR}" fetch origin "${JACKIE_PLAN_BRANCH}" >/dev/null 2>&1 || true
   git -C "${JACKIE_PLAN_REPO_DIR}" merge --ff-only "origin/${JACKIE_PLAN_BRANCH}" >/dev/null 2>&1 || true
 fi
 
