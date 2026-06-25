@@ -18,6 +18,7 @@
 ## Engineering Style
 - Default to the simplest implementation that fully solves the stated problem.
 - Do not add abstractions, fallback paths, configuration knobs, or future-proofing unless the current requirement needs them.
+- For configuration or selection behavior, prefer one explicit source of truth. Do not add secondary env overrides, fallback defaults, or parallel config paths unless a repeated concrete pain point justifies them.
 - Avoid speculative defensive coding. Add guards, retries, parsing, normalization, or recovery logic only for a concrete failure mode, explicit requirement, or established codebase pattern.
 - Do not add features, alternate flows, or edge-case handling that were not requested.
 - Prefer fixing the actual boundary where data is consumed instead of pre-validating or transforming inputs earlier "just in case."
