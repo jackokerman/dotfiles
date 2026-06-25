@@ -17,9 +17,7 @@ For command-heavy README patterns, template/generator limits, and a large CLI st
 
 ## Bootstrap Mode
 
-When a repo has no useful README, write one from repo truth instead of asking
-for a template. Start from this lightweight shape and remove sections that do
-not fit:
+When a repo has no useful README, write one from repo truth instead of asking for a template. Start from this lightweight shape and remove sections that do not fit:
 
 - Overview: what the repo does, who it is for, and why it exists.
 - Install or quick start: the shortest path to a working result.
@@ -28,8 +26,7 @@ not fit:
 - Development: the smallest contributor check path.
 - Deeper docs: links for reference material that would make the README too long.
 
-Treat this as scaffolding, not a required template. Prefer the repo's existing
-package metadata, CLI help, tests, docs, and scripts over generic section names.
+Treat this as scaffolding, not a required template. Prefer the repo's existing package metadata, CLI help, tests, docs, and scripts over generic section names.
 
 ## Workflow
 

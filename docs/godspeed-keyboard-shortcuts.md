@@ -1,7 +1,6 @@
 # Godspeed Keyboard Shortcuts
 
-This is the durable setup guide for my Godspeed desktop shortcuts. It documents
-the scheme, not the private account-specific list IDs.
+This is the durable setup guide for my Godspeed desktop shortcuts. It documents the scheme, not the private account-specific list IDs.
 
 Official references:
 
@@ -40,8 +39,7 @@ Avoid these:
 
 ## Bindings
 
-Use workspace-first chords for predictable navigation, plus default-workspace
-aliases for the views used constantly on a given machine.
+Use workspace-first chords for predictable navigation, plus default-workspace aliases for the views used constantly on a given machine.
 
 Workspace navigation macros:
 
@@ -82,9 +80,7 @@ Keep `M` as the fallback for uncommon moves.
 
 ## Navigation Macro Pattern
 
-The `Expand/collapse folder` action operates on the currently selected folder.
-To switch workspace context, first jump to the folder you want to hide, collapse
-it, then jump to the folder you want to use and expand it.
+The `Expand/collapse folder` action operates on the currently selected folder. To switch workspace context, first jump to the folder you want to hide, collapse it, then jump to the folder you want to use and expand it.
 
 Work navigation macros should use this shape:
 
@@ -94,8 +90,7 @@ Work navigation macros should use this shape:
 4. `Expand/collapse folder` -> `Expand`.
 5. `Jump to list` -> the target Work list.
 
-Personal navigation macros should use the same shape with Work and Personal
-reversed.
+Personal navigation macros should use the same shape with Work and Personal reversed.
 
 Examples:
 
@@ -106,13 +101,9 @@ Examples:
 
 ## Move Macro Pattern
 
-Godspeed's `Move task to list` macro action uses a list picker. It does not
-accept `{{variable}}` text for the destination list, so a single dynamic
-same-workspace move macro is not possible inside the app's macro editor.
+Godspeed's `Move task to list` macro action uses a list picker. It does not accept `{{variable}}` text for the destination list, so a single dynamic same-workspace move macro is not possible inside the app's macro editor.
 
-Create one fixed-destination move macro per workspace and target state. This
-does not require copying account-specific list IDs: select the destination list
-from Godspeed's dropdown.
+Create one fixed-destination move macro per workspace and target state. This does not require copying account-specific list IDs: select the destination list from Godspeed's dropdown.
 
 Next Actions macros:
 
@@ -126,21 +117,11 @@ Someday macros:
 2. Select either Work `🌱 Someday` or Personal `🌱 Someday`.
 3. Set `Location` to `Top` or `Bottom`, whichever feels better during triage.
 
-Today macros should move to Next Actions and set the task's start date to today,
-but do not configure these as Godspeed macros in the current app release.
+Today macros should move to Next Actions and set the task's start date to today, but do not configure these as Godspeed macros in the current app release.
 
-The shipped app macro implementation applies `{{variable}}` substitution for
-`Set due date` and `Set snooze date`, but not for `Set start date`. JavaScript
-macro variables such as `{{currentDate}}` or `{{currentISO}}` therefore cannot
-drive a dynamic start-date macro. Literal queries such as `today` also failed in
-the macro editor with `Date query didn't produce any results`, so there is no
-reliable in-app macro setup for `Move to Today` right now.
+The shipped app macro implementation applies `{{variable}}` substitution for `Set due date` and `Set snooze date`, but not for `Set start date`. JavaScript macro variables such as `{{currentDate}}` or `{{currentISO}}` therefore cannot drive a dynamic start-date macro. Literal queries such as `today` also failed in the macro editor with `Date query didn't produce any results`, so there is no reliable in-app macro setup for `Move to Today` right now.
 
-Do not use a due-date macro as a substitute by default. A due date means the
-task is due today, while a start date means the task should become available in
-the Today smart list today. For now, use fixed-destination macros for Next
-Actions and Someday, and set start dates manually with Godspeed's start-date
-picker when needed.
+Do not use a due-date macro as a substitute by default. A due date means the task is due today, while a start date means the task should become available in the Today smart list today. For now, use fixed-destination macros for Next Actions and Someday, and set start dates manually with Godspeed's start-date picker when needed.
 
 ## Setup
 
@@ -157,14 +138,9 @@ picker when needed.
 
 ## Account-Specific IDs
 
-Navigation macros and fixed-destination move macros should be configured through
-Godspeed's list picker, not by committing account-specific list IDs. If a future
-macro or external script does need IDs, do not commit those IDs to this public
-repo. Keep them in the private in-app Godspeed note named `Godspeed keyboard
-shortcuts`, or recopy them from Godspeed with `Copy list ID`.
+Navigation macros and fixed-destination move macros should be configured through Godspeed's list picker, not by committing account-specific list IDs. If a future macro or external script does need IDs, do not commit those IDs to this public repo. Keep them in the private in-app Godspeed note named `Godspeed keyboard shortcuts`, or recopy them from Godspeed with `Copy list ID`.
 
-If IDs are needed for future external scripts, the private note should include
-IDs for:
+If IDs are needed for future external scripts, the private note should include IDs for:
 
 - Work folder, Today, Inbox, Next Actions, and Someday.
 - Personal folder, Today, Inbox, Next Actions, and Someday.

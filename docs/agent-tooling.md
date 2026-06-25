@@ -94,8 +94,7 @@ gh auth status
 ssh -T git@github.com
 ```
 
-`gh auth login` uses a browser-based flow by default and stores credentials in the system keychain when available.
-With `--git-protocol ssh`, it will detect an existing SSH key and prompt to create and upload one if needed.
+`gh auth login` uses a browser-based flow by default and stores credentials in the system keychain when available. With `--git-protocol ssh`, it will detect an existing SSH key and prompt to create and upload one if needed.
 
 This repo no longer routes SSH through 1Password. It expects a normal machine-local SSH key setup, and it does not track `~/.ssh/`.
 
