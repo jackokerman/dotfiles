@@ -1,55 +1,47 @@
 ---
 id: 2026-06-25-audit-single-checkout-ownership-for-dotty-managed-tool-repos
 title: audit single-checkout ownership for dotty-managed tool repos
-state: inbox
+state: ready-to-implement
 createdAt: 2026-06-25T15:55:17.861Z
-updatedAt: 2026-06-25T15:55:17.861Z
+updatedAt: 2026-06-25T21:46:50.858Z
 ---
 
 # audit single-checkout ownership for dotty-managed tool repos
 
 ## Plan
 
+1. Document one checkout-ownership rule for dotty-managed tools:
+   actively developed personal tools that are tracked in `.dotty/dev-checkouts.tsv` use `~/src/<repo>` as the canonical checkout, while `~/.local/share/<tool>/repo` is reserved for runtime-only installs or compatibility paths.
+2. Align `tmux-agent-bar` with that rule by migrating dotfiles wrappers, sync logic, and tests away from treating `~/.local/share/tmux-agent-bar/repo` as the canonical source tree.
+3. Keep `tuicr` as a runtime-only managed checkout unless this audit uncovers a concrete reason to promote it into `~/src` development-checkout handling.
+4. Leave `dotty` self-management out of this change unless a concrete conflict appears; capture any resulting work as a separate follow-up.
+
 ## Why this exists
 
-The current `tmux-agent-bar` setup now has both a development checkout under `~/src/tmux-agent-bar` and a managed runtime clone under `~/.local/share/tmux-agent-bar/repo`. That split made sense when the runtime checkout was only an install detail, but it is now causing ownership ambiguity and risks version drift.
+The repo currently mixes two ownership models for dotty-managed tools. `jackie-plan` already uses a normal development checkout under `~/src/jackie-plan` plus a compatibility symlink when needed, but `tmux-agent-bar` is now also listed in `.dotty/dev-checkouts.tsv` while docs, path resolution, and sync scripts still talk about `~/.local/share/tmux-agent-bar/repo` as the default location. That mismatch makes it unclear which checkout is authoritative and risks drift between a development clone and the runtime clone.
 
 ## Goal
 
-Decide which dotty-managed tools should have a single canonical checkout, which should stay runtime-only, and whether compatibility paths should be symlinks instead of separate clones.
+Make the checkout policy explicit and consistent so actively developed personal tools have one canonical checkout, while runtime-only tools stay under `~/.local/share/` by design.
 
-## Preliminary inventory
+## Confirmed repo facts
 
-- `tmux-agent-bar`
-  - currently has both `~/src/tmux-agent-bar` and `~/.local/share/tmux-agent-bar/repo`
-  - dotfiles scripts/docs still describe the `~/.local/share` clone as the default runtime path
-  - likely candidate for one canonical `~/src` checkout plus optional compatibility symlink
-- `jackie-plan`
-  - already follows the preferred shape: canonical `~/src/jackie-plan`
-  - compatibility path under `~/.local/share/jackie-plan/repo` is only a symlink when needed
-- `tuicr`
-  - still appears to be runtime-only under `~/.local/share/tuicr/repo`
-  - likely fine if it remains install/use only, but should be reviewed if it becomes an actively developed personal tool
-- `dotty`
-  - local executable resolves to `~/.dotty/bin/dotty -> ~/.dotty/dotty`
-  - ownership/update model should be verified before assuming it should follow the same repo-checkout pattern
+- `.dotty/dev-checkouts.tsv` already tracks both `jackie-plan` and `tmux-agent-bar` under `~/src`.
+- `.dotty/commands/install-jackie-plan` treats `~/src/jackie-plan` as the active checkout and creates `~/.local/share/jackie-plan/repo` only as a compatibility symlink when absent.
+- `docs/agent-tooling.md`, `AGENTS.md`, `scripts/sync-tmux-agent-bar.sh`, and `tests/tmux-agent-bar/test-runtime-path.sh` still treat `~/.local/share/tmux-agent-bar/repo` as the default tmux-agent-bar location.
+- `.dotty/run.sh` and `tests/tuicr/test-setup.sh` still manage `tuicr` as a runtime-only checkout under `~/.local/share/tuicr/repo`.
 
-## Questions to answer
+## Definition of done
 
-- Which tools should be treated as active development repos versus runtime implementation details?
-- For active development repos, should dotty standardize on a single canonical `~/src/<repo>` checkout?
-- When compatibility with an old runtime path is still needed, should dotty create a symlink instead of a second clone?
-- Should `tmux-agent-bar` now follow the same model as `jackie-plan`?
-- Does `tuicr` still justify a runtime-only clone, or should its policy be documented more explicitly?
-- Is `dotty` itself managed in a way that should be folded into the same ownership model, or is it intentionally separate?
+- The repo documents one consistent ownership model for dotty-managed personal tools.
+- `tmux-agent-bar` path resolution, sync behavior, and tests follow that model without requiring two independent clones.
+- `tuicr` remains explicitly documented as runtime-only if it stays on the existing path.
+- Any unrelated `dotty` ownership questions are captured as separate follow-up work instead of expanding this change.
 
-## Concrete follow-ups
+## First implementation slice
 
-- Audit dotfiles docs, scripts, and tests that currently assume a managed `tmux-agent-bar` runtime clone.
-- Propose one documented ownership model for actively developed personal tools.
-- If the model changes, migrate `tmux-agent-bar` first and update wrapper path resolution, sync logic, and tests accordingly.
-- Consider whether the broken `dotty guard-check` hook placeholder issue belongs in the same audit or should be split into a separate dotty follow-up after tool ownership is clarified.
+Update the tmux-agent-bar path model and sync flow to treat the `~/src/tmux-agent-bar` development checkout as canonical when present, keep `~/.local/share/tmux-agent-bar/repo` only as a compatibility path, and then align the affected docs and tests.
 
 ## Notes
 
-Directly editing a script in the canonical checkout should be picked up on the next invocation of that script path; shell re-sourcing only matters when the behavior depends on shell startup state, exported environment, or command resolution rather than the script file contents themselves.
+This plan is intentionally scoped to tool-checkout ownership. It does not include unrelated hook, guard, or shell-refresh issues unless they directly block the migration.
