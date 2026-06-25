@@ -1,0 +1,1 @@
+DOTTY_CLEANUP_DESCRIPTION="Move the old ~/.zshrc wrapper out of the way after ZDOTDIR migration"
