@@ -88,3 +88,4 @@
 - In personal dotty-managed repos, the task is not done until changes are committed and pushed to `main`.
 - Use conventional commits.
 - After changing linked config, hooks, or generated Codex sources, run `dotty update` before finishing.
+- When adding or migrating `.dotty/cleanups/` tasks, verify discovery with `dotty cleanups` and dry-run update output before any real `dotty update`; if local verification accidentally writes receipts for the new cleanup ids, remove only those new receipts before final status checks.
