@@ -1,0 +1,1 @@
+DOTTY_CLEANUP_DESCRIPTION="Replace the legacy Jackie Plan runtime checkout with a compatibility symlink"
