@@ -491,7 +491,7 @@ setup_codex() {
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local ruler_agents_src="$DOTFILES/home/.ruler/AGENTS.md"
     local portable_skills_src_dir="$DOTFILES/home/.ruler/skills"
-    local jackie_plan_skills_src_dir="${JACKIE_PLAN_REPO_DIR:-$HOME/.local/share/jackie-plan/repo}/skills"
+    local jackie_plan_skills_src_dir="${JACKIE_PLAN_REPO_DIR:-$HOME/src/jackie-plan}/skills"
     local custom_agents_src_dir="$DOTFILES/home/.codex/agents"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"
@@ -631,10 +631,10 @@ setup_codex() {
 }
 
 setup_jackie_plan() {
-    local sync_script="$DOTFILES/scripts/sync-jackie-plan.sh"
+    local install_script="$DOTFILES/.dotty/commands/install-jackie-plan"
 
-    [[ -x "$sync_script" ]] || return 0
-    "$sync_script"
+    [[ -x "$install_script" ]] || return 0
+    "$install_script"
 }
 
 main() {

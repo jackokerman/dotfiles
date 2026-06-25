@@ -55,6 +55,12 @@ Tracked Codex inputs live under `home/.codex/` and `home/.ruler/`.
 
 Ruler-generated output is never committed. Dotty invokes Ruler only in a temporary staging root and remains the owner of the live `~/.codex/AGENTS.md` file.
 
+## Jackie Plan
+
+`dotty update` installs Jackie Plan from `~/src/jackie-plan`, cloning `https://github.com/jackokerman/jackie-plan.git` there when the checkout is missing. The checkout is intentionally a normal development clone so Jackie Plan can be improved in place.
+
+The installer links the `jp` CLI with Bun and Codex skill generation imports `~/src/jackie-plan/skills`. If `~/.local/share/jackie-plan/repo` is absent, the installer creates it as a compatibility symlink to the development checkout. Existing checkouts at that legacy path are left untouched.
+
 Everyday instruction workflow:
 
 1. Edit `home/.ruler/AGENTS.md`.

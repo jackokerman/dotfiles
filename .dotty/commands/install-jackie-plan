@@ -3,8 +3,9 @@ set -euo pipefail
 
 readonly JACKIE_PLAN_REPO_URL="${JACKIE_PLAN_REPO_URL:-https://github.com/jackokerman/jackie-plan.git}"
 readonly JACKIE_PLAN_BRANCH="${JACKIE_PLAN_BRANCH:-main}"
-readonly JACKIE_PLAN_INSTALL_ROOT="${JACKIE_PLAN_INSTALL_ROOT:-$HOME/.local/share/jackie-plan}"
-readonly JACKIE_PLAN_REPO_DIR="${JACKIE_PLAN_REPO_DIR:-${JACKIE_PLAN_INSTALL_ROOT}/repo}"
+readonly JACKIE_PLAN_SRC_ROOT="${JACKIE_PLAN_SRC_ROOT:-$HOME/src}"
+readonly JACKIE_PLAN_REPO_DIR="${JACKIE_PLAN_REPO_DIR:-${JACKIE_PLAN_SRC_ROOT}/jackie-plan}"
+readonly JACKIE_PLAN_COMPAT_REPO_DIR="${JACKIE_PLAN_COMPAT_REPO_DIR:-$HOME/.local/share/jackie-plan/repo}"
 
 log() {
   printf '[jackie-plan] %s\n' "$*"
@@ -15,7 +16,7 @@ warn() {
 }
 
 if [[ ! -e "${JACKIE_PLAN_REPO_DIR}" ]]; then
-  mkdir -p "${JACKIE_PLAN_INSTALL_ROOT}"
+  mkdir -p "$(dirname "${JACKIE_PLAN_REPO_DIR}")"
   if ! git clone --branch "${JACKIE_PLAN_BRANCH}" "${JACKIE_PLAN_REPO_URL}" "${JACKIE_PLAN_REPO_DIR}"; then
     warn "Skipping install because ${JACKIE_PLAN_REPO_URL} could not be cloned"
     exit 0
@@ -31,6 +32,15 @@ fi
 if [[ ! -x "${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" ]]; then
   warn "Skipping install because ${JACKIE_PLAN_REPO_DIR}/scripts/install.sh is missing or not executable"
   exit 0
+fi
+
+if [[ ! -e "${JACKIE_PLAN_COMPAT_REPO_DIR}" ]]; then
+  mkdir -p "$(dirname "${JACKIE_PLAN_COMPAT_REPO_DIR}")"
+  ln -s "${JACKIE_PLAN_REPO_DIR}" "${JACKIE_PLAN_COMPAT_REPO_DIR}"
+elif [[ -L "${JACKIE_PLAN_COMPAT_REPO_DIR}" && "$(readlink "${JACKIE_PLAN_COMPAT_REPO_DIR}")" == "${JACKIE_PLAN_REPO_DIR}" ]]; then
+  :
+elif [[ "${JACKIE_PLAN_COMPAT_REPO_DIR}" != "${JACKIE_PLAN_REPO_DIR}" ]]; then
+  warn "Leaving existing ${JACKIE_PLAN_COMPAT_REPO_DIR} in place; ${JACKIE_PLAN_REPO_DIR} is the active checkout"
 fi
 
 exec "${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" "$@"

@@ -2,7 +2,7 @@
 
 Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This is the public, generic layer for shared defaults; local overrides and later repos in the dotty chain add machine-specific behavior.
 
-This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, Codex and Claude defaults, and a few small runtime checkouts under `~/.local/share/`. Tracked source lives under `home/`, and `dotty` links or renders it into `$HOME`.
+This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, Codex and Claude defaults, a few small runtime checkouts under `~/.local/share/`, and a development checkout for Jackie Plan under `~/src/jackie-plan`. Tracked source lives under `home/`, and `dotty` links or renders it into `$HOME`.
 
 ## Install
 
@@ -56,7 +56,7 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and updates managed runtime checkouts.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, updates managed runtime checkouts, and installs Jackie Plan from `~/src/jackie-plan`.
 
 ## Daily Use
 
