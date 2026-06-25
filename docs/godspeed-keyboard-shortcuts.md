@@ -12,10 +12,8 @@ Official references:
 
 Godspeed has two separate pieces here:
 
-- Key chords are keyboard sequences assigned to commands or macros, such as
-  `ctrl + g w t`.
-- Macros are Godspeed actions that do the work, such as jumping to a list,
-  collapsing a folder, or moving selected tasks.
+- Key chords are keyboard sequences assigned to commands or macros, such as `ctrl + g w t`.
+- Macros are Godspeed actions that do the work, such as jumping to a list, collapsing a folder, or moving selected tasks.
 
 The shortcut should be memorable, but the macro is the behavior.
 
@@ -23,19 +21,14 @@ The shortcut should be memorable, but the macro is the behavior.
 
 Use a hybrid leader strategy:
 
-- `ctrl + g` is the workspace/navigation leader. The `g` is for
-  Godspeed/GTD, and it avoids conflicts with tmux and Neovim.
-- `ctrl + m` is the move/triage leader. Godspeed's hotkey guide uses
-  `ctrl + m` for move-to-list macro examples, so this follows the app's own
-  convention.
+- `ctrl + g` is the workspace/navigation leader. The `g` is for Godspeed/GTD, and it avoids conflicts with tmux and Neovim.
+- `ctrl + m` is the move/triage leader. Godspeed's hotkey guide uses `ctrl + m` for move-to-list macro examples, so this follows the app's own convention.
 
 Avoid these:
 
 - `ctrl + t`, because tmux uses it for `sesh-pick`.
 - `ctrl + a`, because tmux uses it as prefix.
-- `space` or `ctrl + space`, because Neovim already uses space as leader and
-  Space-like bindings are more likely to collide with text input or task
-  selection.
+- `space` or `ctrl + space`, because Neovim already uses space as leader and Space-like bindings are more likely to collide with text input or task selection.
 
 ## Bindings
 
@@ -94,10 +87,8 @@ Personal navigation macros should use the same shape with Work and Personal reve
 
 Examples:
 
-- Work Today (`ctrl + g w t`): collapse Personal, expand Work, jump to Work
-  Today.
-- Work Inbox (`ctrl + g w i`): collapse Personal, expand Work, jump to Work
-  Inbox.
+- Work Today (`ctrl + g w t`): collapse Personal, expand Work, jump to Work Today.
+- Work Inbox (`ctrl + g w i`): collapse Personal, expand Work, jump to Work Inbox.
 
 ## Move Macro Pattern
 
@@ -130,11 +121,9 @@ Do not use a due-date macro as a substitute by default. A due date means the tas
 3. Enable `Settings > Text > Key chords`.
 4. Enable `Settings > Sync > hotkey sync`.
 5. Create one navigation macro per table row in the Macro Editor.
-6. Create fixed-destination move macros for the Next Actions and Someday move
-   table rows.
+6. Create fixed-destination move macros for the Next Actions and Someday move table rows.
 7. Bind the shortcuts in the Hotkey Editor with `?`.
-8. Test `ctrl + g w t`, `ctrl + g w i`, one default-workspace alias, and one
-   move shortcut.
+8. Test `ctrl + g w t`, `ctrl + g w i`, one default-workspace alias, and one move shortcut.
 
 ## Account-Specific IDs
 
@@ -144,18 +133,13 @@ If IDs are needed for future external scripts, the private note should include I
 
 - Work folder, Today, Inbox, Next Actions, and Someday.
 - Personal folder, Today, Inbox, Next Actions, and Someday.
-- Which workspace should be the default target for `ctrl + g t/i/n/s` on the
-  current machine.
+- Which workspace should be the default target for `ctrl + g t/i/n/s` on the current machine.
 
 ## Test Plan
 
 - Press `?` and verify every new chord has no conflict.
-- Run `ctrl + g w t`, `ctrl + g w i`, and `ctrl + g p t`. Confirm the target
-  list opens and the other workspace collapses.
-- Run `ctrl + g t`, `ctrl + g i`, `ctrl + g n`, and `ctrl + g s`. Confirm each
-  opens the machine's default workspace view.
-- From Work Inbox, run `ctrl + m w n`. Confirm the task moves to Work Next
-  Actions.
-- From Personal Inbox, run `ctrl + m p s`. Confirm the task moves to Personal
-  Someday.
+- Run `ctrl + g w t`, `ctrl + g w i`, and `ctrl + g p t`. Confirm the target list opens and the other workspace collapses.
+- Run `ctrl + g t`, `ctrl + g i`, `ctrl + g n`, and `ctrl + g s`. Confirm each opens the machine's default workspace view.
+- From Work Inbox, run `ctrl + m w n`. Confirm the task moves to Work Next Actions.
+- From Personal Inbox, run `ctrl + m p s`. Confirm the task moves to Personal Someday.
 - Test multi-select with two inbox tasks.

@@ -2,8 +2,7 @@
 
 ## Summary
 
-This note is the full handoff for adding a built-in `nightfly` theme to
-`tuicr` on a personal machine.
+This note is the full handoff for adding a built-in `nightfly` theme to `tuicr` on a personal machine.
 
 The intended shape of the change is:
 
@@ -14,18 +13,13 @@ The intended shape of the change is:
 - Do not add a light variant.
 - Do not turn this into a generic custom-theme feature in the same change.
 
-The key design decision is that `tuicr` should bundle its own Nightfly syntect
-theme asset instead of blocking on a separate upstream change to `two-face` or
-`syntect`.
+The key design decision is that `tuicr` should bundle its own Nightfly syntect theme asset instead of blocking on a separate upstream change to `two-face` or `syntect`.
 
 ## Why this should live in `tuicr`
 
-`tuicr` currently stores a `two_face::theme::EmbeddedThemeName` on its `Theme`
-struct and feeds that into the syntax highlighter. That is an implementation
-choice, not a hard product constraint.
+`tuicr` currently stores a `two_face::theme::EmbeddedThemeName` on its `Theme` struct and feeds that into the syntax highlighter. That is an implementation choice, not a hard product constraint.
 
-`syntect` itself can load a `.tmTheme` directly. That means `tuicr` can support
-Nightfly cleanly with a small refactor:
+`syntect` itself can load a `.tmTheme` directly. That means `tuicr` can support Nightfly cleanly with a small refactor:
 
 - Keep existing themes on embedded `two-face` themes.
 - Add one more syntax theme source for bundled custom themes.
@@ -33,14 +27,9 @@ Nightfly cleanly with a small refactor:
 
 This is better than trying to upstream Nightfly elsewhere first:
 
-- `syntect` is the highlighting engine, not the right place for a broad app
-  theme catalog.
-- `two-face` ships generated embedded theme assets and a fixed enum, so
-  upstreaming there first means a separate PR, waiting for a release, and then
-  bumping `tuicr`.
-- `tuicr` still needs its own UI palette work even if Nightfly landed in
-  `two-face`, so that dependency work does not remove the main implementation
-  task.
+- `syntect` is the highlighting engine, not the right place for a broad app theme catalog.
+- `two-face` ships generated embedded theme assets and a fixed enum, so upstreaming there first means a separate PR, waiting for a release, and then bumping `tuicr`.
+- `tuicr` still needs its own UI palette work even if Nightfly landed in `two-face`, so that dependency work does not remove the main implementation task.
 
 The simplest correct change is to bundle Nightfly directly in `tuicr`.
 
@@ -55,40 +44,29 @@ These are the main files involved:
 
 Relevant behavior:
 
-- `src/theme/mod.rs` defines the `Theme` struct, built-in themes, theme CLI
-  parsing, config theme parsing, and theme resolution.
-- `src/syntax/mod.rs` builds the `SyntaxHighlighter` and currently expects an
-  embedded `two-face` theme name.
-- `src/config/mod.rs` already accepts arbitrary strings for `theme`,
-  `theme_dark`, and `theme_light`, so adding `nightfly` is mostly a
-  theme-resolution concern rather than a config-schema concern.
+- `src/theme/mod.rs` defines the `Theme` struct, built-in themes, theme CLI parsing, config theme parsing, and theme resolution.
+- `src/syntax/mod.rs` builds the `SyntaxHighlighter` and currently expects an embedded `two-face` theme name.
+- `src/config/mod.rs` already accepts arbitrary strings for `theme`, `theme_dark`, and `theme_light`, so adding `nightfly` is mostly a theme-resolution concern rather than a config-schema concern.
 - `README.md` currently documents the built-in theme list and config examples.
 
 Places already confirmed during investigation:
 
 - `ThemeArg` and `THEME_CHOICES` live in `src/theme/mod.rs`.
 - `resolve_theme(...)` lives in `src/theme/mod.rs`.
-- `Theme::syntax_highlighter()` currently calls
-  `SyntaxHighlighter::new(self.syntect_theme, ...)`.
-- `SyntaxHighlighter::new(...)` currently accepts
-  `EmbeddedThemeName` and resolves via `two_face::theme::extra()`.
-- Existing theme parser and resolution tests already live in
-  `src/theme/mod.rs`.
+- `Theme::syntax_highlighter()` currently calls `SyntaxHighlighter::new(self.syntect_theme, ...)`.
+- `SyntaxHighlighter::new(...)` currently accepts `EmbeddedThemeName` and resolves via `two_face::theme::extra()`.
+- Existing theme parser and resolution tests already live in `src/theme/mod.rs`.
 
 ## Source of truth
 
 Use this precedence when picking values:
 
-1. Bundled `nightfly.tmTheme` for syntax token colors and syntax-scope diff
-   backgrounds.
-2. Canonical Nightfly palette from `bluz71/vim-nightfly-colors` for non-syntax
-   UI surfaces.
-3. Existing user `git-delta` Nightfly/OpenCode diff values for add/delete
-   accents and diff affordances when they differ from generic UI colors.
+1. Bundled `nightfly.tmTheme` for syntax token colors and syntax-scope diff backgrounds.
+2. Canonical Nightfly palette from `bluz71/vim-nightfly-colors` for non-syntax UI surfaces.
+3. Existing user `git-delta` Nightfly/OpenCode diff values for add/delete accents and diff affordances when they differ from generic UI colors.
 4. Only make manual tweaks after a live preview proves a real contrast problem.
 
-Do not approximate Nightfly with a nearby embedded theme such as Nord, One Half,
-or Base16.
+Do not approximate Nightfly with a nearby embedded theme such as Nord, One Half, or Base16.
 
 ## Primary syntax asset
 
@@ -99,12 +77,9 @@ The best syntax source is:
 Why this is the right source:
 
 - It is already syntect-compatible.
-- It is derived from the `fly16` / bat ecosystem rather than being a raw Vim
-  theme export.
-- It already includes concrete diff-related scopes like `meta.separator`,
-  `markup.inserted`, and `markup.deleted`.
-- It is closer to `tuicr`'s syntax stack than trying to reconstruct Nightfly
-  from UI colors alone.
+- It is derived from the `fly16` / bat ecosystem rather than being a raw Vim theme export.
+- It already includes concrete diff-related scopes like `meta.separator`, `markup.inserted`, and `markup.deleted`.
+- It is closer to `tuicr`'s syntax stack than trying to reconstruct Nightfly from UI colors alone.
 
 Important values already present in that file:
 
@@ -122,8 +97,7 @@ The current file also contains:
 - `markup.inserted` foreground: `#a1cd5e`
 - `markup.deleted` foreground: `#fc514e`
 
-That is fine for syntax scopes. For top-level `tuicr` diff UI, prefer the
-delta/OpenCode-style add/delete accents listed below.
+That is fine for syntax scopes. For top-level `tuicr` diff UI, prefer the delta/OpenCode-style add/delete accents listed below.
 
 ## Canonical Nightfly palette
 
@@ -174,8 +148,7 @@ Relevant values from the local `git-delta` config:
 - `minus-emph-style = bold "#ff5874" "#4e3030"`
 - `whitespace-error-style = bold "#ff5874" "#4e3030"`
 
-These should influence the `tuicr` diff UI more than the generic Nightfly
-palette when choosing add/delete accents.
+These should influence the `tuicr` diff UI more than the generic Nightfly palette when choosing add/delete accents.
 
 ## Recommended `Theme` field mapping
 
@@ -226,24 +199,19 @@ This is the proposed Nightfly mapping for `tuicr`'s `Theme` struct.
 Notes on the mapping:
 
 - `bg_highlight` follows Nightfly visual selection semantics via `#1d3b53`.
-- `cursor_line_bg` follows Nightfly `CursorLine` / `lineHighlight` via
-  `#092236`.
-- `status_bar_bg` uses `#252c3f`, which better matches Nightfly statusline
-  surfaces than a flat panel background.
-- Message and badge foregrounds use `#092236` so bright backgrounds still have
-  contrast.
+- `cursor_line_bg` follows Nightfly `CursorLine` / `lineHighlight` via `#092236`.
+- `status_bar_bg` uses `#252c3f`, which better matches Nightfly statusline surfaces than a flat panel background.
+- Message and badge foregrounds use `#092236` so bright backgrounds still have contrast.
 
 ## Expected implementation shape
 
-The change should stay narrow. Do not redesign the theme system beyond what is
-needed to support Nightfly correctly.
+The change should stay narrow. Do not redesign the theme system beyond what is needed to support Nightfly correctly.
 
 Recommended shape:
 
 1. Keep all existing built-in themes working exactly as they do now.
 2. Refactor the syntax theme selector away from a raw `EmbeddedThemeName`.
-3. Add a new built-in `nightfly` theme that uses a bundled `.tmTheme` asset for
-   syntax.
+3. Add a new built-in `nightfly` theme that uses a bundled `.tmTheme` asset for syntax.
 
 Recommended new type:
 
@@ -269,8 +237,7 @@ Copy the syntax asset into the repo as:
 
 - `src/theme/nightfly.tmTheme`
 
-Use `include_bytes!` so the binary is self-contained. A reasonable loading shape
-is:
+Use `include_bytes!` so the binary is self-contained. A reasonable loading shape is:
 
 ```rust
 use std::io::{BufReader, Cursor};
@@ -287,8 +254,7 @@ Implementation guidance:
 - Keep this infallible at runtime with `expect(...)`.
 - Cover that expectation with a unit test.
 - Do not add a runtime file lookup from the filesystem for the built-in theme.
-- Do not add a generic "load arbitrary path from config" feature in the same
-  patch.
+- Do not add a generic "load arbitrary path from config" feature in the same patch.
 
 ## Nightfly theme entry points to add
 
@@ -320,8 +286,7 @@ Nightfly remains dark-only.
 
 ## Config and behavior expectations
 
-No behavior changes are needed for theme precedence. `nightfly` should behave
-exactly like any other explicit theme choice.
+No behavior changes are needed for theme precedence. `nightfly` should behave exactly like any other explicit theme choice.
 
 The existing precedence should remain:
 
@@ -333,29 +298,22 @@ The existing precedence should remain:
 6. config `appearance`
 7. default system-based choice
 
-The important detail is only that `nightfly` becomes a valid value wherever the
-existing theme parser already expects a theme string.
+The important detail is only that `nightfly` becomes a valid value wherever the existing theme parser already expects a theme string.
 
 ## Where the theme fields are actually used
 
-This is the practical mapping between `Theme` fields and UI surfaces, based on
-the current code:
+This is the practical mapping between `Theme` fields and UI surfaces, based on the current code:
 
-- `panel_bg`, `fg_primary` drive general panel and header rendering in
-  `src/ui/styles.rs`.
+- `panel_bg`, `fg_primary` drive general panel and header rendering in `src/ui/styles.rs`.
 - `bg_highlight` drives selected rows and visual selections.
-- `diff_add`, `diff_add_bg`, `diff_del`, `diff_del_bg`, `diff_context`,
-  `diff_hunk_header`, `expanded_context_fg` drive diff rendering.
-- `syntax_add_bg` and `syntax_del_bg` drive syntax-highlighted diff padding and
-  background surfaces in unified and side-by-side diff views.
+- `diff_add`, `diff_add_bg`, `diff_del`, `diff_del_bg`, `diff_context`, `diff_hunk_header`, `expanded_context_fg` drive diff rendering.
+- `syntax_add_bg` and `syntax_del_bg` drive syntax-highlighted diff padding and background surfaces in unified and side-by-side diff views.
 - `status_bar_bg`, `mode_fg`, and `mode_bg` drive the footer and mode badge.
-- `cursor_line_bg` is used in unified and side-by-side diff cursor row
-  highlighting.
+- `cursor_line_bg` is used in unified and side-by-side diff cursor row highlighting.
 - `comment_*` colors are the defaults for built-in comment types in `app.rs`.
 - `message_*` and `update_badge_*` colors are used in `src/ui/status_bar.rs`.
 
-This means the proposed Nightfly values above are not speculative. They are
-mapped to specific current surfaces.
+This means the proposed Nightfly values above are not speculative. They are mapped to specific current surfaces.
 
 ## Docs to update
 
@@ -368,9 +326,7 @@ Add:
 - `nightfly` to the documented theme list
 - a config example using `theme = "nightfly"`
 
-If upstream `main` has added `docs/CONFIG.md` or other dedicated docs by the
-time you implement this, update those too. Do not assume the older local README
-structure is still the whole docs surface.
+If upstream `main` has added `docs/CONFIG.md` or other dedicated docs by the time you implement this, update those too. Do not assume the older local README structure is still the whole docs surface.
 
 ## Tests to add or update
 
@@ -388,11 +344,9 @@ Recommended concrete checks:
 - parser returns `Some(ThemeArg::Nightfly)`
 - `resolve_theme(ThemeArg::Nightfly)` picks the Nightfly syntax theme source
 - bundled theme loader successfully parses the vendored `.tmTheme`
-- optionally assert a few known values from the parsed theme, such as name or
-  the global background / foreground
+- optionally assert a few known values from the parsed theme, such as name or the global background / foreground
 
-Also keep the existing theme-resolution tests intact so the new variant does not
-accidentally break unrelated theme behavior.
+Also keep the existing theme-resolution tests intact so the new variant does not accidentally break unrelated theme behavior.
 
 ## Personal machine workflow
 
@@ -400,12 +354,9 @@ This should be implemented on a personal machine.
 
 Reason:
 
-- On the managed work machine, `cargo run -- --help` triggered a blocked build
-  script under
-  `/Users/jackokerman/src/tuicr/target/debug/build/crc32fast-2effd4628f3044bc/build-script-build`.
+- On the managed work machine, `cargo run -- --help` triggered a blocked build script under `/Users/jackokerman/src/tuicr/target/debug/build/crc32fast-2effd4628f3044bc/build-script-build`.
 - That was caused by local Cargo compilation, not by `tuicr` itself.
-- The cleanest way to avoid Santa is to do the actual Rust build on a personal
-  machine or another unrestricted environment.
+- The cleanest way to avoid Santa is to do the actual Rust build on a personal machine or another unrestricted environment.
 
 ## Git and repo setup notes
 
@@ -467,9 +418,7 @@ Use a representative set of files if possible:
 - Rust
 - TypeScript or JavaScript
 - Markdown
-- one container syntax such as Vue, Svelte, Astro, MDX, PHP, or ERB if you have
-  a handy repo, since `tuicr` has explicit container-language handling in the
-  syntax highlighter
+- one container syntax such as Vue, Svelte, Astro, MDX, PHP, or ERB if you have a handy repo, since `tuicr` has explicit container-language handling in the syntax highlighter
 
 ## Accuracy rules
 
@@ -488,8 +437,7 @@ If you need to deviate from the proposed values after a live preview:
 
 ## Optional future follow-up, not part of this change
 
-If you later decide `tuicr` should support user-provided themes without
-upstreaming them, that should be a separate feature.
+If you later decide `tuicr` should support user-provided themes without upstreaming them, that should be a separate feature.
 
 That follow-up could add:
 
