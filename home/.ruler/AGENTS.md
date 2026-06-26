@@ -60,6 +60,7 @@
 - For commit-only or review-only Git tasks, start with `git status --short` and the relevant `git diff`; do not scan the repo for candidate files when the modified path is already known.
 - Use official documentation as the primary source of truth for public product, library, framework, and API behavior.
 - If the docs are unclear or incomplete and source code is available, inspect the relevant implementation, schema, types, examples, or tests before answering.
+- For Codex product, CLI, TUI, feature-flag, or config behavior, treat the official Codex manual as the first source, then inspect the installed CLI, local config, and public `openai/codex` source when the manual does not establish the exact answer. Distinguish similarly named features from the behavior being debugged before recommending a config change.
 - When adopting a tool with install profiles, feature tiers, or optional integrations, verify the selected surface exposes the specific commands and files the workflow will rely on.
 - Be explicit about what was confirmed from docs, source, or local usage and what remains uncertain. Avoid conjecture when verification is possible.
 
