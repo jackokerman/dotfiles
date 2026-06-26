@@ -315,7 +315,6 @@ setup_glow() {
         printf '%s\n' '# Edit home/.config/glow/nightfly.json or .dotty/run.sh, then run `dotty update`.'
         printf '%s\n' 'style: "'"$style_target"'"'
         printf '%s\n' 'pager: true'
-        printf '%s\n' 'width: 120'
         printf '%s\n' 'all: false'
     } > "$tmp_target"
 
