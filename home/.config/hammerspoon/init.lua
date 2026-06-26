@@ -16,15 +16,9 @@ spoon.SpoonInstall:andUse("ReloadConfiguration", {
     start = true
 })
 
--- Load all dependencies first (but don't start URLDispatcher yet)
-spoon.SpoonInstall:andUse("URLDispatcher", {
-    start = false
-})
-
 -- Load your custom spoons
 hs.loadSpoon("NoTunes")
 hs.loadSpoon("RichLinkCopy")
-hs.loadSpoon("SmartLinkManager")
 
 -- Configure and start RichLinkCopy
 spoon.RichLinkCopy:bindHotkeys({
@@ -112,4 +106,3 @@ end
 -- Start spoons after configuration
 spoon.NoTunes:start()
 spoon.RichLinkCopy:start()
-spoon.SmartLinkManager:start(false)
