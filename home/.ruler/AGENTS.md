@@ -19,6 +19,7 @@
 ## Engineering Style
 - Default to the simplest implementation that fully solves the stated problem.
 - Prefer one explicit source of truth for configuration and selection behavior. Do not add abstractions, fallback paths, configuration knobs, env overrides, parallel config paths, or future-proofing unless the current requirement or a repeated concrete pain point needs them.
+- When replacing a configuration mechanism, first trace the existing producers and consumers across the active dotty chain, then remove the old mechanism and its docs in the same change instead of adding a parallel control surface.
 - In personal single-user config or tooling repos, prefer removing obsolete paths and accepting deliberate breaking changes over adding compatibility layers for hypothetical external users.
 - Avoid speculative defensive coding. Add guards, retries, parsing, normalization, or recovery logic only for a concrete failure mode, explicit requirement, or established codebase pattern.
 - Do not add features, alternate flows, or edge-case handling that were not requested.
@@ -67,6 +68,7 @@
 ## Tool Adoption Workflow
 - When adopting or configuring a new development tool, start with the smallest useful workflow that preserves the tool's core value. Keep optional automation, extra artifacts, and broad integrations off by default until repeated use shows they are worth the added ceremony.
 - Prefer a reversible, documented default path before adding custom wrappers or helper scripts. Add custom tooling only after the off-the-shelf workflow still causes repeated friction.
+- Keep native tool commands working when possible; wrappers should bootstrap, narrow, or document a workflow, not become the only place required state is set.
 - When building or changing tools that launch coding agents, generate agent prompts, or print agent commands, prefer agent-neutral contracts and config-driven agent selection over hard-coding one agent surface. If the workflow is intentionally single-agent, make that scope explicit in repo docs or config.
 - For standalone tools or plugins, keep implementation code, tests, skills, plugin metadata, and installer/update logic in that tool's own repository. Dotfiles should provide only thin bootstrap glue, machine-specific config, or routing needed to make the standalone tool available.
 - In user-owned personal standalone tool, plugin, or package repos, implementation work is not done until the tracked changes are verified, committed with a conventional commit, and pushed to the default branch, unless the user explicitly asks to leave changes local. Before committing or pushing, re-check branch status, stage only the paths you own, and report unrelated dirty files without treating them as blockers when the scope is clear. Stop for unexpected ahead commits, non-fast-forward remote changes, or dirty-file overlap that makes the commit unsafe.

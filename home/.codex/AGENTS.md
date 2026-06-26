@@ -17,6 +17,7 @@
 ## Engineering Style
 - Default to the simplest implementation that fully solves the stated problem.
 - Do not add abstractions, fallback paths, configuration knobs, or future-proofing unless the current requirement needs them.
+- When replacing a configuration mechanism, first trace the existing producers and consumers across the active dotty chain, then remove the old mechanism and its docs in the same change instead of adding a parallel control surface.
 - In personal single-user config or tooling repos, prefer removing obsolete paths and accepting deliberate breaking changes over adding compatibility layers for hypothetical external users.
 - Avoid speculative defensive coding. Add guards, retries, parsing, normalization, or recovery logic only for a concrete failure mode, explicit requirement, or established codebase pattern.
 - Do not add features, alternate flows, or edge-case handling that were not requested.
@@ -42,6 +43,7 @@
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate.
 - For scripts and small CLIs we own, prefer Bun. For third-party tools we do not control, use the runtime they expect instead of adding local compatibility wrappers; install Node when upstream tooling depends on it.
 - Use another runtime only when it has a clear operational advantage.
+- Keep native tool commands working when possible; wrappers should bootstrap, narrow, or document a workflow, not become the only place required state is set.
 - For Raycast Script Commands, check the official Raycast Script Commands docs and `raycast/script-commands` examples before changing metadata, output modes, or UI behavior. Choose modes by documented semantics: `fullOutput` for long-running/log output, `compact` or `silent` for simple last-line results, and `inline` for dashboard/status items with `refreshTime`; Extension API functions such as `closeMainWindow` are not available inside Bash Script Commands.
 
 ## Research Workflow
