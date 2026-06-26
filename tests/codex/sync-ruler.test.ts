@@ -256,4 +256,58 @@ describe("sync-ruler codex-agents", () => {
       expect(existsSync(unrelatedHiddenDir)).toBe(true);
     });
   });
+
+  test("portable mode removes stale managed skills whose source no longer has a skill file", () => {
+    withTempDir((dir) => {
+      const ruler = writeFakeRuler(dir);
+      const sourcePath = join(dir, "AGENTS.md");
+      const skillSourceRoot = join(dir, "skills");
+      const skillSourceDir = join(skillSourceRoot, "example-skill");
+      const staleSourceDir = join(dir, "external-skills", "old-skill");
+      const codexAgentsOutput = join(dir, "out", "AGENTS.md");
+      const claudeOutput = join(dir, "out", "CLAUDE.md");
+      const codexSkillsOutput = join(dir, "out", "codex-skills");
+      const claudeSkillsOutput = join(dir, "out", "claude-skills");
+      const staleTargetDir = join(claudeSkillsOutput, "old-skill");
+      const indexPath = join(claudeSkillsOutput, ".dotty-managed-skills.tsv");
+
+      writeFileSync(sourcePath, "# Rules\n\n- Prefer focused output.\n");
+      mkdirSync(skillSourceDir, { recursive: true });
+      mkdirSync(staleSourceDir, { recursive: true });
+      mkdirSync(staleTargetDir, { recursive: true });
+      writeFileSync(join(skillSourceDir, "SKILL.md"), "# Example Skill\n");
+      writeFileSync(join(staleTargetDir, "SKILL.md"), "# Old Skill\n");
+      writeFileSync(
+        indexPath,
+        [
+          "skill_name\tsource_dir\ttarget_dir",
+          `old-skill\t${staleSourceDir}\t${staleTargetDir}`,
+          "",
+        ].join("\n"),
+      );
+
+      const result = runSync([
+        "portable",
+        "--ruler-bin",
+        ruler,
+        "--codex-agents-output",
+        codexAgentsOutput,
+        "--claude-output",
+        claudeOutput,
+        "--codex-skills-output",
+        codexSkillsOutput,
+        "--claude-skills-output",
+        claudeSkillsOutput,
+        "--source",
+        sourcePath,
+        "--skill-source",
+        skillSourceRoot,
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(existsSync(join(claudeSkillsOutput, "example-skill", "SKILL.md"))).toBe(true);
+      expect(existsSync(staleTargetDir)).toBe(false);
+      expect(readFileSync(indexPath, "utf8")).not.toContain("old-skill");
+    });
+  });
 });

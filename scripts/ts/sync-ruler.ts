@@ -344,6 +344,10 @@ function sourceLooksPortable(sourceDir: string) {
   return sourceDir.includes("/home/.ruler/skills/");
 }
 
+function sourceStillLooksLikeSkill(sourceDir: string) {
+  return existsSync(resolve(sourceDir, "SKILL.md"));
+}
+
 function installGeneratedSkills(
   generatedRoots: string[],
   outputRoot: string,
@@ -378,7 +382,7 @@ function installGeneratedSkills(
       continue;
     }
 
-    if (sourceDir && sourceLooksPortable(sourceDir)) {
+    if (sourceDir && (sourceLooksPortable(sourceDir) || !sourceStillLooksLikeSkill(sourceDir))) {
       rmSync(targetDir, { force: true, recursive: true });
       continue;
     }
