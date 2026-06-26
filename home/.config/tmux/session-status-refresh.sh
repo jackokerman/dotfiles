@@ -8,6 +8,7 @@ source "${_tmux_agent_bar_path_helper}"
 
 _tmux_agent_bar_repo="$(tmux_agent_bar_runtime_repo_path)"
 _tmux_agent_bar_bin="${_tmux_agent_bar_repo}/bin/tmux-agent-bar"
+_timeout_wrapper="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tmux-run-with-timeout.sh"
 _target=""
 _all_clients=0
 _mode_cached=0
@@ -23,8 +24,8 @@ _current_state=""
 render_status() {
   local mode="$1"
 
-  if command -v timeout >/dev/null 2>&1; then
-    timeout 2s "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null
+  if [[ -x "${_timeout_wrapper}" ]]; then
+    "${_timeout_wrapper}" 2 "${_tmux_agent_bar_bin}" "${mode}" "${_target}" 2>/dev/null
     return "$?"
   fi
 
