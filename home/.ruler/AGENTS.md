@@ -19,6 +19,7 @@
 ## Engineering Style
 - Default to the simplest implementation that fully solves the stated problem.
 - Prefer one explicit source of truth for configuration and selection behavior. Do not add abstractions, fallback paths, configuration knobs, env overrides, parallel config paths, or future-proofing unless the current requirement or a repeated concrete pain point needs them.
+- In personal single-user config or tooling repos, prefer removing obsolete paths and accepting deliberate breaking changes over adding compatibility layers for hypothetical external users.
 - Avoid speculative defensive coding. Add guards, retries, parsing, normalization, or recovery logic only for a concrete failure mode, explicit requirement, or established codebase pattern.
 - Do not add features, alternate flows, or edge-case handling that were not requested.
 - Prefer fixing the actual boundary where data is consumed instead of pre-validating or transforming inputs earlier "just in case."
