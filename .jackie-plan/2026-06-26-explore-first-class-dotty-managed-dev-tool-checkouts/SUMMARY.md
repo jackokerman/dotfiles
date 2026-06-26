@@ -1,9 +1,9 @@
 ---
 id: 2026-06-26-explore-first-class-dotty-managed-dev-tool-checkouts
 title: Explore first-class dotty-managed dev tool checkouts
-state: ready-to-implement
+state: complete
 createdAt: 2026-06-26T06:52:25.121Z
-updatedAt: 2026-06-26T16:34:10.119Z
+updatedAt: 2026-06-26T16:49:22.090Z
 ---
 
-Refined the inbox item into a concrete exploration brief based on current repo behavior. The plan now names the existing split between `.dotty/dev-checkouts.tsv` checkout sync and separate per-tool integration paths like `install-jackie-plan`, frames the key design questions, recommends proving any richer contract on `jackie-plan` first, and is marked `ready-to-implement`.
+Investigated first-class dev checkout model and revised the plan with a concrete recommendation: keep lightweight checkout sync as the base, add richer metadata only for integrated dev tools, and prove the model on Jackie Plan.
