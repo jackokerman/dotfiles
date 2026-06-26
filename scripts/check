@@ -164,6 +164,7 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
+        "scripts/sync-tuicr.sh"
         "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
@@ -201,6 +202,7 @@ assert_expected_executables() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
+        "scripts/sync-tuicr.sh"
         "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
@@ -401,7 +403,7 @@ run_staged_checks() {
         run_phase "Handy sync regression tests" 0 run_handy_tests
     fi
 
-    if changed_any ".dotty/run.sh" "tests/tuicr/*"; then
+    if changed_any ".dotty/run.sh" "scripts/sync-tuicr.sh" "tests/tuicr/*"; then
         run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
     fi
 

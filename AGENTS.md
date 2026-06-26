@@ -41,6 +41,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `home/` is tracked source that dotty links into `$HOME`.
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
+- Keep `.dotty/commands/*` as thin `dotty run` entrypoints. Put substantive reusable workflow logic under `scripts/`, and leave `.dotty/run.sh` inline logic for post-link orchestration that only makes sense inside the hook.
 - `tests/tmux-agent-bar/` holds the wrapper and sync tests for the active `tmux-agent-bar` checkout.
 - `tests/tuicr/` holds the managed-checkout tests for the dotty-owned `tuicr` runtime clone.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
