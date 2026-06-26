@@ -1,7 +1,10 @@
 tap "oven-sh/bun"
-tap "modem-dev/tap"
 
 personal_dotty_env = ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
+
+if personal_dotty_env
+  tap "modem-dev/tap"
+end
 
 if OS.mac?
   # Applications
@@ -16,12 +19,12 @@ if OS.mac?
   cask "logi-options+"              # software for Logitech mouse
   cask "obsidian"                   # knowledge base with markdown files
   cask "1password"                  # password manager
-  cask "visual-studio-code"         # code editor
-  cask "codex"                      # OpenAI coding agent terminal CLI
-  cask "claude-code"                # Anthropic coding agent terminal CLI
-  cask "handy"                      # window snapping and management
-  cask "discord"                    # chat and voice application
   if personal_dotty_env
+    cask "visual-studio-code"       # code editor
+    cask "codex"                    # OpenAI coding agent terminal CLI
+    cask "claude-code"              # Anthropic coding agent terminal CLI
+    cask "handy"                    # window snapping and management
+    cask "discord"                  # chat and voice application
     cask "zen"                      # firefox-based browser
   end
 end
@@ -32,7 +35,6 @@ brew "eza"                          # a better ls
 brew "fd"                           # find alternative
 brew "fzf"                          # a fuzzy finder
 brew "gh"                           # GitHub CLI
-brew "git"                          # git version control (latest)
 brew "git-delta"                    # syntax-highlighted git diff pager
 brew "glow"                         # markdown renderer for the terminal
 brew "jq"                           # parse and work with JSON
@@ -42,11 +44,15 @@ brew "ripgrep"                      # fast recursive search tool (`rg`)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
-brew "node"                         # broad JS CLI compatibility
 brew "nodenv"                       # Node.js version manager
 brew "node-build"                   # nodenv install definitions
 brew "oven-sh/bun/bun"              # JavaScript runtime
-brew "modem-dev/tap/hunk"           # review-first terminal diff viewer
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
 brew "zoxide"                       # smarter cd command (z/zi)
+
+if personal_dotty_env
+  brew "git"                        # git version control (latest)
+  brew "node"                       # broad JS CLI compatibility
+  brew "modem-dev/tap/hunk"         # review-first terminal diff viewer
+end
