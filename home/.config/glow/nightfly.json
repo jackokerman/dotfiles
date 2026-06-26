@@ -85,10 +85,9 @@
     "format": "Image: {{.text}} ->"
   },
   "code": {
-    "prefix": " ",
-    "suffix": " ",
-    "color": "#ecc48d",
-    "background_color": "#011627"
+    "prefix": "`",
+    "suffix": "`",
+    "color": "#e3d18a"
   },
   "code_block": {
     "color": "#c3ccdc",
