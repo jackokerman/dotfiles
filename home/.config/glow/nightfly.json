@@ -94,7 +94,7 @@
     "margin": 2,
     "chroma": {
       "text": {
-        "color": "#c3ccdc"
+        "color": "#a1aab8"
       },
       "error": {
         "color": "#011627",
@@ -105,7 +105,8 @@
         "italic": true
       },
       "comment_preproc": {
-        "color": "#7fdbca"
+        "color": "#7c8f8f",
+        "italic": true
       },
       "keyword": {
         "color": "#800080"
@@ -123,10 +124,10 @@
         "color": "#800080"
       },
       "punctuation": {
-        "color": "#c3ccdc"
+        "color": "#a1aab8"
       },
       "name": {
-        "color": "#c3ccdc"
+        "color": "#a1aab8"
       },
       "name_builtin": {
         "color": "#21c7a8"
