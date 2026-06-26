@@ -14,6 +14,8 @@ When a repo-local helper grows its own runtime, dependency, verification, or rel
 
 When a standalone tool still needs dotty integration, keep dotfiles to bootstrap and routing glue, then audit the full dotty chain for later overlays that regenerate the same live outputs. After `dotty update`, verify generated indexes such as `~/.codex/skills/.dotty-managed-skills.tsv` and `~/.claude/skills/.dotty-managed-skills.tsv` point at the standalone source, not a copied dotfiles source.
 
+When changing ownership of generated files, plugin skills, managed checkouts, symlinks, or other live artifacts, decide explicitly whether the fix needs a one-time `.dotty/cleanups/` task. Use a cleanup when merely stopping future generation would leave stale files, receipts, symlinks, directories, or managed-index rows on existing machines. Verify cleanup discovery with `dotty cleanups` and dry-run behavior before the real update when adding one.
+
 ## Context Surface Audit
 
 When a session exposes token or latency pressure, inspect always-loaded instructions, invoked skills, enabled plugins, configured MCP servers, runtime-injected MCP servers, and repeated tool sequences.
