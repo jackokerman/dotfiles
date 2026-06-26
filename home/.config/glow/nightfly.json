@@ -117,7 +117,7 @@
         "color": "#c792ea"
       },
       "keyword_type": {
-        "color": "#82aaff"
+        "color": "#21c7a8"
       },
       "operator": {
         "color": "#c792ea"
@@ -158,10 +158,10 @@
       },
       "literal_date": {},
       "literal_string": {
-        "color": "#e3d18a"
+        "color": "#ecc48d"
       },
       "literal_string_escape": {
-        "color": "#7fdbca"
+        "color": "#ff5874"
       },
       "generic_deleted": {
         "color": "#fc514e"
