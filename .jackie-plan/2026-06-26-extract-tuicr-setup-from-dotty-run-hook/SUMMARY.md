@@ -1,9 +1,9 @@
 ---
 id: 2026-06-26-extract-tuicr-setup-from-dotty-run-hook
 title: Extract tuicr setup from dotty run hook
-state: ready-to-implement
+state: complete
 createdAt: 2026-06-26T16:16:58.067Z
-updatedAt: 2026-06-26T16:27:37.426Z
+updatedAt: 2026-06-26T16:29:25.407Z
 sourcePlan: 2026-06-26-explore-leaner-dotty-run-file-structure
 sourceRepo: dotfiles
 sourcePath: .
