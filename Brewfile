@@ -1,6 +1,8 @@
 tap "oven-sh/bun"
 tap "modem-dev/tap"
 
+personal_dotty_env = ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
+
 if OS.mac?
   # Applications
   cask "hammerspoon"                # desktop automation application
@@ -19,7 +21,9 @@ if OS.mac?
   cask "claude-code"                # Anthropic coding agent terminal CLI
   cask "handy"                      # window snapping and management
   cask "discord"                    # chat and voice application
-  cask "zen"                        # firefox-based browser
+  if personal_dotty_env
+    cask "zen"                      # firefox-based browser
+  end
 end
 
 # Packages

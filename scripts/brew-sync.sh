@@ -25,6 +25,10 @@ Installs packages from the tracked Brewfile. By default this does not remove
 untracked Homebrew packages, because later dotty-chain repos or local machine
 setup may own additional tools.
 
+When run through dotty, DOTTY_ENV is forwarded to the Brewfile as
+HOMEBREW_DOTFILES_ENV. Brewfile entries marked for personal machines only are
+included when DOTTY_ENV=personal.
+
 Options:
   --cleanup    Remove formulae and casks not present in the active Brewfile.
   -h, --help   Show this help.
@@ -71,6 +75,12 @@ else
 fi
 
 info "Installing packages from Brewfile"
+if [[ -n "${DOTTY_ENV:-}" ]]; then
+    export HOMEBREW_DOTFILES_ENV="${DOTTY_ENV}"
+fi
+if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "personal" ]]; then
+    info "Including personal-only Homebrew entries."
+fi
 brew bundle --file "${BREWFILE}"
 success "Homebrew packages installed successfully"
 
