@@ -109,19 +109,19 @@
         "color": "#7fdbca"
       },
       "keyword": {
-        "color": "#7fdbca"
+        "color": "#c792ea"
       },
       "keyword_reserved": {
         "color": "#c792ea"
       },
       "keyword_namespace": {
-        "color": "#7fdbca"
+        "color": "#c792ea"
       },
       "keyword_type": {
         "color": "#82aaff"
       },
       "operator": {
-        "color": "#7fdbca"
+        "color": "#c792ea"
       },
       "punctuation": {
         "color": "#c3ccdc"
@@ -130,20 +130,20 @@
         "color": "#c3ccdc"
       },
       "name_builtin": {
-        "color": "#ff5874"
+        "color": "#21c7a8"
       },
       "name_tag": {
         "color": "#82aaff"
       },
       "name_attribute": {
-        "color": "#a1cd5e"
+        "color": "#7fdbca"
       },
       "name_class": {
         "color": "#21c7a8",
         "bold": true
       },
       "name_constant": {
-        "color": "#c792ea"
+        "color": "#e3d18a"
       },
       "name_decorator": {
         "color": "#ecc48d"
@@ -155,11 +155,11 @@
       "name_other": {},
       "literal": {},
       "literal_number": {
-        "color": "#ff5874"
+        "color": "#ae81ff"
       },
       "literal_date": {},
       "literal_string": {
-        "color": "#ecc48d"
+        "color": "#e3d18a"
       },
       "literal_string_escape": {
         "color": "#7fdbca"
