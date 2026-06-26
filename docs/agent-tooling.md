@@ -66,7 +66,7 @@ Use this for reusable personal tools that are both part of the dotfiles workflow
 
 `dotty update` installs Jackie Plan from `~/src/jackie-plan`, cloning `https://github.com/jackokerman/jackie-plan.git` there when the checkout is missing. The checkout is intentionally a normal development clone so Jackie Plan can be improved in place.
 
-The installer links the `jp` CLI with Bun and Codex skill generation imports `~/src/jackie-plan/skills`. If `~/.local/share/jackie-plan/repo` is absent, the installer creates it as a compatibility symlink to the development checkout. Existing checkouts at that legacy path are left untouched.
+The installer links the `jp` CLI with Bun and owns Jackie Plan's Codex plugin installation. Dotfiles still generates shared Codex and Claude skills from tracked dotfiles sources, but it does not import Jackie Plan's plugin skills as global generated skills. If `~/.local/share/jackie-plan/repo` is absent, the installer creates it as a compatibility symlink to the development checkout. Existing checkouts at that legacy path are left untouched.
 
 Everyday instruction workflow:
 

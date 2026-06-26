@@ -473,7 +473,6 @@ setup_codex() {
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
     local ruler_agents_src="$DOTFILES/home/.ruler/AGENTS.md"
     local portable_skills_src_dir="$DOTFILES/home/.ruler/skills"
-    local jackie_plan_skills_src_dir="${JACKIE_PLAN_REPO_DIR:-$HOME/src/jackie-plan}/skills"
     local custom_agents_src_dir="$DOTFILES/home/.codex/agents"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"
@@ -492,11 +491,6 @@ setup_codex() {
     if [[ -d "$portable_skills_src_dir" ]]; then
         portable_skill_source_args+=(--skill-source "$portable_skills_src_dir")
         generated_skill_source_args+=(--source "$portable_skills_src_dir")
-    fi
-
-    if [[ -d "$jackie_plan_skills_src_dir" ]]; then
-        portable_skill_source_args+=(--skill-source "$jackie_plan_skills_src_dir")
-        generated_skill_source_args+=(--source "$jackie_plan_skills_src_dir")
     fi
 
     local use_portable_ruler=false
