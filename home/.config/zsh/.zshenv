@@ -18,11 +18,9 @@ export ZSH_COMPCACHE_DIR="$ZSH_CACHE_DIR/.zcompcache"
 # Disable macOS Terminal shell session files in ~/.zsh_sessions.
 export SHELL_SESSIONS_DISABLE=1
 
-# Set `EDITOR` to VS Code if it's installed, otherwise Cursor, otherwise use default
-if command -v code >/dev/null; then
-  export EDITOR="code --wait --new-window"
-elif command -v cursor >/dev/null; then
-  export EDITOR="cursor --wait --new-window"
+# Set `EDITOR` to Neovim if it's installed, otherwise use the default.
+if command -v nvim >/dev/null; then
+  export EDITOR="nvim"
 fi
 
 # Nightfly theme for fzf, upstream: github.com/bluz71/vim-nightfly-colors
