@@ -28,7 +28,7 @@ After `./install.sh`, run these steps on a fresh macOS machine.
 dotty run brew-sync
 ```
 
-This installs packages from the tracked `Brewfile`. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. When `dotty run brew-sync` runs with `DOTTY_ENV=personal`, the `Brewfile` also includes entries marked as personal-machine only.
+This installs packages from the tracked `Brewfile`. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. Personal-only entries are included when `HOMEBREW_DOTFILES_ENV=personal`, which is the base shell default. From an initialized shell, plain `brew bundle --file Brewfile` uses the same profile.
 
 ### 2. Set up GitHub auth and SSH
 
@@ -69,7 +69,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 | Command | Use |
 | --- | --- |
 | `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, ensure selected `~/src` development checkouts exist, and update runtime-only managed checkouts. |
-| `dotty run brew-sync` | Install packages from the tracked `Brewfile` on macOS. Includes personal-only entries when `DOTTY_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
+| `dotty run brew-sync` | Install packages from the tracked `Brewfile` on macOS. Includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |
 | `dotty run sync-dev-checkouts` | Clone or conservatively fast-forward tracked development repos listed in `.dotty/dev-checkouts.tsv` under `~/src`. Private entries rely on your machine GitHub auth. |

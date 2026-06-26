@@ -1,12 +1,8 @@
 # Taps
-tap "oven-sh/bun"                  # preferred JavaScript runtime
+tap "oven-sh/bun"                   # preferred JavaScript runtime
 
-# Homebrew strips non-HOMEBREW_ env vars before evaluating Brewfiles.
-# scripts/brew-sync.sh forwards dotty's DOTTY_ENV through this variable.
-personal_dotty_env = ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
-
-if personal_dotty_env
-  tap "modem-dev/tap"              # personal hunk tap
+if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
+  tap "modem-dev/tap"               # personal hunk tap
 end
 
 # Applications
@@ -23,7 +19,7 @@ if OS.mac?
   cask "obsidian"                   # knowledge base with markdown files
   cask "1password"                  # password manager
 
-  if personal_dotty_env
+  if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
     # Personal applications
     cask "visual-studio-code"       # code editor
     cask "codex"                    # OpenAI coding agent terminal CLI
@@ -56,7 +52,7 @@ brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
 brew "zoxide"                       # smarter cd command (z/zi)
 
-if personal_dotty_env
+if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
   # Personal packages
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
