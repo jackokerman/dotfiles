@@ -18,7 +18,10 @@ import {
 } from "karabiner.ts";
 
 const PROFILE_NAME = "Default profile";
-const appleMagicKeyboardWithTouchId: DeviceIdentifier = { product_id: 666 };
+const appleMagicKeyboardWithTouchId: DeviceIdentifier = {
+  product_id: 666,
+  vendor_id: 1452,
+};
 const builtInKeyboardCondition = {
   type: "device_if",
   identifiers: [{ is_built_in_keyboard: true }],
@@ -45,7 +48,7 @@ type KarabinerConfig = {
 
 function isTouchIdMagicKeyboard(device: KarabinerDevice) {
   return device.identifiers?.product_id === appleMagicKeyboardWithTouchId.product_id
-    && device.identifiers?.vendor_id === 1452;
+    && device.identifiers?.vendor_id === appleMagicKeyboardWithTouchId.vendor_id;
 }
 
 async function normalizeKeyboardDevices(configPath: string) {

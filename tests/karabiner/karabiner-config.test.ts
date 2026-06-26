@@ -32,6 +32,7 @@ type KarabinerConfig = {
             identifiers?: Array<{
               is_built_in_keyboard?: boolean;
               product_id?: number;
+              vendor_id?: number;
             }>;
           }>;
         }>;
@@ -111,7 +112,7 @@ describe("karabiner-config", () => {
         conditions: [
           {
             type: "device_unless",
-            identifiers: [{ product_id: 666 }],
+            identifiers: [{ product_id: 666, vendor_id: 1452 }],
           },
         ],
         to: [
