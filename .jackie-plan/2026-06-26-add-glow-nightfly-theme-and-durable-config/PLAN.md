@@ -1,10 +1,10 @@
 ---
 id: 2026-06-26-add-glow-nightfly-theme-and-durable-config
 title: add glow Nightfly theme and durable config
-state: inbox
+state: complete
 priority: high
 createdAt: 2026-06-26T06:29:30.367Z
-updatedAt: 2026-06-26T06:29:36.902Z
+updatedAt: 2026-06-26T15:50:10.566Z
 ---
 
 # add glow Nightfly theme and durable config

@@ -116,6 +116,7 @@ Common places to edit:
 | --- | --- |
 | Shell | `home/.zshenv` and `home/.config/zsh/` |
 | Git defaults | `home/.config/git/config`; use `~/.gitconfig.local` for machine-local overrides. |
+| Glow markdown rendering | `home/.config/glow/nightfly.json`; `dotty update` renders the live `~/.config/glow/glow.yml` with an absolute style path. |
 | SSH hosts and identities | Local `~/.ssh/config` |
 | Keyboard remaps | `scripts/ts/karabiner-config.ts` |
 | Neovim | `home/.config/nvim/` |
