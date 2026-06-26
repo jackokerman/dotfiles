@@ -6,6 +6,8 @@ For tooling adoption plans, settle off-the-shelf versus custom structure, owners
 
 For helper extraction or public-repo plans, also settle publication privacy, reachable Git history, install/update ownership, dirty-worktree handling, rollback, and downstream rollout. Verify tool availability and package-manager ownership on each relevant machine class. Treat package-manager cleanup, prune, uninstall, and sync modes that remove untracked tools as destructive.
 
+When moving or capturing plan artifacts from a private, local, or later-overlay root into a public repo, rewrite source metadata and prose to the generic public purpose before staging. If that would lose necessary context or change the work's meaning, keep the artifact in the private or later-overlay root instead.
+
 When a workflow already has a tracked helper or client, prefer extending that helper and its tests over teaching Codex more ad hoc fallback commands. Treat raw API probes and runtime bundle inspection as last-resort discovery steps, then capture the confirmed contract back into the helper immediately.
 
 When a repo-local helper grows its own runtime, dependency, verification, or release-cadence needs, evaluate extracting it into a standalone repo or package instead of continuing to expand dotfiles. Favor extraction when the helper is likely to back multiple surfaces such as a CLI, Raycast extension, or other automation entrypoints.
