@@ -35,6 +35,7 @@
 - For backlog or next-work requests, treat the current working repo as the default scope. If `jp` reports a missing repo-local root and falls back to a personal or global plan root, do not silently pick cross-repo work; state that no current-repo backlog was found, name the fallback root and candidate plan, and get clear user confirmation before switching repos.
 - For one-off local migrations, audits, or machine-local cleanup, prefer ephemeral scripts and temporary artifacts outside tracked repos. Only move that work into tracked files, commit it, or leave it behind when the user explicitly asks for reusable tooling or durable repo changes.
 - For local machine, shell, or environment debugging, remove or disable the upstream source first. Add a tracked startup workaround only after reproducing the need in a fresh process and confirming the source fix is insufficient.
+- For local machine, shell, or environment debugging, verify host command availability and shell semantics before assuming common GNU utilities exist.
 - For bug fixes or behavior changes, prefer a focused reproduction or failing test first, then make it pass when practical.
 - When a command, browser auth flow, or external tool requires user interaction, state the needed action explicitly and stop polling or retrying until the user confirms it is complete.
 - When debugging an external flow, distinguish clearly between “I need your intervention now” and “I’m still fixing this locally” so the user does not have to infer which state you are in.
