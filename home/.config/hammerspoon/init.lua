@@ -11,10 +11,24 @@ spoon.SpoonInstall.use_syncinstall = true
 -- Add custom spoon directory to package path
 package.path = package.path .. ";" .. hs.configdir .. "/MySpoons/?.spoon/init.lua"
 
--- Automatically reload the configuration when it is changed
-spoon.SpoonInstall:andUse("ReloadConfiguration", {
-    start = true
-})
+-- Automatically reload the configuration after file changes settle. Dotty updates
+-- base and overlay links in separate steps, so immediate reloads can catch a
+-- partially relinked config.
+local function scheduleConfigurationReload()
+    if dotfilesConfigurationReloadTimer then
+        dotfilesConfigurationReloadTimer:stop()
+    end
+
+    dotfilesConfigurationReloadTimer = hs.timer.doAfter(2, function()
+        dotfilesConfigurationReloadTimer = nil
+        hs.reload()
+    end)
+end
+
+if dotfilesConfigurationReloadWatcher then
+    dotfilesConfigurationReloadWatcher:stop()
+end
+dotfilesConfigurationReloadWatcher = hs.pathwatcher.new(hs.configdir, scheduleConfigurationReload):start()
 
 -- Load your custom spoons
 hs.loadSpoon("NoTunes")
