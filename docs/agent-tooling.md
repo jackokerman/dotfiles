@@ -19,7 +19,8 @@
   - `~/src/tmux-agent-bar`
 - `dotty update` keeps `~/src/tmux-agent-bar` current through `.dotty/dev-checkouts.tsv`
 - `home/.config/tmux/README.md` is the code-local change guide for the wrappers and runtime path model
-- The status bar still polls every 2 seconds, but tmux also forces an immediate refresh on `client-session-changed` and `client-attached`
+- The status bar still redraws on tmux's normal interval, while `client-session-changed` and `client-attached` refresh the cached per-session option without forcing another nested tmux redraw
+- Agent hook wrappers refresh the cached right-side option in the background and rely on tmux's normal redraw path instead of forcing a client refresh on every tool event
 - The generic prompt heuristics, reconciliation rules, and source registration now live in the `tmux-agent-bar` repo
 - Finished shell-only sessions are hidden once no live agent process remains
 - dotfiles-side wrapper and sync tests live under `tests/tmux-agent-bar/`

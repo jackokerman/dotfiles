@@ -31,6 +31,8 @@ Optional runtime modules under `~/.config/tmux-agent-bar/agents/` and `~/.config
 - Keep generic status-bar logic in `tmux-agent-bar`, not here.
 - Keep this repo responsible only for wrapper stability, checkout sync, and path resolution.
 - Keep the visible right side event-driven. `status-right` must read `#{@tmux_agent_bar_status_right}` only; wrappers and hooks refresh that cached option. Do not fix freshness by adding a polling `#()` renderer or refresher back into `status-right`.
+- Agent hook wrappers should refresh the cached option in the background without forcing an immediate tmux redraw. Let tmux paint the updated cached value on its normal status redraw path.
+- Client switch and attach hooks should refresh the cached option only. Do not make those hooks call back into `tmux refresh-client`, or the redraw can recursively re-enter the same wrapper path.
 - Before changing status behavior, identify the source of truth and trigger path: explicit hook state, live pane tail, remote/source cache, session-scoped tmux option, and the tmux hook that updates it. Add the regression at the boundary that failed.
 - If a status-bar bug is in agent detection, rendering, or remote-source behavior, fix it in `tmux-agent-bar` and keep the regression there.
 - If a bug is in install/update behavior or wrapper path selection, fix it here and add a focused wrapper or sync test.

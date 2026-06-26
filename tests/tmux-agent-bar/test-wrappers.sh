@@ -97,6 +97,17 @@ run_hook_wrapper_case() {
   rm -rf "${tmp_dir}"
 }
 
+run_hook_wrapper_uses_cached_refresh_case() {
+  if grep -q -- '--all-clients --cached --refresh-client' "${HOOK_WRAPPER}"; then
+    fail "hook wrapper should not force a tmux redraw for cached agent updates"
+  fi
+  if ! grep -q -- '--all-clients --cached' "${HOOK_WRAPPER}"; then
+    fail "hook wrapper should refresh the cached status option"
+  fi
+
+  pass "hook wrapper refreshes cached agent state without forcing a tmux redraw"
+}
+
 run_codex_hook_wrapper_case() {
   local tmp_dir="" actual=""
 
@@ -114,6 +125,17 @@ run_codex_hook_detaches_refresh_case() {
   fi
 
   pass "Codex hook wrapper detaches status refresh from hook stdin"
+}
+
+run_codex_hook_uses_cached_refresh_case() {
+  if grep -q -- '--all-clients --cached --refresh-client' "${CODEX_HOOK_WRAPPER}"; then
+    fail "Codex hook wrapper should not force a tmux redraw for cached agent updates"
+  fi
+  if ! grep -q -- '--all-clients --cached' "${CODEX_HOOK_WRAPPER}"; then
+    fail "Codex hook wrapper should refresh the cached status option"
+  fi
+
+  pass "Codex hook wrapper refreshes cached agent state without forcing a tmux redraw"
 }
 
 run_codex_hook_missing_runtime_case() {
@@ -540,12 +562,18 @@ run_session_switch_hook_case() {
 
   assert_matches \
     "session switch hook targets the changed client's session name" \
-    'client-session-changed.*#\{q:client_session\}.*--force-refresh.*--refresh-client.*#\{q:hook_client\}' \
+    'client-session-changed.*#\{q:client_session\}.*--force-refresh.*#\{q:hook_client\}' \
     "${actual}"
   assert_matches \
     "client attach hook targets the attached client's session name" \
-    'client-attached.*#\{q:client_session\}.*--force-refresh.*--refresh-client.*#\{q:hook_client\}' \
+    'client-attached.*#\{q:client_session\}.*--force-refresh.*#\{q:hook_client\}' \
     "${actual}"
+  if grep -Eq 'client-session-changed.*--refresh-client' <<< "${actual}"; then
+    fail "session switch hook should not force another tmux client redraw"
+  fi
+  if grep -Eq 'client-attached.*--refresh-client' <<< "${actual}"; then
+    fail "client attach hook should not force another tmux client redraw"
+  fi
   assert_matches \
     "session close hook refreshes all attached client sessions" \
     'session-closed.*--all-clients.*--force-refresh.*--refresh-client' \
@@ -578,8 +606,10 @@ run_missing_runtime_case() {
 
 run_session_wrapper_case
 run_hook_wrapper_case
+run_hook_wrapper_uses_cached_refresh_case
 run_codex_hook_wrapper_case
 run_codex_hook_detaches_refresh_case
+run_codex_hook_uses_cached_refresh_case
 run_codex_hook_missing_runtime_case
 run_left_wrapper_case
 run_left_wrapper_current_state_cache_case

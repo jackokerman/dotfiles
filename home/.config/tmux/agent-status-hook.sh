@@ -17,9 +17,9 @@ _refresh_wrapper="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/session-status-r
 if [[ -x "${_refresh_wrapper}" ]]; then
   (
     if command -v timeout >/dev/null 2>&1; then
-      timeout 2s "${_refresh_wrapper}" --all-clients --cached --refresh-client
+      timeout 2s "${_refresh_wrapper}" --all-clients --cached
     else
-      "${_refresh_wrapper}" --all-clients --cached --refresh-client
+      "${_refresh_wrapper}" --all-clients --cached
     fi
   ) >/dev/null 2>&1 &
 fi
