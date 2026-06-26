@@ -108,19 +108,19 @@
         "color": "#7fdbca"
       },
       "keyword": {
-        "color": "#c792ea"
+        "color": "#800080"
       },
       "keyword_reserved": {
-        "color": "#c792ea"
+        "color": "#800080"
       },
       "keyword_namespace": {
-        "color": "#c792ea"
+        "color": "#800080"
       },
       "keyword_type": {
         "color": "#21c7a8"
       },
       "operator": {
-        "color": "#c792ea"
+        "color": "#800080"
       },
       "punctuation": {
         "color": "#c3ccdc"
