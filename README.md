@@ -58,7 +58,7 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` development checkouts exist, updates managed runtime checkouts, and installs Jackie Plan from `~/src/jackie-plan`.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` development checkouts exist, updates runtime-only managed checkouts, and installs Jackie Plan from `~/src/jackie-plan`.
 
 ## Daily Use
 
@@ -68,7 +68,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 | Command | Use |
 | --- | --- |
-| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, ensure selected `~/src` development checkouts exist, and update managed runtime checkouts. |
+| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, ensure selected `~/src` development checkouts exist, and update runtime-only managed checkouts. |
 | `dotty run brew-sync` | Install packages from the tracked `Brewfile` on macOS. Use `dotty run brew-sync --cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |

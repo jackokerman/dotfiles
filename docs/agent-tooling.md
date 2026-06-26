@@ -12,12 +12,13 @@
 - Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
 - Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
 - `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, `home/.config/tmux/session-status-refresh.sh`,
-  and `home/.config/tmux/agent-status-hook.sh` are stable wrappers around the managed `tmux-agent-bar` runtime
+  and `home/.config/tmux/agent-status-hook.sh` are stable wrappers around the active `tmux-agent-bar` checkout
 - `home/.config/tmux/tmux-agent-bar-path.sh` resolves the runtime checkout in this order:
   - `TMUX_AGENT_BAR_DIR`
   - `~/.config/tmux-agent-bar/path.local`
+  - `~/src/tmux-agent-bar` when present
   - `~/.local/share/tmux-agent-bar/repo`
-- `dotty update` keeps the default managed checkout current
+- `dotty update` keeps `~/src/tmux-agent-bar` current through `.dotty/dev-checkouts.tsv`; the legacy `~/.local/share/tmux-agent-bar/repo` path is a compatibility symlink when safe, or a fallback checkout when the development checkout is absent
 - `home/.config/tmux/README.md` is the code-local change guide for the wrappers and runtime path model
 - The status bar still polls every 2 seconds, but tmux also forces an immediate refresh on `client-session-changed` and `client-attached`
 - The generic prompt heuristics, reconciliation rules, and source registration now live in the `tmux-agent-bar` repo
@@ -59,7 +60,7 @@ Ruler-generated output is never committed. Dotty invokes Ruler only in a tempora
 
 `.dotty/dev-checkouts.tsv` lists tracked development repos that should exist under `~/src` on every machine. `dotty update` and `dotty run sync-dev-checkouts` clone missing entries and fast-forward existing checkouts only when they are clean, on the configured branch, and still point at the configured origin URL. Private entries rely on machine GitHub auth, and the clone and fetch paths stay non-interactive so hook runs warn and skip instead of hanging on prompts.
 
-Use this for reusable personal tools that are both part of the dotfiles workflow and likely to be iterated on directly, such as lint configs, Codex-adjacent tools, or small CLIs. Keep runtime-only clones under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace.
+Use this for reusable personal tools that are both part of the dotfiles workflow and likely to be iterated on directly, such as lint configs, Codex-adjacent tools, or small CLIs. `tmux-agent-bar` and `jackie-plan` use this model. Keep runtime-only clones under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace; `tuicr` stays in that runtime-only category.
 
 ## Jackie Plan
 

@@ -41,7 +41,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `home/` is tracked source that dotty links into `$HOME`.
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
-- `tests/tmux-agent-bar/` holds the wrapper and sync tests for the managed `tmux-agent-bar` runtime.
+- `tests/tmux-agent-bar/` holds the wrapper and sync tests for the active `tmux-agent-bar` checkout.
 - `tests/tuicr/` holds the managed-checkout tests for the dotty-owned `tuicr` runtime clone.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
 - Use `~/.zshenv.local` for machine-local env vars and path tweaks, including local API tokens needed by shell-backed agent workflows, unless a specific tool documents a different secret source.
@@ -57,9 +57,9 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep generic Hunk defaults in `home/.config/hunk/`; host-specific install routing belongs in later repos in the dotty chain.
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
-- The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the managed `tmux-agent-bar` checkout under `~/.local/share/tmux-agent-bar/repo` unless a local override path is set.
+- The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the `tmux-agent-bar` checkout under `~/src/tmux-agent-bar` unless an explicit override path is set. `~/.local/share/tmux-agent-bar/repo` is only a compatibility symlink when safe, or a fallback checkout when the development checkout is absent.
 - `home/.config/tmux/session-status-left.sh` owns the current-session prefix path, `session-status-refresh.sh` owns the cached visible `status-right` refresh path, `session-status.sh` remains the stable renderer wrapper, and `agent-status-hook.sh` owns explicit state writes.
-- Managed runtime checkouts live under `~/.local/share/`; `tmux-agent-bar` and `tuicr` use that pattern.
+- Managed runtime checkouts live under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace. `tuicr` uses that runtime-only pattern; actively developed tools such as `tmux-agent-bar` use `~/src` through `.dotty/dev-checkouts.tsv`.
 - Development checkouts for reusable tools live under `~/src` and are listed in `.dotty/dev-checkouts.tsv`; `dotty update` clones missing entries and conservatively fast-forwards clean checkouts on their configured branch.
 - Some tracked development checkouts are private GitHub HTTPS repos. Keep machine GitHub auth available for those clone paths, and prefer non-interactive failures over prompt-driven hooks.
 - Keep dotty-owned runtime checkouts separate from manual development clones. For `tuicr`, the managed checkout at `~/.local/share/tuicr/repo` is for install/use, not for personal fork remotes or long-lived branches.

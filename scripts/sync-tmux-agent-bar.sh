@@ -36,42 +36,83 @@ warning_log() {
 
 TMUX_AGENT_BAR_REPO_URL="${TMUX_AGENT_BAR_REPO_URL:-https://github.com/jackokerman/tmux-agent-bar.git}"
 TMUX_AGENT_BAR_BRANCH="${TMUX_AGENT_BAR_BRANCH:-main}"
+TMUX_AGENT_BAR_DEV_DIR="${TMUX_AGENT_BAR_DEV_DIR:-$HOME/src/tmux-agent-bar}"
 TMUX_AGENT_BAR_INSTALL_ROOT="${TMUX_AGENT_BAR_INSTALL_ROOT:-$HOME/.local/share/tmux-agent-bar}"
 TMUX_AGENT_BAR_REPO_DIR="${TMUX_AGENT_BAR_REPO_DIR:-${TMUX_AGENT_BAR_INSTALL_ROOT}/repo}"
 
-clone_tmux_agent_bar() {
+git_no_prompt() {
+  GIT_TERMINAL_PROMPT=0 git "$@"
+}
+
+tmux_agent_bar_active_repo_dir() {
+  if [[ -e "${TMUX_AGENT_BAR_DEV_DIR}" ]]; then
+    printf '%s\n' "${TMUX_AGENT_BAR_DEV_DIR}"
+    return 0
+  fi
+
+  printf '%s\n' "${TMUX_AGENT_BAR_REPO_DIR}"
+}
+
+sync_legacy_path_to_dev_checkout() {
+  if [[ ! -e "${TMUX_AGENT_BAR_DEV_DIR}" ]]; then
+    return 0
+  fi
+
+  if [[ -L "${TMUX_AGENT_BAR_REPO_DIR}" ]]; then
+    return 0
+  fi
+
+  if [[ -e "${TMUX_AGENT_BAR_REPO_DIR}" ]]; then
+    warning_log "Leaving legacy tmux-agent-bar path unchanged because ${TMUX_AGENT_BAR_REPO_DIR} already exists"
+    return 0
+  fi
+
   mkdir -p "${TMUX_AGENT_BAR_INSTALL_ROOT}"
-  git clone --branch "${TMUX_AGENT_BAR_BRANCH}" "${TMUX_AGENT_BAR_REPO_URL}" "${TMUX_AGENT_BAR_REPO_DIR}"
+  ln -s "${TMUX_AGENT_BAR_DEV_DIR}" "${TMUX_AGENT_BAR_REPO_DIR}"
+}
+
+clone_tmux_agent_bar() {
+  local repo_dir="$1"
+
+  mkdir -p "$(dirname "${repo_dir}")"
+  git_no_prompt clone --branch "${TMUX_AGENT_BAR_BRANCH}" "${TMUX_AGENT_BAR_REPO_URL}" "${repo_dir}"
 }
 
 tmux_agent_bar_checkout_is_dirty() {
-  local status=""
+  local repo_dir="$1" status=""
 
-  status=$(git -C "${TMUX_AGENT_BAR_REPO_DIR}" status --porcelain 2>/dev/null || true)
+  status=$(git -C "${repo_dir}" status --porcelain 2>/dev/null || true)
   [[ -n "${status}" ]]
 }
 
 tmux_agent_bar_checkout_branch() {
-  git -C "${TMUX_AGENT_BAR_REPO_DIR}" symbolic-ref --quiet --short HEAD 2>/dev/null || true
+  local repo_dir="$1"
+
+  git -C "${repo_dir}" symbolic-ref --quiet --short HEAD 2>/dev/null || true
 }
 
 tmux_agent_bar_checkout_can_fast_forward() {
-  git -C "${TMUX_AGENT_BAR_REPO_DIR}" merge-base --is-ancestor HEAD "origin/${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
+  local repo_dir="$1"
+
+  git -C "${repo_dir}" merge-base --is-ancestor HEAD "origin/${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
 }
 
 update_tmux_agent_bar() {
-  local before="" after=""
+  local repo_dir="$1" before="" after=""
 
-  git -C "${TMUX_AGENT_BAR_REPO_DIR}" fetch origin "${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
+  if ! git_no_prompt -C "${repo_dir}" fetch origin "${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1; then
+    warning_log "Skipping tmux-agent-bar update because fetch failed"
+    return 0
+  fi
 
-  if ! tmux_agent_bar_checkout_can_fast_forward; then
+  if ! tmux_agent_bar_checkout_can_fast_forward "${repo_dir}"; then
     warning_log "Skipping tmux-agent-bar update because the checkout cannot be fast-forwarded to origin/${TMUX_AGENT_BAR_BRANCH}"
     return 0
   fi
 
-  before=$(git -C "${TMUX_AGENT_BAR_REPO_DIR}" rev-parse HEAD)
-  git -C "${TMUX_AGENT_BAR_REPO_DIR}" merge --ff-only "origin/${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
-  after=$(git -C "${TMUX_AGENT_BAR_REPO_DIR}" rev-parse HEAD)
+  before=$(git -C "${repo_dir}" rev-parse HEAD)
+  git -C "${repo_dir}" merge --ff-only "origin/${TMUX_AGENT_BAR_BRANCH}" >/dev/null 2>&1
+  after=$(git -C "${repo_dir}" rev-parse HEAD)
 
   if [[ "${before}" == "${after}" ]]; then
     success_log "tmux-agent-bar already up to date"
@@ -81,33 +122,37 @@ update_tmux_agent_bar() {
 }
 
 main() {
-  local branch=""
+  local branch="" repo_dir=""
 
   title "Syncing tmux-agent-bar"
 
-  if [[ ! -e "${TMUX_AGENT_BAR_REPO_DIR}" ]]; then
-    clone_tmux_agent_bar
+  repo_dir=$(tmux_agent_bar_active_repo_dir)
+
+  if [[ ! -e "${repo_dir}" ]]; then
+    clone_tmux_agent_bar "${repo_dir}"
     success_log "Installed tmux-agent-bar"
     return 0
   fi
 
-  if [[ ! -d "${TMUX_AGENT_BAR_REPO_DIR}/.git" ]]; then
-    warning_log "Skipping tmux-agent-bar sync because ${TMUX_AGENT_BAR_REPO_DIR} is not a git checkout"
+  sync_legacy_path_to_dev_checkout
+
+  if [[ ! -d "${repo_dir}/.git" ]]; then
+    warning_log "Skipping tmux-agent-bar sync because ${repo_dir} is not a git checkout"
     return 0
   fi
 
-  branch=$(tmux_agent_bar_checkout_branch)
+  branch=$(tmux_agent_bar_checkout_branch "${repo_dir}")
   if [[ "${branch}" != "${TMUX_AGENT_BAR_BRANCH}" ]]; then
     warning_log "Skipping tmux-agent-bar update because the checkout is not on ${TMUX_AGENT_BAR_BRANCH}"
     return 0
   fi
 
-  if tmux_agent_bar_checkout_is_dirty; then
+  if tmux_agent_bar_checkout_is_dirty "${repo_dir}"; then
     warning_log "Skipping tmux-agent-bar update because the checkout is dirty"
     return 0
   fi
 
-  update_tmux_agent_bar
+  update_tmux_agent_bar "${repo_dir}"
 }
 
 main "$@"

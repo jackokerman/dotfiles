@@ -49,11 +49,34 @@ run_clone_case() {
   create_remote_repo "${tmp_dir}"
 
   TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+    TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
     TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
     "${TARGET_SCRIPT}" >/dev/null 2>&1
 
   actual=$(git -C "${tmp_dir}/install/repo" rev-parse --abbrev-ref HEAD)
   assert_equal "sync script clones the managed checkout on first run" "main" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_dev_checkout_case() {
+  local tmp_dir="" actual="" symlink_target=""
+
+  tmp_dir=$(mktemp -d)
+  create_remote_repo "${tmp_dir}"
+  mkdir -p "${tmp_dir}/src"
+  git clone --branch main "${tmp_dir}/remote.git" "${tmp_dir}/src/tmux-agent-bar" >/dev/null 2>&1
+
+  append_remote_commit "${tmp_dir}"
+
+  TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+    TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
+    TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
+    "${TARGET_SCRIPT}" >/dev/null 2>&1
+
+  actual=$(tail -n 1 "${tmp_dir}/src/tmux-agent-bar/README.md")
+  symlink_target=$(readlink "${tmp_dir}/install/repo")
+  assert_equal "sync script fast-forwards the development checkout when present" "two" "${actual}"
+  assert_equal "sync script creates the legacy compatibility symlink" "${tmp_dir}/src/tmux-agent-bar" "${symlink_target}"
   rm -rf "${tmp_dir}"
 }
 
@@ -64,12 +87,14 @@ run_update_case() {
   create_remote_repo "${tmp_dir}"
 
   TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+    TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
     TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
     "${TARGET_SCRIPT}" >/dev/null 2>&1
 
   append_remote_commit "${tmp_dir}"
 
   TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+    TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
     TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
     "${TARGET_SCRIPT}" >/dev/null 2>&1
 
@@ -85,6 +110,7 @@ run_dirty_skip_case() {
   create_remote_repo "${tmp_dir}"
 
   TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+    TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
     TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
     "${TARGET_SCRIPT}" >/dev/null 2>&1
 
@@ -93,6 +119,7 @@ run_dirty_skip_case() {
 
   actual=$(
     TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+      TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
       TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
       "${TARGET_SCRIPT}" 2>&1 || true
   )
@@ -108,6 +135,7 @@ run_diverged_skip_case() {
   create_remote_repo "${tmp_dir}"
 
   TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+    TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
     TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
     "${TARGET_SCRIPT}" >/dev/null 2>&1
 
@@ -124,6 +152,7 @@ run_diverged_skip_case() {
 
   actual=$(
     TMUX_AGENT_BAR_REPO_URL="${tmp_dir}/remote.git" \
+      TMUX_AGENT_BAR_DEV_DIR="${tmp_dir}/src/tmux-agent-bar" \
       TMUX_AGENT_BAR_INSTALL_ROOT="${tmp_dir}/install" \
       "${TARGET_SCRIPT}" 2>&1
   )
@@ -135,6 +164,7 @@ run_diverged_skip_case() {
 }
 
 run_clone_case
+run_dev_checkout_case
 run_update_case
 run_dirty_skip_case
 run_diverged_skip_case

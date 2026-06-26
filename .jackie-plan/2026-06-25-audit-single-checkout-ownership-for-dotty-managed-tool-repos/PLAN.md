@@ -1,9 +1,9 @@
 ---
 id: 2026-06-25-audit-single-checkout-ownership-for-dotty-managed-tool-repos
 title: audit single-checkout ownership for dotty-managed tool repos
-state: ready-to-implement
+state: complete
 createdAt: 2026-06-25T15:55:17.861Z
-updatedAt: 2026-06-25T21:46:50.858Z
+updatedAt: 2026-06-26T00:38:54.806Z
 ---
 
 # audit single-checkout ownership for dotty-managed tool repos

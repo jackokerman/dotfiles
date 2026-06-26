@@ -12,7 +12,7 @@ This directory now owns the tmux-side wrappers and path resolution for the exter
 - `tmux-agent-bar-path.sh`: shared path-resolution helper for the wrappers.
 - `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, passes the session name to the left prefix helper, keeps the visible session name tmux-native, and renders only the session-scoped cached right-side option. Hooks update that option on session switches, session closes, and agent state changes.
 
-The generic parser, collector, renderer, prompt heuristics, and Codex event-to-state mapping live in the managed `tmux-agent-bar` repo, not in this repo.
+The generic parser, collector, renderer, prompt heuristics, and Codex event-to-state mapping live in the active `tmux-agent-bar` checkout, not in this repo.
 
 ## Runtime resolution
 
@@ -20,9 +20,10 @@ The wrappers resolve the runtime checkout in this order:
 
 1. `TMUX_AGENT_BAR_DIR`
 2. `~/.config/tmux-agent-bar/path.local`
-3. `~/.local/share/tmux-agent-bar/repo`
+3. `~/src/tmux-agent-bar` when present
+4. `~/.local/share/tmux-agent-bar/repo`
 
-`dotty update` manages the default checkout under `~/.local/share/tmux-agent-bar/repo`.
+`dotty update` manages the default development checkout under `~/src/tmux-agent-bar` through `.dotty/dev-checkouts.tsv`. The legacy `~/.local/share/tmux-agent-bar/repo` path is kept only as a compatibility symlink when safe, or as a fallback checkout when the development checkout is absent.
 
 Optional runtime modules under `~/.config/tmux-agent-bar/agents/` and `~/.config/tmux-agent-bar/sources/` are owned by the current dotty layer or by local user config. The base `dotfiles` repo installs and updates the runtime but does not hardcode private launcher labels or remote transports.
 
