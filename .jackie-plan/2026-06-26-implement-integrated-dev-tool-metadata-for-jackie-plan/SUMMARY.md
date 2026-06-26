@@ -1,9 +1,9 @@
 ---
 id: 2026-06-26-implement-integrated-dev-tool-metadata-for-jackie-plan
 title: Implement integrated dev-tool metadata for Jackie Plan
-state: ready-to-implement
+state: paused
 createdAt: 2026-06-26T16:49:18.390Z
-updatedAt: 2026-06-26T16:49:22.092Z
+updatedAt: 2026-06-26T17:42:16.847Z
 sourcePlan: 2026-06-26-explore-first-class-dotty-managed-dev-tool-checkouts
 sourceRepo: /Users/jackokerman/dotfiles
 sourcePath: .
