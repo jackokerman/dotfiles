@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 tmux_agent_bar_runtime_repo_path() {
-  local config_dir="" path_file="" candidate="" dev_checkout=""
+  local config_dir="" path_file="" candidate=""
 
   if [[ -n "${TMUX_AGENT_BAR_DIR:-}" ]]; then
     printf '%s\n' "${TMUX_AGENT_BAR_DIR}"
@@ -19,11 +19,5 @@ tmux_agent_bar_runtime_repo_path() {
     fi
   fi
 
-  dev_checkout="${HOME}/src/tmux-agent-bar"
-  if [[ -d "${dev_checkout}" ]]; then
-    printf '%s\n' "${dev_checkout}"
-    return 0
-  fi
-
-  printf '%s\n' "${HOME}/.local/share/tmux-agent-bar/repo"
+  printf '%s\n' "${HOME}/src/tmux-agent-bar"
 }

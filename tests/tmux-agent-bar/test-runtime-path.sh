@@ -9,23 +9,7 @@ TEST_PREFIX="tmux-agent-bar-path-test"
 # shellcheck source=/dev/null
 source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
 
-run_dev_checkout_case() {
-  local tmp_dir="" actual=""
-
-  tmp_dir=$(mktemp -d)
-  mkdir -p "${tmp_dir}/home/src/tmux-agent-bar"
-
-  actual=$(
-    HOME="${tmp_dir}/home" \
-    XDG_CONFIG_HOME="${tmp_dir}/config" \
-    "${BASH}" -c 'set -euo pipefail; source "$1"; tmux_agent_bar_runtime_repo_path' bash "${TARGET_SCRIPT}"
-  )
-
-  assert_equal "default path uses development checkout when present" "${tmp_dir}/home/src/tmux-agent-bar" "${actual}"
-  rm -rf "${tmp_dir}"
-}
-
-run_legacy_fallback_case() {
+run_default_case() {
   local tmp_dir="" actual=""
 
   tmp_dir=$(mktemp -d)
@@ -36,7 +20,7 @@ run_legacy_fallback_case() {
     "${BASH}" -c 'set -euo pipefail; source "$1"; tmux_agent_bar_runtime_repo_path' bash "${TARGET_SCRIPT}"
   )
 
-  assert_equal "default path falls back to legacy runtime checkout" "${tmp_dir}/home/.local/share/tmux-agent-bar/repo" "${actual}"
+  assert_equal "default path uses development checkout" "${tmp_dir}/home/src/tmux-agent-bar" "${actual}"
   rm -rf "${tmp_dir}"
 }
 
@@ -75,7 +59,6 @@ run_env_case() {
   rm -rf "${tmp_dir}"
 }
 
-run_dev_checkout_case
-run_legacy_fallback_case
+run_default_case
 run_path_local_case
 run_env_case

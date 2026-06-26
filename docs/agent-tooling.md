@@ -16,9 +16,8 @@
 - `home/.config/tmux/tmux-agent-bar-path.sh` resolves the runtime checkout in this order:
   - `TMUX_AGENT_BAR_DIR`
   - `~/.config/tmux-agent-bar/path.local`
-  - `~/src/tmux-agent-bar` when present
-  - `~/.local/share/tmux-agent-bar/repo`
-- `dotty update` keeps `~/src/tmux-agent-bar` current through `.dotty/dev-checkouts.tsv`; the legacy `~/.local/share/tmux-agent-bar/repo` path is a compatibility symlink when safe, or a fallback checkout when the development checkout is absent
+  - `~/src/tmux-agent-bar`
+- `dotty update` keeps `~/src/tmux-agent-bar` current through `.dotty/dev-checkouts.tsv`
 - `home/.config/tmux/README.md` is the code-local change guide for the wrappers and runtime path model
 - The status bar still polls every 2 seconds, but tmux also forces an immediate refresh on `client-session-changed` and `client-attached`
 - The generic prompt heuristics, reconciliation rules, and source registration now live in the `tmux-agent-bar` repo

@@ -172,24 +172,6 @@ setup_shell() {
     fi
 }
 
-setup_tmux_agent_bar() {
-    local sync_script="$DOTFILES/scripts/sync-tmux-agent-bar.sh"
-
-    title "Syncing tmux-agent-bar"
-
-    if [[ ! -x "$sync_script" ]]; then
-        warning "tmux-agent-bar sync script not found at $sync_script"
-        return 0
-    fi
-
-    if ! "$sync_script"; then
-        if [[ "${DOTTY_COMMAND:-}" == "install" ]]; then
-            die "Failed to sync tmux-agent-bar"
-        fi
-        warning "Failed to sync tmux-agent-bar"
-    fi
-}
-
 tuicr_checkout_is_dirty() {
     local repo_dir="$1"
     local status=""
@@ -674,7 +656,6 @@ main() {
     setup_dev_checkouts
     setup_jackie_plan
     setup_codex
-    setup_tmux_agent_bar
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
