@@ -1,0 +1,4 @@
+interface:
+  display_name: "Terminal Rendering"
+  short_description: "Debug terminal colors, wrapping, and renderer output."
+  default_prompt: "Use $terminal-rendering to debug terminal renderer colors, wrapping, ANSI output, or TUI preview behavior."
