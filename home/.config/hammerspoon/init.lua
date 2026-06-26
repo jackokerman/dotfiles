@@ -33,19 +33,38 @@ spoon.RichLinkCopy:bindHotkeys({
 
 -- Toggle Chrome vertical tabs sidebar (Cmd+S, Chrome-only)
 local function toggleChromeVerticalTabs()
-    local chrome = hs.application.get("com.google.Chrome")
+    local chromeBundleID = "com.google.Chrome"
+    local frontmost = hs.application.frontmostApplication()
+    local chrome = nil
+    if frontmost and frontmost:bundleID() == chromeBundleID then
+        chrome = frontmost
+    else
+        chrome = hs.application.get(chromeBundleID)
+    end
+
     if not chrome then
         hs.alert.show("Chrome not running")
         return
     end
 
-    local win = chrome:mainWindow()
-    if not win then
-        hs.alert.show("No Chrome window")
+    local axRoot = nil
+    local focusedWindow = hs.window.focusedWindow()
+    if focusedWindow and focusedWindow:application() and focusedWindow:application():bundleID() == chromeBundleID then
+        axRoot = hs.axuielement.windowElement(focusedWindow)
+    end
+
+    local axApp = hs.axuielement.applicationElement(chrome)
+    if not axRoot and axApp then
+        axRoot = axApp:attributeValue("AXFocusedWindow") or axApp:attributeValue("AXMainWindow")
+    end
+    if not axRoot then
+        axRoot = axApp
+    end
+    if not axRoot then
+        hs.alert.show("Chrome window not accessible")
         return
     end
 
-    local axWin = hs.axuielement.windowElement(win)
     local targets = {
         ["Expand tabs"] = true, ["Collapse tabs"] = true,
         ["Expand Tabs"] = true, ["Collapse Tabs"] = true,
@@ -70,7 +89,7 @@ local function toggleChromeVerticalTabs()
         return nil
     end
 
-    local btn = findButton(axWin, 0)
+    local btn = findButton(axRoot, 0)
     if btn then
         btn:performAction("AXPress")
     else
