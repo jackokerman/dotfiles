@@ -11,8 +11,8 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 
 - When a non-temporary JS/TS tool needs a small off-the-shelf library choice, use [references/tooling-defaults.md](references/tooling-defaults.md).
 - Keep those defaults short and pragmatic. Prefer built-ins when they are already direct and sufficient.
-- For non-temporary JS/TS tools, prefer Bun, TypeScript, Oxlint, and `@jackokerman/oxlint-config` unless the surrounding project has a stronger established stack.
-- For non-temporary Bun/TypeScript CLI tools, consider `slop-scan` as an early deterministic quality gate; keep command shape and config policy in [references/tooling-defaults.md](references/tooling-defaults.md).
+- For non-temporary JS/TS tools, prefer Bun, TypeScript, Oxlint, `@jackokerman/oxlint-config`, and repo-local deterministic quality gates unless the surrounding project has a stronger established stack.
+- For non-temporary Bun/TypeScript CLI tools that agents will edit or invoke repeatedly, add `slop-scan` as part of the preferred validation stack; keep command shape and config policy in [references/tooling-defaults.md](references/tooling-defaults.md).
 - Put reusable lint style changes in `github.com/jackokerman/oxlint-config` first. Release the config and update dependents only when the exported lint behavior changes; do not churn dependents for docs-only, README-only, or source-repo check-tooling releases.
 - When creating or publishing a reusable npm package, use [references/npm-package-release.md](references/npm-package-release.md).
 
