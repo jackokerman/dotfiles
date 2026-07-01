@@ -5,8 +5,6 @@ state: paused
 createdAt: 2026-06-26T16:49:18.390Z
 updatedAt: 2026-06-26T17:42:16.847Z
 sourcePlan: 2026-06-26-explore-first-class-dotty-managed-dev-tool-checkouts
-sourceRepo: /Users/jackokerman/dotfiles
-sourcePath: .
 ---
 
 # Summary

@@ -5,8 +5,6 @@ state: complete
 createdAt: 2026-06-25T21:50:30.007Z
 updatedAt: 2026-06-26T00:50:01.414Z
 sourcePlan: 2026-06-25-continue-codex-token-audit
-sourceRepo: private-overlay
-sourcePath: codex-token-audit
 ---
 
 Resolved with a narrow `codex-config-coach` deferred-reference update in `home/.codex/skills/codex-config-coach/references/audit-details.md`: public-repo plan artifacts moved from private, local, or later-overlay roots should have source metadata and prose rewritten to the generic public purpose before staging, and should stay in the private/later-overlay root if that would lose necessary context.

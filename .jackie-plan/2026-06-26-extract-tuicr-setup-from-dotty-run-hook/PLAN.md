@@ -5,8 +5,6 @@ state: complete
 createdAt: 2026-06-26T16:16:58.067Z
 updatedAt: 2026-06-26T16:29:25.407Z
 sourcePlan: 2026-06-26-explore-leaner-dotty-run-file-structure
-sourceRepo: dotfiles
-sourcePath: .
 ---
 
 # Extract tuicr setup from dotty run hook

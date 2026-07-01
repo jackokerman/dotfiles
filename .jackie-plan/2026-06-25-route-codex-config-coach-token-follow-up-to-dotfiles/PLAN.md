@@ -5,8 +5,6 @@ state: complete
 createdAt: 2026-06-25T21:50:30.007Z
 updatedAt: 2026-06-26T00:50:01.414Z
 sourcePlan: 2026-06-25-continue-codex-token-audit
-sourceRepo: private-overlay
-sourcePath: codex-token-audit
 ---
 
 # Route codex-config-coach token follow-up to dotfiles

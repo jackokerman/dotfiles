@@ -5,8 +5,6 @@ state: ready-to-implement
 createdAt: 2026-06-26T17:42:12.482Z
 updatedAt: 2026-06-26T17:42:55.035Z
 sourcePlan: 2026-06-26-implement-integrated-dev-tool-metadata-for-jackie-plan
-sourceRepo: /Users/jackokerman/dotfiles
-sourcePath: .
 ---
 
 # Design config-driven devtool repo management
