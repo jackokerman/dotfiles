@@ -265,6 +265,30 @@ assert_zsh_bootstrap_boundary() {
     fi
 }
 
+assert_git_local_overrides_last() {
+    local git_config_path="$PROJECT_ROOT/home/.config/git/config"
+    local github_helper_line=""
+    local local_include_line=""
+
+    log "Checking Git local override order"
+
+    github_helper_line=$(awk '
+        $0 == "[credential \"https://github.com\"]" { in_github = 1; next }
+        /^\[/ { in_github = 0 }
+        in_github && $0 ~ /helper[[:space:]]*=[[:space:]]*!gh auth git-credential/ { print NR; exit }
+    ' "$git_config_path")
+
+    local_include_line=$(awk '
+        $0 == "[include]" { in_include = 1; next }
+        /^\[/ { in_include = 0 }
+        in_include && $0 ~ /path[[:space:]]*=[[:space:]]*~\/\.gitconfig\.local/ { print NR; exit }
+    ' "$git_config_path")
+
+    [[ -n "$github_helper_line" ]] || fail "missing github.com gh credential helper in $git_config_path"
+    [[ -n "$local_include_line" ]] || fail "missing ~/.gitconfig.local include in $git_config_path"
+    [[ "$local_include_line" -gt "$github_helper_line" ]] || fail "~/.gitconfig.local include must come after shared github.com credential helpers"
+}
+
 run_tmux_agent_bar_tests() {
     log "Running tmux-agent-bar wrapper and sync tests"
     "$PROJECT_ROOT/tests/tmux-agent-bar/test-runtime-path.sh"
@@ -335,6 +359,7 @@ run_common_checks() {
     run_phase "expected executable files" 0 assert_expected_executables
     run_phase "zsh source/runtime boundary" 0 assert_zsh_runtime_inputs_removed
     run_phase "zsh bootstrap boundary" 0 assert_zsh_bootstrap_boundary
+    run_phase "Git local override order" 0 assert_git_local_overrides_last
 }
 
 run_prose_checks() {
