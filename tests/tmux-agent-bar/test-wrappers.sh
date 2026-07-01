@@ -263,6 +263,14 @@ run_refresh_wrapper_uses_timeout_helper_case() {
   pass "refresh wrapper uses the portable timeout helper"
 }
 
+run_refresh_wrapper_timeout_budget_case() {
+  if ! grep -q '_render_timeout_seconds=6' "${REFRESH_WRAPPER}"; then
+    fail "refresh wrapper should allow slower remote source refreshes to complete"
+  fi
+
+  pass "refresh wrapper timeout is long enough for remote source probes"
+}
+
 run_timeout_wrapper_case() {
   local tmp_dir="" actual="" python3_path=""
 
@@ -732,6 +740,7 @@ run_left_wrapper_explicit_state_precedence_case
 run_left_wrapper_fallback_case
 run_refresh_wrapper_cached_case
 run_refresh_wrapper_uses_timeout_helper_case
+run_refresh_wrapper_timeout_budget_case
 run_timeout_wrapper_case
 run_cached_refresh_helper_case
 run_cached_refresh_helper_coalesces_case
