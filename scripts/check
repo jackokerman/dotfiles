@@ -157,6 +157,7 @@ run_bash_syntax() {
         "install.sh"
         "scripts/brew-sync.sh"
         "scripts/enable-touchid-sudo.sh"
+        "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
         "scripts/check"
         "scripts/check-prose.sh"
@@ -169,6 +170,7 @@ run_bash_syntax() {
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "tests/handy/test-sync-handy-settings.sh"
+        "tests/fzf/test-install.sh"
         "tests/sesh/test-setup.sh"
         "tests/tmux-agent-bar/test-runtime-path.sh"
         "tests/tmux-agent-bar/test-sync.sh"
@@ -198,6 +200,7 @@ assert_expected_executables() {
         "scripts/check-prose.sh"
         "scripts/sync-dev-checkouts.sh"
         "scripts/enable-touchid-sudo.sh"
+        "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
@@ -214,6 +217,7 @@ assert_expected_executables() {
         "home/.config/tmux/session-status-refresh.sh"
         "tests/tuicr/test-setup.sh"
         "tests/dev-checkouts/test-sync.sh"
+        "tests/fzf/test-install.sh"
     )
     local file
 
@@ -304,6 +308,11 @@ run_handy_tests() {
 run_tuicr_tests() {
     log "Running tuicr runtime checkout tests"
     "$PROJECT_ROOT/tests/tuicr/test-setup.sh"
+}
+
+run_fzf_tests() {
+    log "Running fzf install tests"
+    "$PROJECT_ROOT/tests/fzf/test-install.sh"
 }
 
 run_dev_checkout_tests() {
@@ -430,6 +439,10 @@ run_staged_checks() {
 
     if changed_any ".dotty/run.sh" "scripts/sync-tuicr.sh" "tests/tuicr/*"; then
         run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
+    fi
+
+    if changed_any ".dotty/run.sh" "scripts/install-fzf.sh" "tests/fzf/*"; then
+        run_phase "fzf install tests" 0 run_fzf_tests
     fi
 
     if changed_any \

@@ -172,6 +172,25 @@ setup_shell() {
     fi
 }
 
+setup_fzf() {
+    local install_script="$DOTFILES/scripts/install-fzf.sh"
+
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        return 0
+    fi
+
+    title "Installing fzf"
+
+    if [[ ! -x "$install_script" ]]; then
+        warning "fzf installer not found at $install_script"
+        return 0
+    fi
+
+    if ! "$install_script"; then
+        warning "Failed to install fzf"
+    fi
+}
+
 setup_tuicr() {
     local sync_script="$DOTFILES/scripts/sync-tuicr.sh"
 
@@ -542,6 +561,7 @@ setup_dev_checkouts() {
 
 main() {
     setup_vscode
+    setup_fzf
     setup_shell
     setup_handy
     setup_nvim_js_tools
