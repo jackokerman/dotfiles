@@ -4,6 +4,7 @@ set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+SCRIPT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd -P)"
 SYNC_SCRIPT="$SCRIPT_DIR/ts/sync-codex.ts"
 FRONTEND_WORKFLOW_SCRIPT="$SCRIPT_DIR/ts/validate-codex-frontend-workflow.ts"
 REGISTRY_PATH="${HOME}/.dotty/registry"
@@ -226,7 +227,7 @@ main() {
         exit 1
     }
 
-    bun install --cwd "$PROJECT_ROOT" --frozen-lockfile --silent
+    bun install --cwd "$SCRIPT_ROOT" --frozen-lockfile --silent
 
     local env_name
     env_name="$(detect_env)"
