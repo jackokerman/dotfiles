@@ -138,7 +138,7 @@ validate_kind() {
         args+=("--source" "$source")
     done
 
-    bun run "$SYNC_SCRIPT" "${args[@]}"
+    bun --install=auto run "$SYNC_SCRIPT" "${args[@]}"
 }
 
 validate_custom_agents() {
@@ -173,7 +173,7 @@ validate_custom_agents() {
         args+=("--skill-source" "$source")
     done
 
-    bun run "$SYNC_SCRIPT" "${args[@]}"
+    bun --install=auto run "$SYNC_SCRIPT" "${args[@]}"
 }
 
 validate_frontend_workflow() {
@@ -217,7 +217,7 @@ validate_frontend_workflow() {
         args+=("--skill-source" "$source")
     done
 
-    bun run "$FRONTEND_WORKFLOW_SCRIPT" "${args[@]}"
+    bun --install=auto run "$FRONTEND_WORKFLOW_SCRIPT" "${args[@]}"
 }
 
 main() {
@@ -225,6 +225,8 @@ main() {
         echo "bun is required to validate Codex sync output" >&2
         exit 1
     }
+
+    bun install --cwd "$PROJECT_ROOT" --frozen-lockfile --silent
 
     local env_name
     env_name="$(detect_env)"

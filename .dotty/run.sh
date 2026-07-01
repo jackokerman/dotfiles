@@ -372,6 +372,19 @@ setup_claude() {
 # Codex: keep ~/.codex as a real directory so local runtime state remains
 # local, then generate the managed instruction, config, and hook files from
 # tracked source fragments.
+ensure_dotfiles_bun_dependencies() {
+    if [[ ! -d "$DOTFILES/node_modules" ]]; then
+        info "Installing dotfiles Bun dependencies"
+    fi
+
+    bun install --cwd "$DOTFILES" --frozen-lockfile --silent \
+        || die "Failed to install dotfiles Bun dependencies"
+}
+
+run_dotfiles_bun_script() {
+    bun run "$@"
+}
+
 setup_codex() {
     local codex_dir="$HOME/.codex"
     local script="$DOTFILES/scripts/ts/sync-codex.ts"
@@ -392,6 +405,7 @@ setup_codex() {
         return 0
     fi
 
+    ensure_dotfiles_bun_dependencies
     mkdir -p "$codex_dir"
 
     if [[ -d "$portable_skills_src_dir" ]]; then
@@ -405,46 +419,46 @@ setup_codex() {
     fi
 
     if [[ "$use_portable_ruler" != "true" && "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -f "$ruler_script" ]]; then
-        bun run "$ruler_script" codex-agents \
+        run_dotfiles_bun_script "$ruler_script" codex-agents \
             --validate-only \
             --source "$ruler_agents_src" \
             || die "Failed to validate Ruler-backed Codex instructions"
-        bun run "$ruler_script" codex-agents \
+        run_dotfiles_bun_script "$ruler_script" codex-agents \
             --output "$codex_dir/AGENTS.md" \
             --source "$ruler_agents_src" \
             || die "Failed to generate Ruler-backed Codex instructions"
     elif [[ -f "$agents_src" ]]; then
-        bun run "$script" agents \
+        run_dotfiles_bun_script "$script" agents \
             --validate-only \
             --source "$agents_src"
-        bun run "$script" agents \
+        run_dotfiles_bun_script "$script" agents \
             --output "$codex_dir/AGENTS.md" \
             --source "$agents_src"
     fi
 
     if [[ -f "$config_src" ]]; then
-        bun run "$script" config \
+        run_dotfiles_bun_script "$script" config \
             --validate-only \
             --source "$config_src"
-        bun run "$script" config \
+        run_dotfiles_bun_script "$script" config \
             --output "$codex_dir/config.toml" \
             --source "$config_src"
     fi
 
     if [[ -f "$hooks_src" ]]; then
-        bun run "$script" hooks \
+        run_dotfiles_bun_script "$script" hooks \
             --validate-only \
             --source "$hooks_src"
-        bun run "$script" hooks \
+        run_dotfiles_bun_script "$script" hooks \
             --output "$codex_dir/hooks.json" \
             --source "$hooks_src"
     fi
 
     if [[ -d "$skills_src_dir" ]]; then
-        bun run "$script" skills \
+        run_dotfiles_bun_script "$script" skills \
             --validate-only \
             --source "$skills_src_dir"
-        bun run "$script" skills \
+        run_dotfiles_bun_script "$script" skills \
             --output "$codex_dir/skills" \
             --source "$skills_src_dir"
     fi
@@ -461,10 +475,10 @@ setup_codex() {
         fi
         custom_agent_args+=("${portable_skill_source_args[@]}")
 
-        bun run "$script" custom-agents \
+        run_dotfiles_bun_script "$script" custom-agents \
             --validate-only \
             "${custom_agent_args[@]}"
-        bun run "$script" custom-agents \
+        run_dotfiles_bun_script "$script" custom-agents \
             --output "$codex_dir/agents" \
             --skills-output "$codex_dir/skills" \
             "${custom_agent_args[@]}"
@@ -473,12 +487,12 @@ setup_codex() {
     if [[ "$use_portable_ruler" == "true" ]]; then
         local claude_dir="$HOME/.claude"
         mkdir -p "$claude_dir"
-        bun run "$ruler_script" portable \
+        run_dotfiles_bun_script "$ruler_script" portable \
             --validate-only \
             --source "$ruler_agents_src" \
             "${portable_skill_source_args[@]}" \
             || die "Failed to validate portable Ruler outputs"
-        bun run "$ruler_script" portable \
+        run_dotfiles_bun_script "$ruler_script" portable \
             --codex-agents-output "$codex_dir/AGENTS.md" \
             --claude-output "$claude_dir/CLAUDE.md" \
             --codex-skills-output "$codex_dir/skills" \
@@ -488,11 +502,11 @@ setup_codex() {
             || die "Failed to generate portable Ruler outputs"
 
         if [[ -d "$skills_src_dir" ]]; then
-            bun run "$script" skills \
+            run_dotfiles_bun_script "$script" skills \
                 --validate-only \
                 "${generated_skill_source_args[@]}" \
                 --source "$skills_src_dir"
-            bun run "$script" skills \
+            run_dotfiles_bun_script "$script" skills \
                 --output "$codex_dir/skills" \
                 "${generated_skill_source_args[@]}" \
                 --source "$skills_src_dir"
