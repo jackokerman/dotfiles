@@ -45,3 +45,9 @@ Update the tmux-agent-bar path model and sync flow to treat the `~/src/tmux-agen
 ## Notes
 
 This plan is intentionally scoped to tool-checkout ownership. It does not include unrelated hook, guard, or shell-refresh issues unless they directly block the migration.
+
+## Agent handoff
+
+Implemented the first slice: tmux-agent-bar wrappers now prefer the `~/src/tmux-agent-bar` development checkout when present, fall back to `~/.local/share/tmux-agent-bar/repo`, and the sync script uses the same model. The sync script creates the legacy runtime path as a compatibility symlink when a dev checkout exists and the legacy path is absent, while preserving existing legacy checkouts. Updated focused tests and docs/steering surfaces to describe the `~/src` development-checkout ownership model and `tuicr` as runtime-only.
+
+Verified with `./tests/tmux-agent-bar/test-runtime-path.sh`, `./tests/tmux-agent-bar/test-sync.sh`, `./tests/tmux-agent-bar/test-wrappers.sh`, and `./scripts/check --extended --quiet`.

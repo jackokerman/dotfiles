@@ -62,3 +62,7 @@ Leave `tuicr` out of the first slice unless the implementation naturally support
 - Obsolete Jackie Plan compatibility behavior is removed or converted into an explicit one-time cleanup rather than kept as ongoing runtime logic.
 - Docs explain the new config surface, how to add a personal devtool, and when to use this model versus a runtime-only checkout.
 - Focused tests cover config parsing, checkout-only tools, installed tools, skipped dirty/customized repos, and Jackie Plan installer dispatch.
+
+## Agent handoff
+
+Broadened the follow-up from Jackie Plan-specific metadata into config-driven personal devtool repo management for dotty. The plan now centers one declarative tracked config surface for checkout-only and installed devtools, rejects ongoing compatibility layers by default, keeps Jackie Plan as the first proof case, and leaves runtime-only tools out of the first slice unless the implementation supports them naturally.

@@ -57,3 +57,7 @@ Keep the first slice behavior-preserving: missing Jackie Plan checkouts should s
 
 ## Verification
 This recommendation was based on local source inspection of `.dotty/dev-checkouts.tsv`, `scripts/sync-dev-checkouts.sh`, `.dotty/commands/install-jackie-plan`, `.dotty/run.sh`, `scripts/sync-tuicr.sh`, `tests/dev-checkouts/test-sync.sh`, `README.md`, `docs/agent-tooling.md`, and `AGENTS.md`. No broad repo validation is required because this slice only updates Jackie Plan artifacts.
+
+## Agent handoff
+
+Investigated first-class dev checkout model and revised the plan with a concrete recommendation: keep lightweight checkout sync as the base, add richer metadata only for integrated dev tools, and prove the model on Jackie Plan.

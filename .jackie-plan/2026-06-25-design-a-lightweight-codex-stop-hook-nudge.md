@@ -57,3 +57,18 @@ Evaluate a lightweight `Stop` hook that nudges or captures review input without 
 ## Routing
 
 Generic personal Codex hook behavior belongs in the base dotfiles repo.
+
+## Agent handoff
+
+# Design a lightweight Codex Stop hook nudge
+
+Evaluate whether a lightweight `Stop` hook should nudge or capture review input without launching a full agent or editing config automatically.
+
+Constraints:
+
+- Do not auto-edit `AGENTS.md`, skills, or config from the hook.
+- Do not run a nested interactive/agentic Codex review on every `Stop` event.
+- Keep any hook runtime short, deterministic, throttled, and recursion-safe.
+- Preserve the existing tmux status `Stop` hook behavior.
+
+Open questions include whether enough session metadata is available for useful nudging, whether a scheduled review is better than a turn-scoped hook, and whether this should wait until a manual session-review helper exists.

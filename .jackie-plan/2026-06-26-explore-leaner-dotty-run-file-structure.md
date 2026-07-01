@@ -49,3 +49,7 @@ Leave these inline for now:
 
 ## Non-Goals
 Do not assume every run file needs extraction. Do not optimize for abstract flexibility without a concrete maintenance or testing win. Do not move one-shot cleanup logic just to satisfy a uniform file layout.
+
+## Agent handoff
+
+Explored the current dotty run-file structure. Most `.dotty/commands/*` files are already thin wrappers into `scripts/`; `.dotty/run.sh` is the main mixed-concern file, and `setup_tuicr` is the strongest extraction candidate because it is a full managed-checkout workflow with existing tests. Revised the plan with a concrete recommendation and captured `2026-06-26-extract-tuicr-setup-from-dotty-run-hook` as the first implementation follow-up.

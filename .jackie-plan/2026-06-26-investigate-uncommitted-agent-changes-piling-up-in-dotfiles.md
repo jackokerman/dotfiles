@@ -31,3 +31,18 @@ Investigate how to make uncommitted or untracked dotfiles changes more visible a
 - The core pain is not just dirty git state; it is losing provenance and confidence when changes accumulate across agent/tool runs.
 - The desired outcome is exploratory first: identify a practical improvement path, then implement it in the owning repo or workflow.
 - This feels worth addressing sooner rather than leaving as a vague annoyance.
+
+## Agent handoff
+
+# Investigate uncommitted agent changes piling up in dotfiles
+
+Investigate how to make uncommitted or untracked dotfiles changes more visible and actionable when agents or helper tools modify them.
+
+Key questions:
+
+- Where changes most often accumulate: public dotfiles, private overlays, generated/live linked outputs, or multiple places.
+- Which workflows leave changes behind: agents, local tools, dotty update/link flows, generated files, or repo checks.
+- Whether the fix should be steering, status checks, a follow-up prompt, shell helper, or repo-level validation.
+- How to handle unrelated dirty files that predate an agent session.
+
+The desired outcome is first to identify a practical improvement path, then implement it in the owning repo or workflow.

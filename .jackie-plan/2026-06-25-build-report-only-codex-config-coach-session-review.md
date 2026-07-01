@@ -59,3 +59,18 @@ Create a manual, report-only workflow that gives the user the post-session `code
 ## Routing
 
 Generic personal Codex setup belongs in the base dotfiles repo, especially because `codex-session-snippets` and `codex-config-coach` live there.
+
+## Agent handoff
+
+# Build report-only Codex config coach session review
+
+Create a manual report-only workflow for the post-session `codex-config-coach` ritual without automatically editing config from a hook.
+
+Likely shape:
+
+- Add a helper such as `codex-coach-latest-session`.
+- Gather bounded latest-session context with `codex-session-snippets`.
+- Run `codex exec` in report-only mode with hooks disabled and least privilege.
+- Output a compact recommendation with observed friction, whether durable steering is warranted, target surface, proposed edit, and token/tool-surface opportunities.
+
+The first version should avoid broad transcript loading, recursive hooks, and tracked-file edits by default.

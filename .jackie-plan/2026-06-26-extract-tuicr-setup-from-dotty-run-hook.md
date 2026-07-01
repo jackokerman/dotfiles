@@ -39,3 +39,9 @@ Add repo steering that `.dotty/commands/*` should stay thin `dotty run` entrypoi
 
 ## Verification
 Run `tests/tuicr/test-setup.sh` for focused behavior and `./scripts/check --staged --quiet` before committing. Because this touches a `dotty update` hook path and a managed checkout helper, run `dotty update` after committing to refresh the live home state before pushing.
+
+## Agent handoff
+
+Extracted the `tuicr` managed-checkout workflow from `.dotty/run.sh` into executable `scripts/sync-tuicr.sh`. The hook now keeps a small non-fatal wrapper that calls the standalone script during install/update. `tests/tuicr/test-setup.sh` now exercises the standalone script directly with fake HOME/Cargo/remote repos. Added `scripts/sync-tuicr.sh` to `scripts/check` syntax and executable-bit coverage plus staged-check routing, and documented the thin `.dotty/commands/*` wrapper pattern in `AGENTS.md` and `scripts/README.md`.
+
+Focused verification passed: `tests/tuicr/test-setup.sh`, `bash -n .dotty/run.sh scripts/sync-tuicr.sh tests/tuicr/test-setup.sh scripts/check`, and `./scripts/check --staged --quiet`.
