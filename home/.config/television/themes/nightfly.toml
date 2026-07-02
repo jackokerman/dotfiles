@@ -10,7 +10,7 @@ text_fg = '#c3ccdc'
 dimmed_text_fg = '#7c8f8f'
 
 # input
-input_text_fg = '#82aaff'
+input_text_fg = '#d6deeb'
 result_count_fg = '#ecc48d'
 
 # results
