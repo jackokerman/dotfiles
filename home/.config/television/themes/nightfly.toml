@@ -17,7 +17,7 @@ result_count_fg = '#ecc48d'
 result_name_fg = '#acb4c2'
 result_line_number_fg = '#ecc48d'
 result_value_fg = '#acb4c2'
-selection_fg = '#ff5874'
+selection_fg = '#d6deeb'
 selection_bg = '#0e293f'
 match_fg = '#f78c6c'
 
