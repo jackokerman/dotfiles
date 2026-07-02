@@ -1,0 +1,33 @@
+# Nightfly theme for Television (`tv`).
+#
+# Palette source: github.com/bluz71/vim-nightfly-colors
+# FZF mapping source: `home/.config/zsh/.zshenv`.
+
+# general
+background = '#011627'
+border_fg = '#2c3043'
+text_fg = '#c3ccdc'
+dimmed_text_fg = '#7c8f8f'
+
+# input
+input_text_fg = '#d6deeb'
+result_count_fg = '#ecc48d'
+
+# results
+result_name_fg = '#acb4c2'
+result_line_number_fg = '#ecc48d'
+result_value_fg = '#acb4c2'
+selection_fg = '#d6deeb'
+selection_bg = '#0e293f'
+match_fg = '#f78c6c'
+
+# preview
+preview_title_fg = '#82aaff'
+
+# modes
+channel_mode_fg = '#092236'
+channel_mode_bg = '#82aaff'
+remote_control_mode_fg = '#092236'
+remote_control_mode_bg = '#21c7a8'
+action_picker_mode_fg = '#092236'
+action_picker_mode_bg = '#c792ea'

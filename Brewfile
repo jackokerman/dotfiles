@@ -50,6 +50,7 @@ brew "node-build"                   # nodenv install definitions
 brew "oven-sh/bun/bun"              # JavaScript runtime
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
+brew "television"                   # rich terminal fuzzy finder (`tv`)
 brew "zoxide"                       # smarter cd command (z/zi)
 
 if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"

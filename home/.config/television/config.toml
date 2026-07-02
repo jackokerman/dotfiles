@@ -1,0 +1,38 @@
+# Tracked global defaults for Television (`tv`).
+# Keep this file small; `tv` owns mutable channel data under `cable/`.
+
+tick_rate = 50
+default_channel = "files"
+history_size = 200
+global_history = false
+
+[ui]
+theme = "nightfly"
+orientation = "landscape"
+
+[ui.input_bar]
+position = "top"
+prompt = ">"
+border_type = "rounded"
+
+[ui.results_panel]
+border_type = "rounded"
+
+[ui.preview_panel]
+size = 50
+scrollbar = true
+border_type = "rounded"
+hidden = false
+
+[ui.status_bar]
+separator_open = ""
+separator_close = ""
+hidden = false
+
+[ui.help_panel]
+show_categories = true
+hidden = true
+
+[ui.remote_control]
+show_channel_descriptions = true
+sort_alphabetically = true

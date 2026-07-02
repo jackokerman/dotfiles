@@ -340,6 +340,35 @@ setup_glow() {
     replace_file_if_changed "$tmp_target" "$config_target"
 }
 
+setup_television() {
+    local target_dir="$HOME/.config/television"
+    local config_source="$DOTFILES/home/.config/television/config.toml"
+    local config_target="$target_dir/config.toml"
+    local theme_source="$DOTFILES/home/.config/television/themes/nightfly.toml"
+    local theme_target="$target_dir/themes/nightfly.toml"
+
+    [[ -f "$config_source" ]] || return 0
+
+    # Keep ~/.config/television as a real directory because tv stores mutable
+    # channel files under cable/.
+    if [[ -L "$target_dir" ]]; then
+        rm -f "$target_dir"
+    fi
+
+    mkdir -p "$target_dir/cable" "$target_dir/themes"
+    if [[ -e "$config_target" && ! -L "$config_target" ]]; then
+        rm -f "$config_target"
+    fi
+    create_symlink "$config_source" "$config_target"
+
+    if [[ -f "$theme_source" ]]; then
+        if [[ -e "$theme_target" && ! -L "$theme_target" ]]; then
+            rm -f "$theme_target"
+        fi
+        create_symlink "$theme_source" "$theme_target"
+    fi
+}
+
 # Claude: create ~/.claude as a real directory and symlink tracked config.
 # The entire .claude directory is in DOTTY_LINK_IGNORE so dotty won't
 # create a directory symlink (which would cause Claude runtime files like
@@ -567,6 +596,7 @@ main() {
     setup_nvim_js_tools
     setup_sesh
     setup_glow
+    setup_television
     setup_claude
 
     case "${DOTTY_COMMAND:-}" in
