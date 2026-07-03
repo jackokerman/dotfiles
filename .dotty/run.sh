@@ -319,8 +319,10 @@ setup_glow() {
 
     [[ -f "$style_source" ]] || return 0
 
-    # Keep ~/.config/glow as a real directory so glow.yml can contain the
-    # absolute live style path that Glow needs for custom JSON styles.
+    # This is path materialization, not config composition. Glow does not
+    # reliably resolve custom JSON style paths relative to glow.yml, so the
+    # live config needs an absolute path without tracking a user-specific
+    # /Users/... path in the repo.
     if [[ -L "$target_dir" ]]; then
         rm -f "$target_dir"
     fi

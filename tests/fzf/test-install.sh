@@ -69,6 +69,7 @@ run_install_case() {
 
   PATH="${fake_bin}:${PATH}" \
     HOME="${tmp_dir}/home" \
+    FZF_OS="Linux" \
     FZF_ARCH="aarch64" \
     FZF_INSTALL_BIN_DIR="${bin_dir}" \
     "${TARGET_SCRIPT}" >/dev/null
@@ -82,6 +83,7 @@ run_install_case() {
   : > "${curl_log}"
   PATH="${fake_bin}:${PATH}" \
     HOME="${tmp_dir}/home" \
+    FZF_OS="Linux" \
     FZF_ARCH="aarch64" \
     FZF_INSTALL_BIN_DIR="${bin_dir}" \
     "${TARGET_SCRIPT}" >/dev/null
