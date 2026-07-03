@@ -338,11 +338,6 @@ run_zsh_prompt_tests() {
     bash "$PROJECT_ROOT/tests/zsh/test-p10k-overrides.sh"
 }
 
-run_godspeed_tasks_tests() {
-    log "Running Godspeed task helper tests"
-    bun test "$PROJECT_ROOT/tests/godspeed-tasks/godspeed-tasks.test.ts"
-}
-
 run_karabiner_config_tests() {
     log "Running Karabiner config regression tests"
     bun --install=auto test "$PROJECT_ROOT/tests/karabiner/karabiner-config.test.ts"
@@ -409,7 +404,6 @@ run_extended_checks() {
     run_phase "sesh regression tests" 0 run_sesh_tests
     run_phase "Television regression tests" 0 run_television_tests
     run_phase "zsh prompt regression tests" 0 run_zsh_prompt_tests
-    run_phase "Godspeed task helper tests" 0 run_godspeed_tasks_tests
     run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
     run_phase "Codex config coach helper tests" 0 run_codex_config_coach_tests
     run_phase "Slack rich-text helper tests" 0 run_slack_rich_text_tests
@@ -484,10 +478,6 @@ run_staged_checks() {
 
     if changed_any "home/.config/zsh/*" "home/.zshenv" "tests/zsh/*"; then
         run_phase "zsh prompt regression tests" 0 run_zsh_prompt_tests
-    fi
-
-    if changed_any "home/.ruler/skills/godspeed-tasks/*" "tests/godspeed-tasks/*"; then
-        run_phase "Godspeed task helper tests" 0 run_godspeed_tasks_tests
     fi
 
     if changed_any "scripts/ts/karabiner-config.ts" "tests/karabiner/*"; then

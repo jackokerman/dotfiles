@@ -3,7 +3,7 @@ id: 2026-07-03-build-godspeed-api-tooling
 title: Build Godspeed API tooling
 state: ready-to-implement
 createdAt: 2026-07-03T16:10:24.025Z
-updatedAt: 2026-07-03T18:26:15.485Z
+updatedAt: 2026-07-03T19:04:20.162Z
 ---
 
 # Build Godspeed API tooling
@@ -336,19 +336,43 @@ Resolve during dotfiles migration:
 
 ## Agent handoff
 
-Compressed the plan from a long research-oriented artifact into a tighter implementation contract.
+Integrated dotfiles with the standalone `godspeed-js` CLI while preserving the existing high-level skill behavior:
 
-The persisted plan now centers on:
+- moved the old high-level dotfiles helper into `/Users/jackokerman/src/godspeed-js/packages/godspeed-cli/src/godspeed-tasks.ts` as a compatibility executable;
+- added `godspeed-tasks` as a second bin in `@jackokerman/godspeed-cli` alongside `godspeed`;
+- moved the old dotfiles helper tests into `/Users/jackokerman/src/godspeed-js/tests/godspeed-tasks.test.ts` and adapted them to Vitest;
+- added `p-queue` to the standalone CLI package, where the compatibility helper now lives;
+- updated GodspeedJS docs to mention both installed bins;
+- removed `home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts` from dotfiles;
+- removed `tests/godspeed-tasks/godspeed-tasks.test.ts` and the Godspeed helper check lane from dotfiles;
+- removed the Godspeed-only `p-queue` dependency from dotfiles `package.json`/`bun.lock`;
+- updated the tracked `godspeed-tasks` skill to call the installed `godspeed-tasks` executable instead of a tracked TypeScript script;
+- added `godspeed-js` to `.dotty/dev-checkouts.tsv`;
+- added `setup_godspeed_js` to `.dotty/run.sh`, so `dotty update` installs dependencies and runs `bun run install:local` in `~/src/godspeed-js` when the checkout exists;
+- updated README and `docs/agent-tooling.md` to document the GodspeedJS CLI linkage;
+- captured follow-up `2026-07-03-consolidate-godspeed-task-compatibility-cli` for folding the compatibility helper into the stricter CLI later.
 
-- objective and repo/distribution decisions,
-- existing helper parity requirements,
-- API inventory contract,
-- client and CLI contracts,
-- dotfiles migration boundary,
-- verification expectations,
-- non-goals,
-- implementation stages,
-- ready boundary,
-- decisions to resolve during implementation.
+Verification passed:
 
-The cleanup preserves `godspeed-js`, `~/src/godspeed-js`, private/unpublished first pass, `GODSPEED_API_TOKEN`, agent-first JSON, mutation safety policy, and end-to-end replacement of the dotfiles helper after parity.
+- in `/Users/jackokerman/src/godspeed-js`, `bun run check` passes with 5 test files and 47 tests;
+- `bun run install:local` links both `godspeed` and `godspeed-tasks`;
+- `zsh -lc 'command -v godspeed && command -v godspeed-tasks && godspeed --version && godspeed-tasks discover-labels ...'` resolved both bins and completed a live labels read;
+- in `/Users/jackokerman/dotfiles`, `./scripts/check --extended --quiet` passed.
+
+Current state: standalone `godspeed-js` and dotfiles changes remain uncommitted/unpushed pending review. I did not run `dotty update` because this session is still at the review gate; the installer and linked binaries were verified directly.
+
+Next honest step after review: commit and push `godspeed-js` first, then commit/push dotfiles and run `dotty update` so generated/live skill output reflects the new installed-bin guidance.
+
+## Process notes
+
+The root dotfiles `package.json` cannot be removed entirely because it still supports other repo TypeScript scripts such as Karabiner and Codex sync. The integration removed only the Godspeed-specific dependency and test lane from dotfiles.
+
+The moved `godspeed-tasks` compatibility helper is intentionally marked as legacy with local lint/type waivers in `godspeed-js`. It preserves behavior for the dotfiles skill while the lower-level `godspeed` CLI matures; follow-up `2026-07-03-consolidate-godspeed-task-compatibility-cli` tracks consolidating it later.
+
+The earlier scaffold used plausible but incorrect todo-item request shapes. Inspecting the existing helper showed the observed API contract is query-param `item_ids` for lookup and `client_id`/`update_bodies` for bulk updates, so tests now pin those shapes before dotfiles migration.
+
+Stricli formats command-thrown errors itself, so CLI commands that need stable JSON errors should handle expected command failures inside the command helper instead of relying on an outer `try` around `run()`.
+
+Bun did not hoist workspace-only runtime dependencies to root `node_modules`, so root-level typecheck/lint inspection was made deterministic by listing the runtime deps at the root too.
+
+Replacing the executable `cli.ts` through patching reset its executable bit; the linked `godspeed` symlink then failed with `permission denied`. Restored `chmod +x packages/godspeed-cli/src/cli.ts` and verified the installed CLI afterward. Future changes to executable TS entrypoints should include a fresh installed-bin smoke check.

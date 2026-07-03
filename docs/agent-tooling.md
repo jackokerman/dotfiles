@@ -60,7 +60,11 @@ Ruler-generated output is never committed. Dotty invokes Ruler only in a tempora
 
 `.dotty/dev-checkouts.tsv` lists tracked development repos that should exist under `~/src` on every machine. `dotty update` and `dotty run sync-dev-checkouts` clone missing entries and fast-forward existing checkouts only when they are clean, on the configured branch, and still point at the configured origin URL. Private entries rely on machine GitHub auth, and the clone and fetch paths stay non-interactive so hook runs warn and skip instead of hanging on prompts.
 
-Use this for reusable personal tools that are both part of the dotfiles workflow and likely to be iterated on directly, such as lint configs, Codex-adjacent tools, or small CLIs. `tmux-agent-bar` and `jackie-plan` use this model. Keep runtime-only clones under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace; `tuicr` stays in that runtime-only category.
+Use this for reusable personal tools that are both part of the dotfiles workflow and likely to be iterated on directly, such as lint configs, Codex-adjacent tools, or small CLIs. `tmux-agent-bar`, `jackie-plan`, and the private `godspeed-js` CLI use this model. Keep runtime-only clones under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace; `tuicr` stays in that runtime-only category.
+
+## GodspeedJS
+
+`dotty update` expects the private `godspeed-js` checkout at `~/src/godspeed-js`, installs its Bun dependencies, and links its `godspeed` and `godspeed-tasks` CLIs with `bun run install:local`. The tracked `godspeed-tasks` Codex skill calls that installed CLI; dotfiles no longer carries a separate Godspeed TypeScript helper or Godspeed-specific package dependency.
 
 ## Jackie Plan
 

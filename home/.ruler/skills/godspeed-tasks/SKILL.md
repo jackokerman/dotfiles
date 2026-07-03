@@ -21,44 +21,44 @@ Do not track personal category names, keyword taxonomies, or smart-list definiti
 Prefer Bun env-file injection over sourcing shell startup files in one-off commands. Keep machine-local Godspeed credentials in a dedicated dotenv file such as `~/.config/godspeed/tasks.env`, then run the helper with:
 
 ```bash
-bun --env-file "$HOME/.config/godspeed/tasks.env" home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts discover-lists
+bun --env-file "$HOME/.config/godspeed/tasks.env" "$(command -v godspeed-tasks)" discover-lists
 ```
 
 Falling back to an already-exported `GODSPEED_API_TOKEN` is fine. Do not source `~/.zshenv.local` unless you are fixing auth plumbing itself.
 
 ## Core Commands
 
-Use the tracked helper directly:
+Use the installed `godspeed-tasks` helper from the private `godspeed-js` checkout:
 
 ```bash
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts discover-lists
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts discover-labels
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts inbox-snapshot --scope personal
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts task-snapshot --scope work
+godspeed-tasks discover-lists
+godspeed-tasks discover-labels
+godspeed-tasks inbox-snapshot --scope personal
+godspeed-tasks task-snapshot --scope work
 ```
 
 For explicit objective writes:
 
 ```bash
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts create-task --folder personal --state next-actions --title "Review the migration follow-up" --label server --due 2026-06-23
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts complete-task --task-id <task-id>
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts ensure-label --name server
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts set-task-labels --add-label server --task-id <task-id>
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts remove-task-labels --remove-label server --task-id <task-id>
+godspeed-tasks create-task --folder personal --state next-actions --title "Review the migration follow-up" --label server --due 2026-06-23
+godspeed-tasks complete-task --task-id <task-id>
+godspeed-tasks ensure-label --name server
+godspeed-tasks set-task-labels --add-label server --task-id <task-id>
+godspeed-tasks remove-task-labels --remove-label server --task-id <task-id>
 ```
 
 For heuristic or bulk categorization:
 
 ```bash
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts preview-bulk-labeling --label server --scope personal --contains docker --contains torrent
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts apply-bulk-labeling --label server --task-id <task-id> --task-id <task-id>
+godspeed-tasks preview-bulk-labeling --label server --scope personal --contains docker --contains torrent
+godspeed-tasks apply-bulk-labeling --label server --task-id <task-id> --task-id <task-id>
 ```
 
 For smart-list planning:
 
 ```bash
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts smart-list-plan --folder personal --label server
-bun home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts ensure-smart-list --folder personal --label server --smart-list-name "Server"
+godspeed-tasks smart-list-plan --folder personal --label server
+godspeed-tasks ensure-smart-list --folder personal --label server --smart-list-name "Server"
 ```
 
 Smart-list verification note:
@@ -80,7 +80,7 @@ Smart-list verification note:
 - For explicit follow-up capture, prefer the helper `create-task` command over ad hoc raw API calls.
 - For explicit completion, use the helper `complete-task` command. Godspeed task completion uses the `/todo_items/bulk_update` transport; direct `/tasks/<id>` patches can return success while leaving the task incomplete.
 - When capturing a new follow-up task and its priority is unclear, prefer `inbox` over guessing `next-actions` or `someday`. Let the user triage it during review.
-- When a needed Godspeed workflow is missing from the helper, extend the tracked `scripts/godspeed-tasks.ts` client surface and its tests before reaching for ad hoc Python or Node scripts.
+- When a needed Godspeed workflow is missing from the helper, extend the private `godspeed-js` checkout and its tests before reaching for ad hoc Python or Node scripts.
 - Prefer direct API observation through the tracked helper or Bun probes over reverse engineering the desktop app bundle. Treat local bundle inspection as a last resort for undocumented behavior, and capture any confirmed contract back into the helper immediately.
 - Require a preview or approval step before bulk, heuristic, or subjective categorization changes.
 - When a category label already exists, discover it dynamically. When it does not exist and the user explicitly asked for it, create it through the API.

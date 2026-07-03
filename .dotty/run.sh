@@ -583,6 +583,31 @@ setup_jackie_plan() {
     "$install_script"
 }
 
+setup_godspeed_js() {
+    local repo_dir="${GODSPEED_JS_REPO_DIR:-$HOME/src/godspeed-js}"
+
+    if [[ ! -d "$repo_dir" ]]; then
+        warning "Skipping GodspeedJS install because $repo_dir is missing"
+        return 0
+    fi
+
+    if ! command -v bun >/dev/null 2>&1; then
+        warning "Skipping GodspeedJS install because Bun is not available"
+        return 0
+    fi
+
+    if [[ ! -f "$repo_dir/package.json" ]]; then
+        warning "Skipping GodspeedJS install because $repo_dir/package.json is missing"
+        return 0
+    fi
+
+    info "Installing GodspeedJS CLI"
+    bun install --cwd "$repo_dir" --frozen-lockfile --silent \
+        || die "Failed to install GodspeedJS dependencies"
+    bun run --cwd "$repo_dir" install:local \
+        || die "Failed to link GodspeedJS CLI"
+}
+
 setup_dev_checkouts() {
     local sync_script="$DOTFILES/scripts/sync-dev-checkouts.sh"
 
@@ -622,6 +647,7 @@ main() {
 
     setup_dev_checkouts
     setup_jackie_plan
+    setup_godspeed_js
     setup_codex
 }
 

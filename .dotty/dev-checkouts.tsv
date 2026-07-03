@@ -1,5 +1,6 @@
 # name	repo-url	branch
 comment-width-check	https://github.com/jackokerman/comment-width-check.git	main
+godspeed-js	https://github.com/jackokerman/godspeed-js.git	main
 jackie-plan	https://github.com/jackokerman/jackie-plan.git	main
 oxlint-config	https://github.com/jackokerman/oxlint-config.git	main
 tmux-agent-bar	https://github.com/jackokerman/tmux-agent-bar.git	main
