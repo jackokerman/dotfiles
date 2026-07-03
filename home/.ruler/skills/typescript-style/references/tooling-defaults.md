@@ -18,6 +18,12 @@ Use this file only when the task includes choosing small reusable libraries for 
 - Prefer `p-queue` or `p-limit` when the problem is concurrency, ordering, backpressure, or an explicit work queue rather than fixed-window throttling.
 - Do not rely on the HTTP client alone to keep requests under strict provider limits.
 
+## General Utilities
+
+- Prefer built-in JavaScript and TypeScript features when they are direct and readable.
+- Prefer `es-toolkit` when a non-temporary tool needs repeated collection, object, predicate, string, promise, or function utilities that would otherwise become local helper boilerplate.
+- Prefer focused imports from `es-toolkit` or its category exports. Avoid `es-toolkit/compat` unless migrating existing Lodash-shaped code.
+
 ## Runtime Data Boundaries
 
 - Prefer a schema library at API, config, storage, and CLI input boundaries when the data is external or untrusted.
