@@ -29,6 +29,7 @@
 - Prefer early returns and straightforward conditional blocks over non-trivial ternaries. Simple boolean checks such as `if (!value)` and short `&&` conditions are fine when they read clearly.
 - Avoid deeply nested conditionals. When branching starts to nest, use guard clauses, a small helper, or a named boolean to keep the control flow easy to scan.
 - Prefer concise multi-line JSDoc descriptions for exported functions, hooks, components, and types so editor hints and agents see the public contract.
+- Treat lint, typecheck, formatting, and documentation rules as repo standards to satisfy, not obstacles to bypass. Do not disable or weaken a rule to make progress unless the exception is genuinely necessary, narrowly scoped, and documented with the concrete reason; prefer fixing the code or adding the required JSDoc/type coverage.
 
 ## Execution Workflow
 - For non-trivial implementation work, translate the request into the smallest verifiable outcome before editing.
