@@ -1,9 +1,9 @@
 ---
 id: 2026-07-05-simplify-godspeedjs-client-types
 title: Simplify GodspeedJS client API shape
-state: ready-to-implement
+state: complete
 createdAt: 2026-07-05T19:28:04.297Z
-updatedAt: 2026-07-06T00:17:27.988Z
+updatedAt: 2026-07-06T02:18:05.111Z
 sourcePlan: 2026-07-03-restore-godspeedjs-lint-standard-enforcement
 ---
 
@@ -75,3 +75,33 @@ In `/Users/jackokerman/dotfiles`:
 Stop for review after the snake_case/schema-derived public API cleanup is implemented and verified.
 
 Do not commit, push, mark complete, archive, or start `2026-07-03-consolidate-godspeed-task-compatibility-cli` without explicit approval after review.
+
+## Agent handoff
+
+Implemented the snake_case/schema-derived GodspeedJS client API cleanup in `/Users/jackokerman/src/godspeed-js` and also knocked out the small captured follow-up for `godspeed-tasks --help`. Stopped at the required review gate without committing, pushing, or changing lifecycle state.
+
+Client migration changes:
+- Resource-returning client methods now return validated ArkType response objects directly.
+- Removed `normalizeList`, `normalizeLabel`, and `normalizeTask`.
+- `packages/godspeed-client/src/normalize.ts` now only keeps request-body undefined cleanup helpers.
+- Public client input fields for API-shaped values now use snake_case, while local control fields such as `signal`, `status`, `maxItems`, `method`, `path`, `body`, and `searchParams` remain unchanged.
+- `TaskPage` now uses `next_updated_before`.
+- `packages/godspeed-cli/src/command-tree.ts` keeps kebab-case CLI flags but translates them into snake_case client inputs.
+- Updated checked script usage in `scripts/live-read-probe.ts` and client/CLI tests for raw snake_case output.
+
+Follow-up folded into this review set:
+- `packages/godspeed-cli/src/godspeed-tasks.ts` now treats top-level `--help` and `-h` as successful usage requests.
+- `tests/godspeed-tasks.test.ts` now has a process-level regression test for `godspeed-tasks --help` exiting `0`.
+- Captured follow-up `2026-07-06-make-godspeed-tasks-help-exit-successfully` was implemented in code but not lifecycle-completed because this session is still at the review gate.
+
+Verification completed:
+- `bun run check` passed in `/Users/jackokerman/src/godspeed-js` after the follow-up fix.
+- `godspeed-tasks --help` now exits `0` and prints usage.
+- Earlier verification also passed: `bun run install:local`, `godspeed --help`, and live read-only smoke for `godspeed lists --json`, `godspeed labels --json`, and `godspeed tasks list --json` with snake_case API keys.
+- Dotfiles audit found no raw `godspeed` JSON consumers that needed updates.
+
+Review notes:
+- Do not commit, push, mark ready-to-ship, complete, archive, or start the compatibility CLI removal plan until explicit approval after review.
+
+Process notes:
+- The first help regression test used Bun-specific test globals, but repo verification runs Vitest under Node. The final regression test uses Node `child_process.spawn` and standard URL/path helpers.
