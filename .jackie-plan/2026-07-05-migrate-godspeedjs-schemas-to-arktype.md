@@ -1,9 +1,9 @@
 ---
 id: 2026-07-05-migrate-godspeedjs-schemas-to-arktype
 title: Migrate GodspeedJS schemas to ArkType
-state: ready-to-implement
+state: complete
 createdAt: 2026-07-05T19:28:04.253Z
-updatedAt: 2026-07-05T19:51:48.531Z
+updatedAt: 2026-07-06T00:07:42.104Z
 sourcePlan: 2026-07-03-restore-godspeedjs-lint-standard-enforcement
 ---
 
@@ -61,3 +61,22 @@ In `/Users/jackokerman/dotfiles`:
 ## Review Gate
 
 Stop for review after the ArkType migration and preferred-stack guidance update are implemented and verified. Do not mark the plan complete, commit, push, or start the snake_case/schema-derived public type cleanup without explicit approval for that follow-through.
+
+## Agent handoff
+
+Implemented the ArkType migration and dotfiles TypeScript guidance update through the review gate.
+
+GodspeedJS changes in `/Users/jackokerman/src/godspeed-js`:
+- Replaced Valibot schemas in `packages/godspeed-client/src/schemas.ts` with ArkType `type(...)` definitions while preserving existing wire type exports via `typeof schema.infer`.
+- Updated `packages/godspeed-client/src/index.ts` `parseResponse` to call ArkType validators directly, branch on `ArkErrors`, and continue wrapping failures as `GodspeedValidationError`.
+- Replaced `valibot` with `arktype@^2.2.2` in root and client package manifests and regenerated `bun.lock`.
+
+Dotfiles changes in `/Users/jackokerman/dotfiles`:
+- Updated `home/.ruler/skills/typescript-style/references/tooling-defaults.md` so Runtime Data Boundaries prefer `arktype` for new owned TypeScript tools, without churning existing Valibot/Zod usage.
+
+Verification passed:
+- `/Users/jackokerman/src/godspeed-js`: `bun run check`
+- `/Users/jackokerman/src/godspeed-js`: `rg 'valibot|from "valibot"|from "arktype"' package.json packages bun.lock` showed no Valibot references and ArkType imports in active source.
+- `/Users/jackokerman/dotfiles`: staged only the guidance file, ran `./scripts/check --staged --quiet`, then unstaged it for review.
+
+Stopped for review per plan. Do not commit, push, mark ready-to-ship, complete, archive, or start `2026-07-05-simplify-godspeedjs-client-types` without explicit user approval.

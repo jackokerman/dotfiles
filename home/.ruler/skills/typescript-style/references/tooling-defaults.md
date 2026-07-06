@@ -27,7 +27,8 @@ Use this file only when the task includes choosing small reusable libraries for 
 ## Runtime Data Boundaries
 
 - Prefer a schema library at API, config, storage, and CLI input boundaries when the data is external or untrusted.
-- Consider `valibot` first for new owned TypeScript tools when a modern Standard Schema-compatible library is useful and the surrounding project has no stronger existing pattern.
+- Consider `arktype` first for new owned TypeScript tools when a TypeScript-like runtime schema library is useful and the surrounding project has no stronger existing pattern.
+- Do not churn existing `valibot`, `zod`, or other schema-library usage merely because `arktype` is the preferred default for new owned tools.
 - Keep schemas close to the resource or module that owns the boundary, and export inferred types only when they are part of the public contract.
 - Do not add runtime schemas for purely internal objects that TypeScript already owns end-to-end.
 
