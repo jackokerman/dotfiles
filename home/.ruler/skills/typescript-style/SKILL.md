@@ -23,6 +23,7 @@ Use this skill for generic TypeScript and TSX work. Keep React-specific renderin
 - Prefer `const` by default and `let` only when reassignment is part of the logic.
 - Prefer template literals over string concatenation when dynamic values are involved.
 - For broad naming or API-shape migrations, use symbol-aware TypeScript refactors when practical, then separately audit serialized boundaries such as config keys, CLI flags, env vars, JSON payload fields, database fields, and persisted state before changing them.
+- When adding tests around Bun-based CLI behavior, verify the configured test runner runtime before using Bun-specific globals in test code. If Vitest or another runner executes under Node, use Node APIs such as `node:child_process` for process tests while still invoking the Bun CLI as the system under test.
 
 ## API Shape And Types
 
