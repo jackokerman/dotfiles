@@ -1,9 +1,9 @@
 ---
 id: 2026-07-03-consolidate-godspeed-task-compatibility-cli
 title: Remove Godspeed task compatibility CLI
-state: ready-to-implement
+state: complete
 createdAt: 2026-07-03T19:03:56.995Z
-updatedAt: 2026-07-06T00:17:28.029Z
+updatedAt: 2026-07-06T05:24:37.071Z
 sourcePlan: 2026-07-03-build-godspeed-api-tooling
 ---
 
@@ -86,3 +86,30 @@ In `/Users/jackokerman/dotfiles`:
 Stop for review after the compatibility executable is removed, dotfiles consumers point at `godspeed`, and verification passes.
 
 Do not commit, push, mark complete, or archive without explicit approval after review.
+
+## Agent handoff
+
+Implemented the compatibility CLI removal through the review gate without committing, pushing, or changing lifecycle state.
+
+Code state:
+- In `/Users/jackokerman/src/godspeed-js`, removed the `godspeed-tasks` bin from `packages/godspeed-cli/package.json` and removed the old executable source path by moving the maintained domain logic into `packages/godspeed-cli/src/task-workflows.ts`.
+- Added `godspeed gtd ...` as the first-class workflow command family in `packages/godspeed-cli/src/command-tree.ts`.
+- Routed GTD workflows through the shared `@jackokerman/godspeed-client` auth/retry/rate-limit path, using raw client requests only where the typed client lacks a specific endpoint/body shape.
+- Kept the domain helper tests but retargeted them to `task-workflows.ts`; added CLI/MSW coverage that `godspeed gtd labels` emits snake_case JSON.
+- Updated `README.md`, `docs/agent-usage.md`, and `bun.lock` in `godspeed-js`.
+- In `/Users/jackokerman/dotfiles`, updated `home/.ruler/skills/godspeed-tasks/SKILL.md` and `docs/agent-tooling.md` to call `godspeed gtd` instead of `godspeed-tasks`.
+- Ran `dotty update`; it completed and relinked the current local `godspeed` CLI. It skipped fast-forwarding `godspeed-js` because that checkout is dirty with this implementation, which is expected before review/commit.
+
+Verification:
+- `/Users/jackokerman/src/godspeed-js`: `bun run check` passed.
+- `/Users/jackokerman/src/godspeed-js`: `bun run install:local` passed.
+- Linked CLI smoke passed: `godspeed gtd --help`, authenticated `godspeed gtd labels` returned snake_case JSON, and `godspeed-tasks` no longer resolves on `PATH`.
+- `/Users/jackokerman/src/godspeed-js`: `rg 'godspeed-tasks|packages/godspeed-cli/src/godspeed-tasks' package.json packages README.md docs tests` returned no matches.
+- `/Users/jackokerman/dotfiles`: `./scripts/check --quiet` passed with existing advisory prose warnings about long paragraphs.
+- `/Users/jackokerman/dotfiles`: `rg 'godspeed-tasks' home docs README.md .jackie-plan` only found the skill name/current docs plus historical JP plan text; executable command examples now use `godspeed gtd`.
+
+Review gate:
+- Stop here for review. Do not commit, push, mark ready-to-ship, complete, or archive without explicit approval.
+
+Process notes:
+- The user clarified that preserving legacy command spelling was not the goal because we own the CLI and consuming skill. The implementation switched from a compatibility-shaped top-level command migration to the more explicit `godspeed gtd` command family and updated the skill to match.

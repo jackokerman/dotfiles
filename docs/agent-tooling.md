@@ -64,7 +64,7 @@ Use this for reusable personal tools that are both part of the dotfiles workflow
 
 ## GodspeedJS
 
-`dotty update` expects the private `godspeed-js` checkout at `~/src/godspeed-js`, installs its Bun dependencies, and links its `godspeed` and `godspeed-tasks` CLIs with `bun run install:local`. The tracked `godspeed-tasks` Codex skill calls that installed CLI; dotfiles no longer carries a separate Godspeed TypeScript helper or Godspeed-specific package dependency.
+`dotty update` expects the private `godspeed-js` checkout at `~/src/godspeed-js`, installs its Bun dependencies, and links its `godspeed` CLI with `bun run install:local`. The tracked `godspeed-tasks` Codex skill calls the `godspeed gtd` workflow commands; dotfiles no longer carries a separate Godspeed TypeScript helper or Godspeed-specific package dependency.
 
 ## Jackie Plan
 
