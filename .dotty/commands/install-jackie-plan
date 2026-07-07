@@ -47,4 +47,28 @@ elif [[ "${JACKIE_PLAN_COMPAT_REPO_DIR}" != "${JACKIE_PLAN_REPO_DIR}" ]]; then
   warn "Leaving existing ${JACKIE_PLAN_COMPAT_REPO_DIR} in place; ${JACKIE_PLAN_REPO_DIR} is the active checkout"
 fi
 
-exec "${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" "$@"
+"${JACKIE_PLAN_REPO_DIR}/scripts/install.sh" "$@"
+
+for bin_dir in "$HOME/.local/bin" "$HOME/.dotty/bin"; do
+  mkdir -p "${bin_dir}"
+  for command_name in jp jackie-plan; do
+    tmp_file="$(mktemp "${bin_dir}/.${command_name}.XXXXXX")"
+    cat > "${tmp_file}" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+export BUN_INSTALL="\${BUN_INSTALL:-\$HOME/.bun}"
+export PATH="\${BUN_INSTALL}/bin:\${PATH}"
+
+if [[ -x "\${BUN_INSTALL}/bin/bun" ]]; then
+  exec "\${BUN_INSTALL}/bin/bun" "${JACKIE_PLAN_REPO_DIR}/src/cli.ts" "\$@"
+fi
+
+exec bun "${JACKIE_PLAN_REPO_DIR}/src/cli.ts" "\$@"
+EOF
+    chmod 755 "${tmp_file}"
+    mv "${tmp_file}" "${bin_dir}/${command_name}"
+  done
+done
+
+log "Installed PATH-safe jp wrappers"
