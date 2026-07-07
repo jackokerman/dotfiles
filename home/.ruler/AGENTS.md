@@ -20,6 +20,7 @@
 - Default to the simplest implementation that fully solves the stated problem.
 - Prefer one explicit source of truth for configuration and selection behavior. Do not add abstractions, fallback paths, configuration knobs, env overrides, parallel config paths, or future-proofing unless the current requirement or a repeated concrete pain point needs them.
 - When replacing a configuration mechanism, first trace the existing producers and consumers across the active dotty chain, then remove the old mechanism and its docs in the same change instead of adding a parallel control surface.
+- When fixing personal tooling that already has fallback behavior, treat existing fallbacks, fallback tests, and fallback docs as suspect. Remove them in the same change unless they serve a current, concrete requirement; do not preserve them merely because they were already present.
 - In personal single-user config or tooling repos, prefer removing obsolete paths and accepting deliberate breaking changes over adding compatibility layers for hypothetical external users.
 - Avoid speculative defensive coding. Add guards, retries, parsing, normalization, or recovery logic only for a concrete failure mode, explicit requirement, or established codebase pattern.
 - Do not add features, alternate flows, or edge-case handling that were not requested.
