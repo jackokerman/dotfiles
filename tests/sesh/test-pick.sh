@@ -169,6 +169,48 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_all_ignores_stale_sesh_tmux_cache_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual="" extra_file=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+  extra_file="${cache_dir}/sesh-extra-entries"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}" "${bin_dir}"
+  printf '📦 stale-remote 🌮\n' > "${extra_file}"
+  write_stub_commands "${bin_dir}"
+
+  cat > "${bin_dir}/sesh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${1:-}" == "list" ]]; then
+  case "${2:-}" in
+    -it) printf '🪟 stale-remote\n' ;;
+    -ic|-iz) ;;
+  esac
+  exit 0
+fi
+
+exit 1
+EOF
+  chmod +x "${bin_dir}/sesh"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      bash "${PICKER}" --all
+  )
+
+  assert_equal "sesh-pick ignores stale sesh tmux cache rows" "📦 stale-remote 🌮" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
 run_refresh_extra_case() {
   local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual="" extra_file="" refresh_hook=""
 
@@ -355,6 +397,7 @@ EOF
 run_without_extra_entries_case
 run_with_extra_entries_case
 run_extra_entries_hide_emoji_suffix_duplicates_case
+run_all_ignores_stale_sesh_tmux_cache_case
 run_refresh_extra_case
 run_async_refresh_hook_case
 run_icon_prefixed_tmux_selection_connects_by_name_case
