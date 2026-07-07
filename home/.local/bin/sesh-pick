@@ -41,7 +41,9 @@ _extra_entries() {
   tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
   while IFS= read -r line; do
     local name="${line#* }"
-    if ! echo "$tmux_sessions" | grep -qxF "$name"; then
+    local bare_name="${name% *}"
+    if ! echo "$tmux_sessions" | grep -qxF "$name" \
+      && ! echo "$tmux_sessions" | grep -qxF "$bare_name"; then
       echo "$line"
     fi
   done < "$EXTRA"
