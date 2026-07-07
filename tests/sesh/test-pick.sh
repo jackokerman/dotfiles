@@ -59,6 +59,9 @@ set -euo pipefail
 
 printf '%s\n' "$*" > "${FZF_ARGS_LOG:?}"
 cat >/dev/null
+if [[ -n "${FZF_SELECTION:-}" ]]; then
+  printf '%s\n' "${FZF_SELECTION}"
+fi
 exit 0
 EOF
 
@@ -237,8 +240,124 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_icon_prefixed_tmux_selection_connects_by_name_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}" "${bin_dir}"
+  write_stub_commands "${bin_dir}"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      FZF_ARGS_LOG="${tmp_dir}/fzf-tmux.log" \
+      FZF_SELECTION=$'\033[34m\033[39m alpha' \
+      bash "${PICKER}"
+  )
+
+  assert_equal "sesh-pick strips presentation icons before sesh connect" "connect:alpha" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_icon_prefixed_config_selection_preserves_spaces_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}" "${bin_dir}"
+  write_stub_commands "${bin_dir}"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      FZF_ARGS_LOG="${tmp_dir}/fzf-config.log" \
+      FZF_SELECTION=$'\033[35m📁\033[39m Plan capture 📝' \
+      bash "${PICKER}"
+  )
+
+  assert_equal "sesh-pick keeps spaces after stripping a configured-session icon" "connect:Plan capture 📝" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_plain_selection_with_spaces_is_not_stripped_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}" "${bin_dir}"
+  write_stub_commands "${bin_dir}"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      FZF_ARGS_LOG="${tmp_dir}/fzf-path.log" \
+      FZF_SELECTION="/tmp/project with spaces" \
+      bash "${PICKER}"
+  )
+
+  assert_equal "sesh-pick does not strip plain paths with spaces" "connect:/tmp/project with spaces" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
+run_hook_receives_normalized_extra_entry_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" hook="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+  hook="${config_dir}/sesh/hooks/connect.d/remote"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}/sesh/hooks/connect.d" "${bin_dir}"
+  write_stub_commands "${bin_dir}"
+
+  cat > "${hook}" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'hook:%s\n' "${1:-}"
+EOF
+  chmod +x "${hook}"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      FZF_ARGS_LOG="${tmp_dir}/fzf-hook.log" \
+      FZF_SELECTION=$'📦 remote-session 🌮' \
+      bash "${PICKER}"
+  )
+
+  assert_equal "sesh-pick passes stable labels to connect hooks" "hook:remote-session 🌮" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
 run_without_extra_entries_case
 run_with_extra_entries_case
 run_extra_entries_hide_emoji_suffix_duplicates_case
 run_refresh_extra_case
 run_async_refresh_hook_case
+run_icon_prefixed_tmux_selection_connects_by_name_case
+run_icon_prefixed_config_selection_preserves_spaces_case
+run_plain_selection_with_spaces_is_not_stripped_case
+run_hook_receives_normalized_extra_entry_case

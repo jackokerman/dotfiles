@@ -51,6 +51,28 @@ _extra_entries() {
 
 _all() { sesh list -it; _extra_entries; sesh list -ic; sesh list -iz; }
 
+normalize_selection() {
+  local label="$1" cleaned="" prefix="" rest=""
+
+  cleaned="$(printf '%s\n' "$label" | sed $'s/\x1b\\[[0-9;]*m//g')"
+  if [[ "$cleaned" != *" "* ]]; then
+    printf '%s\n' "$cleaned"
+    return 0
+  fi
+
+  prefix="${cleaned%% *}"
+  rest="${cleaned#* }"
+
+  case "$prefix" in
+    [[:alnum:]_./~:-]*)
+      printf '%s\n' "$cleaned"
+      ;;
+    *)
+      printf '%s\n' "$rest"
+      ;;
+  esac
+}
+
 # Sub-commands for fzf reload (fzf can't call bash functions directly)
 if [[ "${1:-}" == "--all" ]]; then _all; exit 0; fi
 if [[ "${1:-}" == "--extra" ]]; then _extra_entries; exit 0; fi
@@ -79,9 +101,10 @@ pick_session() {
 }
 
 header="  ^a all ^t tmux ^x remote ^d kill ^f find"
-session=$(pick_session "$header" --bind "ctrl-x:change-prompt(📦  )+reload($0 --refresh-extra)")
+selected=$(pick_session "$header" --bind "ctrl-x:change-prompt(📦  )+reload($0 --refresh-extra)")
 
-[[ -z "$session" ]] && exit 0
+[[ -z "$selected" ]] && exit 0
+session="$(normalize_selection "$selected")"
 
 # Try connect hooks
 if [[ -d "$HOOKS_DIR" ]]; then
