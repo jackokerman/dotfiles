@@ -1,9 +1,9 @@
 ---
 id: 2026-07-03-build-godspeed-api-tooling
 title: Build Godspeed API tooling
-state: ready-to-implement
+state: ready-to-ship
 createdAt: 2026-07-03T16:10:24.025Z
-updatedAt: 2026-07-03T19:04:20.162Z
+updatedAt: 2026-07-07T02:55:28.388Z
 ---
 
 # Build Godspeed API tooling
@@ -336,32 +336,28 @@ Resolve during dotfiles migration:
 
 ## Agent handoff
 
-Integrated dotfiles with the standalone `godspeed-js` CLI while preserving the existing high-level skill behavior:
+Fresh persisted state was `ready-to-implement`, but the prior handoff was stale: both `/Users/jackokerman/src/godspeed-js` and `/Users/jackokerman/dotfiles` were already clean on `main` with no ahead commits, and recent history shows the earlier GodspeedJS implementation and consolidation follow-up were committed and pushed.
 
-- moved the old high-level dotfiles helper into `/Users/jackokerman/src/godspeed-js/packages/godspeed-cli/src/godspeed-tasks.ts` as a compatibility executable;
-- added `godspeed-tasks` as a second bin in `@jackokerman/godspeed-cli` alongside `godspeed`;
-- moved the old dotfiles helper tests into `/Users/jackokerman/src/godspeed-js/tests/godspeed-tasks.test.ts` and adapted them to Vitest;
-- added `p-queue` to the standalone CLI package, where the compatibility helper now lives;
-- updated GodspeedJS docs to mention both installed bins;
-- removed `home/.ruler/skills/godspeed-tasks/scripts/godspeed-tasks.ts` from dotfiles;
-- removed `tests/godspeed-tasks/godspeed-tasks.test.ts` and the Godspeed helper check lane from dotfiles;
-- removed the Godspeed-only `p-queue` dependency from dotfiles `package.json`/`bun.lock`;
-- updated the tracked `godspeed-tasks` skill to call the installed `godspeed-tasks` executable instead of a tracked TypeScript script;
-- added `godspeed-js` to `.dotty/dev-checkouts.tsv`;
-- added `setup_godspeed_js` to `.dotty/run.sh`, so `dotty update` installs dependencies and runs `bun run install:local` in `~/src/godspeed-js` when the checkout exists;
-- updated README and `docs/agent-tooling.md` to document the GodspeedJS CLI linkage;
-- captured follow-up `2026-07-03-consolidate-godspeed-task-compatibility-cli` for folding the compatibility helper into the stricter CLI later.
+Next honest implementation step completed in `/Users/jackokerman/src/godspeed-js`: fixed local install drift after the compatibility `godspeed-tasks` bin was removed. `bun run install:local` now runs `scripts/install-local.ts`, which wraps the existing `bun link` for `packages/godspeed-cli` and removes only the obsolete `godspeed-tasks` symlink from Bun's install bin directory when it points at the removed `@jackokerman/godspeed-cli/src/godspeed-tasks.ts` entrypoint. This keeps `dotty update` aligned with current docs: install/link the `godspeed` CLI only, while the tracked dotfiles skill uses `godspeed gtd ...` commands.
 
 Verification passed:
 
-- in `/Users/jackokerman/src/godspeed-js`, `bun run check` passes with 5 test files and 47 tests;
-- `bun run install:local` links both `godspeed` and `godspeed-tasks`;
-- `zsh -lc 'command -v godspeed && command -v godspeed-tasks && godspeed --version && godspeed-tasks discover-labels ...'` resolved both bins and completed a live labels read;
-- in `/Users/jackokerman/dotfiles`, `./scripts/check --extended --quiet` passed.
+- `/Users/jackokerman/src/godspeed-js`: `bun run install:local` succeeded and removed the stale local `godspeed-tasks` link.
+- `/Users/jackokerman/src/godspeed-js`: `zsh -lc 'command -v godspeed && ! command -v godspeed-tasks && godspeed --version && godspeed --help >/dev/null && godspeed gtd --help >/dev/null'` passed and printed the `godspeed` path plus version `0.1.0`.
+- `/Users/jackokerman/src/godspeed-js`: `bun run check` passed.
+- `/Users/jackokerman/dotfiles`: `./scripts/check --quiet` passed before the install cleanup change; no dotfiles implementation files changed after that.
 
-Current state: standalone `godspeed-js` and dotfiles changes remain uncommitted/unpushed pending review. I did not run `dotty update` because this session is still at the review gate; the installer and linked binaries were verified directly.
+Current review gate:
 
-Next honest step after review: commit and push `godspeed-js` first, then commit/push dotfiles and run `dotty update` so generated/live skill output reflects the new installed-bin guidance.
+- `/Users/jackokerman/src/godspeed-js` has uncommitted changes in `package.json` and new `scripts/install-local.ts`.
+- `/Users/jackokerman/dotfiles` has only this Jackie Plan checkpoint update after checkpointing.
+- Do not commit, push, mark `ready-to-ship`, mark `complete`, or archive until the user reviews and explicitly approves follow-through.
+
+### Process notes from this session
+
+The persisted handoff can lag behind reality when implementation work is committed in later sessions without lifecycle advancement. This session corrected the checkpoint with repo status and recent history before adding new implementation work.
+
+The stale `godspeed-tasks` symlink demonstrated a concrete cleanup gap from removing a Bun package bin. The fix belongs in `godspeed-js` `install:local`, because dotfiles delegates linking to that standalone repo and should not know about removed package internals.
 
 ## Process notes
 
