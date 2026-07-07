@@ -1,9 +1,9 @@
 ---
 id: 2026-07-03-build-godspeed-api-tooling
 title: Build Godspeed API tooling
-state: ready-to-ship
+state: complete
 createdAt: 2026-07-03T16:10:24.025Z
-updatedAt: 2026-07-07T02:55:28.388Z
+updatedAt: 2026-07-07T02:59:17.916Z
 ---
 
 # Build Godspeed API tooling
