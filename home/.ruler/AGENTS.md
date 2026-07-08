@@ -57,7 +57,7 @@
 ## Research Workflow
 - For questions about tool behavior, configuration, library or framework semantics, APIs, or documented workflows, prefer deterministic verification over inference.
 - Check the strongest available sources first: official docs, local CLI help, tracked config, local types, project usages, tests, or repo sources.
-- For file and text discovery, prefer `rg` tools directly. Use `rg --hidden --files` for hidden dotfiles/config trees instead of raw `find`, and use `rg '<pattern>'` instead of `grep`; local hooks may block slower raw search commands and waste retries.
+- For file discovery by name, start with `rg --files` or `rg --hidden --files`; use `rg --files -g '<pattern>'` for filename globs. Use raw `find` only when `rg` is unavailable or when you specifically need `find` predicates after narrowing the path. Use `rg '<pattern>'` for content search instead of recursive `grep`.
 - For GitHub repository, gist, permalink, issue, or PR research, prefer local checkouts first when applicable, then authenticated `gh` CLI commands such as `gh search code`, `gh api`, `gh api gists/<id>`, `gh issue view`, and `gh pr view` over generic web fetch/search. Use web fetch only for exact known public URLs or when no authenticated/local source is available.
 - When a plan depends on a public tool's limitation, missing feature, workaround, or adoption path, check the upstream issue and PR tracker before concluding the path is unsupported or recommending custom tooling.
 - When the user provides a code permalink, file path, or line range, inspect that exact target before answering or broadening to surrounding context.
