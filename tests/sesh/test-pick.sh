@@ -40,6 +40,10 @@ if [[ "${1:-}" == "list-sessions" ]]; then
   exit 0
 fi
 
+if [[ "${1:-}" == "has-session" ]]; then
+  exit 1
+fi
+
 if [[ "${1:-}" == "kill-session" ]]; then
   exit 0
 fi
@@ -394,6 +398,57 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_tmux_selection_bypasses_connect_hooks_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" hook="" actual=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+  hook="${config_dir}/sesh/hooks/connect.d/remote"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}/sesh/hooks/connect.d" "${bin_dir}"
+  write_stub_commands "${bin_dir}"
+
+  cat > "${bin_dir}/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${1:-}" == "list-sessions" ]]; then
+  printf 'alpha\n'
+  exit 0
+fi
+
+if [[ "${1:-}" == "has-session" && "${2:-}" == "-t" && "${3:-}" == "alpha" ]]; then
+  exit 0
+fi
+
+exit 1
+EOF
+  chmod +x "${bin_dir}/tmux"
+
+  cat > "${hook}" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'hook:%s\n' "${1:-}"
+EOF
+  chmod +x "${hook}"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      FZF_ARGS_LOG="${tmp_dir}/fzf-hook-bypass.log" \
+      FZF_SELECTION=$'\033[34m\033[39m alpha' \
+      bash "${PICKER}"
+  )
+
+  assert_equal "sesh-pick bypasses connect hooks for existing tmux sessions" "connect:alpha" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
 run_without_extra_entries_case
 run_with_extra_entries_case
 run_extra_entries_hide_emoji_suffix_duplicates_case
@@ -404,3 +459,4 @@ run_icon_prefixed_tmux_selection_connects_by_name_case
 run_icon_prefixed_config_selection_preserves_spaces_case
 run_plain_selection_with_spaces_is_not_stripped_case
 run_hook_receives_normalized_extra_entry_case
+run_tmux_selection_bypasses_connect_hooks_case

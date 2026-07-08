@@ -111,6 +111,10 @@ selected=$(pick_session "$header" --bind "ctrl-x:change-prompt(📦  )+reload($0
 [[ -z "$selected" ]] && exit 0
 session="$(normalize_selection "$selected")"
 
+if tmux has-session -t "$session" 2>/dev/null; then
+  exec sesh connect "$session"
+fi
+
 # Try connect hooks
 if [[ -d "$HOOKS_DIR" ]]; then
   for hook in "$HOOKS_DIR"/*; do
