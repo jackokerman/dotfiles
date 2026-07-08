@@ -36,3 +36,7 @@ hidden = true
 [ui.remote_control]
 show_channel_descriptions = true
 sort_alphabetically = true
+
+[keybindings]
+alt-x = "toggle_remote_control"
+ctrl-t = "no_op"
