@@ -44,7 +44,7 @@ brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
 brew "nodenv"                       # Node.js version manager
 brew "node-build"                   # nodenv install definitions
-brew "oven-sh/bun/bun", trusted: true # JavaScript runtime
+brew "oven-sh/bun/bun"              # JavaScript runtime
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
 brew "television"                   # rich terminal fuzzy finder (`tv`)

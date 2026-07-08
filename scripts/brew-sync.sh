@@ -108,7 +108,21 @@ ensure_homebrew() {
     command -v brew >/dev/null 2>&1 || die "Homebrew installed but brew is not on PATH"
 }
 
+brewfile_uses_bun_formula() {
+    grep -Eq '^[[:space:]]*brew[[:space:]]+"oven-sh/bun/bun"' "${BREWFILE}"
+}
+
+trust_bun_formula_if_needed() {
+    if ! brewfile_uses_bun_formula; then
+        return 0
+    fi
+
+    info "Trusting Homebrew Bun formula"
+    brew trust --formula oven-sh/bun/bun
+}
+
 ensure_homebrew
+trust_bun_formula_if_needed
 
 info "Installing packages from Brewfile"
 if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "personal" ]]; then
