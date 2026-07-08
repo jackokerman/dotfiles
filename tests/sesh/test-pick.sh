@@ -215,6 +215,46 @@ EOF
   rm -rf "${tmp_dir}"
 }
 
+run_tmux_entries_sort_by_recent_activity_case() {
+  local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual="" expected=""
+
+  tmp_dir=$(mktemp -d)
+  home_dir="${tmp_dir}/home"
+  cache_dir="${tmp_dir}/cache"
+  config_dir="${tmp_dir}/config"
+  bin_dir="${tmp_dir}/bin"
+
+  mkdir -p "${home_dir}" "${cache_dir}" "${config_dir}" "${bin_dir}"
+  write_stub_commands "${bin_dir}"
+
+  cat > "${bin_dir}/tmux" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${1:-}" == "list-sessions" ]]; then
+  printf '20\t\033[34m\033[39m middle\n'
+  printf '10\t\033[34m\033[39m oldest\n'
+  printf '30\t\033[34m\033[39m newest\n'
+  exit 0
+fi
+
+exit 1
+EOF
+  chmod +x "${bin_dir}/tmux"
+
+  actual=$(
+    HOME="${home_dir}" \
+      PATH="${bin_dir}:${PATH}" \
+      XDG_CACHE_HOME="${cache_dir}" \
+      XDG_CONFIG_HOME="${config_dir}" \
+      bash "${PICKER}" --tmux
+  )
+
+  expected=$'\033[34m\033[39m newest\n\033[34m\033[39m middle\n\033[34m\033[39m oldest'
+  assert_equal "sesh-pick sorts tmux sessions by recent activity" "${expected}" "${actual}"
+  rm -rf "${tmp_dir}"
+}
+
 run_refresh_extra_case() {
   local tmp_dir="" home_dir="" cache_dir="" config_dir="" bin_dir="" actual="" extra_file="" refresh_hook=""
 
@@ -453,6 +493,7 @@ run_without_extra_entries_case
 run_with_extra_entries_case
 run_extra_entries_hide_emoji_suffix_duplicates_case
 run_all_ignores_stale_sesh_tmux_cache_case
+run_tmux_entries_sort_by_recent_activity_case
 run_refresh_extra_case
 run_async_refresh_hook_case
 run_icon_prefixed_tmux_selection_connects_by_name_case

@@ -50,7 +50,11 @@ _extra_entries() {
 }
 
 _tmux_entries() {
-  tmux list-sessions -F $'\033[34m\033[39m #{session_name}' 2>/dev/null || true
+  local rows=""
+
+  rows=$(tmux list-sessions -F $'#{session_activity}\t\033[34m\033[39m #{session_name}' 2>/dev/null || true)
+  [[ -n "$rows" ]] || return 0
+  printf '%s\n' "$rows" | sort -t $'\t' -k1,1nr | cut -f2-
 }
 
 _all() { _tmux_entries; _extra_entries; sesh list -ic; sesh list -iz; }
