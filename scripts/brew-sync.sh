@@ -16,6 +16,8 @@ fi
 REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 BREWFILE="${REPO_ROOT}/Brewfile"
 CLEANUP=false
+HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+LINUXBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
 
 usage() {
     cat <<'EOF'
@@ -52,26 +54,61 @@ done
 
 title "Installing Homebrew packages"
 
-if ! command -v brew >/dev/null 2>&1; then
-    if [[ "$(uname -s)" != "Darwin" ]]; then
-        info "Skipping Homebrew setup (brew not found and not on macOS)"
+host_os="$(uname -s)"
+
+activate_linuxbrew() {
+    local brew_bin="${LINUXBREW_PREFIX}/bin/brew"
+
+    if [[ -x "${brew_bin}" ]]; then
+        eval "$("${brew_bin}" shellenv)"
+        return 0
+    fi
+
+    if command -v brew >/dev/null 2>&1; then
+        eval "$(brew shellenv)"
+        return 0
+    fi
+
+    return 1
+}
+
+install_homebrew() {
+    info "Homebrew not found. Installing Homebrew..."
+
+    if NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL "${HOMEBREW_INSTALL_URL}")"; then
+        success "Homebrew installed successfully"
+        return 0
+    fi
+
+    die "Failed to install Homebrew"
+}
+
+ensure_homebrew() {
+    if command -v brew >/dev/null 2>&1; then
+        info "Homebrew already installed... Skipping installation."
+    elif [[ "${host_os}" == "Linux" && -x "${LINUXBREW_PREFIX}/bin/brew" ]]; then
+        info "Linuxbrew already installed... Adding it to PATH."
+    elif [[ "${host_os}" == "Darwin" || "${host_os}" == "Linux" ]]; then
+        install_homebrew
+    else
+        info "Skipping Homebrew setup (brew not found on ${host_os})"
         exit 0
     fi
 
-    info "Homebrew not found. Installing Homebrew..."
-    if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
-        success "Homebrew installed successfully"
-        if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    if [[ "${host_os}" == "Linux" ]]; then
+        activate_linuxbrew || die "Failed to activate Linuxbrew at ${LINUXBREW_PREFIX}"
+    elif ! command -v brew >/dev/null 2>&1; then
+        if [[ -x "/opt/homebrew/bin/brew" ]]; then
             export PATH="/opt/homebrew/bin:$PATH"
-        elif [[ -f "/usr/local/bin/brew" ]]; then
+        elif [[ -x "/usr/local/bin/brew" ]]; then
             export PATH="/usr/local/bin:$PATH"
         fi
-    else
-        die "Failed to install Homebrew"
     fi
-else
-    info "Homebrew already installed... Skipping installation."
-fi
+
+    command -v brew >/dev/null 2>&1 || die "Homebrew installed but brew is not on PATH"
+}
+
+ensure_homebrew
 
 info "Installing packages from Brewfile"
 if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "personal" ]]; then

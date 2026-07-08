@@ -156,6 +156,7 @@ run_bash_syntax() {
         "home/.raycast-scripts/paste-markdown-as-slack-rich-text.sh"
         "install.sh"
         "scripts/brew-sync.sh"
+        "tests/brew-sync/test-brew-sync.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
@@ -170,6 +171,7 @@ run_bash_syntax() {
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "tests/handy/test-sync-handy-settings.sh"
+        "tests/brew-sync/test-brew-sync.sh"
         "tests/fzf/test-install.sh"
         "tests/jackie-plan/test-install.sh"
         "tests/sesh/test-setup.sh"
@@ -319,6 +321,11 @@ run_fzf_tests() {
     "$PROJECT_ROOT/tests/fzf/test-install.sh"
 }
 
+run_brew_sync_tests() {
+    log "Running brew-sync regression tests"
+    "$PROJECT_ROOT/tests/brew-sync/test-brew-sync.sh"
+}
+
 run_jackie_plan_tests() {
     log "Running Jackie Plan install regression tests"
     "$PROJECT_ROOT/tests/jackie-plan/test-install.sh"
@@ -399,6 +406,7 @@ run_core_checks() {
     run_phase "Codex sync regression tests" 0 run_codex_sync_tests
     run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
     run_phase "Codex sync input validation" 0 run_codex_sync_validation
+    run_phase "brew-sync regression tests" 0 run_brew_sync_tests
     run_phase "advisory prose checks" 1 run_prose_checks
 }
 
@@ -453,6 +461,10 @@ run_staged_checks() {
 
     if changed_any ".dotty/run.sh" "scripts/install-fzf.sh" "tests/fzf/*"; then
         run_phase "fzf install tests" 0 run_fzf_tests
+    fi
+
+    if changed_any ".dotty/commands/brew-sync" "Brewfile" "scripts/brew-sync.sh" "tests/brew-sync/*"; then
+        run_phase "brew-sync regression tests" 0 run_brew_sync_tests
     fi
 
     if changed_any ".dotty/commands/install-jackie-plan" "tests/jackie-plan/*"; then

@@ -1,10 +1,6 @@
 # Taps
 tap "oven-sh/bun"                   # preferred JavaScript runtime
 
-if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
-  tap "modem-dev/tap"               # personal hunk tap
-end
-
 # Applications
 if OS.mac?
   cask "hammerspoon"                # desktop automation application
@@ -38,6 +34,7 @@ brew "fzf"                          # a fuzzy finder
 brew "gh"                           # GitHub CLI
 brew "git-delta"                    # syntax-highlighted git diff pager
 brew "glow"                         # markdown renderer for the terminal
+brew "hunk"                         # review-first terminal diff viewer
 brew "jq"                           # parse and work with JSON
 brew "neovim"                       # extensible modal editor
 brew "python"                       # python (latest)
@@ -47,7 +44,7 @@ brew "zsh"                          # zsh shell (latest)
 brew "deno"                         # a better node
 brew "nodenv"                       # Node.js version manager
 brew "node-build"                   # nodenv install definitions
-brew "oven-sh/bun/bun"              # JavaScript runtime
+brew "oven-sh/bun/bun", trusted: true # JavaScript runtime
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
 brew "television"                   # rich terminal fuzzy finder (`tv`)
@@ -57,5 +54,4 @@ if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
   # Personal packages
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
-  brew "modem-dev/tap/hunk"         # review-first terminal diff viewer
 end

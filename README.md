@@ -6,7 +6,7 @@ This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, 
 
 ## Install
 
-Requirements for the first install are `git`, `curl`, and a POSIX shell. macOS-specific tooling is installed in the next section.
+Requirements for the first install are `git`, `curl`, and a POSIX shell. Homebrew packages and macOS-specific tooling are installed in the next section.
 
 ```bash
 git clone https://github.com/jackokerman/dotfiles.git ~/dotfiles
@@ -18,17 +18,17 @@ cd ~/dotfiles
 
 Pinned repo submodules are synced during `./install.sh` and `dotty update`. Use `git clone --recurse-submodules` if you want a fully populated checkout immediately after clone.
 
-## New Machine
+## New machine
 
-After `./install.sh`, run these steps on a fresh macOS machine.
+After `./install.sh`, run the steps that apply to the fresh host.
 
-### 1. Install tracked tools and apps
+### 1. Install tracked Homebrew tools
 
 ```bash
 dotty run brew-sync
 ```
 
-This installs packages from the tracked `Brewfile`. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. Personal-only entries are included when `HOMEBREW_DOTFILES_ENV=personal`, which is the base shell default. From an initialized shell, plain `brew bundle --file Brewfile` uses the same profile.
+This installs packages from the tracked `Brewfile` on supported Homebrew hosts, including Linuxbrew on Linux. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. Personal-only entries are included when `HOMEBREW_DOTFILES_ENV=personal`, which is the base shell default. From an initialized shell, plain `brew bundle --file Brewfile` uses the same profile.
 
 ### 2. Set up GitHub auth and SSH
 
@@ -69,7 +69,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 | Command | Use |
 | --- | --- |
 | `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, install the pinned upstream `fzf` binary on Linux, ensure selected `~/src` development checkouts exist, link the private GodspeedJS CLI, and update runtime-only managed checkouts. |
-| `dotty run brew-sync` | Install packages from the tracked `Brewfile` on macOS. Includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
+| `dotty run brew-sync` | Install packages from the tracked `Brewfile` on supported Homebrew hosts. Includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |
 | `dotty run sync-dev-checkouts` | Clone or conservatively fast-forward tracked development repos listed in `.dotty/dev-checkouts.tsv` under `~/src`. Private entries rely on your machine GitHub auth. |
