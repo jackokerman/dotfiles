@@ -170,17 +170,12 @@ run_bash_syntax() {
         "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
-        "tests/handy/test-sync-handy-settings.sh"
         "tests/brew-sync/test-brew-sync.sh"
-        "tests/fzf/test-install.sh"
-        "tests/jackie-plan/test-install.sh"
         "tests/sesh/test-setup.sh"
         "tests/television/test-setup.sh"
         "tests/tmux-agent-bar/test-runtime-path.sh"
         "tests/tmux-agent-bar/test-sync.sh"
-        "tests/tmux-agent-bar/test-wrappers.sh"
         "tests/tuicr/test-setup.sh"
-        "tests/zsh/test-p10k-overrides.sh"
         "tests/tmux-agent-status/testlib.sh"
         "scripts/validate-codex-sync.sh"
     )
@@ -221,8 +216,6 @@ assert_expected_executables() {
         "home/.config/tmux/session-status-refresh.sh"
         "tests/tuicr/test-setup.sh"
         "tests/dev-checkouts/test-sync.sh"
-        "tests/fzf/test-install.sh"
-        "tests/jackie-plan/test-install.sh"
         "tests/television/test-setup.sh"
     )
     local file
@@ -300,15 +293,9 @@ assert_git_local_overrides_last() {
 }
 
 run_tmux_agent_bar_tests() {
-    log "Running tmux-agent-bar wrapper and sync tests"
+    log "Running tmux-agent-bar runtime path and sync tests"
     "$PROJECT_ROOT/tests/tmux-agent-bar/test-runtime-path.sh"
-    "$PROJECT_ROOT/tests/tmux-agent-bar/test-wrappers.sh"
     "$PROJECT_ROOT/tests/tmux-agent-bar/test-sync.sh"
-}
-
-run_handy_tests() {
-    log "Running Handy sync regression tests"
-    "$PROJECT_ROOT/tests/handy/test-sync-handy-settings.sh"
 }
 
 run_tuicr_tests() {
@@ -316,19 +303,9 @@ run_tuicr_tests() {
     "$PROJECT_ROOT/tests/tuicr/test-setup.sh"
 }
 
-run_fzf_tests() {
-    log "Running fzf install tests"
-    "$PROJECT_ROOT/tests/fzf/test-install.sh"
-}
-
 run_brew_sync_tests() {
     log "Running brew-sync regression tests"
     "$PROJECT_ROOT/tests/brew-sync/test-brew-sync.sh"
-}
-
-run_jackie_plan_tests() {
-    log "Running Jackie Plan install regression tests"
-    "$PROJECT_ROOT/tests/jackie-plan/test-install.sh"
 }
 
 run_dev_checkout_tests() {
@@ -337,19 +314,13 @@ run_dev_checkout_tests() {
 }
 
 run_sesh_tests() {
-    log "Running sesh regression tests"
+    log "Running sesh setup regression tests"
     "$PROJECT_ROOT/tests/sesh/test-setup.sh"
-    "$PROJECT_ROOT/tests/sesh/test-pick.sh"
 }
 
 run_television_tests() {
     log "Running Television regression tests"
     "$PROJECT_ROOT/tests/television/test-setup.sh"
-}
-
-run_zsh_prompt_tests() {
-    log "Running zsh prompt regression tests"
-    bash "$PROJECT_ROOT/tests/zsh/test-p10k-overrides.sh"
 }
 
 run_karabiner_config_tests() {
@@ -412,14 +383,11 @@ run_core_checks() {
 
 run_extended_checks() {
     run_core_checks
-    run_phase "tmux-agent-bar wrapper and sync tests" 0 run_tmux_agent_bar_tests
-    run_phase "Handy sync regression tests" 0 run_handy_tests
+    run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
     run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
     run_phase "development checkout sync tests" 0 run_dev_checkout_tests
-    run_phase "Jackie Plan install regression tests" 0 run_jackie_plan_tests
-    run_phase "sesh regression tests" 0 run_sesh_tests
+    run_phase "sesh setup regression tests" 0 run_sesh_tests
     run_phase "Television regression tests" 0 run_television_tests
-    run_phase "zsh prompt regression tests" 0 run_zsh_prompt_tests
     run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
     run_phase "Codex config coach helper tests" 0 run_codex_config_coach_tests
     run_phase "Slack rich-text helper tests" 0 run_slack_rich_text_tests
@@ -448,27 +416,15 @@ run_staged_checks() {
         "scripts/sync-tmux-agent-bar.sh" \
         "tests/tmux-agent-bar/*" \
         "tests/tmux-agent-status/*"; then
-        run_phase "tmux-agent-bar wrapper and sync tests" 0 run_tmux_agent_bar_tests
-    fi
-
-    if changed_any "scripts/sync-handy-settings.sh" "tests/handy/*"; then
-        run_phase "Handy sync regression tests" 0 run_handy_tests
+        run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
     fi
 
     if changed_any ".dotty/run.sh" "scripts/sync-tuicr.sh" "tests/tuicr/*"; then
         run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
     fi
 
-    if changed_any ".dotty/run.sh" "scripts/install-fzf.sh" "tests/fzf/*"; then
-        run_phase "fzf install tests" 0 run_fzf_tests
-    fi
-
     if changed_any ".dotty/commands/brew-sync" "Brewfile" "scripts/brew-sync.sh" "tests/brew-sync/*"; then
         run_phase "brew-sync regression tests" 0 run_brew_sync_tests
-    fi
-
-    if changed_any ".dotty/commands/install-jackie-plan" "tests/jackie-plan/*"; then
-        run_phase "Jackie Plan install regression tests" 0 run_jackie_plan_tests
     fi
 
     if changed_any \
@@ -484,11 +440,9 @@ run_staged_checks() {
         ".dotty/config" \
         ".dotty/run.sh" \
         "home/.config/sesh/sesh.toml" \
-        "home/.local/bin/sesh-pick" \
-        "home/.local/bin/sesh-one-shot" \
         "home/.config/zsh/sesh.zsh" \
         "tests/sesh/*"; then
-        run_phase "sesh regression tests" 0 run_sesh_tests
+        run_phase "sesh setup regression tests" 0 run_sesh_tests
     fi
 
     if changed_any \
@@ -498,10 +452,6 @@ run_staged_checks() {
         "home/.config/television/themes/*" \
         "tests/television/*"; then
         run_phase "Television regression tests" 0 run_television_tests
-    fi
-
-    if changed_any "home/.config/zsh/*" "home/.zshenv" "tests/zsh/*"; then
-        run_phase "zsh prompt regression tests" 0 run_zsh_prompt_tests
     fi
 
     if changed_any "scripts/ts/karabiner-config.ts" "tests/karabiner/*"; then

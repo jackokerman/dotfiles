@@ -23,7 +23,7 @@
 - Agent hook wrappers refresh the cached right-side option in the background and rely on tmux's normal redraw path instead of forcing a client refresh on every tool event
 - The generic prompt heuristics, reconciliation rules, and source registration now live in the `tmux-agent-bar` repo
 - Finished shell-only sessions are hidden once no live agent process remains
-- dotfiles-side wrapper and sync tests live under `tests/tmux-agent-bar/`
+- dotfiles-side runtime path and sync tests live under `tests/tmux-agent-bar/`
 
 ## Claude
 
@@ -111,7 +111,7 @@ Use `./scripts/check` as the fast local validation path. It currently:
 
 - runs shell syntax checks for tracked bash and zsh files
 - asserts that zsh runtime artifacts are not present in `home/.config/zsh`
-- runs `tmux-agent-bar` wrapper and sync tests
+- runs `tmux-agent-bar` runtime path and sync tests
 - runs Codex sync validation, including tracked skill UI metadata and extra frontend workflow manifest checks when present
 
 To install the repo-local pre-commit hook:
