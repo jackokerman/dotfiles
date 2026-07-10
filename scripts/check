@@ -156,6 +156,7 @@ run_bash_syntax() {
         "home/.raycast-scripts/paste-markdown-as-slack-rich-text.sh"
         "install.sh"
         "scripts/brew-sync.sh"
+        "tests/brew-sync/test-brewfile-gh-provider.sh"
         "tests/brew-sync/test-brew-sync.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fzf.sh"
@@ -307,6 +308,7 @@ run_tuicr_tests() {
 
 run_brew_sync_tests() {
     log "Running brew-sync regression tests"
+    "$PROJECT_ROOT/tests/brew-sync/test-brewfile-gh-provider.sh"
     "$PROJECT_ROOT/tests/brew-sync/test-brew-sync.sh"
 }
 

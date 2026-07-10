@@ -1,6 +1,40 @@
 # Taps
 tap "oven-sh/bun"                   # preferred JavaScript runtime
 
+def executable_paths(command)
+  paths = []
+
+  ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).each do |dir|
+    path = File.join(dir, command)
+    next unless File.file?(path) && File.executable?(path)
+
+    paths << begin
+      File.realpath(path)
+    rescue StandardError
+      path
+    end
+  end
+
+  paths.uniq
+end
+
+def homebrew_managed_path?(path)
+  prefix = ENV["HOMEBREW_PREFIX"].to_s
+  return false if prefix.empty?
+
+  real_prefix = begin
+    File.realpath(prefix)
+  rescue StandardError
+    prefix
+  end
+
+  path == real_prefix || path.start_with?("#{real_prefix}/")
+end
+
+def host_provides_command?(command)
+  executable_paths(command).any? { |path| !homebrew_managed_path?(path) }
+end
+
 # Applications
 if OS.mac?
   cask "hammerspoon"                # desktop automation application
@@ -31,6 +65,7 @@ brew "bat"                          # a better cat
 brew "eza"                          # a better ls
 brew "fd"                           # find alternative
 brew "fzf"                          # a fuzzy finder
+brew "gh" unless host_provides_command?("gh")
 brew "git-delta"                    # syntax-highlighted git diff pager
 brew "glow"                         # markdown renderer for the terminal
 brew "hunk"                         # review-first terminal diff viewer
@@ -51,7 +86,6 @@ brew "zoxide"                       # smarter cd command (z/zi)
 
 if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
   # Personal packages
-  brew "gh"                         # GitHub CLI
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
 end
