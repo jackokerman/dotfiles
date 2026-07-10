@@ -3,8 +3,12 @@ tap "oven-sh/bun"                   # preferred JavaScript runtime
 
 def executable_paths(command)
   paths = []
+  search_path = [
+    ENV.fetch("PATH", ""),
+    ENV.fetch("HOMEBREW_DOTFILES_HOST_PATH", ""),
+  ].join(File::PATH_SEPARATOR)
 
-  ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).each do |dir|
+  search_path.split(File::PATH_SEPARATOR).each do |dir|
     path = File.join(dir, command)
     next unless File.file?(path) && File.executable?(path)
 

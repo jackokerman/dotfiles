@@ -18,6 +18,7 @@ BREWFILE="${REPO_ROOT}/Brewfile"
 CLEANUP=false
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 LINUXBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
+export HOMEBREW_DOTFILES_HOST_PATH="${HOMEBREW_DOTFILES_HOST_PATH:-${PATH}}"
 
 usage() {
     cat <<'EOF'

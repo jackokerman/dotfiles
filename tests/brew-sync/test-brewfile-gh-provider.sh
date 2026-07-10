@@ -22,9 +22,11 @@ write_fake_command() {
 brewfile_formulae() {
     local homebrew_prefix="$1"
     local path_value="$2"
+    local host_path_value="$3"
 
     HOMEBREW_PREFIX="${homebrew_prefix}" \
         HOMEBREW_DOTFILES_ENV="remote" \
+        HOMEBREW_DOTFILES_HOST_PATH="${host_path_value}" \
         PATH="${path_value}" \
         "${RUBY_BIN}" - "${BREWFILE}" <<'RUBY'
 module OS
@@ -60,7 +62,7 @@ assert_gh_presence() {
 
 run_case() {
     local name="$1" provider="$2" expected="$3"
-    local tmp_dir="" homebrew_prefix="" homebrew_bin="" host_bin="" path_value="" formulae=""
+    local tmp_dir="" homebrew_prefix="" homebrew_bin="" host_bin="" path_value="" host_path_value="" formulae=""
 
     tmp_dir="$(mktemp -d)"
     homebrew_prefix="${tmp_dir}/homebrew"
@@ -71,26 +73,35 @@ run_case() {
     case "${provider}" in
         none)
             path_value="${homebrew_bin}:${host_bin}:${SYSTEM_PATH}"
+            host_path_value="${path_value}"
             ;;
         homebrew)
             write_fake_command "${homebrew_bin}/gh"
             path_value="${homebrew_bin}:${host_bin}:${SYSTEM_PATH}"
+            host_path_value="${path_value}"
             ;;
         host)
             write_fake_command "${host_bin}/gh"
             path_value="${homebrew_bin}:${host_bin}:${SYSTEM_PATH}"
+            host_path_value="${path_value}"
             ;;
         both)
             write_fake_command "${homebrew_bin}/gh"
             write_fake_command "${host_bin}/gh"
             path_value="${homebrew_bin}:${host_bin}:${SYSTEM_PATH}"
+            host_path_value="${path_value}"
+            ;;
+        preserved-host)
+            write_fake_command "${host_bin}/gh"
+            path_value="${homebrew_bin}:${SYSTEM_PATH}"
+            host_path_value="${host_bin}:${SYSTEM_PATH}"
             ;;
         *)
             fail "unknown provider case: ${provider}"
             ;;
     esac
 
-    formulae="$(brewfile_formulae "${homebrew_prefix}" "${path_value}")"
+    formulae="$(brewfile_formulae "${homebrew_prefix}" "${path_value}" "${host_path_value}")"
     assert_gh_presence "${name}" "${expected}" "${formulae}"
     rm -rf "${tmp_dir}"
 }
@@ -99,3 +110,4 @@ run_case "Brewfile installs gh when no provider exists" "none" "present"
 run_case "Brewfile keeps gh managed when only Homebrew provides it" "homebrew" "present"
 run_case "Brewfile skips gh when host provides it" "host" "absent"
 run_case "Brewfile skips gh when host and Homebrew both provide it" "both" "absent"
+run_case "Brewfile skips gh when host provider is only in preserved host PATH" "preserved-host" "absent"
