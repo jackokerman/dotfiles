@@ -174,6 +174,7 @@ run_bash_syntax() {
         "tests/sesh/test-setup.sh"
         "tests/television/test-setup.sh"
         "tests/tmux-agent-bar/test-runtime-path.sh"
+        "tests/tmux-agent-bar/test-session-status-left.sh"
         "tests/tmux-agent-bar/test-sync.sh"
         "tests/tuicr/test-setup.sh"
         "tests/tmux-agent-status/testlib.sh"
@@ -295,6 +296,7 @@ assert_git_local_overrides_last() {
 run_tmux_agent_bar_tests() {
     log "Running tmux-agent-bar runtime path and sync tests"
     "$PROJECT_ROOT/tests/tmux-agent-bar/test-runtime-path.sh"
+    "$PROJECT_ROOT/tests/tmux-agent-bar/test-session-status-left.sh"
     "$PROJECT_ROOT/tests/tmux-agent-bar/test-sync.sh"
 }
 

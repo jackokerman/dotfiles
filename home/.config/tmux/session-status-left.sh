@@ -19,13 +19,10 @@ elif [[ -n "${_session_name}" && -f "${_current_state_file}" ]]; then
 fi
 
 case "${_state}" in
-  waiting)
-    printf '%s' "#[fg=#e3d18a] "
-    ;;
   working)
     printf '%s' "#[fg=#82aaff] "
     ;;
-  done)
+  waiting | done)
     printf '%s' "#[fg=#21c7a8] "
     ;;
   *)
