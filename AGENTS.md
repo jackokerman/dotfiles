@@ -46,7 +46,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `scripts/` contains setup, sync, and validation helpers.
 - Keep `.dotty/commands/*` as thin `dotty run` entrypoints. Put substantive reusable workflow logic under `scripts/`, and leave `.dotty/run.sh` inline logic for post-link orchestration that only makes sense inside the hook.
 - `tests/tmux-agent-bar/` holds the remaining runtime path and sync tests for the active `tmux-agent-bar` checkout.
-- `tests/tuicr/` holds the managed-checkout tests for the dotty-owned `tuicr` runtime clone.
+- `tests/tuicr/` holds installer wrapper tests for the dotty-managed `tuicr` binary.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
 - Use `~/.zshenv.local` for machine-local env vars and path tweaks, including local API tokens needed by shell-backed agent workflows, unless a specific tool documents a different secret source.
 - Use `~/.zshrc.pre.local` for pre-`compinit` shell init and `~/.zshrc.local` for post-`compinit` interactive overrides. Do not reintroduce a tracked dependency on a real `~/.zshrc`.
@@ -64,10 +64,10 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
 - The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the `tmux-agent-bar` checkout under `~/src/tmux-agent-bar` unless an explicit override path is set.
 - `home/.config/tmux/session-status-left.sh` owns the current-session prefix path, `session-status-refresh.sh` owns the cached visible `status-right` refresh path, `session-status.sh` remains the stable renderer wrapper, and `agent-status-hook.sh` owns explicit state writes.
-- Managed runtime checkouts live under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace. `tuicr` uses that runtime-only pattern; actively developed tools such as `tmux-agent-bar` use `~/src` through `.dotty/dev-checkouts.tsv`.
+- Managed runtime checkouts live under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace. Actively developed tools such as `tmux-agent-bar` use `~/src` through `.dotty/dev-checkouts.tsv`.
 - Development checkouts for reusable tools live under `~/src` and are listed in `.dotty/dev-checkouts.tsv`; `dotty update` clones missing entries and conservatively fast-forwards clean checkouts on their configured branch.
 - Some tracked development checkouts are private GitHub HTTPS repos. Keep machine GitHub auth available for those clone paths, and prefer non-interactive failures over prompt-driven hooks.
-- Keep dotty-owned runtime checkouts separate from manual development clones. For `tuicr`, the managed checkout at `~/.local/share/tuicr/repo` is for install/use, not for personal fork remotes or long-lived branches.
+- Keep dotty-owned runtime checkouts separate from manual development clones.
 - Do not assume a dotty-managed runtime checkout under `~/.local/share/*/repo` is the right upstream contribution clone. Check for an existing development clone first; if only the managed checkout exists, ask before committing there.
 - Jackie Plan is an exception to the runtime-checkout pattern: `dotty update` installs it from the normal development checkout at `~/src/jackie-plan`, and the Jackie Plan installer owns its `jp` CLI and Codex plugin installation.
 - Put generic always-on Codex instruction behavior, including simplicity and anti-overengineering guidance, in `home/.ruler/AGENTS.md`. Keep `home/.codex/AGENTS.md` as the rollback source for `DOTTY_CODEX_RULER=0` while that fallback remains supported.

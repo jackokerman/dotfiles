@@ -299,7 +299,7 @@ run_tmux_agent_bar_tests() {
 }
 
 run_tuicr_tests() {
-    log "Running tuicr runtime checkout tests"
+    log "Running tuicr installer wrapper tests"
     "$PROJECT_ROOT/tests/tuicr/test-setup.sh"
 }
 
@@ -384,7 +384,7 @@ run_core_checks() {
 run_extended_checks() {
     run_core_checks
     run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
-    run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
+    run_phase "tuicr installer wrapper tests" 0 run_tuicr_tests
     run_phase "development checkout sync tests" 0 run_dev_checkout_tests
     run_phase "sesh setup regression tests" 0 run_sesh_tests
     run_phase "Television regression tests" 0 run_television_tests
@@ -420,7 +420,7 @@ run_staged_checks() {
     fi
 
     if changed_any ".dotty/run.sh" "scripts/sync-tuicr.sh" "tests/tuicr/*"; then
-        run_phase "tuicr runtime checkout tests" 0 run_tuicr_tests
+        run_phase "tuicr installer wrapper tests" 0 run_tuicr_tests
     fi
 
     if changed_any ".dotty/commands/brew-sync" "Brewfile" "scripts/brew-sync.sh" "tests/brew-sync/*"; then

@@ -9,232 +9,172 @@ TEST_PREFIX="tuicr-setup-test"
 # shellcheck source=/dev/null
 source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
 
-create_remote_repo() {
-    local root="$1" worktree="" remote=""
+write_fake_curl() {
+    local path="$1" log_file="$2" install_script="$3"
 
-    worktree="${root}/work"
-    remote="${root}/remote.git"
-
-    git init --bare "${remote}" >/dev/null 2>&1
-    git clone "${remote}" "${worktree}" >/dev/null 2>&1
-    (
-        cd "${worktree}"
-        git config user.name "Test User"
-        git config user.email "test@example.com"
-        printf 'one\n' > README.md
-        git add README.md
-        git commit -m "initial" >/dev/null 2>&1
-        git branch -M main
-        git push origin main >/dev/null 2>&1
-    )
-}
-
-append_remote_commit() {
-    local root="$1" worktree=""
-
-    worktree="${root}/work"
-    (
-        cd "${worktree}"
-        printf 'two\n' >> README.md
-        git commit -am "second" >/dev/null 2>&1
-        git push origin main >/dev/null 2>&1
-    )
-}
-
-write_fake_cargo() {
-    local path="$1"
-
-    cat > "${path}" <<'EOF'
+    cat > "$path" <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
 
-printf '%s\n' "$*" >> "${FAKE_CARGO_LOG:?}"
+url="\${*: -1}"
+printf '%s\n' "\${url}" >> "${log_file}"
 
-if [[ "${1:-}" == "install" ]]; then
-    cargo_home="${CARGO_HOME:-$HOME/.cargo}"
-    mkdir -p "${cargo_home}/bin"
-    cat > "${cargo_home}/bin/tuicr" <<'BIN'
-#!/usr/bin/env bash
-exit 0
+case "\${url}" in
+    https://api.github.com/repos/agavra/tuicr/releases/latest)
+        printf '%s\n' '{"tag_name":"v0.19.0"}'
+        ;;
+    https://tuicr.dev/install.sh)
+        cat "${install_script}"
+        ;;
+    *)
+        printf 'unexpected curl URL: %s\n' "\${url}" >&2
+        exit 1
+        ;;
+esac
+EOF
+    chmod +x "$path"
+}
+
+write_fake_installer() {
+    local path="$1" log_file="$2"
+
+    cat > "$path" <<EOF
+#!/usr/bin/env sh
+set -eu
+
+printf 'version=%s dir=%s yes=%s\n' "\${TUICR_VERSION:-}" "\${TUICR_INSTALL_DIR:-}" "\${TUICR_INSTALL_YES:-}" >> "${log_file}"
+mkdir -p "\${TUICR_INSTALL_DIR:?}"
+cat > "\${TUICR_INSTALL_DIR}/tuicr" <<BIN
+#!/usr/bin/env sh
+printf '%s\n' 'tuicr \${TUICR_VERSION}'
 BIN
-    chmod +x "${cargo_home}/bin/tuicr"
-fi
+chmod +x "\${TUICR_INSTALL_DIR}/tuicr"
 EOF
 }
 
-run_setup_tuicr() {
-    local home_dir="$1" repo_url="$2" install_root="$3" cargo_log="$4"
+run_sync_tuicr() {
+    local home_dir="$1" fake_bin="$2"
 
-    HOME="${home_dir}" \
-        PATH="${home_dir}/bin:${PATH}" \
-        XDG_STATE_HOME="${home_dir}/.local/state" \
-        CARGO_HOME="${home_dir}/.cargo" \
-        TUICR_REPO_URL="${repo_url}" \
-        TUICR_BRANCH="main" \
-        TUICR_INSTALL_ROOT="${install_root}" \
-        TUICR_REPO_DIR="${install_root}/repo" \
-        FAKE_CARGO_LOG="${cargo_log}" \
-        "${SYNC_SCRIPT}"
+    HOME="$home_dir" \
+        PATH="$fake_bin:/usr/bin:/bin" \
+        "$SYNC_SCRIPT"
 }
 
-count_lines() {
+read_file_if_present() {
     local path="$1"
 
-    if [[ ! -f "${path}" ]]; then
-        printf '0\n'
-        return 0
-    fi
-
-    wc -l < "${path}" | tr -d ' '
+    [[ -f "$path" ]] || return 0
+    cat "$path"
 }
 
-run_clone_case() {
-    local tmp_dir="" home_dir="" install_root="" repo_head="" installed_rev=""
+run_install_case() {
+    local tmp_dir="" home_dir="" fake_bin="" curl_log="" installer_log=""
 
     tmp_dir=$(mktemp -d)
     home_dir="${tmp_dir}/home"
-    install_root="${tmp_dir}/install"
+    fake_bin="${tmp_dir}/bin"
+    curl_log="${tmp_dir}/curl.log"
+    installer_log="${tmp_dir}/installer.log"
+    mkdir -p "$fake_bin"
 
-    mkdir -p "${home_dir}/bin"
-    create_remote_repo "${tmp_dir}"
-    write_fake_cargo "${home_dir}/bin/cargo"
-    chmod +x "${home_dir}/bin/cargo"
+    write_fake_installer "${tmp_dir}/install.sh" "$installer_log"
+    write_fake_curl "${fake_bin}/curl" "$curl_log" "${tmp_dir}/install.sh"
 
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
+    run_sync_tuicr "$home_dir" "$fake_bin"
 
-    repo_head=$(git -C "${install_root}/repo" rev-parse --abbrev-ref HEAD)
-    installed_rev=$(sed -n '1p' "${home_dir}/.local/state/dotfiles/tuicr/install-rev")
+    assert_equal "sync_tuicr installs the latest release into ~/.local/bin" \
+        "tuicr 0.19.0" \
+        "$("${home_dir}/.local/bin/tuicr" --version)"
+    assert_equal "sync_tuicr passes non-interactive installer env" \
+        "version=0.19.0 dir=${home_dir}/.local/bin yes=1" \
+        "$(<"$installer_log")"
+    assert_equal "sync_tuicr resolves latest before fetching installer" \
+        $'https://api.github.com/repos/agavra/tuicr/releases/latest\nhttps://tuicr.dev/install.sh' \
+        "$(<"$curl_log")"
 
-    assert_equal "setup_tuicr clones the managed checkout on first run" "main" "${repo_head}"
-    assert_equal "setup_tuicr records the installed checkout revision" \
-        "$(git -C "${install_root}/repo" rev-parse HEAD)" "${installed_rev}"
-    assert_equal "setup_tuicr installs a tuicr binary on first run" "1" \
-        "$(if [[ -x "${home_dir}/.cargo/bin/tuicr" ]]; then printf '1'; else printf '0'; fi)"
-    rm -rf "${tmp_dir}"
+    rm -rf "$tmp_dir"
 }
 
-run_update_case() {
-    local tmp_dir="" home_dir="" install_root=""
+run_skip_current_case() {
+    local tmp_dir="" home_dir="" fake_bin="" curl_log="" installer_log=""
 
     tmp_dir=$(mktemp -d)
     home_dir="${tmp_dir}/home"
-    install_root="${tmp_dir}/install"
+    fake_bin="${tmp_dir}/bin"
+    curl_log="${tmp_dir}/curl.log"
+    installer_log="${tmp_dir}/installer.log"
+    mkdir -p "$fake_bin" "${home_dir}/.local/bin"
 
-    mkdir -p "${home_dir}/bin"
-    create_remote_repo "${tmp_dir}"
-    write_fake_cargo "${home_dir}/bin/cargo"
-    chmod +x "${home_dir}/bin/cargo"
+    cat > "${home_dir}/.local/bin/tuicr" <<'EOF'
+#!/usr/bin/env sh
+printf '%s\n' 'tuicr 0.19.0'
+EOF
+    chmod +x "${home_dir}/.local/bin/tuicr"
+    write_fake_installer "${tmp_dir}/install.sh" "$installer_log"
+    write_fake_curl "${fake_bin}/curl" "$curl_log" "${tmp_dir}/install.sh"
 
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
-    append_remote_commit "${tmp_dir}"
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
+    run_sync_tuicr "$home_dir" "$fake_bin"
 
-    assert_equal "setup_tuicr fast-forwards a clean checkout" "two" \
-        "$(tail -n 1 "${install_root}/repo/README.md")"
-    assert_equal "setup_tuicr reinstalls after the checkout advances" "2" \
-        "$(count_lines "${tmp_dir}/cargo.log")"
-    rm -rf "${tmp_dir}"
+    assert_equal "sync_tuicr skips installer when target binary is current" "" "$(read_file_if_present "$installer_log")"
+    assert_equal "sync_tuicr only resolves latest when target binary is current" \
+        "https://api.github.com/repos/agavra/tuicr/releases/latest" \
+        "$(<"$curl_log")"
+
+    rm -rf "$tmp_dir"
 }
 
-run_dirty_skip_case() {
-    local tmp_dir="" home_dir="" install_root="" actual=""
+run_pinned_version_case() {
+    local tmp_dir="" home_dir="" fake_bin="" curl_log="" installer_log=""
 
     tmp_dir=$(mktemp -d)
     home_dir="${tmp_dir}/home"
-    install_root="${tmp_dir}/install"
+    fake_bin="${tmp_dir}/bin"
+    curl_log="${tmp_dir}/curl.log"
+    installer_log="${tmp_dir}/installer.log"
+    mkdir -p "$fake_bin"
 
-    mkdir -p "${home_dir}/bin"
-    create_remote_repo "${tmp_dir}"
-    write_fake_cargo "${home_dir}/bin/cargo"
-    chmod +x "${home_dir}/bin/cargo"
+    write_fake_installer "${tmp_dir}/install.sh" "$installer_log"
+    write_fake_curl "${fake_bin}/curl" "$curl_log" "${tmp_dir}/install.sh"
 
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
-    append_remote_commit "${tmp_dir}"
-    printf 'local\n' >> "${install_root}/repo/README.md"
+    HOME="$home_dir" \
+        PATH="$fake_bin:/usr/bin:/bin" \
+        TUICR_VERSION="v0.18.0" \
+        "$SYNC_SCRIPT"
 
-    actual=$(
-        run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log" 2>&1 || true
-    )
+    assert_equal "sync_tuicr installs a pinned version without resolving latest" \
+        "version=0.18.0 dir=${home_dir}/.local/bin yes=1" \
+        "$(<"$installer_log")"
+    assert_equal "sync_tuicr fetches only the installer for pinned versions" \
+        "https://tuicr.dev/install.sh" \
+        "$(<"$curl_log")"
 
-    assert_matches "setup_tuicr warns instead of overwriting a dirty checkout" 'dirty' "${actual}"
-    assert_equal "setup_tuicr does not reinstall from a dirty checkout" "1" \
-        "$(count_lines "${tmp_dir}/cargo.log")"
-    rm -rf "${tmp_dir}"
+    rm -rf "$tmp_dir"
 }
 
-run_branch_skip_case() {
-    local tmp_dir="" home_dir="" install_root="" actual=""
+run_legacy_cargo_cleanup_case() {
+    local tmp_dir="" home_dir="" fake_bin="" curl_log="" installer_log=""
 
     tmp_dir=$(mktemp -d)
     home_dir="${tmp_dir}/home"
-    install_root="${tmp_dir}/install"
+    fake_bin="${tmp_dir}/bin"
+    curl_log="${tmp_dir}/curl.log"
+    installer_log="${tmp_dir}/installer.log"
+    mkdir -p "$fake_bin" "${home_dir}/.cargo/bin"
+    touch "${home_dir}/.cargo/bin/tuicr"
 
-    mkdir -p "${home_dir}/bin"
-    create_remote_repo "${tmp_dir}"
-    write_fake_cargo "${home_dir}/bin/cargo"
-    chmod +x "${home_dir}/bin/cargo"
+    write_fake_installer "${tmp_dir}/install.sh" "$installer_log"
+    write_fake_curl "${fake_bin}/curl" "$curl_log" "${tmp_dir}/install.sh"
 
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
-    git -C "${install_root}/repo" checkout -b feature >/dev/null 2>&1
+    run_sync_tuicr "$home_dir" "$fake_bin"
 
-    actual=$(
-        run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log" 2>&1 || true
-    )
+    assert_equal "sync_tuicr removes the old cargo-installed binary after installer success" \
+        "0" \
+        "$(if [[ -e "${home_dir}/.cargo/bin/tuicr" ]]; then printf '1'; else printf '0'; fi)"
 
-    assert_matches "setup_tuicr warns instead of updating a non-main checkout" 'not on main' "${actual}"
-    assert_equal "setup_tuicr does not reinstall from a non-main checkout" "1" \
-        "$(count_lines "${tmp_dir}/cargo.log")"
-    rm -rf "${tmp_dir}"
+    rm -rf "$tmp_dir"
 }
 
-run_origin_skip_case() {
-    local tmp_dir="" home_dir="" install_root="" actual=""
-
-    tmp_dir=$(mktemp -d)
-    home_dir="${tmp_dir}/home"
-    install_root="${tmp_dir}/install"
-
-    mkdir -p "${home_dir}/bin"
-    create_remote_repo "${tmp_dir}"
-    write_fake_cargo "${home_dir}/bin/cargo"
-    chmod +x "${home_dir}/bin/cargo"
-
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
-    git -C "${install_root}/repo" remote set-url origin https://example.com/tuicr.git
-
-    actual=$(
-        run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log" 2>&1 || true
-    )
-
-    assert_matches "setup_tuicr warns instead of updating a checkout with a custom origin" 'origin does not match' "${actual}"
-    assert_equal "setup_tuicr does not reinstall from a checkout with a custom origin" "1" \
-        "$(count_lines "${tmp_dir}/cargo.log")"
-    rm -rf "${tmp_dir}"
-}
-
-run_skip_install_case() {
-    local tmp_dir="" home_dir="" install_root=""
-
-    tmp_dir=$(mktemp -d)
-    home_dir="${tmp_dir}/home"
-    install_root="${tmp_dir}/install"
-
-    mkdir -p "${home_dir}/bin"
-    create_remote_repo "${tmp_dir}"
-    write_fake_cargo "${home_dir}/bin/cargo"
-    chmod +x "${home_dir}/bin/cargo"
-
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
-
-    run_setup_tuicr "${home_dir}" "${tmp_dir}/remote.git" "${install_root}" "${tmp_dir}/cargo.log"
-    assert_equal "setup_tuicr skips reinstall when the stamp and binary are current" "1" \
-        "$(count_lines "${tmp_dir}/cargo.log")"
-    rm -rf "${tmp_dir}"
-}
-
-run_clone_case
-run_update_case
-run_dirty_skip_case
-run_branch_skip_case
-run_origin_skip_case
-run_skip_install_case
+run_install_case
+run_skip_current_case
+run_pinned_version_case
+run_legacy_cargo_cleanup_case
