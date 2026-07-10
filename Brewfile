@@ -31,7 +31,6 @@ brew "bat"                          # a better cat
 brew "eza"                          # a better ls
 brew "fd"                           # find alternative
 brew "fzf"                          # a fuzzy finder
-brew "gh"                           # GitHub CLI
 brew "git-delta"                    # syntax-highlighted git diff pager
 brew "glow"                         # markdown renderer for the terminal
 brew "hunk"                         # review-first terminal diff viewer
@@ -52,6 +51,7 @@ brew "zoxide"                       # smarter cd command (z/zi)
 
 if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
   # Personal packages
+  brew "gh"                         # GitHub CLI
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
 end
