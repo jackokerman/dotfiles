@@ -91,7 +91,7 @@ run_connect_hooks() {
     [[ -x "$hook" ]] || continue
 
     if "$hook" --match "$session" >/dev/null 2>&1; then
-      exec "$hook" "$session"
+      exec "$hook" --connect "$session"
     fi
 
     if "$hook" "$session"; then
