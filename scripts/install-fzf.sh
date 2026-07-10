@@ -54,6 +54,10 @@ main() {
 
     target_dir="${FZF_INSTALL_BIN_DIR:-$HOME/.local/bin}"
     target_path="${target_dir}/fzf"
+    if [[ -L "$target_path" ]]; then
+        rm -f "$target_path"
+    fi
+
     installed_version=$(installed_fzf_version "$target_path" || true)
     if [[ "$installed_version" == "$version" ]]; then
         info "fzf $version already installed at $target_path"
