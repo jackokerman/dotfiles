@@ -81,12 +81,41 @@ normalize_selection() {
   esac
 }
 
+run_connect_hooks() {
+  local session="$1"
+  local hook
+
+  [[ -d "$HOOKS_DIR" ]] || return 1
+
+  for hook in "$HOOKS_DIR"/*; do
+    [[ -x "$hook" ]] || continue
+
+    if "$hook" --match "$session" >/dev/null 2>&1; then
+      exec "$hook" "$session"
+    fi
+
+    if "$hook" "$session"; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 # Sub-commands for fzf reload (fzf can't call bash functions directly)
 if [[ "${1:-}" == "--all" ]]; then _all; exit 0; fi
 if [[ "${1:-}" == "--tmux" ]]; then _tmux_entries; exit 0; fi
 if [[ "${1:-}" == "--extra" ]]; then _extra_entries; exit 0; fi
 if [[ "${1:-}" == "--refresh-all" ]]; then run_refresh_hooks sync; _all; exit 0; fi
 if [[ "${1:-}" == "--refresh-extra" ]]; then run_refresh_hooks sync; _extra_entries; exit 0; fi
+if [[ "${1:-}" == "--kill-selection" ]]; then
+  shift
+  session="$(normalize_selection "$*")"
+  [[ -n "$session" ]] || exit 0
+  tmux kill-session -t "$session" 2>/dev/null || true
+  rm -f "${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob"
+  exit 0
+fi
 
 # Kick off background refresh hooks (SWR: show stale entries now, refresh for
 # the next open). Do not mutate the active fzf list; that can move the selection
@@ -105,7 +134,7 @@ pick_session() {
     --bind "ctrl-a:change-prompt(⚡  )+reload($0 --refresh-all)" \
     --bind "ctrl-t:change-prompt(🪟  )+reload($0 --tmux)" \
     --bind "ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .git -E node_modules)" \
-    --bind "ctrl-d:execute-silent(tmux kill-session -t {2..}; rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob)+change-prompt(⚡  )+reload($0 --all)" \
+    --bind "ctrl-d:execute-silent($0 --kill-selection {})+change-prompt(⚡  )+reload($0 --all)" \
     "$@" || true
 }
 
@@ -120,12 +149,8 @@ if tmux has-session -t "$session" 2>/dev/null; then
 fi
 
 # Try connect hooks
-if [[ -d "$HOOKS_DIR" ]]; then
-  for hook in "$HOOKS_DIR"/*; do
-    if [[ -x "$hook" ]] && "$hook" "$session"; then
-      exit 0
-    fi
-  done
+if run_connect_hooks "$session"; then
+  exit 0
 fi
 
 # Default: sesh connect
