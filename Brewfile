@@ -75,7 +75,6 @@ brew "glow"                         # markdown renderer for the terminal
 brew "hunk"                         # review-first terminal diff viewer
 brew "jq"                           # parse and work with JSON
 brew "neovim"                       # extensible modal editor
-brew "python"                       # python (latest)
 brew "ripgrep"                      # fast recursive search tool (`rg`)
 brew "wget"                         # internet file retriever
 brew "zsh"                          # zsh shell (latest)
@@ -92,4 +91,5 @@ if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
   # Personal packages
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
+  brew "python"                     # python (latest)
 end

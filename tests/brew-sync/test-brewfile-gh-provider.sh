@@ -23,9 +23,10 @@ brewfile_formulae() {
     local homebrew_prefix="$1"
     local path_value="$2"
     local host_path_value="$3"
+    local dotfiles_env="${4:-remote}"
 
     HOMEBREW_PREFIX="${homebrew_prefix}" \
-        HOMEBREW_DOTFILES_ENV="remote" \
+        HOMEBREW_DOTFILES_ENV="${dotfiles_env}" \
         HOMEBREW_DOTFILES_HOST_PATH="${host_path_value}" \
         PATH="${path_value}" \
         "${RUBY_BIN}" - "${BREWFILE}" <<'RUBY'
@@ -54,6 +55,17 @@ assert_gh_presence() {
     local actual="absent"
 
     if grep -qx "gh" <<< "${formulae}"; then
+        actual="present"
+    fi
+
+    assert_equal "${name}" "${expected}" "${actual}"
+}
+
+assert_formula_presence() {
+    local name="$1" formula="$2" expected="$3" formulae="$4"
+    local actual="absent"
+
+    if grep -qx "${formula}" <<< "${formulae}"; then
         actual="present"
     fi
 
@@ -106,8 +118,24 @@ run_case() {
     rm -rf "${tmp_dir}"
 }
 
+run_profile_case() {
+    local name="$1" dotfiles_env="$2" formula="$3" expected="$4"
+    local tmp_dir="" homebrew_prefix="" formulae=""
+
+    tmp_dir="$(mktemp -d)"
+    homebrew_prefix="${tmp_dir}/homebrew"
+    mkdir -p "${homebrew_prefix}/bin"
+
+    formulae="$(brewfile_formulae "${homebrew_prefix}" "${homebrew_prefix}/bin:${SYSTEM_PATH}" "${SYSTEM_PATH}" "${dotfiles_env}")"
+    assert_formula_presence "${name}" "${formula}" "${expected}" "${formulae}"
+    rm -rf "${tmp_dir}"
+}
+
 run_case "Brewfile installs gh when no provider exists" "none" "present"
 run_case "Brewfile keeps gh managed when only Homebrew provides it" "homebrew" "present"
 run_case "Brewfile skips gh when host provides it" "host" "absent"
 run_case "Brewfile skips gh when host and Homebrew both provide it" "both" "absent"
 run_case "Brewfile skips gh when host provider is only in preserved host PATH" "preserved-host" "absent"
+run_profile_case "Brewfile excludes Python from managed laptop profile" "laptop" "python" "absent"
+run_profile_case "Brewfile excludes Python from remote profile" "remote" "python" "absent"
+run_profile_case "Brewfile includes Python in personal profile" "personal" "python" "present"

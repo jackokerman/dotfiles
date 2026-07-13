@@ -1,9 +1,10 @@
 ---
 id: 2026-07-13-gate-homebrew-python-on-managed-machines
 title: Gate Homebrew Python on managed machines
-state: inbox
+state: complete
+priority: high
 createdAt: 2026-07-13T18:03:18.976Z
-updatedAt: 2026-07-13T18:03:18.976Z
+updatedAt: 2026-07-13T18:05:47.994Z
 ---
 
 # Gate Homebrew Python on managed machines
