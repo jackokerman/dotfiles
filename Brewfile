@@ -1,4 +1,5 @@
 # Taps
+tap "agavra/tap"                    # terminal code review TUI
 tap "oven-sh/bun"                   # preferred JavaScript runtime
 
 def executable_paths(command)
@@ -72,7 +73,6 @@ brew "fzf"                          # a fuzzy finder
 brew "gh" unless host_provides_command?("gh")
 brew "git-delta"                    # syntax-highlighted git diff pager
 brew "glow"                         # markdown renderer for the terminal
-brew "hunk"                         # review-first terminal diff viewer
 brew "jq"                           # parse and work with JSON
 brew "neovim"                       # extensible modal editor
 brew "ripgrep"                      # fast recursive search tool (`rg`)
@@ -85,6 +85,7 @@ brew "oven-sh/bun/bun"              # JavaScript runtime
 brew "tmux"                         # terminal multiplexer
 brew "sesh"                         # smart tmux session manager
 brew "television"                   # rich terminal fuzzy finder (`tv`)
+brew "agavra/tap/tuicr"             # terminal code review TUI
 brew "zoxide"                       # smarter cd command (z/zi)
 
 if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"

@@ -147,7 +147,7 @@ run_linux_install_case() {
     : > "${brew_log}"
     : > "${curl_log}"
 
-    copy_script_fixture "${repo_dir}" $'tap "oven-sh/bun"\nbrew "oven-sh/bun/bun"'
+    copy_script_fixture "${repo_dir}" $'tap "oven-sh/bun"\ntap "agavra/tap"\nbrew "oven-sh/bun/bun"\nbrew "agavra/tap/tuicr"'
     repo_dir="$(cd "${repo_dir}" && pwd -P)"
     write_fake_uname "${fake_bin}/uname" "Linux"
     write_fake_installer "${tmp_dir}/install.sh" "${prefix}/bin/brew" "${brew_log}" "${prefix}"
@@ -161,8 +161,8 @@ run_linux_install_case() {
         "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" \
         "$(<"${curl_log}")"
 
-    assert_equal "Linux install activates Linuxbrew, trusts Bun, then bundles" \
-        $'brew shellenv\nbrew trust --formula oven-sh/bun/bun\nbrew bundle --file '"${repo_dir}"$'/Brewfile' \
+    assert_equal "Linux install activates Linuxbrew, trusts third-party formulas, then bundles" \
+        $'brew shellenv\nbrew trust --formula oven-sh/bun/bun\nbrew trust --formula agavra/tap/tuicr\nbrew bundle --file '"${repo_dir}"$'/Brewfile' \
         "$(<"${brew_log}")"
 
     rm -rf "${tmp_dir}"

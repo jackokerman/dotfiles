@@ -167,7 +167,6 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
-        "scripts/sync-tuicr.sh"
         "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
@@ -177,7 +176,6 @@ run_bash_syntax() {
         "tests/tmux-agent-bar/test-runtime-path.sh"
         "tests/tmux-agent-bar/test-session-status-left.sh"
         "tests/tmux-agent-bar/test-sync.sh"
-        "tests/tuicr/test-setup.sh"
         "tests/tmux-agent-status/testlib.sh"
         "scripts/validate-codex-sync.sh"
     )
@@ -206,7 +204,6 @@ assert_expected_executables() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
-        "scripts/sync-tuicr.sh"
         "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
@@ -216,7 +213,6 @@ assert_expected_executables() {
         "home/.config/tmux/codex-agent-status-hook.sh"
         "home/.config/tmux/session-status-left.sh"
         "home/.config/tmux/session-status-refresh.sh"
-        "tests/tuicr/test-setup.sh"
         "tests/dev-checkouts/test-sync.sh"
         "tests/television/test-setup.sh"
     )
@@ -301,11 +297,6 @@ run_tmux_agent_bar_tests() {
     "$PROJECT_ROOT/tests/tmux-agent-bar/test-sync.sh"
 }
 
-run_tuicr_tests() {
-    log "Running tuicr installer wrapper tests"
-    "$PROJECT_ROOT/tests/tuicr/test-setup.sh"
-}
-
 run_brew_sync_tests() {
     log "Running brew-sync regression tests"
     "$PROJECT_ROOT/tests/brew-sync/test-brewfile-gh-provider.sh"
@@ -388,7 +379,6 @@ run_core_checks() {
 run_extended_checks() {
     run_core_checks
     run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
-    run_phase "tuicr installer wrapper tests" 0 run_tuicr_tests
     run_phase "development checkout sync tests" 0 run_dev_checkout_tests
     run_phase "sesh setup regression tests" 0 run_sesh_tests
     run_phase "Television regression tests" 0 run_television_tests
@@ -421,10 +411,6 @@ run_staged_checks() {
         "tests/tmux-agent-bar/*" \
         "tests/tmux-agent-status/*"; then
         run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
-    fi
-
-    if changed_any ".dotty/run.sh" "scripts/sync-tuicr.sh" "tests/tuicr/*"; then
-        run_phase "tuicr installer wrapper tests" 0 run_tuicr_tests
     fi
 
     if changed_any ".dotty/commands/brew-sync" "Brewfile" "scripts/brew-sync.sh" "tests/brew-sync/*"; then

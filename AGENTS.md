@@ -46,7 +46,6 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `scripts/` contains setup, sync, and validation helpers.
 - Keep `.dotty/commands/*` as thin `dotty run` entrypoints. Put substantive reusable workflow logic under `scripts/`, and leave `.dotty/run.sh` inline logic for post-link orchestration that only makes sense inside the hook.
 - `tests/tmux-agent-bar/` holds the remaining runtime path and sync tests for the active `tmux-agent-bar` checkout.
-- `tests/tuicr/` holds installer wrapper tests for the dotty-managed `tuicr` binary.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
 - Use `~/.zshenv.local` for machine-local env vars and path tweaks, including local API tokens needed by shell-backed agent workflows, unless a specific tool documents a different secret source.
 - Use `~/.zshrc.pre.local` for pre-`compinit` shell init and `~/.zshrc.local` for post-`compinit` interactive overrides. Do not reintroduce a tracked dependency on a real `~/.zshrc`.
@@ -59,7 +58,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - When debugging local GUI automation, verify behavior through the same app runtime that owns the workflow. For Hammerspoon, prefer AppleScript or `hs.task` probes and scoped app logs over terminal-only reproduction.
 - When searching logs or caches, start from known app log paths, recent timestamps, or narrow predicates. Do not run broad recursive searches over `~/Library/Logs` or cache roots unless narrower paths fail.
 - Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
-- Keep generic Hunk defaults in `home/.config/hunk/`; host-specific install routing belongs in later repos in the dotty chain.
+- Keep install routing for broadly available CLI tools in the tracked `Brewfile` or later repos in the dotty chain.
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
 - The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the `tmux-agent-bar` checkout under `~/src/tmux-agent-bar` unless an explicit override path is set.

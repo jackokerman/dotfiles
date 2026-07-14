@@ -109,21 +109,20 @@ ensure_homebrew() {
     command -v brew >/dev/null 2>&1 || die "Homebrew installed but brew is not on PATH"
 }
 
-brewfile_uses_bun_formula() {
-    grep -Eq '^[[:space:]]*brew[[:space:]]+"oven-sh/bun/bun"' "${BREWFILE}"
-}
+trust_formula_if_needed() {
+    local formula="$1"
 
-trust_bun_formula_if_needed() {
-    if ! brewfile_uses_bun_formula; then
+    if ! grep -Eq "^[[:space:]]*brew[[:space:]]+\"${formula}\"" "${BREWFILE}"; then
         return 0
     fi
 
-    info "Trusting Homebrew Bun formula"
-    brew trust --formula oven-sh/bun/bun
+    info "Trusting Homebrew formula ${formula}"
+    brew trust --formula "${formula}"
 }
 
 ensure_homebrew
-trust_bun_formula_if_needed
+trust_formula_if_needed "oven-sh/bun/bun"
+trust_formula_if_needed "agavra/tap/tuicr"
 
 info "Installing packages from Brewfile"
 if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "personal" ]]; then

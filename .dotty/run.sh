@@ -191,19 +191,6 @@ setup_fzf() {
     fi
 }
 
-setup_tuicr() {
-    local sync_script="$DOTFILES/scripts/sync-tuicr.sh"
-
-    if [[ ! -x "$sync_script" ]]; then
-        warning "tuicr sync script not found at $sync_script"
-        return 0
-    fi
-
-    if ! "$sync_script"; then
-        warning "Failed to sync tuicr"
-    fi
-}
-
 # Homebrew
 
 run_brew_sync() {
@@ -634,7 +621,6 @@ main() {
 
             setup_git_hooks
             sync_repo_submodules
-            setup_tuicr
 
             if [[ "$(uname -s)" == "Darwin" ]]; then
                 if [[ "$DOTTY_COMMAND" == "install" ]]; then
