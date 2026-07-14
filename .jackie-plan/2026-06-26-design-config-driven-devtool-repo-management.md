@@ -1,9 +1,9 @@
 ---
 id: 2026-06-26-design-config-driven-devtool-repo-management
 title: Design config-driven devtool repo management
-state: ready-to-implement
+state: complete
 createdAt: 2026-06-26T17:42:12.482Z
-updatedAt: 2026-07-14T17:16:45.828Z
+updatedAt: 2026-07-14T17:49:59.528Z
 sourcePlan: 2026-06-26-implement-integrated-dev-tool-metadata-for-jackie-plan
 ---
 
@@ -139,4 +139,27 @@ This should be implemented as one shot with final review after validation, not s
 
 ## Agent handoff
 
-Refined implementation contract after user review. User deferred naming to the agent; chose `.dotty/devtools.tsv` and `dotty run sync-devtools` as clearer now that the manifest covers checkout sync plus install dispatch. User raised fresh-machine and cleanup confidence as the main concern. Updated the plan to treat current-machine reconciliation and empty-checkout fresh-machine behavior as acceptance criteria, and to implement as one shot with explicit stopping points only for real migration risks: per-machine overrides, runtime-only checkout handling, destructive cleanup of a real checkout, or an unusable repo-owned installer.
+Implementation is code-complete and waiting for user review in `/Users/jackokerman/dotfiles`; do not commit, push, mark `ready-to-ship`, or complete without explicit user approval.
+
+Changed implementation shape:
+- Renamed `.dotty/dev-checkouts.tsv` to `.dotty/devtools.tsv` with six columns: `name`, `repo-url`, `branch`, `checkout`, `update`, and `install`.
+- Replaced `scripts/sync-dev-checkouts.sh` with `scripts/sync-devtools.sh`, preserving conservative non-interactive clone/fetch/fast-forward behavior while adding install dispatch for `repo:` and `dotty:` actions.
+- Added `dotty run sync-devtools` and removed the old `sync-dev-checkouts` command surface because no current caller required a compatibility wrapper.
+- Removed the dotfiles-owned Jackie Plan installer; Jackie Plan now uses the manifest row `repo:scripts/install.sh` from `~/src/jackie-plan`.
+- Added `.dotty/commands/install-godspeed-js` for the manifest row `dotty:.dotty/commands/install-godspeed-js`.
+- Routed `.dotty/run.sh` through the single devtools sync/install path instead of separate checkout, Jackie Plan, and GodspeedJS functions.
+- Updated `scripts/check`, README, `docs/agent-tooling.md`, and `AGENTS.md` for the new source-of-truth and command surface.
+- Expanded tests under `tests/devtools/` for empty-root cloning, checkout-only rows, repo-owned and dotfiles-owned install actions, working-directory selection, `DOTTY_DEVTOOL_*` metadata, malformed rows, non-interactive Git, and conservative dirty/origin mismatch skips.
+
+Verification completed:
+- `tests/devtools/test-sync.sh` passed.
+- `./scripts/check --extended --quiet` passed. It printed advisory long-paragraph notes for existing docs/README prose, but no failures.
+- `dotty run sync-devtools` completed successfully on the current machine: all declared repos were already up to date, GodspeedJS CLIs were linked, Jackie Plan installed through its repo script, and checkout-only tools ran no install actions.
+- `dotty update` completed successfully and exercised the new devtools path through the normal base repo hook.
+
+Follow-up captured:
+- `2026-07-14-make-jackie-plan-installer-install-only-friendly-for-manifest` tracks out-of-scope Jackie Plan repo work to expose an install-only installer boundary so manifest-driven callers avoid the repo installer's redundant fetch/update.
+
+Remaining review focus:
+- Confirm the intentionally removed `dotty run sync-dev-checkouts` and `.dotty/commands/install-jackie-plan` surfaces are acceptable.
+- Confirm the policy to skip install actions when checkout sync is skipped for dirty, branch-mismatched, origin-mismatched, or diverged repos is the desired conservative behavior.

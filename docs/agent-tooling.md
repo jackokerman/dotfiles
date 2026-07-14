@@ -17,7 +17,7 @@
   - `TMUX_AGENT_BAR_DIR`
   - `~/.config/tmux-agent-bar/path.local`
   - `~/src/tmux-agent-bar`
-- `dotty update` keeps `~/src/tmux-agent-bar` current through `.dotty/dev-checkouts.tsv`
+- `dotty update` keeps `~/src/tmux-agent-bar` current through `.dotty/devtools.tsv`
 - `home/.config/tmux/README.md` is the code-local change guide for the wrappers and runtime path model
 - The status bar still redraws on tmux's normal interval, while `client-session-changed` and `client-attached` refresh the cached per-session option without forcing another nested tmux redraw
 - Agent hook wrappers refresh the cached right-side option in the background and rely on tmux's normal redraw path instead of forcing a client refresh on every tool event
@@ -56,21 +56,25 @@ Tracked Codex inputs live under `home/.codex/` and `home/.ruler/`.
 
 Ruler-generated output is never committed. Dotty invokes Ruler only in a temporary staging root and remains the owner of the live `~/.codex/AGENTS.md` file.
 
-## Development checkouts
+## Devtool repos
 
-`.dotty/dev-checkouts.tsv` lists tracked development repos that should exist under `~/src` on every machine. `dotty update` and `dotty run sync-dev-checkouts` clone missing entries and fast-forward existing checkouts only when they are clean, on the configured branch, and still point at the configured origin URL. Private entries rely on machine GitHub auth, and the clone and fetch paths stay non-interactive so hook runs warn and skip instead of hanging on prompts.
+`.dotty/devtools.tsv` lists tracked personal devtool repos that should exist on every machine. `dotty update` and `dotty run sync-devtools` clone missing entries, fast-forward existing checkouts only when they are clean, on the configured branch, and still point at the configured origin URL, then run the row's configured install action when one is present. Private entries rely on machine GitHub auth, and the clone and fetch paths stay non-interactive so hook runs warn and skip instead of hanging on prompts.
 
 Use this for reusable personal tools that are both part of the dotfiles workflow and likely to be iterated on directly, such as lint configs, Codex-adjacent tools, or small CLIs. `tmux-agent-bar`, `jackie-plan`, and the private `godspeed-js` CLIs use this model. Keep runtime-only clones under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace.
 
+The manifest columns are `name`, `repo-url`, `branch`, `checkout`, `update`, and `install`. Use `dev` for the normal `~/src/<name>` checkout location. The only update policy is `fast-forward`, which skips dirty, branch-mismatched, origin-mismatched, and diverged checkouts rather than overwriting them.
+
+Leave `install` empty for checkout-only tools. Use `repo:<relative-command>` when the tool owns its installer, and use `dotty:<relative-command>` when this repo needs to adapt the install step to the dotty environment. `repo:` actions run from the configured checkout; `dotty:` actions run from this repo. Install actions receive manifest metadata through `DOTTY_DEVTOOL_NAME`, `DOTTY_DEVTOOL_CHECKOUT_DIR`, `DOTTY_DEVTOOL_REPO_URL`, and `DOTTY_DEVTOOL_BRANCH`; do not add a second positional-argument metadata API.
+
 ## GodspeedJS
 
-`dotty update` expects the private `godspeed-js` checkout at `~/src/godspeed-js`, installs its Bun dependencies, and links both CLIs with `bun run install:local`. The generic `godspeed` executable exposes API diagnostics and exact resource operations. The tracked `godspeed-tasks` Codex skill calls the opinionated `godspeed-gtd` workflow executable; dotfiles no longer carries a separate Godspeed TypeScript helper or Godspeed-specific package dependency.
+`.dotty/devtools.tsv` installs the private `godspeed-js` checkout from `~/src/godspeed-js` with `.dotty/commands/install-godspeed-js`, which installs Bun dependencies and links both CLIs with `bun run install:local`. The generic `godspeed` executable exposes API diagnostics and exact resource operations. The tracked `godspeed-tasks` Codex skill calls the opinionated `godspeed-gtd` workflow executable; dotfiles no longer carries a separate Godspeed TypeScript helper or Godspeed-specific package dependency.
 
 ## Jackie Plan
 
-`dotty update` installs Jackie Plan from `~/src/jackie-plan`, cloning `https://github.com/jackokerman/jackie-plan.git` there when the checkout is missing. The checkout is intentionally a normal development clone so Jackie Plan can be improved in place.
+`.dotty/devtools.tsv` installs Jackie Plan from `~/src/jackie-plan`, cloning `https://github.com/jackokerman/jackie-plan.git` there when the checkout is missing. The checkout is intentionally a normal development clone so Jackie Plan can be improved in place.
 
-The installer links the `jp` CLI with Bun and owns Jackie Plan's Codex plugin installation. Dotfiles still generates shared Codex and Claude skills from tracked dotfiles sources, but it does not import Jackie Plan's plugin skills as global generated skills. If `~/.local/share/jackie-plan/repo` is absent, the installer creates it as a compatibility symlink to the development checkout. Existing checkouts at that legacy path are left untouched.
+The Jackie Plan repo-owned `scripts/install.sh` links the `jp` CLI with Bun and owns Jackie Plan's Codex plugin installation. Dotfiles still generates shared Codex and Claude skills from tracked dotfiles sources, but it does not import Jackie Plan's plugin skills as global generated skills. Legacy runtime-checkout replacement is handled by the explicit dotty cleanup task instead of ongoing installer compatibility behavior.
 
 Everyday instruction workflow:
 

@@ -1,0 +1,9 @@
+# name	repo-url	branch	checkout	update	install
+# checkout: dev for ~/src/<name>, or an absolute path when a tool has a concrete custom location.
+# update: fast-forward skips dirty, branch-mismatched, origin-mismatched, and diverged checkouts.
+# install: empty for checkout-only tools, repo:<relative-command> from the checkout, or dotty:<relative-command> from this repo.
+comment-width-check	https://github.com/jackokerman/comment-width-check.git	main	dev	fast-forward	
+godspeed-js	https://github.com/jackokerman/godspeed-js.git	main	dev	fast-forward	dotty:.dotty/commands/install-godspeed-js
+jackie-plan	https://github.com/jackokerman/jackie-plan.git	main	dev	fast-forward	repo:scripts/install.sh
+oxlint-config	https://github.com/jackokerman/oxlint-config.git	main	dev	fast-forward	
+tmux-agent-bar	https://github.com/jackokerman/tmux-agent-bar.git	main	dev	fast-forward	

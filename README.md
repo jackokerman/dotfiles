@@ -2,7 +2,7 @@
 
 Personal base dotfiles managed by [dotty](https://github.com/jackokerman/dotty). This is the public, generic layer for shared defaults; local overrides and later repos in the dotty chain add machine-specific behavior.
 
-This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, Codex and Claude defaults, and selected development checkouts under `~/src`. Tracked source lives under `home/`, and `dotty` links or renders it into `$HOME`.
+This repo manages shell, Git, tmux, Neovim, Raycast Script Commands, Karabiner, Codex and Claude defaults, and selected personal devtool repos under `~/src`. Tracked source lives under `home/`, and `dotty` links or renders it into `$HOME`.
 
 ## Install
 
@@ -38,7 +38,7 @@ gh auth status
 ssh -T git@github.com
 ```
 
-Private HTTPS checkouts in this repo, including `jackie-plan`, rely on GitHub credentials being available to Git. After `dotty update`, the tracked Git config routes GitHub HTTPS through `gh auth git-credential`. If you want that wiring before the first successful `dotty update`, run `gh auth setup-git`.
+Private HTTPS devtool repos in this repo, including `jackie-plan`, rely on GitHub credentials being available to Git. After `dotty update`, the tracked Git config routes GitHub HTTPS through `gh auth git-credential`. If you want that wiring before the first successful `dotty update`, run `gh auth setup-git`.
 
 This repo does not track `~/.ssh/`. Keep custom hosts, identities, or non-default key layouts in local SSH config or a later repo in the dotty chain.
 
@@ -58,7 +58,7 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` development checkouts exist, installs the pinned upstream `fzf` binary on Linux, installs Jackie Plan from `~/src/jackie-plan`, and links the private GodspeedJS CLIs from `~/src/godspeed-js`.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` devtool repos exist, installs the pinned upstream `fzf` binary on Linux, installs Jackie Plan from `~/src/jackie-plan`, and links the private GodspeedJS CLIs from `~/src/godspeed-js`.
 
 ## Daily Use
 
@@ -68,11 +68,11 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 | Command | Use |
 | --- | --- |
-| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, install the pinned upstream `fzf` binary on Linux, ensure selected `~/src` development checkouts exist, and link the private GodspeedJS CLIs. |
+| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, install the pinned upstream `fzf` binary on Linux, ensure selected `~/src` devtool repos exist, and run their configured install actions. |
 | `dotty run brew-sync` | Install packages from the tracked `Brewfile` on supported Homebrew hosts. Includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` for a narrower refresh. |
-| `dotty run sync-dev-checkouts` | Clone or conservatively fast-forward tracked development repos listed in `.dotty/dev-checkouts.tsv` under `~/src`. Private entries rely on your machine GitHub auth. |
+| `dotty run sync-devtools` | Clone or conservatively fast-forward tracked devtool repos listed in `.dotty/devtools.tsv` and run each configured install action. Private entries rely on your machine GitHub auth. |
 
 ### Validation
 
@@ -125,7 +125,7 @@ Common places to edit:
 | sesh defaults | `home/.config/sesh/sesh.toml`; `dotty update` renders the live `~/.config/sesh/sesh.toml` into a real `~/.config/sesh/` directory. |
 | Raycast script commands | `home/.raycast-scripts/` |
 | Codex and Claude tracked config | `home/.ruler/`, `home/.codex/`, and `home/.claude/` |
-| Public development checkouts | `.dotty/dev-checkouts.tsv` |
+| Public devtool repos | `.dotty/devtools.tsv` |
 
 Keep the tracked Godspeed helper and guidance generic. Personal labels, matching rules, and smart-list definitions should be discovered or supplied at runtime.
 

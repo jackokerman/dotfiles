@@ -131,10 +131,10 @@ run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/commands/brew-sync"
-        ".dotty/commands/install-jackie-plan"
+        ".dotty/commands/install-godspeed-js"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
-        ".dotty/commands/sync-dev-checkouts"
+        ".dotty/commands/sync-devtools"
         ".dotty/commands/sync-tmux-agent-bar"
         ".githooks/pre-commit"
         "home/.config/tmux/agent-status-hook.sh"
@@ -163,7 +163,7 @@ run_bash_syntax() {
         "scripts/install-nvim-js-tools.sh"
         "scripts/check"
         "scripts/check-prose.sh"
-        "scripts/sync-dev-checkouts.sh"
+        "scripts/sync-devtools.sh"
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
@@ -188,16 +188,16 @@ assert_expected_executables() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/commands/brew-sync"
-        ".dotty/commands/install-jackie-plan"
+        ".dotty/commands/install-godspeed-js"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
-        ".dotty/commands/sync-dev-checkouts"
+        ".dotty/commands/sync-devtools"
         ".dotty/commands/sync-tmux-agent-bar"
         "install.sh"
         "scripts/brew-sync.sh"
         "scripts/check"
         "scripts/check-prose.sh"
-        "scripts/sync-dev-checkouts.sh"
+        "scripts/sync-devtools.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
@@ -213,7 +213,8 @@ assert_expected_executables() {
         "home/.config/tmux/codex-agent-status-hook.sh"
         "home/.config/tmux/session-status-left.sh"
         "home/.config/tmux/session-status-refresh.sh"
-        "tests/dev-checkouts/test-sync.sh"
+        "tests/devtools/fixtures/log-install.sh"
+        "tests/devtools/test-sync.sh"
         "tests/television/test-setup.sh"
     )
     local file
@@ -316,9 +317,9 @@ run_brew_sync_tests() {
     "$PROJECT_ROOT/tests/brew-sync/test-brew-sync.sh"
 }
 
-run_dev_checkout_tests() {
-    log "Running development checkout sync tests"
-    "$PROJECT_ROOT/tests/dev-checkouts/test-sync.sh"
+run_devtool_tests() {
+    log "Running devtool sync tests"
+    "$PROJECT_ROOT/tests/devtools/test-sync.sh"
 }
 
 run_sesh_tests() {
@@ -418,7 +419,7 @@ run_core_checks() {
 run_extended_checks() {
     run_core_checks
     run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
-    run_phase "development checkout sync tests" 0 run_dev_checkout_tests
+    run_phase "devtool sync tests" 0 run_devtool_tests
     run_phase "sesh setup regression tests" 0 run_sesh_tests
     run_phase "Television regression tests" 0 run_television_tests
     run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
@@ -457,12 +458,14 @@ run_staged_checks() {
     fi
 
     if changed_any \
-        ".dotty/dev-checkouts.tsv" \
-        ".dotty/commands/sync-dev-checkouts" \
+        ".dotty/commands/install-godspeed-js" \
+        ".dotty/commands/sync-devtools" \
+        ".dotty/devtools.tsv" \
         ".dotty/run.sh" \
-        "scripts/sync-dev-checkouts.sh" \
-        "tests/dev-checkouts/*"; then
-        run_phase "development checkout sync tests" 0 run_dev_checkout_tests
+        "scripts/sync-devtools.sh" \
+        "tests/devtools/*" \
+        "tests/devtools/fixtures/*"; then
+        run_phase "devtool sync tests" 0 run_devtool_tests
     fi
 
     if changed_any \
