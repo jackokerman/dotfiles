@@ -3,7 +3,7 @@ id: 2026-06-26-design-config-driven-devtool-repo-management
 title: Design config-driven devtool repo management
 state: ready-to-implement
 createdAt: 2026-06-26T17:42:12.482Z
-updatedAt: 2026-07-14T16:50:18.630Z
+updatedAt: 2026-07-14T16:56:58.041Z
 sourcePlan: 2026-06-26-implement-integrated-dev-tool-metadata-for-jackie-plan
 ---
 
@@ -78,7 +78,9 @@ The first slice should:
 - Keep checkout-only tools such as `comment-width-check`, `oxlint-config`, and `tmux-agent-bar` in the same manifest with an empty install field.
 - Convert Jackie Plan so repo URL, branch, checkout path, and installer dispatch come from the manifest instead of being repeated across the manifest, `scripts/sync-dev-checkouts.sh`, and `.dotty/commands/install-jackie-plan`.
 - Convert the GodspeedJS install path so `dotty update` dispatches it through the manifest instead of dedicated `setup_godspeed_js` logic in `.dotty/run.sh`.
+- Keep the dotfiles repo, dotty's own repo-chain update flow, and later repos in the dotty chain outside this devtool manifest. Those are the system that applies configuration; this manifest is for external editable devtool checkouts managed by that system.
 - Leave runtime-only tools out of the first slice unless the implementation naturally supports them without extra branching. The priority is editable devtool repos that are intended to live under `~/src`.
+- Update user-facing and agent-facing documentation in the same change, including the README command table and setup prose, `docs/agent-tooling.md`, relevant `AGENTS.md` mental-model guidance, and manifest comments or examples.
 
 ## Non-Goals
 
@@ -87,12 +89,13 @@ The first slice should:
 - Do not add YAML or another parser dependency for this manifest.
 - Do not make the manifest executable shell code.
 - Do not add per-machine override machinery unless the implementation hits a real current need.
-- Do not make dotty self-management part of this slice.
+- Do not make dotty self-management, dotfiles repo cloning, dotty-chain repo updates, or later-repo orchestration part of this slice.
 - Do not route every runtime-only checkout through the devtool model before proving it on editable devtool repos.
 
 ## Acceptance Criteria
 
 - A tracked TSV manifest can declare at least Jackie Plan and GodspeedJS as installed devtools and at least one checkout-only devtool.
+- The manifest is scoped to external editable devtool checkouts, not the dotfiles repo itself, dotty's own repo-chain update flow, or later repos in the dotty chain.
 - `dotty update` and `dotty run sync-dev-checkouts` continue to converge declared devtool repos without prompting for Git credentials.
 - Missing declared devtool repos are cloned to their configured location.
 - Clean declared repos on the configured branch fast-forward when their origin matches the manifest.
@@ -103,7 +106,10 @@ The first slice should:
 - `repo:` install actions run with the configured checkout as the working directory, and `dotty:` install actions run with the dotfiles repo as the working directory.
 - Jackie Plan installation runs from the configured checkout, and any remaining legacy runtime-checkout compatibility behavior is removed or converted into explicit cleanup rather than kept as ongoing install logic.
 - GodspeedJS installation is driven by the manifest instead of dedicated `setup_godspeed_js` logic in `.dotty/run.sh`.
-- Docs explain the new manifest, how to add a checkout-only or installed personal devtool, the `DOTTY_DEVTOOL_*` install-action environment contract, and when to use this model versus a runtime-only checkout.
+- README setup prose and command tables describe the new manifest and any command-name or file-name changes.
+- `docs/agent-tooling.md` explains how to add checkout-only and installed personal devtools, the `DOTTY_DEVTOOL_*` install-action environment contract, and when to use this model versus a runtime-only checkout.
+- Relevant `AGENTS.md` mental-model guidance is updated if the source-of-truth boundary, command surface, or dotty-chain routing guidance changes.
+- The manifest itself includes enough header comments or examples that adding a new devtool does not require reverse-engineering the parser.
 - Focused tests cover manifest parsing, checkout-only tools, installed tools, skipped dirty/customized repos, install dispatch for both repo-owned and dotfiles-owned commands, working-directory selection, and the `DOTTY_DEVTOOL_*` environment contract.
 
 ## Readiness Assessment
@@ -112,7 +118,4 @@ The plan is still worth doing because the repo already has repeated devtool cere
 
 ## Agent handoff
 
-Refined install-dispatch metadata passing after user approved env vars over positional arguments. The plan now requires install actions to receive metadata through `DOTTY_DEVTOOL_NAME`, `DOTTY_DEVTOOL_CHECKOUT_DIR`, `DOTTY_DEVTOOL_REPO_URL`, and `DOTTY_DEVTOOL_BRANCH`. It also specifies that `repo:` actions run with the checkout as cwd, `dotty:` actions run with the dotfiles repo as cwd, and the implementation should not add a duplicate positional-argument metadata API.
-
-Process notes
-- User asked only to update the plan; do not infer approval to implement, commit, push, or change lifecycle state.
+Captured final refinement before closeout: dotfiles itself should not be managed by the devtool manifest. Dotfiles, dotty repo-chain updates, and later repos are the configuration application system; the new manifest is for external editable devtool checkouts managed by that system. Also made documentation requirements explicit: implementation must update README setup prose/command tables, docs/agent-tooling.md, relevant AGENTS.md mental-model guidance, and manifest comments/examples.
