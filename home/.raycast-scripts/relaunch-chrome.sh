@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # @raycast.schemaVersion 1
-# @raycast.title Restart Chrome
+# @raycast.title Relaunch Chrome
 # @raycast.mode compact
 # @raycast.icon 🔄
 # @raycast.packageName Window Manager
 
-# Restart Chrome and restore window workspace assignments.
+# Relaunch Chrome and restore window workspace assignments.
 # Saves current positions, triggers chrome://restart, waits for windows
 # to reappear with stable titles, then moves them back.
 set -euo pipefail
@@ -80,7 +80,7 @@ done <<< "${windows}"
 expected=${#saved_workspaces[@]}
 old_ids=$(get_chrome_windows | cut -d'|' -f1 | sort)
 
-# Trigger restart
+# Trigger relaunch
 osascript -e 'tell application "Google Chrome" to open location "chrome://restart"'
 
 # Wait for old windows to disappear
@@ -231,4 +231,4 @@ result="${moved} moved, ${already} already correct"
 if (( unmatched > 0 )); then
   result="${result}, ${unmatched} unmatched"
 fi
-echo "Restarted Chrome: ${result}"
+echo "Relaunched Chrome: ${result}"
