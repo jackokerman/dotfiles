@@ -58,7 +58,7 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` development checkouts exist, installs the pinned upstream `fzf` binary on Linux, installs Jackie Plan from `~/src/jackie-plan`, and links the private GodspeedJS CLI from `~/src/godspeed-js`.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` development checkouts exist, installs the pinned upstream `fzf` binary on Linux, installs Jackie Plan from `~/src/jackie-plan`, and links the private GodspeedJS CLIs from `~/src/godspeed-js`.
 
 ## Daily Use
 
@@ -68,7 +68,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 | Command | Use |
 | --- | --- |
-| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, install the pinned upstream `fzf` binary on Linux, ensure selected `~/src` development checkouts exist, and link the private GodspeedJS CLI. |
+| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, install the pinned upstream `fzf` binary on Linux, ensure selected `~/src` development checkouts exist, and link the private GodspeedJS CLIs. |
 | `dotty run brew-sync` | Install packages from the tracked `Brewfile` on supported Homebrew hosts. Includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |

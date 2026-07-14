@@ -588,11 +588,11 @@ setup_godspeed_js() {
         return 0
     fi
 
-    info "Installing GodspeedJS CLI"
+    info "Installing GodspeedJS CLIs"
     bun install --cwd "$repo_dir" --frozen-lockfile --silent \
         || die "Failed to install GodspeedJS dependencies"
     bun run --cwd "$repo_dir" install:local \
-        || die "Failed to link GodspeedJS CLI"
+        || die "Failed to link GodspeedJS CLIs"
 }
 
 setup_dev_checkouts() {
