@@ -3,7 +3,7 @@ id: 2026-06-27-design-sesh-config-layering-for-the-dotty-chain
 title: Design sesh config layering for the dotty chain
 state: ready-to-implement
 createdAt: 2026-06-27T19:49:58.297Z
-updatedAt: 2026-06-27T19:53:31.832Z
+updatedAt: 2026-07-14T18:32:09.408Z
 ---
 
 # Design sesh config layering for the dotty chain
@@ -12,212 +12,109 @@ updatedAt: 2026-06-27T19:53:31.832Z
 
 ## Problem
 
-The repo already layers `sesh` config across the dotty chain, but it does so by blindly concatenating each repo's `home/.config/sesh/sesh.toml` into one generated live file during `dotty update`.
+The repo already layers `sesh` config across the dotty chain, but it does so by blindly concatenating each repo's `home/.config/sesh/sesh.toml` into one generated live `~/.config/sesh/sesh.toml` during `dotty update`.
 
-That works for simple additive snippets, but it is not an explicit extension model and it breaks down once we need clearer ownership for:
+That works for simple additive snippets, but it is not an explicit extension model. It becomes risky when the chain needs clear ownership for:
 
-- portable shared sessions defined in the public base repo
-- private or work-specific sessions defined in later repos
+- portable shared sessions that should work on personal machines and any host using this base repo
+- host-specific or private sessions supplied by later repos in the dotty chain
 - overlapping or duplicated session/window definitions
-- scalar `sesh` settings such as `default_session`, `dir_length`, `sort_order`, `blacklist`, and `[tui]`
-- long-lived local `sesh` glue that may now overlap with upstream features added since the last real audit
+- scalar `sesh` settings such as `default_session`, `dir_length`, `git_dir_length`, `sort_order`, `blacklist`, `cache`, `separator_aware`, `tmux_command`, `[frecency]`, and `[tui]`
+- long-lived local picker and remote-session glue that may overlap with upstream `sesh` functionality added since the last real audit
 
-This plan is only for the public/base-layer extensibility mechanism in `dotfiles`. It does not try to define the work-specific session inventory itself; that belongs in a later repo once the layering contract exists.
+This plan is for the public/base-layer extensibility mechanism in `dotfiles`. It should not define private or host-specific session inventory; later repos own those fragments once the base layering contract exists.
 
-## Confirmed findings
+## Current confirmations
 
-- Local repo inspection on 2026-06-27 shows `setup_sesh` in `.dotty/run.sh` reading each repo's `home/.config/sesh/sesh.toml` from `~/.dotty/registry` and concatenating them into live `~/.config/sesh/sesh.toml`.
-- Local test inspection on 2026-06-27 shows `tests/sesh/test-setup.sh` only verifying concatenated fragment output; there is no session-aware merge contract yet.
-- Local tracked config inspection on 2026-06-27 shows this repo's `home/.config/sesh/sesh.toml` currently only sets `dir_length = 2`.
-- Local wrapper inspection on 2026-06-27 shows remote/non-local session behavior currently lives outside native `sesh` config, via `home/.local/bin/sesh-pick`, `~/.cache/sesh-extra-entries`, and `~/.config/sesh/hooks/{refresh.d,connect.d}`.
-- Local CLI verification on 2026-06-27 confirmed `sesh version 2.26.2`.
-- Upstream `sesh` source verification on 2026-06-27 confirmed native `import = [..]` support in `sesh.toml`.
-- Upstream parser verification on 2026-06-27 confirmed imports only append `[[session]]`, `[[window]]`, and `[[wildcard]]` entries. They do not merge or override `default_session`, `dir_length`, `sort_order`, `blacklist`, `tmux_command`, `strict_mode`, or `[tui]`.
-- Upstream README/source verification on 2026-06-27 confirmed wildcard precedence is order-sensitive: if multiple wildcard configs match, the first one in config order wins.
-- Upstream release review on 2026-06-27 confirmed recent feature growth that this repo has not audited yet, especially `v2.25.0` on 2026-04-13 adding wildcard config improvements, reusable windows for wildcards, pane listing/connection, and tmux window management.
-- Upstream issue review on 2026-06-27 confirmed:
-  - `joshmedeski/sesh#234` (`sesh list option for ssh config`) has been open since 2025-03-07, with maintainer guidance pointing users toward static `[[session]]` entries or the broader custom-sources idea.
-  - `joshmedeski/sesh#235` (`Custom Sources`) has been open since 2025-03-07 and was updated on 2026-03-31 after a follow-up proposal from `jackokerman`; the maintainer said they are open to a purely additive PR, suggested `connect_command` terminology, and called out cache quality/performance concerns.
-- Current tracked docs already describe `home/.config/sesh/sesh.toml` as the portable baseline and say later repos own their own session definitions, but the implementation contract is still only raw concatenation.
+- Repo inspection on 2026-07-14 shows `setup_sesh` in `.dotty/run.sh` still reads each repo's `home/.config/sesh/sesh.toml` from `~/.dotty/registry` and concatenates them into the live config.
+- `tests/sesh/test-setup.sh` still only verifies concatenated whole-file output and symlink-to-real-directory migration. There is no import-aware or duplicate-aware regression coverage yet.
+- This repo's tracked `home/.config/sesh/sesh.toml` currently only sets `dir_length = 2` and says session definitions belong in later repos.
+- Local wrapper inspection on 2026-07-14 shows extra/non-local session behavior still lives outside native `sesh` config through `home/.local/bin/sesh-pick`, `home/.local/bin/sesh-one-shot`, `~/.cache/sesh-extra-entries`, and `~/.config/sesh/hooks/{refresh.d,connect.d}`.
+- Homebrew currently provides `sesh` `v2.27.0`, released 2026-07-13. Host-managed Homebrew policy already permits the package on the work laptop, so no package-approval follow-up is needed before using the Homebrew binary.
+- On this machine, `~/go/bin/sesh` is earlier on `PATH` than `/opt/homebrew/bin/sesh` and reports `sesh version dev`. Homebrew warns that the approved `sesh` binary is shadowed. The active mismatch is local PATH/manual-install cleanup, not package approval.
+- Upstream `sesh` source on `main` still supports `import = [...]` in `sesh.toml`. Imports are resolved through `~`, environment variables, or absolute paths.
+- Upstream import resolution appends only `[[session]]`, `[[window]]`, and `[[wildcard]]` entries from imported files. It does not merge or override scalar/root settings such as `cache`, `default_session`, `dir_length`, `git_dir_length`, `sort_order`, `blacklist`, `strict_mode`, `separator_aware`, `tmux_command`, `[frecency]`, or `[tui]`.
+- Upstream wildcard behavior is order-sensitive: explicit `[[session]]` entries win over wildcards, and when multiple wildcards match, the first matching wildcard in config order wins.
+- Upstream `v2.27.0` docs and release notes include functionality worth auditing before preserving local glue: native imports, reusable `[[window]]` layouts, wildcard windows, `sesh window`, `sesh mkdir`, opt-in cache plus `sesh cache refresh`, custom `[frecency]`, built-in picker TUI settings, `git_dir_length`, and `tmux_command`.
+- Upstream issue review on 2026-07-14 shows `joshmedeski/sesh#234` and `joshmedeski/sesh#235` are still open. Maintainer guidance still points SSH-style dynamic sources toward static `[[session]]` entries today or a future custom-sources/rules design; the prior maintainer feedback on `#235` prefers `connect_command` terminology and treats cache quality/performance as first-class concerns.
+- Current tracked docs already describe `home/.config/sesh/sesh.toml` as the portable baseline and say later repos own their own session definitions, but the implementation and tests still encode the older raw-concatenation contract.
 
-## Recommended direction
+## Target contract
 
-Do not start with a general-purpose TOML merge CLI.
+Use `sesh`'s native import mechanism instead of building a general-purpose TOML merge layer.
 
-Start with `sesh`'s native import mechanism and make the layering contract explicit:
+The base repo should own one root `home/.config/sesh/sesh.toml` for global/scalar settings and portable defaults. Later repos in the dotty chain should contribute additive fragment files for `[[session]]`, `[[window]]`, and `[[wildcard]]` entries only.
 
-- Keep one root `sesh.toml` owner in the base repo for global/scalar settings and any portable defaults that should remain single-source.
-- Keep portable shared `[[session]]` entries in that root config unless they clearly benefit from moving into a first-party fragment later.
-- Introduce additive tracked fragment files for later repos, likely under something like `home/.config/sesh/imports/`, for `[[session]]`, `[[window]]`, and `[[wildcard]]` entries only.
-- Have `setup_sesh` generate live `~/.config/sesh/imports/*.toml` files and a root live `~/.config/sesh/sesh.toml` that references them through durable `~/.config/...` import paths.
-- Preserve dotty registry order when generating the import list so layering remains predictable.
-- Treat duplicate session/window names across fragments as an explicit error in v1 rather than silently shadowing or inventing partial override semantics.
-- Keep duplicate or overlapping wildcard behavior aligned with upstream ordering rules in v1; document the precedence clearly instead of trying to outsmart it.
-- Keep the generator inline in `.dotty/run.sh` for the first implementation pass. Move it to a Bun/TypeScript helper only if the final contract becomes too awkward to maintain inline.
+`dotty update` should render a real live `~/.config/sesh/` directory containing:
 
-If real override pressure still remains after the import-based design lands, then design a second-phase merge layer with an explicit override contract instead of smuggling that behavior into concatenation.
+- a generated root `~/.config/sesh/sesh.toml` copied from the base root config plus an `import = [...]` list
+- generated imported fragment files under a stable live subdirectory such as `~/.config/sesh/imports/`
+- import paths that are durable from any current working directory, preferably using `~/.config/...` paths or absolute live paths
 
-## Companion sesh hygiene track
+The import list should preserve dotty registry order so wildcard precedence and visible listing order are deterministic.
 
-Pair the layering change with a small `sesh` hygiene audit so we stop carrying stale local complexity by accident.
+## Concrete design decisions
 
-The audit should explicitly compare the current local wrapper surface against upstream features now available in `sesh`, especially:
+- Keep global/scalar settings single-source in the base root `sesh.toml`. Later repos must not contribute whole root configs that change scalar behavior by concatenation.
+- Add a portable base `home` session in this repo because it is useful on personal machines and generic across hosts. Use a stable identifier such as `name = "home"` and `path = "~"`. Do not bake an icon into the identifier unless the implementation verifies that `sesh-pick`, hook routing, and `sesh connect` all preserve a stable machine-readable name. Prefer native `sesh list --icons` or picker presentation for the home icon.
+- Keep private, work, remote, and machine-family-specific sessions out of this public repo. Those belong in later repo fragments after the import contract lands.
+- Treat duplicate `[[session]].name` and duplicate `[[window]].name` across the generated root and all imported fragments as clear `dotty update` errors. Do not silently shadow or invent partial override semantics.
+- Do not fail on duplicate or overlapping `[[wildcard]].pattern` in v1. Follow upstream first-match ordering and document that later repos can narrow behavior only by controlling fragment order, not by overriding earlier wildcard entries.
+- Start with the generator inline in `.dotty/run.sh`, matching the current setup style. Move it to a small Bun/TypeScript helper only if duplicate detection, import rendering, or validation makes the shell implementation meaningfully hard to read.
+- Prefer current upstream `sesh` features over local wrappers where they directly replace existing behavior. Keep local wrappers only when they still solve a concrete need that upstream does not cover.
 
-- native `import` support
-- wildcard configs and wildcard windows
-- reusable `[[window]]` layouts
-- pane and window management commands
-- opt-in cache behavior
-- built-in picker TUI capabilities
-- `tmux_command` / multiplexer support
-
-The goal is not to rewrite the workflow around every new upstream feature. The goal is to decide which local customizations are still justified, which should be simplified, and which should remain because they solve needs upstream still does not cover.
-
-## Upstream SSH/custom-sources follow-up
-
-Treat the remote-session path as an explicit upstream follow-up, not hidden local lore.
-
-- Re-read the current local remote-session hooks alongside upstream issues `#234` and `#235`.
-- Decide whether the right next move is:
-  - keep the local workaround and post a short status update on `#235`
-  - narrow and close `#234` as effectively subsumed by `#235`
-  - or intentionally defer upstream work with a recorded reason if the local layering change reduces urgency
-- If the custom-sources direction still looks worth pursuing, keep any future proposal aligned with the maintainer feedback already given on 2026-03-31: prefer `connect_command` terminology and treat cache behavior/performance as first-class design constraints.
-
-## Why this is the right first slice
-
-- `sesh` already exposes a supported extension boundary for the additive parts that matter most here: sessions, windows, and wildcards.
-- A custom merge tool immediately creates hard questions around scalar ownership, wildcard precedence, duplicate-name policy, and future docs burden.
-- The stated need sounds like base shared sessions plus later-repo session additions, which imports can solve without adding a second config language or control surface.
-- The repo's tracked `sesh` config is currently minimal, so a targeted audit has a good chance of simplifying the setup instead of merely moving complexity around.
-- This keeps one explicit source of truth for global settings while still letting later repos contribute their own session sets.
+If real override pressure remains after the import-based design lands, capture a separate second-phase plan for explicit merge/override semantics instead of smuggling override behavior into concatenation.
 
 ## Implementation slices
 
-1. Audit current local `sesh` usage against recent upstream features and record explicit adopt/ignore decisions for imports, windows, wildcards, panes, cache, picker, and multiplexer support.
-2. Re-read the local remote-session workaround and upstream issues `#234`/`#235`, then record the intended upstream follow-up so the SSH/custom-sources direction is not left ambiguous.
-3. Trace the current producer/consumer path for `setup_sesh` across tracked source, registry traversal, live output, docs, and tests.
-4. Replace the current multi-repo concatenation of `home/.config/sesh/sesh.toml` with a single root-config model plus imported fragment discovery.
-5. Define and document the tracked fragment contract for later repos.
-   Example contract:
-   - the base repo owns `home/.config/sesh/sesh.toml`
-   - later repos own only fragment files for `[[session]]`, `[[window]]`, and `[[wildcard]]`
-6. Generate live imported fragments into the real `~/.config/sesh/` directory during `dotty update` using durable paths that do not depend on the caller's current working directory.
-7. Add validation and regression coverage for:
-   - import generation order
-   - existing symlink-to-real-directory migration behavior
-   - duplicate session/window detection
-   - import-path durability
-8. Update `README.md`, `AGENTS.md`, and any deeper docs to document the new ownership model, the hygiene conclusions, and the removal of the old implicit concatenation contract.
-9. Capture any work/private follow-up in the later repo only after the base layering mechanism exists.
+1. Verify the effective `sesh` binary before coding. Resolve any stale `PATH` shadowing or explicitly use the intended binary for docs/source checks and smoke tests.
+2. Re-check upstream `sesh` docs/source for the current `import`, `window`, `wildcard`, `cache`, `frecency`, `picker`, `mkdir`, `git_dir_length`, and `tmux_command` behavior. Record only implementation-relevant adopt/keep/ignore conclusions in repo docs.
+3. Trace the existing producer/consumer path for `setup_sesh`: tracked source config, dotty registry traversal, live `~/.config/sesh/` output, `sesh-pick`, hook directories, docs, and tests.
+4. Replace raw multi-repo concatenation of `home/.config/sesh/sesh.toml` with a root-config plus imported-fragments model.
+5. Define the tracked fragment contract for later repos. Recommended shape:
+   - base repo owns `home/.config/sesh/sesh.toml`
+   - later repos own additive files under `home/.config/sesh/imports/*.toml`
+   - imported files may contain `[[session]]`, `[[window]]`, and `[[wildcard]]` only
+6. Add the base `home` session in the portable root or a first-party base fragment, keeping `home` as the stable identifier.
+7. Generate live imported fragments into the real `~/.config/sesh/imports/` directory during `dotty update`, with durable import paths in the generated root config.
+8. Add validation and focused regression coverage for import generation order, symlink-to-real-directory migration, duplicate session/window detection, rejection of scalar settings in imported fragments, stale generated-fragment cleanup, and import-path durability.
+9. Update `README.md`, `AGENTS.md`, and any deeper docs that mention `sesh` ownership or generated config. Replace the old implicit whole-file concatenation model with the new root-plus-imports contract.
+10. Revisit `sesh-pick` and `sesh-one-shot` after the generation contract works. Use upstream `sesh cache refresh`, built-in picker behavior, window management, or other native features only where they clearly simplify current local glue without losing remote-session support.
+11. Give the SSH/custom-sources path an explicit disposition. Either leave the local workaround with rationale, post a concise update on `joshmedeski/sesh#235`, cross-link `#234` as effectively subsumed by `#235`, or capture a separate upstream follow-up plan. Do not block the base layering change on upstream work.
+12. Capture any private or host-specific session migration as follow-up work in the later repo after the base layering mechanism exists.
 
 ## Acceptance criteria
 
-- The public base repo can define portable `sesh` defaults and shared sessions without copying work/private session definitions into this repo.
-- Later repos in the dotty chain can add `sesh` sessions, windows, and wildcards without editing the base repo's root `sesh.toml`.
-- `dotty update` produces a durable working `~/.config/sesh/sesh.toml` plus any imported fragment files.
-- Duplicate session/window definitions fail clearly instead of shadowing silently.
-- Order-sensitive upstream behavior stays deterministic and documented.
-- The implementation records which current local `sesh` customizations are still justified after auditing current upstream features.
-- The SSH/custom-sources path has an explicit disposition: update `#235`, deliberately leave it alone with rationale, and/or close or cross-link `#234` if it is effectively subsumed.
-- Docs and regression tests describe and protect the new contract.
+- The public base repo defines portable `sesh` defaults and a generic `home` session without copying private or host-specific session definitions into this repo.
+- Later repos in the dotty chain can add `sesh` sessions, windows, and wildcards by adding import fragments, without editing the base root `sesh.toml`.
+- `dotty update` produces a durable working `~/.config/sesh/sesh.toml` plus imported fragment files under the real live `~/.config/sesh/` directory.
+- Generated imports preserve dotty registry order.
+- Duplicate session/window definitions fail clearly during generation or validation instead of shadowing silently.
+- Imported fragments cannot change scalar/root settings by accident.
+- Wildcard precedence stays aligned with upstream first-match behavior and is documented.
+- The implementation records which current local `sesh` customizations are still justified after checking current upstream functionality.
+- The SSH/custom-sources path has an explicit disposition, even if the disposition is to keep the local workaround and defer upstream work.
+- Docs and regression tests describe and protect the new layering contract.
 
 ## Verification to run when implementing
 
-- `sesh --help`
+- `command -v sesh`, `sesh --version`, and the package-manager `sesh` binary if PATH shadowing is present
+- `sesh --help`, `sesh list --help`, `sesh picker --help`, and help for any newly adopted commands such as `sesh cache`, `sesh window`, or `sesh mkdir`
 - the focused `tests/sesh/` regression lane
 - `dotty update`
 - a live smoke test such as `sesh list -c` after generation
-- `./scripts/check --quiet` or `./scripts/check --extended --quiet`, depending on final change scope
+- direct picker smoke verification if `sesh-pick` labels, icons, hooks, or cache behavior change
+- `./scripts/check --quiet`, or `./scripts/check --extended --quiet` if the change touches broad generated-config, shell helper, or tmux/picker behavior
 - `git status --short --branch` before any commit/push
+
+## Next honest step
+
+Complete the source-linked `sesh` binary provenance cleanup plan first so the Homebrew `sesh` binary is the effective `sesh` command. Then update `setup_sesh` and `tests/sesh/test-setup.sh` around the new root-plus-imports contract before touching picker or remote-session behavior.
 
 ## Agent handoff
 
-# Design sesh config layering for the dotty chain
+Cleaned up the ready-to-implement contract on 2026-07-14 after user-led refinement.
 
-## Plan
+Kept the import-based direction, removed the stale duplicated handoff body, updated upstream/local confirmations for current `sesh` `v2.27.0`, and made the personal/base-vs-later-repo boundary explicit. Added a concrete base `home` session requirement with stable identifier guidance, clarified that icons should stay presentation unless verified across picker/connect boundaries, and kept private/host-specific sessions routed to later repo fragments.
 
-## Problem
-
-The repo already layers `sesh` config across the dotty chain, but it does so by blindly concatenating each repo's `home/.config/sesh/sesh.toml` into one generated live file during `dotty update`.
-
-That works for simple additive snippets, but it is not an explicit extension model and it breaks down once we need clearer ownership for:
-
-- portable shared sessions defined in the public base repo
-- private or work-specific sessions defined in later repos
-- overlapping or duplicated session/window definitions
-- scalar `sesh` settings such as `default_session`, `dir_length`, `sort_order`, `blacklist`, and `[tui]`
-
-This plan is only for the public/base-layer extensibility mechanism in `dotfiles`. It does not try to define the work-specific session inventory itself; that belongs in a later repo once the layering contract exists.
-
-## Confirmed findings
-
-- Local repo inspection on 2026-06-27 shows `setup_sesh` in `.dotty/run.sh` reading each repo's `home/.config/sesh/sesh.toml` from `~/.dotty/registry` and concatenating them into live `~/.config/sesh/sesh.toml`.
-- Local test inspection on 2026-06-27 shows `tests/sesh/test-setup.sh` only verifying concatenated fragment output; there is no session-aware merge contract yet.
-- Local CLI verification on 2026-06-27 confirmed `sesh version 2.26.2`.
-- Upstream `sesh` source verification on 2026-06-27 confirmed native `import = [..]` support in `sesh.toml`.
-- Upstream parser verification on 2026-06-27 confirmed imports only append `[[session]]`, `[[window]]`, and `[[wildcard]]` entries. They do not merge or override `default_session`, `dir_length`, `sort_order`, `blacklist`, `tmux_command`, `strict_mode`, or `[tui]`.
-- Upstream README/source verification on 2026-06-27 confirmed wildcard precedence is order-sensitive: if multiple wildcard configs match, the first one in config order wins.
-- Current tracked docs already describe `home/.config/sesh/sesh.toml` as the portable baseline and say later repos own their own session definitions, but the implementation contract is still only raw concatenation.
-
-## Recommended direction
-
-Do not start with a general-purpose TOML merge CLI.
-
-Start with `sesh`'s native import mechanism and make the layering contract explicit:
-
-- Keep one root `sesh.toml` owner in the base repo for global/scalar settings and any portable defaults that should remain single-source.
-- Introduce additive tracked fragment files for session definitions across the dotty chain, likely under something like `home/.config/sesh/imports/`.
-- Have `setup_sesh` generate live `~/.config/sesh/imports/*.toml` files and a root live `~/.config/sesh/sesh.toml` that references them through durable `~/.config/...` import paths.
-- Preserve dotty registry order when generating the import list so layering remains predictable.
-- Treat duplicate session/window names across fragments as an explicit error in v1 rather than silently shadowing or inventing partial override semantics.
-
-If real override pressure still remains after the import-based design lands, then design a second-phase merge layer with an explicit override contract instead of smuggling that behavior into concatenation.
-
-## Why this is the right first slice
-
-- `sesh` already exposes a supported extension boundary for the additive parts that matter most here: sessions, windows, and wildcards.
-- A custom merge tool immediately creates hard questions around scalar ownership, wildcard precedence, duplicate-name policy, and future docs burden.
-- The stated need sounds like base shared sessions plus later-repo session additions, which imports can solve without adding a second config language or control surface.
-- This keeps one explicit source of truth for global settings while still letting later repos contribute their own session sets.
-
-## Implementation slices
-
-1. Trace the current producer/consumer path for `setup_sesh` across tracked source, registry traversal, live output, docs, and tests.
-2. Replace the current multi-repo concatenation of `home/.config/sesh/sesh.toml` with a single root-config model plus imported fragment discovery.
-3. Define the tracked fragment contract for later repos.
-   Example contract:
-   - the base repo owns `home/.config/sesh/sesh.toml`
-   - later repos own only fragment files for `[[session]]`, `[[window]]`, and `[[wildcard]]`
-4. Generate live imported fragments into the real `~/.config/sesh/` directory during `dotty update` using durable paths that do not depend on the caller's current working directory.
-5. Add validation and regression coverage for:
-   - import generation order
-   - existing symlink-to-real-directory migration behavior
-   - duplicate session/window detection
-   - import-path durability
-6. Update `README.md`, `AGENTS.md`, and any deeper docs to document the new ownership model and remove the old implicit concatenation contract.
-7. Capture any work/private follow-up in the later repo only after the base layering mechanism exists.
-
-## Acceptance criteria
-
-- The public base repo can define portable `sesh` defaults and shared sessions without copying work/private session definitions into this repo.
-- Later repos in the dotty chain can add `sesh` sessions, windows, and wildcards without editing the base repo's root `sesh.toml`.
-- `dotty update` produces a durable working `~/.config/sesh/sesh.toml` plus any imported fragment files.
-- Order-sensitive upstream behavior stays deterministic and documented.
-- Duplicate session/window definitions fail clearly instead of shadowing silently.
-- Docs and regression tests describe and protect the new contract.
-
-## Open decisions to resolve during implementation
-
-- Whether portable shared `[[session]]` entries should stay in the root `sesh.toml` or move into a first-party imported fragment for symmetry.
-- Whether duplicate wildcard patterns should also fail or simply follow import order, since upstream wildcard precedence is intentionally order-based.
-- Whether the live generator should stay inline in `.dotty/run.sh` or move to a small Bun/TypeScript helper once the contract is concrete. Start inline unless the implementation proves too awkward.
-
-## Verification to run when implementing
-
-- `sesh --help`
-- the focused `tests/sesh/` regression lane
-- `dotty update`
-- a live smoke test such as `sesh list -c` after generation
-- `./scripts/check --quiet` or `./scripts/check --extended --quiet`, depending on final change scope
-- `git status --short --branch` before any commit/push
+Follow-up research confirmed `sesh` is already permitted by host-managed Homebrew policy on the work laptop, so package approval is not a blocker. The remaining prerequisite is local binary precedence cleanup: `~/go/bin/sesh` shadows `/opt/homebrew/bin/sesh`, so the source-linked cleanup plan should make the Homebrew binary effective before implementing this config-layering plan.
