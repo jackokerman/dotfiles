@@ -1,115 +1,41 @@
 ---
 name: godspeed-tasks
-description: Generic Godspeed list and label discovery, inbox triage, and API-backed task organization for a mirrored GTD setup with work and personal folders. Use when Codex needs to inspect Godspeed lists, summarize inbox or active tasks, or apply explicit task updates through the Godspeed API without tracking personal taxonomy in the repo.
+description: Manage Godspeed tasks through the mirrored Work/Personal GTD workflow. Use when Codex needs list or label discovery, inbox or active-task summaries, task capture or completion, labeling, smart lists, or inbox triage through godspeed-gtd.
 ---
 
 # Godspeed Tasks
 
-## Overview
+## Workflow
 
-Use this skill for Godspeed work under the mirrored `🏢 Work` and `🏡 Personal` folders. The public repo owns only the generic mechanics and organization model:
+Use `godspeed-gtd` for the opinionated workflow and `godspeed` for generic API diagnostics or exact resource operations. Run `godspeed-gtd --help` for command syntax.
 
-- folders are top-level contexts,
-- GTD lists are state,
-- labels are categories or areas,
-- projects stay in task and subtask structure.
-
-Do not track personal category names, keyword taxonomies, or smart-list definitions in this repo. Discover labels and categories at runtime through the API and the current prompt.
-
-## Authentication
-
-Prefer Bun env-file injection over sourcing shell startup files in one-off commands. Keep machine-local Godspeed credentials in a dedicated dotenv file such as `~/.config/godspeed/tasks.env`, then run the helper with:
+Prefer Bun env-file injection for machine-local credentials:
 
 ```bash
 bun --env-file "$HOME/.config/godspeed/tasks.env" "$(command -v godspeed-gtd)" lists
 ```
 
-Falling back to an already-exported `GODSPEED_API_TOKEN` is fine. Do not source `~/.zshenv.local` unless you are fixing auth plumbing itself.
+An exported `GODSPEED_API_TOKEN` is also valid. Do not source shell startup files unless fixing auth plumbing.
 
-## Core Commands
+Treat folders as contexts, GTD lists as state, labels as categories or areas, and task/subtask structure as projects. Resolve the `📥 Inbox`, `⚡ Next Actions`, and `🌱 Someday` children dynamically under `🏢 Work` and `🏡 Personal`; ignore the root Godspeed Inbox. Keep scopes separate unless the user explicitly requests both.
 
-Use the installed `godspeed-gtd` workflow helper from the private `godspeed-js` checkout. Keep `godspeed` for generic API diagnostics and exact resource operations.
+## Mutation Safety
 
-```bash
-godspeed-gtd lists
-godspeed-gtd labels
-godspeed-gtd inbox --scope personal
-godspeed-gtd snapshot --scope work
-```
-
-For explicit objective writes:
-
-```bash
-godspeed-gtd task create --folder personal --state next-actions --title "Review the migration follow-up" --label server --due 2026-06-23
-godspeed-gtd task complete --task-id <task-id>
-godspeed-gtd label ensure --name server
-godspeed-gtd label add --name server --task-id <task-id>
-godspeed-gtd label remove --name server --task-id <task-id>
-```
-
-For heuristic or bulk categorization:
-
-```bash
-godspeed-gtd bulk-label preview --label server --scope personal --contains docker --contains torrent
-godspeed-gtd bulk-label apply --label server --task-id <task-id> --task-id <task-id>
-```
-
-For smart-list planning:
-
-```bash
-godspeed-gtd smart-list plan --folder personal --label server
-godspeed-gtd smart-list ensure --folder personal --label server --name "Server"
-```
-
-Smart-list verification note:
-- Do not assume `GET /tasks?list_id=<smart-list-id>` reflects smart-list membership. In this setup the API can return an empty task array even for existing smart lists like `Today`. Verify smart-list creation from `/lists`, and treat in-app rendering as the reliable membership check unless the API behavior changes.
-
-## Discovery Rules
-
-- Ignore the top-level default Godspeed Inbox. Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`.
-- Keep work and personal separate unless the user explicitly asks for cross-folder organization.
-- Resolve folder children dynamically by name and type:
-  - `📥 Inbox`
-  - `⚡ Next Actions`
-  - `🌱 Someday`
-- Use the API as the write surface. Do not mutate local Godspeed storage directly.
-
-## Mutation Rules
-
-- Direct writes are fine for explicit, objective operations on explicit targets.
-- For explicit follow-up capture, prefer `godspeed-gtd task create` over ad hoc raw API calls.
-- For explicit completion, use `godspeed-gtd task complete`. Godspeed task completion uses the `/todo_items/bulk_update` transport; direct `/tasks/<id>` patches can return success while leaving the task incomplete.
-- When capturing a new follow-up task and its priority is unclear, prefer `inbox` over guessing `next-actions` or `someday`. Let the user triage it during review.
-- When a needed Godspeed workflow is missing from the helper, extend the private `godspeed-js` checkout and its tests before reaching for ad hoc Python or Node scripts.
-- Prefer direct API observation through the tracked helper or Bun probes over reverse engineering the desktop app bundle. Treat local bundle inspection as a last resort for undocumented behavior, and capture any confirmed contract back into the helper immediately.
-- Require a preview or approval step before bulk, heuristic, or subjective categorization changes.
-- When a category label already exists, discover it dynamically. When it does not exist and the user explicitly asked for it, create it through the API.
-- Use `--due YYYY-MM-DD` for date-only reminders. The helper stores that as a timeless due date.
-- Keep runtime criteria in the current session. Do not persist personal label names or matching rules into tracked repo config.
+- Use the API through the CLI; never mutate local Godspeed storage.
+- Execute explicit, objective writes on explicit targets directly. Capture ambiguous-priority tasks in `inbox` rather than guessing another state.
+- Require preview or approval before bulk, heuristic, subjective, or inferred categorization. Apply bulk labels only to explicit reviewed task IDs.
+- Complete tasks through `godspeed-gtd task complete`; direct task patches can report success without completing the task.
+- Discover labels at runtime. Create a missing label only when explicitly requested. Keep personal category names, matching rules, and smart-list definitions out of tracked config.
+- Treat `/lists` and the app as the reliable smart-list verification surfaces; task queries by smart-list ID can return empty results despite valid membership.
+- Extend `godspeed-js` and its tests when a workflow is missing. Prefer tracked CLI/client probes over ad hoc scripts or desktop-bundle inspection.
 
 ## Inbox Triage
 
-For inbox-review requests, keep using the normalized inbox snapshot and recommend exactly one outcome per task:
+Use the normalized inbox snapshot and recommend exactly one outcome per task:
 
 - `candidate_for_completion`
 - `move_to_next_actions`
 - `move_to_someday`
 - `stay_in_inbox`
 
-Use `candidate_for_completion` only when strong local evidence suggests the task is already done, superseded, or no longer actionable.
-
-## Local Evidence Pass
-
-- Run local evidence gathering only when the helper marks a task as `localEvidenceEligible`.
-- Keep the pass quick and non-mutating. Preferred commands:
-  - `rg`
-  - `rg --files`
-  - `find`
-  - `ls`
-  - `test -e`
-  - `sed -n`
-  - `git status --short`
-  - `git log --oneline`
-  - `git grep`
-- Do not do broad web research as part of routine inbox triage.
-- If the evidence pass is inconclusive, fall back to normal triage and do not use `candidate_for_completion`.
+Use `candidate_for_completion` only with strong evidence that the task is done, superseded, or no longer actionable. Gather local evidence only when `localEvidenceEligible` is true. Keep checks narrow and non-mutating with tools such as `rg`, file-existence checks, and scoped Git status or history. Do not do broad web research; if evidence is inconclusive, use a normal non-completion outcome.

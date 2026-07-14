@@ -1,4 +1,4 @@
 interface:
   display_name: "Godspeed Tasks"
-  short_description: "Generic Godspeed discovery, inbox triage, and API-backed task organization."
-  default_prompt: "Use $godspeed-tasks to inspect or organize Godspeed through the API, keep public repo guidance generic, use explicit writes for objective edits, and require preview or approval before bulk or heuristic categorization."
+  short_description: "Manage mirrored Godspeed GTD tasks safely."
+  default_prompt: "Use $godspeed-tasks to inspect or organize mirrored Work/Personal Godspeed tasks while preserving scope and mutation safeguards."
