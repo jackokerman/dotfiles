@@ -3,13 +3,11 @@ id: 2026-07-14-make-jackie-plan-installer-install-only-friendly-for-manifest
 title: Make Jackie Plan installer install-only friendly for manifest-driven callers
 state: inbox
 createdAt: 2026-07-14T17:30:53.737Z
-updatedAt: 2026-07-14T17:30:53.737Z
+updatedAt: 2026-07-14T17:52:49.015Z
 sourcePlan: 2026-06-26-design-config-driven-devtool-repo-management
 ---
 
 # Make Jackie Plan installer install-only friendly for manifest-driven callers
-
-## Plan
 
 ## Plan
 
