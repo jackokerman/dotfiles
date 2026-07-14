@@ -1,6 +1,6 @@
 # Scripts
 
-This directory keeps stable shell entrypoints at the top level. Repo-maintenance TypeScript scripts live in `scripts/ts/` and share the root `package.json` and `bun.lock` dependencies.
+This directory keeps stable shell entrypoints at the top level. Repo-maintenance TypeScript scripts live in `scripts/ts/` and use Bun's script dependency resolution instead of a root package manifest.
 
 Use these conventions for new helpers:
 

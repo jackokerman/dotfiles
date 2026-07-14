@@ -333,28 +333,28 @@ run_television_tests() {
 
 run_karabiner_config_tests() {
     log "Running Karabiner config regression tests"
-    bun --install=auto test "$PROJECT_ROOT/tests/karabiner/karabiner-config.test.ts"
+    bun --install=fallback test "$PROJECT_ROOT/tests/karabiner/karabiner-config.test.ts"
 }
 
 run_codex_sync_tests() {
     log "Running Codex sync regression tests"
-    bun test "$PROJECT_ROOT/tests/codex/sync-codex.test.ts"
-    bun test "$PROJECT_ROOT/tests/codex/sync-ruler.test.ts"
+    bun --install=fallback test "$PROJECT_ROOT/tests/codex/sync-codex.test.ts"
+    bun --install=fallback test "$PROJECT_ROOT/tests/codex/sync-ruler.test.ts"
 }
 
 run_codex_config_coach_tests() {
     log "Running Codex config coach helper tests"
-    bun test "$PROJECT_ROOT/tests/codex-config-coach/codex-session-snippets.test.ts"
+    bun --install=fallback test "$PROJECT_ROOT/tests/codex-config-coach/codex-session-snippets.test.ts"
 }
 
 run_slack_rich_text_tests() {
     log "Running Slack rich-text helper tests"
-    bun --install=auto test "$PROJECT_ROOT/tests/slack-rich-text/slack-rich-text.test.ts"
+    bun --install=fallback test "$PROJECT_ROOT/tests/slack-rich-text/slack-rich-text.test.ts"
 }
 
 run_codex_theme_sync_check() {
     log "Checking Codex Nightfly theme generation"
-    bun --install=auto "$PROJECT_ROOT/scripts/ts/sync-codex-nightfly-theme.ts" --check
+    bun --install=fallback "$PROJECT_ROOT/scripts/ts/sync-codex-nightfly-theme.ts" --check
 }
 
 run_common_checks() {

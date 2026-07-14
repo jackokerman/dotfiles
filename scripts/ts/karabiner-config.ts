@@ -15,7 +15,7 @@ import {
   withCondition,
   withMapper,
   writeToProfile,
-} from "karabiner.ts";
+} from "karabiner.ts@1.37.0";
 
 const PROFILE_NAME = "Default profile";
 const appleMagicKeyboardWithTouchId: DeviceIdentifier = {
@@ -75,7 +75,7 @@ async function normalizeKeyboardDevices(configPath: string) {
  * Magic Keyboard except Touch ID. Creates a default profile and config
  * directory if they don't exist.
  *
- * Run with: bun run scripts/ts/karabiner-config.ts
+ * Run with: bun --install=fallback run scripts/ts/karabiner-config.ts
  */
 async function main() {
   const configPath = `${homedir()}/.config/karabiner/karabiner.json`;

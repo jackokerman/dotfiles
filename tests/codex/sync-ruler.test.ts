@@ -80,7 +80,7 @@ function writeFakeRuler(dir: string) {
 }
 
 function runSync(args: string[]) {
-  return Bun.spawnSync(["bun", "run", syncScript, ...args], {
+  return Bun.spawnSync(["bun", "--install=fallback", "run", syncScript, ...args], {
     cwd: repoRoot,
     stderr: "pipe",
     stdout: "pipe",

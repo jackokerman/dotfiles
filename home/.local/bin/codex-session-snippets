@@ -5,4 +5,4 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 lib_path="${script_dir%/bin}/lib/codex-session-snippets.ts"
 
-exec bun --install=auto "$lib_path" "$@"
+exec bun --install=fallback "$lib_path" "$@"

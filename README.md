@@ -71,7 +71,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 | `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, install the pinned upstream `fzf` binary on Linux, ensure selected `~/src` development checkouts exist, and link the private GodspeedJS CLIs. |
 | `dotty run brew-sync` | Install packages from the tracked `Brewfile` on supported Homebrew hosts. Includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
-| `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun run scripts/ts/karabiner-config.ts` for a narrower refresh. |
+| `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` for a narrower refresh. |
 | `dotty run sync-dev-checkouts` | Clone or conservatively fast-forward tracked development repos listed in `.dotty/dev-checkouts.tsv` under `~/src`. Private entries rely on your machine GitHub auth. |
 
 ### Validation

@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import { mergeWith } from "es-toolkit";
-import { parse as parseToml, stringify } from "smol-toml";
-import { parse as parseYaml } from "yaml";
+import { mergeWith } from "es-toolkit@1.45.1";
+import { parse as parseToml, stringify } from "smol-toml@1.4.2";
+import { parse as parseYaml } from "yaml@2.8.1";
 import {
   cpSync,
   existsSync,

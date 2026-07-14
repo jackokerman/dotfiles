@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 const helperScript = resolve(import.meta.dir, "run-helper.ts");
 
 function runHelper(command: "paste-script" | "payload" | "render" | "select" | "trim", payload: Record<string, string | null>) {
-  const result = spawnSync("bun", ["--install=auto", helperScript, command, JSON.stringify(payload)], {
+  const result = spawnSync("bun", ["--install=fallback", helperScript, command, JSON.stringify(payload)], {
     cwd: resolve(import.meta.dir, "../.."),
     encoding: "utf8",
   });
@@ -18,7 +18,7 @@ function runHelper(command: "paste-script" | "payload" | "render" | "select" | "
 }
 
 function runCli(args: string[], input: string) {
-  return spawnSync("bun", ["--install=auto", "home/.local/lib/slack-rich-text.ts", ...args], {
+  return spawnSync("bun", ["--install=fallback", "home/.local/lib/slack-rich-text.ts", ...args], {
     cwd: resolve(import.meta.dir, "../.."),
     encoding: "utf8",
     input,

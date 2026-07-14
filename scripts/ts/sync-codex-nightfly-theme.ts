@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { build, parse } from "plist";
+import { build, parse } from "plist@3.1.0";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 

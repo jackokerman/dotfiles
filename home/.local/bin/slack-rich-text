@@ -7,4 +7,4 @@ lib_path="${script_dir%/bin}/lib/slack-rich-text.ts"
 
 export PATH="${HOME}/.bun/bin:${PATH}"
 
-exec bun --install=auto "$lib_path" "$@"
+exec bun --install=fallback "$lib_path" "$@"

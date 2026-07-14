@@ -409,17 +409,8 @@ setup_claude() {
 # Codex: keep ~/.codex as a real directory so local runtime state remains
 # local, then generate the managed instruction, config, and hook files from
 # tracked source fragments.
-ensure_dotfiles_bun_dependencies() {
-    if [[ ! -d "$DOTFILES/node_modules" ]]; then
-        info "Installing dotfiles Bun dependencies"
-    fi
-
-    bun install --cwd "$DOTFILES" --frozen-lockfile --silent \
-        || die "Failed to install dotfiles Bun dependencies"
-}
-
 run_dotfiles_bun_script() {
-    bun run "$@"
+    bun --install=fallback run "$@"
 }
 
 setup_codex() {
@@ -442,7 +433,6 @@ setup_codex() {
         return 0
     fi
 
-    ensure_dotfiles_bun_dependencies
     mkdir -p "$codex_dir"
 
     if [[ -d "$portable_skills_src_dir" ]]; then

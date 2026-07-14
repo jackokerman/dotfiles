@@ -62,7 +62,7 @@ function writeKarabinerConfig(homeDir: string, contents: KarabinerConfig) {
 }
 
 function runKarabinerConfig(homeDir: string) {
-  return Bun.spawnSync(["bun", "--install=auto", "run", karabinerScript], {
+  return Bun.spawnSync(["bun", "--install=fallback", "run", karabinerScript], {
     cwd: repoRoot,
     env: { ...process.env, HOME: homeDir },
     stderr: "pipe",
