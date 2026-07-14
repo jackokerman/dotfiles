@@ -3,7 +3,7 @@ id: 2026-06-26-design-config-driven-devtool-repo-management
 title: Design config-driven devtool repo management
 state: ready-to-implement
 createdAt: 2026-06-26T17:42:12.482Z
-updatedAt: 2026-07-14T16:56:58.041Z
+updatedAt: 2026-07-14T17:16:45.828Z
 sourcePlan: 2026-06-26-implement-integrated-dev-tool-metadata-for-jackie-plan
 ---
 
@@ -31,6 +31,8 @@ This is for personal tooling, not a public package manager. Prefer a direct mode
 ## Config Format Decision
 
 Use a richer line-oriented TSV manifest rather than YAML, JSON, or sourced Bash arrays. This repo already parses TSV in Bash, and TSV keeps `dotty update` independent of `yq`, `jq`, Ruby, Node, Bun, or Python being available during early setup.
+
+Rename the manifest to `.dotty/devtools.tsv`. The manifest now owns both checkout sync and optional install dispatch, so devtools-oriented naming is clearer than keeping checkout-only names. Preserve a `dotty run sync-devtools` command surface. Keep `dotty run sync-dev-checkouts` only if the implementation finds a real current caller that needs a short compatibility wrapper; otherwise remove or migrate the old command in the same change.
 
 Do not make the manifest executable shell code. The manifest should stay declarative data that Bash can parse with `IFS=$'\t' read -r ...`, validate per row, and report clearly when a row is malformed.
 
@@ -74,13 +76,28 @@ Implement the richer manifest around the existing development checkout flow, the
 
 The first slice should:
 
-- Replace or migrate `.dotty/dev-checkouts.tsv` into the richer TSV manifest rather than adding a parallel config path.
+- Replace or migrate `.dotty/dev-checkouts.tsv` into `.dotty/devtools.tsv` rather than adding a parallel config path.
 - Keep checkout-only tools such as `comment-width-check`, `oxlint-config`, and `tmux-agent-bar` in the same manifest with an empty install field.
 - Convert Jackie Plan so repo URL, branch, checkout path, and installer dispatch come from the manifest instead of being repeated across the manifest, `scripts/sync-dev-checkouts.sh`, and `.dotty/commands/install-jackie-plan`.
 - Convert the GodspeedJS install path so `dotty update` dispatches it through the manifest instead of dedicated `setup_godspeed_js` logic in `.dotty/run.sh`.
+- Rename the shared sync implementation and dotty command surface around devtools. Preserve old checkout naming only as a deliberately scoped compatibility wrapper if a real current caller requires it.
 - Keep the dotfiles repo, dotty's own repo-chain update flow, and later repos in the dotty chain outside this devtool manifest. Those are the system that applies configuration; this manifest is for external editable devtool checkouts managed by that system.
 - Leave runtime-only tools out of the first slice unless the implementation naturally supports them without extra branching. The priority is editable devtool repos that are intended to live under `~/src`.
 - Update user-facing and agent-facing documentation in the same change, including the README command table and setup prose, `docs/agent-tooling.md`, relevant `AGENTS.md` mental-model guidance, and manifest comments or examples.
+
+## Migration and Cleanup Expectations
+
+Treat this as a real migration, not a new abstraction around old files. Rename the manifest and command surface to devtools-oriented names, update all repo docs and checks, and remove the old checkout-only config path instead of leaving both active.
+
+On the current machine, run the narrow sync/install path and then `dotty update` so existing declared checkouts, Jackie Plan, GodspeedJS, and any legacy Jackie Plan runtime-checkout state are reconciled through the new manifest-driven flow.
+
+For fresh-machine confidence, tests should cover an empty checkout root cloning declared devtools and dispatching installs from the manifest. If a true personal-machine `dotty update` validation cannot be performed during implementation, leave a checkpoint or follow-up that says exactly what remains to verify there; do not split the implementation just for that.
+
+## Implementation Stopping Points
+
+Implement this as one change. Stop and ask the user only if the manifest design needs per-machine overrides, runtime-only checkout handling, destructive cleanup of a real existing checkout, or a repo-owned installer does not expose a usable command.
+
+Otherwise, make conservative naming and migration choices, complete the docs and tests, run the documented verification, run the local sync/update validation, and hand the completed change back for final review.
 
 ## Non-Goals
 
@@ -94,9 +111,9 @@ The first slice should:
 
 ## Acceptance Criteria
 
-- A tracked TSV manifest can declare at least Jackie Plan and GodspeedJS as installed devtools and at least one checkout-only devtool.
+- A tracked TSV manifest at `.dotty/devtools.tsv` can declare at least Jackie Plan and GodspeedJS as installed devtools and at least one checkout-only devtool.
 - The manifest is scoped to external editable devtool checkouts, not the dotfiles repo itself, dotty's own repo-chain update flow, or later repos in the dotty chain.
-- `dotty update` and `dotty run sync-dev-checkouts` continue to converge declared devtool repos without prompting for Git credentials.
+- `dotty update` and `dotty run sync-devtools` continue to converge declared devtool repos without prompting for Git credentials.
 - Missing declared devtool repos are cloned to their configured location.
 - Clean declared repos on the configured branch fast-forward when their origin matches the manifest.
 - Dirty, branch-mismatched, or origin-mismatched repos are skipped with explicit warnings rather than overwritten.
@@ -106,6 +123,8 @@ The first slice should:
 - `repo:` install actions run with the configured checkout as the working directory, and `dotty:` install actions run with the dotfiles repo as the working directory.
 - Jackie Plan installation runs from the configured checkout, and any remaining legacy runtime-checkout compatibility behavior is removed or converted into explicit cleanup rather than kept as ongoing install logic.
 - GodspeedJS installation is driven by the manifest instead of dedicated `setup_godspeed_js` logic in `.dotty/run.sh`.
+- Existing current-machine declared checkouts and installs are reconciled by the new manifest-driven path after running the narrow sync/install command and `dotty update`.
+- Fresh-machine behavior is covered by tests that start with an empty checkout root, clone declared devtools, and dispatch manifest installs.
 - README setup prose and command tables describe the new manifest and any command-name or file-name changes.
 - `docs/agent-tooling.md` explains how to add checkout-only and installed personal devtools, the `DOTTY_DEVTOOL_*` install-action environment contract, and when to use this model versus a runtime-only checkout.
 - Relevant `AGENTS.md` mental-model guidance is updated if the source-of-truth boundary, command surface, or dotty-chain routing guidance changes.
@@ -116,6 +135,8 @@ The first slice should:
 
 The plan is still worth doing because the repo already has repeated devtool ceremony: checkout metadata lives in `.dotty/dev-checkouts.tsv`, while installed tools require separate hook functions or command scripts. The contract is ready once the implementation sticks to the TSV manifest and install-dispatch model above. Avoid expanding the slice into a general package manager or runtime checkout framework.
 
+This should be implemented as one shot with final review after validation, not split into separate implementation plans. The plan includes explicit stopping points for cases that would make unsupervised migration risky.
+
 ## Agent handoff
 
-Captured final refinement before closeout: dotfiles itself should not be managed by the devtool manifest. Dotfiles, dotty repo-chain updates, and later repos are the configuration application system; the new manifest is for external editable devtool checkouts managed by that system. Also made documentation requirements explicit: implementation must update README setup prose/command tables, docs/agent-tooling.md, relevant AGENTS.md mental-model guidance, and manifest comments/examples.
+Refined implementation contract after user review. User deferred naming to the agent; chose `.dotty/devtools.tsv` and `dotty run sync-devtools` as clearer now that the manifest covers checkout sync plus install dispatch. User raised fresh-machine and cleanup confidence as the main concern. Updated the plan to treat current-machine reconciliation and empty-checkout fresh-machine behavior as acceptance criteria, and to implement as one shot with explicit stopping points only for real migration risks: per-machine overrides, runtime-only checkout handling, destructive cleanup of a real checkout, or an unusable repo-owned installer.
