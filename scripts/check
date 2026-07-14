@@ -365,7 +365,7 @@ run_ts_script_tooling() {
     (
         cd "$PROJECT_ROOT"
         bunx --silent oxlint@1.72.0 --deny-warnings scripts/ts
-        bunx --silent -p @jackokerman/oxlint-config@1.7.0 jack-oxfmt-config check
+        bunx --silent -p @jackokerman/oxlint-config@1.7.0 jack-oxfmt-config check scripts/ts/.oxfmtrc.json
         bunx --silent oxfmt@0.57.0 --check scripts/ts
         bunx --silent @jackokerman/comment-width-check@1.1.0 scripts/ts
 

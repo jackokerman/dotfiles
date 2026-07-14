@@ -9,4 +9,4 @@ Use these conventions for new helpers:
 - Put installed CLI implementations in `home/.local/lib/` with a wrapper in `home/.local/bin/`.
 - Keep feature tests under `tests/<feature>/`.
 - Wire the narrow staged check and full-suite check in `scripts/check`.
-- Keep `scripts/ts/` formatted with the root `.oxfmtrc.json`; `scripts/check` runs the pinned `bunx` TypeScript tooling stack without reintroducing a root package manifest.
+- Keep `scripts/ts/` formatted with `scripts/ts/.oxfmtrc.json`; `scripts/check` runs the pinned `bunx` TypeScript tooling stack without reintroducing a root package manifest.
