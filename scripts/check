@@ -239,6 +239,19 @@ run_zsh_syntax() {
     (cd "$PROJECT_ROOT" && zsh -n "${files[@]}")
 }
 
+run_ruby_syntax() {
+    local -a files=(
+        "Brewfile"
+        "scripts/brewfile_helpers.rb"
+    )
+    local file
+
+    log "Checking Ruby syntax"
+    for file in "${files[@]}"; do
+        ruby -c "$PROJECT_ROOT/$file" >/dev/null
+    done
+}
+
 assert_zsh_runtime_inputs_removed() {
     local path
 
@@ -347,6 +360,7 @@ run_codex_theme_sync_check() {
 run_common_checks() {
     run_phase "bash syntax" 0 run_bash_syntax
     run_phase "zsh syntax" 0 run_zsh_syntax
+    run_phase "Ruby syntax" 0 run_ruby_syntax
     run_phase "expected executable files" 0 assert_expected_executables
     run_phase "zsh source/runtime boundary" 0 assert_zsh_runtime_inputs_removed
     run_phase "zsh bootstrap boundary" 0 assert_zsh_bootstrap_boundary
