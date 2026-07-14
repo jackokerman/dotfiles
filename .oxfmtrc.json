@@ -1,0 +1,18 @@
+{
+	"printWidth": 80,
+	"useTabs": true,
+	"tabWidth": 2,
+	"singleQuote": true,
+	"semi": true,
+	"trailingComma": "all",
+	"bracketSpacing": false,
+	"jsdoc": {
+		"commentLineStrategy": "keep",
+		"lineWrappingStyle": "greedy"
+	},
+	"sortImports": {
+		"newlinesBetween": true
+	},
+	"sortPackageJson": false,
+	"ignorePatterns": []
+}

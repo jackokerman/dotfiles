@@ -357,6 +357,30 @@ run_codex_theme_sync_check() {
     bun --install=fallback "$PROJECT_ROOT/scripts/ts/sync-codex-nightfly-theme.ts" --check
 }
 
+run_ts_script_tooling() {
+    local slop_report=""
+    local findings=""
+
+    log "Checking TypeScript script tooling"
+    (
+        cd "$PROJECT_ROOT"
+        bunx --silent oxlint@1.72.0 --deny-warnings scripts/ts
+        bunx --silent -p @jackokerman/oxlint-config@1.7.0 jack-oxfmt-config check
+        bunx --silent oxfmt@0.57.0 --check scripts/ts
+        bunx --silent @jackokerman/comment-width-check@1.1.0 scripts/ts
+
+        slop_report="$(mktemp "${TMPDIR:-/tmp}/dotfiles-slop-scan.XXXXXX")"
+        bunx --silent slop-scan@0.3.0 scan scripts/ts --json >"$slop_report"
+        findings="$(bun -e 'const report = JSON.parse(await Bun.file(process.argv[1]).text()); console.log(report.summary.findingCount);' "$slop_report")"
+        if [[ "$findings" != "0" ]]; then
+            bunx --silent slop-scan@0.3.0 scan scripts/ts --lint >&2
+            rm -f "$slop_report"
+            return 1
+        fi
+        rm -f "$slop_report"
+    )
+}
+
 run_common_checks() {
     run_phase "bash syntax" 0 run_bash_syntax
     run_phase "zsh syntax" 0 run_zsh_syntax
@@ -383,6 +407,7 @@ run_full_checks() {
 
 run_core_checks() {
     run_common_checks
+    run_phase "TypeScript script tooling" 0 run_ts_script_tooling
     run_phase "Codex sync regression tests" 0 run_codex_sync_tests
     run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
     run_phase "Codex sync input validation" 0 run_codex_sync_validation
@@ -456,6 +481,10 @@ run_staged_checks() {
         "home/.config/television/themes/*" \
         "tests/television/*"; then
         run_phase "Television regression tests" 0 run_television_tests
+    fi
+
+    if changed_any "scripts/ts/*.ts"; then
+        run_phase "TypeScript script tooling" 0 run_ts_script_tooling
     fi
 
     if changed_any "scripts/ts/karabiner-config.ts" "tests/karabiner/*"; then
