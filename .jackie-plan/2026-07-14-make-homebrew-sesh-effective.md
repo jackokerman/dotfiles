@@ -3,7 +3,7 @@ id: 2026-07-14-make-homebrew-sesh-effective
 title: Make Homebrew sesh effective
 state: ready-to-implement
 createdAt: 2026-07-14T18:31:24.058Z
-updatedAt: 2026-07-14T18:31:45.390Z
+updatedAt: 2026-07-14T18:36:02.522Z
 sourcePlan: 2026-06-27-design-sesh-config-layering-for-the-dotty-chain
 ---
 
@@ -69,4 +69,12 @@ Prefer removing the obsolete manually installed `~/go/bin/sesh` binary if nothin
 
 ## Next honest step
 
-Start by confirming whether `~/go/bin/sesh` is still needed. If it is just a stale manual development build, remove or quarantine it and verify that the Homebrew `sesh` becomes the effective command in a fresh shell.
+Review the completed local cleanup and verification results. Do not commit, push, mark `ready-to-ship`, mark `complete`, or archive this plan until the user explicitly approves follow-through.
+
+## Agent handoff
+
+Removed the stale untracked `/Users/jackokerman/go/bin/sesh` binary after confirming it was a March 2026 manual/dev executable, Go is not available in the normal shell, and no tracked or local config references that exact manual path.
+
+Verification now passes: `command -v sesh` resolves to `/opt/homebrew/bin/sesh`, `sesh --version` and `/opt/homebrew/bin/sesh --version` both report `sesh version 2.27.0`, `brew info sesh` no longer prints the shadowing caveat, and the requested `sesh` help surfaces (`--help`, `list`, `picker`, `cache`, `window`, `mkdir`) all exit successfully.
+
+No tracked shell startup, docs, or repo source changes were needed. Stop at the review gate before commit, push, lifecycle transition, or archival unless the user explicitly approves follow-through.
