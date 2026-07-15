@@ -16,6 +16,14 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 - Preserve the user's intended level of certainty. Do not overstate, soften, or pad claims unless the user asks.
 - When the user iterates aloud on phrasing, treat their latest wording as the source of truth. Return one lightly cleaned-up version, and avoid adding new labels, framing, or structure unless they asked for it.
 
+## Workplace Prose Voice
+
+- For Slack messages, PR descriptions, PR comments, Jira comments, review comments, and review requests, keep the final draft close to lightly cleaned-up spoken workplace prose.
+- Prefer personal, first-person phrasing when the user is speaking for themselves, such as `I don't love this`, `from what I can tell`, and `I'd be happy to be proven wrong`.
+- Do not make PR comments or Slack messages sound like polished technical documentation unless the user asks for that tone.
+- Avoid phrases the user has rejected, such as `sanity check` or `re-land`, unless the user provides them.
+- When deeper style calibration is needed, collect approved examples and rejected rewrites before adding more durable rules. Do not infer a broad voice model from one draft alone.
+
 ## Technical Identifiers
 
 - Wrap exact technical identifiers in backticks when the surface supports markdown. This includes file paths, commands, feature flags, package names, component names, hooks, functions, classes, exact operators such as `??`, and literal prop or field names.
