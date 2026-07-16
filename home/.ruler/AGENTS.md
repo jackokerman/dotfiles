@@ -71,6 +71,7 @@
 
 ## Tool Adoption Workflow
 - When adopting or configuring a new development tool, start with the smallest useful workflow that preserves the tool's core value. Keep optional automation, extra artifacts, and broad integrations off by default until repeated use shows they are worth the added ceremony.
+- Before adding a wrapper, hook, repair script, or generated workaround for a tool behavior, check whether the tool has a native config setting and whether this dotty chain already has a tracked config include or override layer for that tool. Use that existing config layer first when it can express the behavior.
 - Prefer a reversible, documented default path before adding custom wrappers or helper scripts. Add custom tooling only after the off-the-shelf workflow still causes repeated friction.
 - Keep native tool commands working when possible; wrappers should bootstrap, narrow, or document a workflow, not become the only place required state is set.
 - When building or changing tools that launch coding agents, generate agent prompts, or print agent commands, prefer agent-neutral contracts and config-driven agent selection over hard-coding one agent surface. If the workflow is intentionally single-agent, make that scope explicit in repo docs or config.
