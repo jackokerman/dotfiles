@@ -15,6 +15,19 @@ There is no universal tool that keeps arbitrary repo READMEs well-structured and
 
 For command-heavy README patterns, template/generator limits, and a large CLI stress case, read `references/readme-patterns.md`.
 
+## Strong Tool README Patterns
+
+For tools, CLIs, and terminal apps, a great README often wins by staging the reader's attention well:
+
+- Lead with a one-sentence identity statement, then a short paragraph that names the target environment, the core job, what the tool replaces or improves, and the major integration boundaries.
+- Put a real screenshot or demo near the top when the UI or workflow is the product. Prefer an image that shows the actual working state over decorative branding.
+- Keep install sections reversible and explicit: show the command, say what it changes, and give the matching uninstall or re-run path when setup touches user config.
+- Organize usage around workflows before exhaustive reference. Start with the default launch or common task, explain what the user sees, then cover interaction modes and state changes.
+- Use tables for dense lookup surfaces such as keybindings, states, config options, and command summaries. Use prose around the tables for nuance, caveats, and behavior that would not fit in cells.
+- Put safety gates and limitations next to the action they protect. If a command refuses unsafe states, preserves existing config, requires a version, or no-ops in some environment, say it where the reader would run it.
+- Use progressive disclosure: quick path and common flows first; theming, configuration, CLI reference, architecture, development, and license later.
+- Include a compact architecture diagram, state model, or invariant only when it helps the reader trust the behavior or debug it. Ground it in real producers, storage, refresh cadence, or ownership boundaries.
+
 ## Bootstrap Mode
 
 When a repo has no useful README, write one from repo truth instead of asking for a template. Start from this lightweight shape and remove sections that do not fit:
@@ -41,6 +54,7 @@ Treat this as scaffolding, not a required template. Prefer the repo's existing p
 3. Choose the smallest useful structure.
    - Prefer: overview, install or quick start, daily use or common tasks, layout, links to deeper docs.
    - For CLI repos, keep the top path task-oriented and split exhaustive options, hooks, config, troubleshooting, or maintainer workflows into later reference sections or `docs/`.
+   - For interactive tools, prefer workflow sections, state tables, and keybinding references over a flat feature list.
    - Do not impose generic template sections that do not fit the repo.
 4. Edit for scanability and freshness.
    - Put each command block next to why or when to run it.
@@ -61,11 +75,15 @@ Treat this as scaffolding, not a required template. Prefer the repo's existing p
 
 - The opening paragraph explains the repo without assuming prior context.
 - The first actionable path is obvious.
+- A UI or workflow-heavy project shows a concrete screenshot or demo before deep reference material.
 - Setup and daily-use commands are separated.
+- Install or integration steps describe side effects, reversibility, and preservation of existing user config when applicable.
 - Long or rare details link to deeper docs.
 - Headings form a usable table of contents when rendered.
 - Code blocks are not detached from their explanation.
 - Lists contain parallel items at the same level of detail.
+- Tables are used for dense reference data, not narrative that needs nuance.
+- Safety gates, constraints, and no-op behavior are documented next to the commands or actions they affect.
 - The README does not duplicate large chunks of docs that will drift.
 - The documented commands exist and still mean what the README says.
 - Adjacent docs and steering surfaces that describe the same behavior were checked and updated or explicitly ruled out.
