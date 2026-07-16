@@ -24,7 +24,7 @@ Treat folders as contexts, GTD lists as state, labels as categories or areas, an
 - Use the API through the CLI; never mutate local Godspeed storage.
 - Execute explicit, objective writes on explicit targets directly. Capture ambiguous-priority tasks in `inbox` rather than guessing another state.
 - Require preview or approval before bulk, heuristic, subjective, or inferred categorization. Apply bulk labels only to explicit reviewed task IDs.
-- Complete tasks through `godspeed-gtd task complete`; direct task patches can report success without completing the task.
+- Complete tasks through `godspeed-gtd task complete`, which completes and clears them by default. Use `--keep-uncleared` only when the completed task should remain visible with a strikethrough; direct task patches can report success without completing the task.
 - Discover labels at runtime. Create a missing label only when explicitly requested. Keep personal category names, matching rules, and smart-list definitions out of tracked config.
 - Treat `/lists` and the app as the reliable smart-list verification surfaces; task queries by smart-list ID can return empty results despite valid membership.
 - Extend `godspeed-js` and its tests when a workflow is missing. Prefer tracked CLI/client probes over ad hoc scripts or desktop-bundle inspection.
