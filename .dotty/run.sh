@@ -553,13 +553,6 @@ setup_codex() {
     fi
 }
 
-setup_devtools() {
-    local sync_script="$DOTFILES/scripts/sync-devtools.sh"
-
-    [[ -x "$sync_script" ]] || return 0
-    "$sync_script"
-}
-
 main() {
     setup_vscode
     setup_fzf
@@ -589,7 +582,6 @@ main() {
             ;;
     esac
 
-    setup_devtools
     setup_codex
 }
 

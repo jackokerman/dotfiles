@@ -44,7 +44,7 @@ gh auth status
 ssh -T git@github.com
 ```
 
-Private HTTPS devtool repos in this repo, including `jackie-plan`, rely on GitHub credentials being available to Git. After `dotty update`, the tracked Git config routes GitHub HTTPS through `gh auth git-credential`. If you want that wiring before the first successful `dotty update`, run `gh auth setup-git`.
+Managed checkout rows that require private GitHub credentials belong in later repos in the dotty chain. After `dotty update`, the tracked Git config routes GitHub HTTPS through `gh auth git-credential`. If you want that wiring before the first successful `dotty update`, run `gh auth setup-git`.
 
 This repo does not track `~/.ssh/`. Keep custom hosts, identities, or non-default key layouts in local SSH config or a later repo in the dotty chain.
 
@@ -64,7 +64,7 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and updates generated config. It also ensures selected `~/src` devtool repos exist and runs their configured install actions.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, syncs managed checkouts, reruns the repo hook, syncs pinned submodules, and updates generated config.
 
 ## Daily Use
 
@@ -74,18 +74,18 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 | Command | Use |
 | --- | --- |
-| `dotty update` | Refresh the active chain: links, hooks, generated config, submodules, Linux `fzf`, and devtool installs. |
+| `dotty update` | Refresh the active chain: managed checkouts, links, hooks, generated config, submodules, and Linux `fzf`. |
+| `dotty checkouts` | Clone or fast-forward clean managed checkouts from `.dotty/managed-checkouts.tsv` without re-linking dotfiles. |
 | `dotty run brew-sync` | Install tracked Homebrew packages; pass `--cleanup` only when you want to remove untracked packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
 | `dotty run macos-setup` | Reapply Touch ID, macOS defaults, Karabiner config, Handy settings, and fonts. |
-| `dotty run sync-devtools` | Clone or fast-forward clean devtool checkouts from `.dotty/devtools.tsv`, then run configured installs. |
 
 Notes:
 
 - `brew-sync` includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`, the base shell default.
 - Use `dotty run brew-sync` instead of invoking `brew bundle` directly so the helper preserves the pre-Homebrew command path for host-provided wrappers.
 - For Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` instead of the full macOS setup path.
-- Private devtool entries rely on your machine GitHub auth.
+- Private managed checkout rows belong in later repos and rely on your machine GitHub auth.
 
 ### Validation
 
@@ -138,7 +138,7 @@ Common places to edit:
 | sesh defaults | `home/.config/sesh/sesh.toml`. |
 | Raycast script commands | `home/.raycast-scripts/`. |
 | Codex and Claude tracked config | `home/.ruler/`, `home/.codex/`, and `home/.claude/`. |
-| Public devtool repos | `.dotty/devtools.tsv`. |
+| Public managed checkouts | `.dotty/managed-checkouts.tsv`. |
 
 Generated or real-directory notes:
 
