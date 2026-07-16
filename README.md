@@ -16,6 +16,12 @@ cd ~/dotfiles
 
 `./install.sh` bootstraps `dotty` if needed, links tracked files into `$HOME`, and runs the repo hook. It does not install Homebrew packages from `Brewfile`.
 
+To remove this repo's managed symlinks and restore backups that `dotty` created:
+
+```bash
+dotty uninstall dotfiles
+```
+
 Pinned repo submodules are synced during `./install.sh` and `dotty update`. Use `git clone --recurse-submodules` if you want a fully populated checkout immediately after clone.
 
 ## New machine
@@ -58,7 +64,7 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 - Add `~/.raycast-scripts` in Raycast Preferences > Extensions > Script Commands.
 - Bind the machine-specific action for `Hyper+Space` in the relevant app, local override, or later repo in the dotty chain.
 
-After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, ensures selected `~/src` devtool repos exist, installs the pinned upstream `fzf` binary on Linux, installs Jackie Plan from `~/src/jackie-plan`, and links the private GodspeedJS CLIs from `~/src/godspeed-js`.
+After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, reruns the repo hook, syncs pinned submodules, and updates generated config. It also ensures selected `~/src` devtool repos exist and runs their configured install actions.
 
 ## Daily Use
 
@@ -68,11 +74,18 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 | Command | Use |
 | --- | --- |
-| `dotty update` | Refresh symlinks, rerun setup hooks, render generated config, sync pinned submodules, install the pinned upstream `fzf` binary on Linux, ensure selected `~/src` devtool repos exist, and run their configured install actions. |
-| `dotty run brew-sync` | Install packages from the tracked `Brewfile` on supported Homebrew hosts. Includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`; use `--cleanup` to remove untracked Homebrew packages. |
+| `dotty update` | Refresh the active chain: links, hooks, generated config, submodules, Linux `fzf`, and devtool installs. |
+| `dotty run brew-sync` | Install tracked Homebrew packages; pass `--cleanup` only when you want to remove untracked packages. |
 | `dotty run install-nvim-js-tools` | Install the minimal Bun-backed Neovim JavaScript language-server toolchain. |
-| `dotty run macos-setup` | Reapply tracked macOS setup. After Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` for a narrower refresh. |
-| `dotty run sync-devtools` | Clone or conservatively fast-forward tracked devtool repos listed in `.dotty/devtools.tsv` and run each configured install action. Private entries rely on your machine GitHub auth. |
+| `dotty run macos-setup` | Reapply Touch ID, macOS defaults, Karabiner config, Handy settings, and fonts. |
+| `dotty run sync-devtools` | Clone or fast-forward clean devtool checkouts from `.dotty/devtools.tsv`, then run configured installs. |
+
+Notes:
+
+- `brew-sync` includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`, the base shell default.
+- Use `dotty run brew-sync` instead of invoking `brew bundle` directly so the helper preserves the pre-Homebrew command path for host-provided wrappers.
+- For Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` instead of the full macOS setup path.
+- Private devtool entries rely on your machine GitHub auth.
 
 ### Validation
 
@@ -114,18 +127,23 @@ Common places to edit:
 
 | Concern | Edit |
 | --- | --- |
-| Shell | `home/.zshenv` and `home/.config/zsh/` |
-| Git defaults | `home/.config/git/config`; use `~/.gitconfig.local` for machine-local overrides. |
-| Glow markdown rendering | `home/.config/glow/nightfly.json`; `dotty update` renders the live `~/.config/glow/glow.yml` with an absolute style path. |
-| Television fuzzy finder | `home/.config/television/`; `dotty update` links tracked config and themes into the live real directory. |
-| SSH hosts and identities | Local `~/.ssh/config` |
-| Keyboard remaps | `scripts/ts/karabiner-config.ts` |
-| Neovim | `home/.config/nvim/` |
-| tmux and related wrappers | `home/.config/tmux/` |
-| sesh defaults | `home/.config/sesh/sesh.toml`; `dotty update` renders the live `~/.config/sesh/sesh.toml` into a real `~/.config/sesh/` directory. |
-| Raycast script commands | `home/.raycast-scripts/` |
-| Codex and Claude tracked config | `home/.ruler/`, `home/.codex/`, and `home/.claude/` |
-| Public devtool repos | `.dotty/devtools.tsv` |
+| Shell | `home/.zshenv` and `home/.config/zsh/`. |
+| Git defaults | `home/.config/git/config`; machine-local overrides in `~/.gitconfig.local`. |
+| Glow markdown rendering | `home/.config/glow/nightfly.json`. |
+| Television fuzzy finder | `home/.config/television/`. |
+| SSH hosts and identities | Local `~/.ssh/config`. |
+| Keyboard remaps | `scripts/ts/karabiner-config.ts`. |
+| Neovim | `home/.config/nvim/`. |
+| tmux and related wrappers | `home/.config/tmux/`. |
+| sesh defaults | `home/.config/sesh/sesh.toml`. |
+| Raycast script commands | `home/.raycast-scripts/`. |
+| Codex and Claude tracked config | `home/.ruler/`, `home/.codex/`, and `home/.claude/`. |
+| Public devtool repos | `.dotty/devtools.tsv`. |
+
+Generated or real-directory notes:
+
+- `dotty update` renders live Glow config, Television config and themes, and sesh config when those sources change.
+- `~/.config/sesh/`, `~/.codex/`, and `~/.claude/` stay real directories so apps can write runtime state; edit tracked sources here, not generated live outputs.
 
 Keep the tracked Godspeed helper and guidance generic. Personal labels, matching rules, and smart-list definitions should be discovered or supplied at runtime.
 

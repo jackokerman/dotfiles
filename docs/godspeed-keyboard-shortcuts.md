@@ -34,18 +34,23 @@ Avoid these:
 
 Use workspace-first chords for predictable navigation, plus default-workspace aliases for the views used constantly on a given machine.
 
-Workspace navigation macros:
+Work workspace navigation macros:
 
 | Shortcut | Macro name | Behavior |
 | --- | --- | --- |
-| `ctrl + g w t` | `Jump to Work Today` | Show Work and jump to Work Today. |
-| `ctrl + g w i` | `Jump to Work Inbox` | Show Work and jump to Work Inbox. |
-| `ctrl + g w n` | `Jump to Work Next Actions` | Show Work and jump to Work Next Actions. |
-| `ctrl + g w s` | `Jump to Work Someday` | Show Work and jump to Work Someday. |
-| `ctrl + g p t` | `Jump to Personal Today` | Show Personal and jump to Personal Today. |
-| `ctrl + g p i` | `Jump to Personal Inbox` | Show Personal and jump to Personal Inbox. |
-| `ctrl + g p n` | `Jump to Personal Next Actions` | Show Personal and jump to Personal Next Actions. |
-| `ctrl + g p s` | `Jump to Personal Someday` | Show Personal and jump to Personal Someday. |
+| `ctrl + g w t` | `Jump to Work Today` | Show Work, then Today. |
+| `ctrl + g w i` | `Jump to Work Inbox` | Show Work, then Inbox. |
+| `ctrl + g w n` | `Jump to Work Next Actions` | Show Work, then Next Actions. |
+| `ctrl + g w s` | `Jump to Work Someday` | Show Work, then Someday. |
+
+Personal workspace navigation macros:
+
+| Shortcut | Macro name | Behavior |
+| --- | --- | --- |
+| `ctrl + g p t` | `Jump to Personal Today` | Show Personal, then Today. |
+| `ctrl + g p i` | `Jump to Personal Inbox` | Show Personal, then Inbox. |
+| `ctrl + g p n` | `Jump to Personal Next Actions` | Show Personal, then Next Actions. |
+| `ctrl + g p s` | `Jump to Personal Someday` | Show Personal, then Someday. |
 
 Default-workspace aliases:
 
@@ -58,16 +63,21 @@ Default-workspace aliases:
 
 On a work machine, the default workspace should be Work.
 
-Move macros:
+Work move macros:
 
 | Shortcut | Macro name | Behavior |
 | --- | --- | --- |
-| `ctrl + m w t` | Reserved for `Move to Work Today` | Not currently configured; Godspeed macros cannot reliably set a dynamic start date. |
-| `ctrl + m w n` | `Move to Work Next Actions` | Move selected task(s) to Work Next Actions. |
-| `ctrl + m w s` | `Move to Work Someday` | Move selected task(s) to Work Someday. |
-| `ctrl + m p t` | Reserved for `Move to Personal Today` | Not currently configured; Godspeed macros cannot reliably set a dynamic start date. |
-| `ctrl + m p n` | `Move to Personal Next Actions` | Move selected task(s) to Personal Next Actions. |
-| `ctrl + m p s` | `Move to Personal Someday` | Move selected task(s) to Personal Someday. |
+| `ctrl + m w t` | Reserved for `Move to Work Today` | Not configured; dynamic start dates are unreliable. |
+| `ctrl + m w n` | `Move to Work Next Actions` | Move selected task(s) there. |
+| `ctrl + m w s` | `Move to Work Someday` | Move selected task(s) there. |
+
+Personal move macros:
+
+| Shortcut | Macro name | Behavior |
+| --- | --- | --- |
+| `ctrl + m p t` | Reserved for `Move to Personal Today` | Not configured; dynamic start dates are unreliable. |
+| `ctrl + m p n` | `Move to Personal Next Actions` | Move selected task(s) there. |
+| `ctrl + m p s` | `Move to Personal Someday` | Move selected task(s) there. |
 
 Keep `M` as the fallback for uncommon moves.
 
