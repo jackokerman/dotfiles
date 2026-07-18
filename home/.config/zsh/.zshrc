@@ -18,35 +18,51 @@ _dotfiles_p10k_reset_cache_if_needed() {
   emulate -L zsh
 
   local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}"
-  local dump_file="${cache_dir}/p10k-dump-${(%):-%n}.zsh"
-  local instant_prompt_file="${cache_dir}/p10k-instant-prompt-${(%):-%n}.zsh"
-  local expected_left_prompt="dir vcs command_execution_time newline prompt_char"
-  local expected_gitstatus_disabled=0
-  local actual_gitstatus_disabled=0
+  local zsh_cache_dir="${ZSH_CACHE_DIR:-${cache_dir}/zsh}"
+  local user="${(%):-%n}"
+  local dump_file="${cache_dir}/p10k-dump-${user}.zsh"
+  local instant_prompt_file="${cache_dir}/p10k-instant-prompt-${user}.zsh"
+  local prompt_cache_dir="${cache_dir}/p10k-${user}"
+  local signature_file="${zsh_cache_dir}/p10k-layout-signature"
+  local signature_tmp="${signature_file}.$$"
+  local -a left_prompt_elements=(
+    dir
+    vcs
+    command_execution_time
+    newline
+    prompt_char
+  )
+  local gitstatus_disabled=0
+  local signature
 
   if (( ${+DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE} )); then
-    expected_left_prompt="${(j: :)DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE}"
+    left_prompt_elements=("${DOTFILES_P10K_LEFT_PROMPT_ELEMENTS_OVERRIDE[@]}")
   fi
 
   case "${${DOTFILES_P10K_DISABLE_GITSTATUS-}:l}" in
     1|true|yes|on)
-      expected_gitstatus_disabled=1
+      gitstatus_disabled=1
       ;;
   esac
 
-  [[ -r "${dump_file}" ]] || return
+  signature="v1|left=${(j: :)left_prompt_elements}|gitstatus=${gitstatus_disabled}"
 
-  command grep -Fq "_POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=( ${expected_left_prompt} )" "${dump_file}" || {
-    command rm -f -- "${dump_file}" "${dump_file}.zwc" "${instant_prompt_file}" "${instant_prompt_file}.zwc"
+  if [[ -r "${signature_file}" ]] && [[ "$(<"${signature_file}")" == "${signature}" ]]; then
+    return
+  fi
+
+  command mkdir -p -- "${zsh_cache_dir}" || return
+  print -r -- "${signature}" >| "${signature_tmp}" || {
+    command rm -f -- "${signature_tmp}"
     return
   }
 
-  if command grep -Fq '_POWERLEVEL9K_DISABLE_GITSTATUS=1' "${dump_file}"; then
-    actual_gitstatus_disabled=1
-  fi
-
-  (( actual_gitstatus_disabled == expected_gitstatus_disabled )) || \
-    command rm -f -- "${dump_file}" "${dump_file}.zwc" "${instant_prompt_file}" "${instant_prompt_file}.zwc"
+  command rm -f -- "${dump_file}" "${dump_file}.zwc" "${instant_prompt_file}" "${instant_prompt_file}.zwc"
+  command rm -rf -- "${prompt_cache_dir}"
+  command mv -f -- "${signature_tmp}" "${signature_file}" || {
+    command rm -f -- "${signature_tmp}"
+    return
+  }
 }
 
 _dotfiles_p10k_reset_cache_if_needed
@@ -66,7 +82,7 @@ _dotfiles_is_prompt_shell() {
 }
 
 # Plugins (clones missing plugins in parallel, then sources in order)
-source $ZDOTDIR/.zetch.zsh
+source "$ZDOTDIR/.zetch.zsh"
 
 plugins=(
   romkatv/powerlevel10k                    # shell prompt with instant prompt
@@ -118,36 +134,36 @@ if command -v dotty >/dev/null 2>&1; then
 fi
 
 # Aliases
-source $ZDOTDIR/.aliases
+source "$ZDOTDIR/.aliases"
 
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
-[[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
+[[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
 
 # Load local configuration if it exists, i.e. machine-specific config.
 [[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
 # Setup fzf widgets and key bindings only in real prompt shells.
 if _dotfiles_is_prompt_shell && command -v fzf >/dev/null 2>&1; then
-    if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
-        # APT installation (Linux devboxes)
-        source /usr/share/doc/fzf/examples/key-bindings.zsh
-        source /usr/share/doc/fzf/examples/completion.zsh
-    else
-        # Homebrew or other installation
-        source <(fzf --zsh)
-    fi
+  if [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh && -f /usr/share/doc/fzf/examples/completion.zsh ]]; then
+    # APT installation on Linux
+    source /usr/share/doc/fzf/examples/key-bindings.zsh
+    source /usr/share/doc/fzf/examples/completion.zsh
+  else
+    # Homebrew or other installation
+    source <(fzf --zsh)
+  fi
 
-    # Keep Ctrl-R on fzf history even if another widget reset the default map.
-    if whence -w fzf-history-widget >/dev/null 2>&1; then
-        bindkey -M emacs '^R' fzf-history-widget
-        bindkey -M vicmd '^R' fzf-history-widget
-        bindkey -M viins '^R' fzf-history-widget
-    fi
+  # Keep Ctrl-R on fzf history even if another widget reset the default map.
+  if whence -w fzf-history-widget >/dev/null 2>&1; then
+    bindkey -M emacs '^R' fzf-history-widget
+    bindkey -M vicmd '^R' fzf-history-widget
+    bindkey -M viins '^R' fzf-history-widget
+  fi
 fi
 
 # Sesh session picker (Alt+S keybinding)
-if _dotfiles_is_prompt_shell && [[ -f $ZDOTDIR/sesh.zsh ]]; then
-  source $ZDOTDIR/sesh.zsh
+if _dotfiles_is_prompt_shell && [[ -f "$ZDOTDIR/sesh.zsh" ]]; then
+  source "$ZDOTDIR/sesh.zsh"
 fi
 
 # bun completions (sourced, not fpath-based — bun uses dynamic compdef)

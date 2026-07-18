@@ -6,7 +6,9 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 # Keep mutable zsh state out of the repo-backed config tree.
 export ZSH_CACHE_DIR="${ZSH_CACHE_DIR:-$XDG_CACHE_HOME/zsh}"
 export ZSH_STATE_DIR="${ZSH_STATE_DIR:-$XDG_STATE_HOME/zsh}"
-mkdir -p "$ZSH_CACHE_DIR/.zcompcache" "$ZSH_STATE_DIR"
+if [[ -o interactive ]]; then
+  mkdir -p "$ZSH_CACHE_DIR/.zcompcache" "$ZSH_STATE_DIR"
+fi
 
 # Initialize history sizing before zsh imports history for interactive shells.
 export HISTSIZE="${HISTSIZE:-2000}"
@@ -24,7 +26,8 @@ if command -v nvim >/dev/null; then
 fi
 
 # Nightfly theme for fzf, upstream: github.com/bluz71/vim-nightfly-colors
-export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
+if [[ "${FZF_DEFAULT_OPTS-}" != *"--color bg:#011627"* ]]; then
+  export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} \
   --color bg:#011627 \
   --color bg+:#0e293f \
   --color border:#2c3043 \
@@ -40,6 +43,7 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
   --color prompt:#82aaff \
   --color spinner:#21c7a8
 "
+fi
 
 # Enable true color detection for tools like bat, delta, and Claude Code.
 # Ghostty supports true color natively but some tools check this variable.
@@ -49,14 +53,16 @@ export COLORTERM="truecolor"
 skip_global_compinit=1
 
 # Path
-export PATH="$HOME/bin:$PATH"
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-[[ -d "$HOME/.cargo/bin" ]] && export PATH="$HOME/.cargo/bin:$PATH"
+typeset -gU path PATH
+path=("$HOME/bin" "${path[@]}")
+path=("/opt/homebrew/bin" "${path[@]}")
+path=("$HOME/.local/bin" "${path[@]}")
+[[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" "${path[@]}")
 export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
-[[ -d "$BUN_INSTALL/bin" ]] && export PATH="$BUN_INSTALL/bin:$PATH"
-[[ -d "$HOME/go/bin" ]] && export PATH="$HOME/go/bin:$PATH"
-[[ -d "$HOME/.dotty/bin" ]] && export PATH="$HOME/.dotty/bin:$PATH"
+[[ -d "$BUN_INSTALL/bin" ]] && path=("$BUN_INSTALL/bin" "${path[@]}")
+[[ -d "$HOME/go/bin" ]] && path=("$HOME/go/bin" "${path[@]}")
+[[ -d "$HOME/.dotty/bin" ]] && path=("$HOME/.dotty/bin" "${path[@]}")
+export PATH
 
 # Homebrew strips non-HOMEBREW_ env vars before evaluating Brewfiles.
 export HOMEBREW_DOTFILES_ENV="${HOMEBREW_DOTFILES_ENV:-personal}"
