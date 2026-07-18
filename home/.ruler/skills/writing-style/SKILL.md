@@ -14,6 +14,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 - Be concise and direct, but do not compress text into fragments.
 - Prefer conversational prose over heavy bulleting. Use lists only when the structure materially helps.
 - Preserve the user's intended level of certainty. Do not overstate, soften, or pad claims unless the user asks.
+- Preserve the user's casual tone when they are drafting casual workplace prose. Do not recast it into a more formal or "professional" voice unless they ask for that.
 - When the user iterates aloud on phrasing, treat their latest wording as the source of truth. Return one lightly cleaned-up version, and avoid adding new labels, framing, or structure unless they asked for it.
 
 ## Workplace Prose Voice
@@ -21,6 +22,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 - For Slack messages, PR descriptions, PR comments, Jira comments, review comments, and review requests, keep the final draft close to lightly cleaned-up spoken workplace prose.
 - Prefer personal, first-person phrasing when the user is speaking for themselves, such as `I don't love this`, `from what I can tell`, and `I'd be happy to be proven wrong`.
 - Do not make PR comments or Slack messages sound like polished technical documentation unless the user asks for that tone.
+- For casual Slack and PR-review prose, friendly is allowed. An occasional exclamation point or light aside is fine when it matches the user's draft; do not strip those away just to make the message sound more neutral.
 - Avoid phrases the user has rejected, such as `sanity check` or `re-land`, unless the user provides them.
 - When deeper style calibration is needed, collect approved examples and rejected rewrites before adding more durable rules. Do not infer a broad voice model from one draft alone.
 
@@ -51,6 +53,7 @@ Use this skill when drafting text on behalf of the user. Keep the substance inta
 - Avoid stiff corporate phrasing.
 - Use ordinary contractions in the user's voice, especially for Slack messages, comments, and conversational drafts. Prefer `don't`, `I'm`, `it's`, `we're`, `that's`, and `wouldn't` over expanded forms unless the surface is formal, legal, or needs extra clarity.
 - In collaborative suggestions or review comments, prefer `we` over `you` when natural.
+- Keep suggestions non-prescriptive by default. Prefer phrasing like `I think maybe`, `could we`, `I wonder if`, `did we consider`, `maybe it would be worth`, or `as much as possible, I think we should try to...` when that matches the user's uncertainty. Avoid stronger phrases like `I'd prefer`, `we should`, or `we need to` unless the user clearly wants that level of firmness.
 - Casual does not mean sloppy. Keep the writing readable and grammatical.
 
 ## Vocabulary And Punctuation
