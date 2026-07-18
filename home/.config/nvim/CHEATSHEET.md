@@ -6,7 +6,8 @@
 
 | Keys | Action |
 | --- | --- |
-| `<leader>?` | Open this cheat sheet |
+| `<leader>?` | Show context-specific keymaps |
+| `<leader>hc` | Toggle this cheat sheet |
 | `<leader>sk` | Search active keymaps |
 | `<leader>sh` | Search Neovim help |
 | `:Tutor` | Open the interactive tutorial |
@@ -64,4 +65,5 @@ Operators combine with motions: `d` delete, `c` change, and `y` yank.
 | `<leader>,` / `<leader>r` | Open buffers/recent files |
 | `<C-w>h/j/k/l` | Move between windows |
 | `<C-w>w` / `<C-w>c` | Cycle/close windows |
+| `:only` | Close every window except the current one |
 | `:w` / `:q` / `:qa` | Save/quit/quit all |
