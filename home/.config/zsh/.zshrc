@@ -14,6 +14,7 @@ command -v dotty >/dev/null 2>&1 && dotty check
 # init, or request early prompt changes before instant prompt and plugin setup.
 [[ ! -f ~/.zshrc.pre.local ]] || source ~/.zshrc.pre.local
 
+# Track dotfiles-owned prompt inputs instead of reading generated p10k internals.
 _dotfiles_p10k_reset_cache_if_needed() {
   emulate -L zsh
 

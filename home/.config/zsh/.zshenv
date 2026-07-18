@@ -26,6 +26,7 @@ if command -v nvim >/dev/null; then
 fi
 
 # Nightfly theme for fzf, upstream: github.com/bluz71/vim-nightfly-colors
+# The background color is the idempotency marker; leave inherited duplicates alone.
 if [[ "${FZF_DEFAULT_OPTS-}" != *"--color bg:#011627"* ]]; then
   export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} \
   --color bg:#011627 \
