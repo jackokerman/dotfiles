@@ -52,4 +52,5 @@ if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
   brew "python"                     # python (latest)
+  brew "shellcheck"                 # shell script static analysis
 end
