@@ -152,5 +152,6 @@ Keep the tracked Godspeed helper and guidance generic. Personal labels, matching
 - [Layout and dotty chain](docs/layout.md)
 - [Shell setup](docs/shell.md)
 - [Agent tooling and managed config](docs/agent-tooling.md)
+- [Vim basics in Neovim](docs/neovim-basics.md)
 - [Git prompt status legend](docs/git-prompt-status.md)
 - [Godspeed keyboard shortcuts](docs/godspeed-keyboard-shortcuts.md)
