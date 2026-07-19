@@ -224,6 +224,7 @@ run_zsh_syntax() {
         "home/.config/zsh/.zetch.zsh"
         "home/.config/zsh/.zshenv"
         "home/.config/zsh/.zshrc"
+        "home/.config/zsh/p10k-cache.zsh"
         "home/.config/zsh/sesh.zsh"
         "home/.zshenv"
     )
