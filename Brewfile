@@ -28,7 +28,6 @@ end
 # Packages
 brew "bat"                          # a better cat
 brew "oven-sh/bun/bun"              # JavaScript runtime
-brew "deno"                         # a better node
 brew "eza"                          # a better ls
 brew "fd"                           # find alternative
 brew "fzf"                          # a fuzzy finder
