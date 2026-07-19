@@ -32,6 +32,6 @@ def homebrew_managed_path?(path)
   path == real_prefix || path.start_with?("#{real_prefix}/")
 end
 
-def host_provides_command?(command)
+def host_has?(command)
   executable_paths(command).any? { |path| !homebrew_managed_path?(path) }
 end

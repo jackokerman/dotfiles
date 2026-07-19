@@ -18,8 +18,8 @@ if OS.mac?
   cask "obsidian"                   # knowledge base with markdown files
   cask "1password"                  # password manager
 
+  # Personal applications
   if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
-    # Personal applications
     cask "visual-studio-code"       # code editor
     cask "codex"                    # OpenAI coding agent terminal CLI
     cask "claude-code"              # Anthropic coding agent terminal CLI
@@ -34,7 +34,7 @@ brew "bat"                          # a better cat
 brew "eza"                          # a better ls
 brew "fd"                           # find alternative
 brew "fzf"                          # a fuzzy finder
-brew "gh" unless host_provides_command?("gh")
+brew "gh" unless host_has?("gh")    # GitHub command-line interface
 brew "git-delta"                    # syntax-highlighted git diff pager
 brew "glow"                         # markdown renderer for the terminal
 brew "jq"                           # parse and work with JSON
@@ -52,8 +52,8 @@ brew "television"                   # rich terminal fuzzy finder (`tv`)
 brew "agavra/tap/tuicr"             # terminal code review TUI
 brew "zoxide"                       # smarter cd command (z/zi)
 
+# Personal packages
 if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
-  # Personal packages
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
   brew "python"                     # python (latest)
