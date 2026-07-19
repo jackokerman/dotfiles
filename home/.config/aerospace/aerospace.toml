@@ -131,7 +131,7 @@ automatically-unhide-macos-hidden-apps = false
     # Dedicated letter workspaces
     alt-b = 'workspace B' # Browser: Primary browser
     alt-c = 'workspace C' # Calendar
-    alt-d = 'workspace D' # Devvy
+    alt-d = 'workspace D' # Development
     alt-g = 'workspace G' # Gmail
     alt-m = 'workspace M' # Messaging: Slack
     alt-n = 'workspace N' # Notes: Obsidian

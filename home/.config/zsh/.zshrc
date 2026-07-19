@@ -51,7 +51,7 @@ zetch romkatv/powerlevel10k
 # Completions: each directory below provides _completion functions. Adding them
 # to fpath makes them discoverable, then compinit compiles and registers them.
 fpath_dirs=(
-  $HOME/.local/share/zsh/site-functions    # XDG location (dotty, devvy, etc.)
+  $HOME/.local/share/zsh/site-functions    # XDG location (dotty, local tools, etc.)
   /opt/homebrew/share/zsh/site-functions   # Homebrew-installed completions
   $ZPLUGINDIR/zsh-completions/src          # zsh-users/zsh-completions plugin
 )
