@@ -1,9 +1,5 @@
 require_relative "scripts/brewfile_helpers"
 
-# Taps
-tap "agavra/tap"                    # terminal code review TUI
-tap "oven-sh/bun"                   # preferred JavaScript runtime
-
 # Applications
 if OS.mac?
   cask "1password"                  # password manager
