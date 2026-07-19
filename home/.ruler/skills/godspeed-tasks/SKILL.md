@@ -9,13 +9,13 @@ description: Manage Godspeed tasks through the mirrored Work/Personal GTD workfl
 
 Use `godspeed-gtd` for the opinionated workflow and `godspeed` for generic API diagnostics or exact resource operations. Run `godspeed-gtd --help` for command syntax.
 
-Prefer Bun env-file injection for machine-local credentials:
+Invoke the installed CLI directly; normal authentication comes from the shared per-machine credential file:
 
 ```bash
-bun --env-file "$HOME/.config/godspeed/tasks.env" "$(command -v godspeed-gtd)" lists
+godspeed-gtd lists
 ```
 
-An exported `GODSPEED_API_TOKEN` is also valid. Do not source shell startup files unless fixing auth plumbing.
+Use `GODSPEED_API_TOKEN` only as an explicit automation or debugging override. Missing credentials should point a human to `godspeed auth login`; ordinary agent commands must not start an interactive prompt or source shell startup files.
 
 Treat folders as contexts, GTD lists as state, labels as categories or areas, and task/subtask structure as projects. Resolve the `📥 Inbox`, `⚡ Next Actions`, and `🌱 Someday` children dynamically under `🏢 Work` and `🏡 Personal`; ignore the root Godspeed Inbox. Keep scopes separate unless the user explicitly requests both.
 

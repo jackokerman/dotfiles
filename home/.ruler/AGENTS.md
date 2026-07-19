@@ -93,7 +93,7 @@
 ## Godspeed Workflow
 - For Godspeed inbox triage, Godspeed task planning, or requests to organize the work or personal inbox, use the native `godspeed-tasks` skill.
 - Use the child `📥 Inbox` lists under `🏢 Work` and `🏡 Personal`, not the top-level default inbox.
-- Use the Godspeed API through `GODSPEED_API_TOKEN` for task mutation. Keep public repo guidance generic: do not track personal category names, matching rules, or smart-list definitions here.
+- Use the Godspeed API through the installed CLI and its per-machine credential file. Reserve `GODSPEED_API_TOKEN` for explicit automation or debugging overrides. Keep public repo guidance generic: do not track personal category names, matching rules, or smart-list definitions here.
 - Allow direct writes for explicit objective updates. Require preview or approval before bulk, heuristic, or subjective categorization changes.
 
 ## Neovim Workflow
