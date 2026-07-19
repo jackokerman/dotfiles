@@ -3,6 +3,8 @@
 # Wizard options: nerdfont-complete + powerline, large icons, unicode, lean_8colors,
 # 2 lines, disconnected, no frame, sparse, few icons, fluent, instant_prompt=verbose.
 # Type `p10k configure` to generate another config.
+# This tracked copy also contains custom dotfiles integration. Do not regenerate
+# it in place without preserving and deliberately reapplying those sections.
 #
 # Config for Powerlevel10k with 8-color lean prompt style. Type `p10k configure` to generate
 # your own config based on it.

@@ -85,7 +85,8 @@ fi
 # Aliases
 source "$ZDOTDIR/.aliases"
 
-# To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
+# This p10k config contains tracked custom integration. Edit it deliberately
+# instead of running `p10k configure` against it in place.
 [[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
 
 # Load local configuration if it exists, i.e. machine-specific config.
