@@ -340,7 +340,7 @@
   #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_VISUAL_IDENTIFIER_EXPANSION='⭐'
   #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_FOREGROUND=4
   #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_SHORTENED_FOREGROUND=4
-  #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_ANCHOR_FOREGROUND=4#POWERLEVEL9K_VCS_BRANCH_ICON
+  #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_ANCHOR_FOREGROUND=4
   #   Styling for WORK_NON_EXISTENT.
   #   typeset -g POWERLEVEL9K_DIR_WORK_NON_EXISTENT_VISUAL_IDENTIFIER_EXPANSION='⭐'
   #   typeset -g POWERLEVEL9K_DIR_WORK_NON_EXISTENT_FOREGROUND=4
@@ -410,7 +410,7 @@
   }
   functions -M dotfiles_p10k_git_formatter 2>/dev/null
 
-  # Keep full gitstatusd accuracy and let the formatter suppress status in the mint monorepo.
+  # Keep full gitstatusd accuracy and let the formatter suppress status in matching workdirs.
   typeset -g POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY=-1
   typeset -g POWERLEVEL9K_VCS_DISABLE_GITSTATUS_FORMATTING=true
   typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='${$((dotfiles_p10k_git_formatter(1)))+${_DOTFILES_P10K_GIT_FORMAT}}'
