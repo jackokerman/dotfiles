@@ -347,26 +347,14 @@ run_codex_theme_sync_check() {
 }
 
 run_ts_script_tooling() {
-    local slop_report=""
-    local findings=""
-
     log "Checking TypeScript script tooling"
     (
         cd "$PROJECT_ROOT"
         bunx --silent oxlint@1.72.0 --deny-warnings scripts/ts
-        bunx --silent -p @jackokerman/oxlint-config@1.7.0 jack-oxfmt-config check scripts/ts/.oxfmtrc.json
+        bunx --silent -p @jackokerman/oxlint-config@1.10.0 jack-oxfmt-config check scripts/ts/.oxfmtrc.json
         bunx --silent oxfmt@0.57.0 --check scripts/ts
         bunx --silent @jackokerman/comment-width-check@1.1.0 scripts/ts
-
-        slop_report="$(mktemp "${TMPDIR:-/tmp}/dotfiles-slop-scan.XXXXXX")"
-        bunx --silent slop-scan@0.3.0 scan scripts/ts --json >"$slop_report"
-        findings="$(bun -e 'const report = JSON.parse(await Bun.file(process.argv[1]).text()); console.log(report.summary.findingCount);' "$slop_report")"
-        if [[ "$findings" != "0" ]]; then
-            bunx --silent slop-scan@0.3.0 scan scripts/ts --lint >&2
-            rm -f "$slop_report"
-            return 1
-        fi
-        rm -f "$slop_report"
+        bunx --silent -p @jackokerman/oxlint-config@1.10.0 slop-scan-check scripts/ts
     )
 }
 

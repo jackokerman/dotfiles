@@ -56,9 +56,9 @@ Use this file only when the task includes choosing small reusable libraries for 
 ## Deterministic Quality Gates
 
 - Add `slop-scan` early for non-temporary Bun/TypeScript CLI tools that agents will edit or invoke repeatedly.
-- Make the check blocking by parsing `slop-scan scan . --json` for `summary.findingCount`; print `slop-scan scan . --lint` output on failure so humans and agents get actionable locations.
+- Use `slop-scan-check` from `@jackokerman/oxlint-config` for package scripts. It runs the package-local Slop Scan dependency, parses `slop-scan scan <path> --json`, exits nonzero when `summary.findingCount` is nonzero, and prints `slop-scan scan <path> --lint` output on failure so humans and agents get actionable locations.
 - Keep the baseline clean and prefer the default rule set with no repo-local config. If a repo needs exceptions, encode them narrowly in `slop-scan.config.json` and capture a follow-up to ratchet them down instead of accepting a permanent noisy warning stream.
-- Keep `slop-scan` repo-local by default. Do not add a global wrapper unless at least two repos need the same blocking JSON/lint bridge.
+- Do not copy local JSON/lint bridge scripts between repos; update the shared `slop-scan-check` bin instead when the bridge behavior needs to change.
 
 ## Duration Parsing And Formatting
 
