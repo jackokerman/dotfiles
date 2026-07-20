@@ -133,7 +133,7 @@ Common places to edit:
 | Television fuzzy finder | `home/.config/television/`. |
 | SSH hosts and identities | Local `~/.ssh/config`. |
 | Keyboard remaps | `scripts/ts/karabiner-config.ts`. |
-| Neovim | `home/.config/nvim/`. |
+| Neovim | `home/.config/nvim/`; see `home/.config/nvim/README.md` for the module and plugin ownership map. |
 | tmux and related wrappers | `home/.config/tmux/`. |
 | sesh defaults | `home/.config/sesh/sesh.toml`. |
 | Raycast script commands | `home/.raycast-scripts/`. |

@@ -57,7 +57,7 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep shared keyboard modifier behavior, such as generic Karabiner Hyper-key remaps, in this repo. Preserve the reserved Touch ID Magic Keyboard exception in shared remaps, and route app-specific or host-specific Hyper actions to local overrides or later repos in the dotty chain.
 - When debugging local GUI automation, verify behavior through the same app runtime that owns the workflow. For Hammerspoon, prefer AppleScript or `hs.task` probes and scoped app logs over terminal-only reproduction.
 - When searching logs or caches, start from known app log paths, recent timestamps, or narrow predicates. Do not run broad recursive searches over `~/Library/Logs` or cache roots unless narrower paths fail.
-- Keep generic NeoVim config in `home/.config/nvim/`; host-specific install logic belongs outside this repo.
+- Keep generic NeoVim config in `home/.config/nvim/`; read `home/.config/nvim/README.md` before changing its module or plugin ownership structure, and keep host-specific install logic outside this repo.
 - Keep install routing for broadly available CLI tools in the tracked `Brewfile` or later repos in the dotty chain.
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.

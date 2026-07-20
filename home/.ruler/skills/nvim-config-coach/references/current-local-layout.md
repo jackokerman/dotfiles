@@ -10,6 +10,8 @@ Use this file as a quick map of the current personal Neovim setup before reading
   - `config.options`
   - `config.keymaps`
   - `config.packages`
+  - `config.navigation`
+  - `config.discovery`
   - `config.lsp`
   - `config.format`
 
@@ -29,7 +31,7 @@ Use this file as a quick map of the current personal Neovim setup before reading
 
 - Sets `mapleader = " "` and `maplocalleader = "\\"`.
 - Adds diagnostic navigation with `[d` and `]d`.
-- Adds `<leader>e` for diagnostic float.
+- Adds `<leader>d` for diagnostic float.
 - Adds `<leader>f` for formatting the buffer or selection through `:Format`.
 
 ### `lua/config/packages.lua`
@@ -37,9 +39,27 @@ Use this file as a quick map of the current personal Neovim setup before reading
 - Uses `vim.pack.add`, not `lazy.nvim`.
 - Current plugins are:
   - `bluz71/vim-nightfly-colors`
+  - `folke/snacks.nvim`
+  - `folke/which-key.nvim`
   - `neovim/nvim-lspconfig`
   - `stevearc/conform.nvim`
 - Sets the colorscheme in the same file.
+- Treat this as the declaration boundary. Plugin setup belongs in the feature module that owns the behavior.
+
+### `lua/config/navigation.lua`
+
+- Wraps `snacks.nvim`.
+- Enables the picker and explorer modules.
+- Replaces netrw with Snacks explorer.
+- Includes hidden files in explorer, file picker, and grep sources.
+- Adds keymaps for file explorer, file search, grep, buffers, recent files, keymaps, commands, help, and diagnostics.
+
+### `lua/config/discovery.lua`
+
+- Wraps `which-key.nvim`.
+- Disables mapping icons.
+- Adds leader groups for code and search actions.
+- Adds `<leader>?` for buffer-local keymap discovery.
 
 ### `lua/config/lsp.lua`
 
@@ -57,9 +77,11 @@ Use this file as a quick map of the current personal Neovim setup before reading
 
 ## Conventions To Preserve
 
+- Read `home/.config/nvim/README.md` for the human-facing module and plugin ownership map.
 - Keep the config small and modular under `lua/config/`.
 - Prefer direct Neovim APIs over framework layers.
 - Treat `packages.lua` as the plugin declaration boundary.
+- Configure plugins in the feature module that owns the behavior, not in a single `lazy.nvim`-style plugin spec file.
 - Add a new `lua/config/<feature>.lua` file only when a capability deserves its own setup.
 - Keep keymaps intentional, documented with `desc`, and quiet with `silent = true` when appropriate.
 - Use `home/.config/nvim/nvim-pack-lock.json` as the lockfile for plugin state.
