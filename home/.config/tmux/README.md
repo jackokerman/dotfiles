@@ -6,7 +6,7 @@ This directory now owns the tmux-side wrappers and path resolution for the exter
 
 - `session-status-left.sh`: stable tmux entrypoint for the current-session state prefix; it reads the explicit state file directly, falls back to the normalized current-state cache, maps raw `waiting` state to the green check-in prefix, and never calls back into tmux while tmux is evaluating `status-left`.
 - `session-status.sh`: stable tmux entrypoint that resolves the active `tmux-agent-bar` checkout and execs its renderer.
-- `session-status-refresh.sh`: stable tmux entrypoint that refreshes the session-scoped cached `status-right` value from the active `tmux-agent-bar` checkout. Forced refreshes draw cached state first and refresh fresh remote/source state in the background.
+- `session-status-refresh.sh`: stable tmux entrypoint that refreshes the session-scoped cached `status-right` value from the active `tmux-agent-bar` checkout. Forced refreshes draw cached state first and refresh fresh remote/source state in the background. Fresh renders are timeout-bounded so slow source refresh hooks cannot hang tmux hook processing.
 - `session-status-refresh-cached.sh`: coalesces background cached refreshes so repeated hook events cannot pile up overlapping renderer jobs.
 - `agent-status-hook.sh`: stable hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its explicit-state writer.
 - `codex-agent-status-hook.sh`: stable Codex hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its Codex lifecycle adapter.
