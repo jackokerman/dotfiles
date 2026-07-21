@@ -2,12 +2,12 @@
 
 # Required parameters:
 # @raycast.schemaVersion 1
-# @raycast.title Setup PR Screenshot
+# @raycast.title Setup Capture Window
 # @raycast.mode silent
 # @raycast.icon 📸
 # @raycast.packageName Window Manager
 
-# Setup the focused window for PR screenshots and recordings.
+# Setup the focused window for screenshots, recordings, and screensharing.
 
 try
     set focusedWindowJson to do shell script "aerospace list-windows --focused --json"
