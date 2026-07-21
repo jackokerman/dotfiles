@@ -2,13 +2,12 @@
 
 # Required parameters:
 # @raycast.schemaVersion 1
-# @raycast.title Setup 1080p Screenshot
+# @raycast.title Setup PR Screenshot
 # @raycast.mode silent
 # @raycast.icon 📸
 # @raycast.packageName Window Manager
 
-# Setup the focused window for screenshots by making it floating, resizing it to 1080p,
-# and centering it on the current desktop.
+# Setup the focused window for PR screenshots and recordings.
 
 try
     set focusedWindowJson to do shell script "aerospace list-windows --focused --json"
@@ -22,8 +21,8 @@ try
     do shell script "aerospace layout floating --window-id " & windowId
     delay 0.1
 
-    set targetWidth to 1920
-    set targetHeight to 1080
+    set targetWidth to 1512
+    set targetHeight to 982
 
     tell application "Finder"
         set screenBounds to bounds of window of desktop
