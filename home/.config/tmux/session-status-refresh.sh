@@ -9,7 +9,10 @@ source "${_tmux_agent_bar_path_helper}"
 _tmux_agent_bar_repo="$(tmux_agent_bar_runtime_repo_path)"
 _tmux_agent_bar_bin="${_tmux_agent_bar_repo}/bin/tmux-agent-bar"
 _timeout_wrapper="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tmux-run-with-timeout.sh"
-_render_timeout_seconds=20
+# A remote source refresh can try several session candidates with a per-probe
+# budget. Keep the wrapper above that bounded source path so tmux does not kill
+# a healthy fallback probe mid-refresh.
+_render_timeout_seconds=50
 _target=""
 _all_clients=0
 _mode_cached=0
