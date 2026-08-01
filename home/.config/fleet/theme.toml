@@ -1,0 +1,9 @@
+# Nightfly source: home/.codex/references/nightfly/vim-nightfly-colors/lua/nightfly/init.lua
+[colors]
+permit = "#e3d18a"
+question = "#c792ea"
+done = "#a1cd5e"
+busy = "#f78c6c"
+idle = "#82aaff"
+shell = "#7c8f8f"
+down = "#4b6479"
