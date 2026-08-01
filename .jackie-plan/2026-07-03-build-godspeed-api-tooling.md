@@ -3,7 +3,7 @@ id: 2026-07-03-build-godspeed-api-tooling
 title: Build Godspeed API tooling
 state: complete
 createdAt: 2026-07-03T16:10:24.025Z
-updatedAt: 2026-07-07T02:59:17.916Z
+updatedAt: 2026-08-01T00:49:33.118Z
 ---
 
 # Build Godspeed API tooling
@@ -353,22 +353,8 @@ Current review gate:
 - `/Users/jackokerman/dotfiles` has only this Jackie Plan checkpoint update after checkpointing.
 - Do not commit, push, mark `ready-to-ship`, mark `complete`, or archive until the user reviews and explicitly approves follow-through.
 
-### Process notes from this session
+### Process notes
 
 The persisted handoff can lag behind reality when implementation work is committed in later sessions without lifecycle advancement. This session corrected the checkpoint with repo status and recent history before adding new implementation work.
 
 The stale `godspeed-tasks` symlink demonstrated a concrete cleanup gap from removing a Bun package bin. The fix belongs in `godspeed-js` `install:local`, because dotfiles delegates linking to that standalone repo and should not know about removed package internals.
-
-## Process notes
-
-The root dotfiles `package.json` cannot be removed entirely because it still supports other repo TypeScript scripts such as Karabiner and Codex sync. The integration removed only the Godspeed-specific dependency and test lane from dotfiles.
-
-The moved `godspeed-tasks` compatibility helper is intentionally marked as legacy with local lint/type waivers in `godspeed-js`. It preserves behavior for the dotfiles skill while the lower-level `godspeed` CLI matures; follow-up `2026-07-03-consolidate-godspeed-task-compatibility-cli` tracks consolidating it later.
-
-The earlier scaffold used plausible but incorrect todo-item request shapes. Inspecting the existing helper showed the observed API contract is query-param `item_ids` for lookup and `client_id`/`update_bodies` for bulk updates, so tests now pin those shapes before dotfiles migration.
-
-Stricli formats command-thrown errors itself, so CLI commands that need stable JSON errors should handle expected command failures inside the command helper instead of relying on an outer `try` around `run()`.
-
-Bun did not hoist workspace-only runtime dependencies to root `node_modules`, so root-level typecheck/lint inspection was made deterministic by listing the runtime deps at the root too.
-
-Replacing the executable `cli.ts` through patching reset its executable bit; the linked `godspeed` symlink then failed with `permission denied`. Restored `chmod +x packages/godspeed-cli/src/cli.ts` and verified the installed CLI afterward. Future changes to executable TS entrypoints should include a fresh installed-bin smoke check.
