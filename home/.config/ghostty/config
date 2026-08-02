@@ -25,5 +25,3 @@ theme = nightfly
 keybind = shift+enter=text:\n
 # Toggle Ghostty's quick terminal with Cmd+Backquote.
 keybind = global:cmd+Backquote=toggle_quick_terminal
-# Keep Fleet available as the dedicated quick-terminal dashboard.
-keybind = global:ctrl+f=toggle_quick_terminal
