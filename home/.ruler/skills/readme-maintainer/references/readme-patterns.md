@@ -1,44 +1,71 @@
-# README Patterns
+# README patterns
 
-Load this reference when a README is command-heavy, a repo already has substantial docs, or a rewrite risks becoming a generic template.
+Use these patterns selectively. A README should feel native to its project, not generated from a universal template.
 
-## Source Patterns
+## Landing-page quality bar
 
-- GitHub README guidance: a README should tell visitors what the project does, why it is useful, how to get started, where to get help, and who maintains it.
-- Google README guidance: a README is a short summary for people browsing code, especially first-time users.
-- Diataxis: keep tutorials, how-to guides, reference, and explanation distinct. The README can route to all four, but should not flatten all four into one long page.
-- Vale and markdownlint: use them for style and mechanics when configured. They do not decide audience, hierarchy, command truth, or README-vs-docs boundaries.
-- README generators and templates: use them for section vocabulary and bootstrapping only. Do not let them overwrite local workflow shape.
+The opening viewport should establish:
 
-## Command-Heavy CLI Structure
+1. **Identity:** what the project is and who it serves.
+2. **Value:** the concrete problem it solves or workflow it replaces.
+3. **Proof:** a real screenshot, demo, transcript, or small example when the result is visual or otherwise hard to picture.
+4. **Action:** the shortest safe path to a successful first use.
 
-Use this structure as a starting point, then adapt to the repo:
+Use an existing logo or icon when it aids recognition; do not invent decorative branding. Keep badges to a few live signals that matter to the reader, such as release, build, or compatibility status.
 
-- Overview: one short paragraph with the audience and job.
-- Install or quick start: the shortest path to a working command.
-- Common tasks: task-oriented examples users run repeatedly.
-- Command reference: exhaustive flags, subcommands, config, hooks, or environment variables.
-- Troubleshooting: common failures and the smallest checks that identify them.
-- Maintainer workflow: release, smoke, generated files, or development commands.
-- Deeper docs: architecture, uncommon operations, and long explanations.
+For workflow tools, a strong sequence is: identity and value, real proof, install, first successful use, common workflows, reference, configuration, architecture, then development. Change the order when the reader's actual job demands it.
 
-Keep the first half of the README useful to new or daily users. Put rare maintainer workflows, exhaustive hook contracts, and long configuration explanation later or in `docs/`.
+## Choosing prose, lists, and tables
 
-## Command Explanation Patterns
+- Use bullets for unordered peers: prerequisites, installer effects, capabilities, outputs, constraints, and troubleshooting checks.
+- Use numbers for a sequence the reader must follow.
+- Use prose when one idea explains another, when nuance matters, or when a list would fragment a short argument.
+- Use tables for repeated fields such as commands, keybindings, states, configuration, and compatibility.
+- Introduce long lists and tables with one sentence that explains how the reader should use them.
 
-- Prefer short command blocks with nearby prose that says why or when to run them.
-- Split commands by workflow when a single block needs many trailing comments.
-- Use a table when readers compare flags, environment variables, hooks, config keys, or command meanings.
-- Use a quick-reference block only when the section is explicitly for scanning commands.
-- Keep generated help and README option lists in sync through existing tests or by adding a narrow drift check when the repo already has that pattern.
+Lists become template-like when every section is a list, each item repeats a bold label and dash, or vague benefits replace concrete behavior. Mix structures based on the information rather than applying a visual pattern mechanically.
 
-## Large CLI Stress Case
+## Visuals and GFM
 
-A CLI README can become dense when it mixes install, source fallback, completion troubleshooting, launch flow, options, machine-readable output, configuration, hooks, and development in one page.
+- Prefer an actual working state over a decorative hero image.
+- Give images useful alt text and keep them near the behavior they demonstrate.
+- Use GitHub admonitions sparingly: notes for optional context, important callouts for required prerequisites, and warnings for destructive or costly actions.
+- Do not use admonitions for ordinary explanation or stack several together.
+- Use collapsible details only for secondary alternatives that would otherwise obscure the default path.
 
-For a repo like that:
+## Installation and safety
 
-- Keep install, quick start, common usage examples, and health-check commands near the top.
-- Treat exhaustive options, config precedence, hooks, generated naming, and maintainer smoke tests as reference material.
-- Preserve local drift checks such as a test that asserts README coverage for CLI flags or generated completions.
-- Inspect rendered structure, not just `rg '^#'`, because headings inside shell examples are code comments rather than Markdown sections.
+Show the recommended installation command first. State what it creates or modifies, whether rerunning it updates safely, and how to reverse it when a supported uninstall path exists. Put version requirements, authentication, destructive effects, refusal states, and preservation guarantees next to the command they protect.
+
+Do not invent an uninstall command or recovery path. If the project deliberately lacks one, document only the safe behavior that exists.
+
+## Progressive disclosure
+
+Keep the README focused on the landing-page job and link to dedicated files instead of duplicating them. When `CONTRIBUTING.md`, `LICENSE`, `CHANGELOG.md`, generated CLI help, architecture docs, or runbooks already exist, summarize only what helps navigation and link to the source of truth.
+
+For command-heavy tools, prefer:
+
+- overview and value;
+- install or quick start;
+- common workflows;
+- a compact command or state reference when it materially helps scanning;
+- troubleshooting and safety;
+- links to configuration, architecture, and maintainer docs; and
+- the smallest contributor check path.
+
+Avoid putting exhaustive flags, hook contracts, generated naming rules, source layout, release machinery, or long architecture explanations ahead of first use.
+
+## Updating an existing README
+
+Do not assume the right edit is additive. Re-read the rendered hierarchy and ask whether the new information changes the audience, primary path, or section order. Consolidate related guidance, delete superseded prose, and move details outward when the landing page becomes denser.
+
+Preserve a recognizable project voice. Avoid generic feature adjectives, excessive emoji, repeated “Overview / Features / Benefits” scaffolding, and badges or sections included only because another README has them.
+
+## Validation
+
+- Confirm the title, description, and first-use path agree with current behavior.
+- Run documented commands or compare them with generated help and scripts.
+- Check local links and image paths.
+- Preserve existing docs-drift checks.
+- Inspect the rendered reading order, not only heading output or line count.
+- Update adjacent docs and repo steering when setup, commands, configuration, or ownership changed.
