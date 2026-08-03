@@ -82,10 +82,13 @@ Rollback workflow:
 
 Current managed defaults also:
 
+- use `gpt-5.6-sol` with medium reasoning as the personal default model
 - enable Codex hooks
 - disable commit attribution trailers
 - use `approval_policy = "never"`
 - use `sandbox_mode = "danger-full-access"`
+
+Keep durable local defaults such as `model` and `model_reasoning_effort` in the tracked `home/.codex/config.toml`. A later dotty-chain repo can override the same keys for a work machine, even when both layers happen to use the same values today. The desktop app, CLI, and IDE share the generated `~/.codex/config.toml`; a setting changed through one of those local surfaces remains a local experiment until it is promoted to the owning tracked fragment, and a later `dotty update` restores tracked values. Codex cloud chats use the model selected in their composer and do not currently support a configurable default model.
 
 For GitHub operations, local agents rely on your machine auth. On a new machine, install the tracked tools first with `dotty run brew-sync`, then run:
 
