@@ -168,6 +168,7 @@ run_bash_syntax() {
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "tests/brew-sync/test-brew-sync.sh"
+        "tests/sesh/test-one-shot.sh"
         "tests/sesh/test-setup.sh"
         "tests/television/test-setup.sh"
         "tests/tmux-agent-bar/test-runtime-path.sh"
@@ -311,7 +312,8 @@ run_brew_sync_tests() {
 }
 
 run_sesh_tests() {
-    log "Running sesh setup regression tests"
+    log "Running sesh regression tests"
+    "$PROJECT_ROOT/tests/sesh/test-one-shot.sh"
     "$PROJECT_ROOT/tests/sesh/test-setup.sh"
 }
 
@@ -437,8 +439,9 @@ run_staged_checks() {
         ".dotty/run.sh" \
         "home/.config/sesh/sesh.toml" \
         "home/.config/zsh/sesh.zsh" \
+        "home/.local/bin/sesh-one-shot" \
         "tests/sesh/*"; then
-        run_phase "sesh setup regression tests" 0 run_sesh_tests
+        run_phase "sesh regression tests" 0 run_sesh_tests
     fi
 
     if changed_any \

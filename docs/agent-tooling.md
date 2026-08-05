@@ -25,6 +25,16 @@
 - Finished shell-only sessions are hidden once no live agent process remains
 - dotfiles-side runtime path and sync tests live under `tests/tmux-agent-bar/`
 
+## Sesh one-shot launchers
+
+`sesh-one-shot` runs a configured launcher command and invalidates sesh's tmux-session cache when the command exits. Later repos in the dotty chain can opt a repeatable launcher into numbered tmux sessions without changing `sesh-pick`:
+
+```bash
+exec sesh-one-shot --numbered-session 'Scratch {n}' -- scratch-session
+```
+
+The name template must contain exactly one `{n}`. Inside tmux, the wrapper renames the newly created configured session to the lowest available positive number before starting the child. Tmux session names remain the uniqueness boundary; the wrapper does not keep a counter or lock file. It invalidates the sesh cache immediately after the rename and again when the child exits. Unnumbered launchers keep the existing `sesh-one-shot <command> [args...]` form.
+
 ## Claude
 
 The repo hook keeps `~/.claude` as a real directory and manages tracked contents from `home/.claude/`.

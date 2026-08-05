@@ -3,17 +3,89 @@
 
 set -euo pipefail
 
-if (($# == 0)); then
-  printf 'usage: %s <command> [args...]\n' "${0##*/}" >&2
-  exit 64
-fi
-
 SESH_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/sesh/sessions.gob"
+NUMBERED_SESSION_TEMPLATE=""
 
-cleanup() {
+usage() {
+  printf 'usage: %s [--numbered-session <name-template> --] <command> [args...]\n' "${0##*/}" >&2
+}
+
+die() {
+  printf '%s: %s\n' "${0##*/}" "$*" >&2
+  exit 1
+}
+
+die_usage() {
+  printf '%s: %s\n' "${0##*/}" "$*" >&2
+  usage
+  exit 64
+}
+
+invalidate_cache() {
   rm -f "${SESH_CACHE}"
 }
 
+allocate_numbered_session() {
+  local template="$1"
+  local placeholder='{n}'
+  local prefix="${template%%"${placeholder}"*}"
+  local suffix="${template#*"${placeholder}"}"
+  local session_id=""
+  local candidate=""
+  local rename_error=""
+  local number=1
+
+  [[ -n "${TMUX_PANE:-}" ]] || die "--numbered-session requires tmux"
+
+  if ! session_id="$(tmux display-message -p -t "${TMUX_PANE}" '#{session_id}')"; then
+    die "could not resolve the current tmux session"
+  fi
+
+  while :; do
+    candidate="${prefix}${number}${suffix}"
+
+    if rename_error="$(tmux rename-session -t "${session_id}" "${candidate}" 2>&1)"; then
+      invalidate_cache
+      return 0
+    fi
+
+    if tmux has-session -t "=${candidate}" 2>/dev/null; then
+      ((number += 1))
+      continue
+    fi
+
+    die "could not rename tmux session to ${candidate}: ${rename_error}"
+  done
+}
+
+validate_numbered_session_template() {
+  local template="$1"
+  local suffix=""
+
+  [[ "${template}" == *'{n}'* ]] || die_usage "the numbered session template must contain {n}"
+  suffix="${template#*'{n}'}"
+  [[ "${suffix}" != *'{n}'* ]] || die_usage "the numbered session template must contain {n} exactly once"
+}
+
+if [[ "${1:-}" == "--numbered-session" ]]; then
+  (($# >= 3)) || die_usage "--numbered-session requires a name template and --"
+  NUMBERED_SESSION_TEMPLATE="$2"
+  [[ "$3" == "--" ]] || die_usage "--numbered-session must be followed by --"
+  shift 3
+
+  validate_numbered_session_template "${NUMBERED_SESSION_TEMPLATE}"
+fi
+
+(($# > 0)) || die_usage "a command is required"
+
+cleanup() {
+  invalidate_cache
+}
+
 trap cleanup EXIT
+
+if [[ -n "${NUMBERED_SESSION_TEMPLATE}" ]]; then
+  allocate_numbered_session "${NUMBERED_SESSION_TEMPLATE}"
+fi
 
 "$@"
