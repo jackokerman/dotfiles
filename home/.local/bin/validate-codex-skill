@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly PYYAML_VERSION="6.0.3"
+
+if [[ "$#" -ne 1 ]]; then
+  printf 'Usage: %s <skill-directory>\n' "${0##*/}" >&2
+  exit 2
+fi
+
+readonly skill_path="$1"
+if [[ ! -d "${skill_path}" ]]; then
+  printf 'Skill directory does not exist: %s\n' "${skill_path}" >&2
+  exit 1
+fi
+
+readonly codex_config_dir="${CODEX_HOME:-${HOME}/.codex}"
+readonly validator_path="${codex_config_dir}/skills/.system/skill-creator/scripts/quick_validate.py"
+if [[ ! -f "${validator_path}" ]]; then
+  printf 'Codex skill validator not found: %s\n' "${validator_path}" >&2
+  exit 1
+fi
+
+base_python="$(command -v python3)"
+readonly base_python
+python_version="$("${base_python}" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+readonly python_version
+readonly cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/codex-skill-validator/python-${python_version}"
+readonly venv_python="${cache_dir}/bin/python"
+
+if [[ ! -x "${venv_python}" ]]; then
+  mkdir -p "${cache_dir}"
+  "${base_python}" -m venv "${cache_dir}"
+fi
+
+if ! "${venv_python}" -c 'import sys, yaml; sys.exit(yaml.__version__ != sys.argv[1])' "${PYYAML_VERSION}" 2>/dev/null; then
+  "${venv_python}" -m pip install --disable-pip-version-check --quiet "PyYAML==${PYYAML_VERSION}"
+fi
+
+exec "${venv_python}" "${validator_path}" "${skill_path}"
