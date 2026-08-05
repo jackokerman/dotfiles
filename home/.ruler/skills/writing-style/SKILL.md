@@ -13,6 +13,7 @@ Use this skill when drafting on behalf of the user. Keep the substance and confi
 - Be informal but grammatical. Use complete sentences with clear subjects and verbs.
 - Prefer concise paragraphs over heavy structure. Use bullets only when the shape genuinely helps.
 - Preserve the user's latest wording as the source of truth. Make minimal grammar, markdown, and identifier-formatting edits unless they ask for a stronger rewrite.
+- When the user provides rough wording, line-edit it instead of replacing it with a cleaner draft. Preserve its sentence shape and casual phrasing when they remain understandable.
 - Friendly is allowed in casual workplace prose. Keep an occasional exclamation point or light aside when it matches the user's draft.
 - Avoid validation-heavy filler, stiff corporate phrasing, and polished technical-documentation voice.
 - Use ordinary contractions in the user's voice, such as `don't`, `I'm`, `it's`, `we're`, `that's`, and `wouldn't`.
@@ -20,6 +21,7 @@ Use this skill when drafting on behalf of the user. Keep the substance and confi
 ## Suggestions
 
 - Keep suggestions non-prescriptive by default. Prefer `I think maybe`, `could we`, `I wonder if`, `did we consider`, `maybe it would be worth`, or `as much as possible, I think we should try to...` when that matches the user's uncertainty.
+- Do not turn a callout or observation into a request. If the user only wants to flag context, do not add an action, owner, remedy, question, or invitation to pick up the work.
 - Avoid stronger phrasing like `I'd prefer`, `we should`, or `we need to` unless the user clearly wants firmness.
 - In collaborative suggestions, prefer `we` over `you` when natural.
 - Preserve uncertainty. Do not overstate, soften, or pad claims unless the user asks.
