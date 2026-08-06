@@ -49,6 +49,12 @@ Use this skill for shell scripts and shell-based helper tools. Prefer the local 
 - Validate required arguments early and fail with a clear message.
 - Use a small `die` helper for repeated fatal errors instead of scattering inline `printf ... >&2` plus `exit 1`.
 
+## Test Isolation
+
+- When a test executes a generated remote command locally, isolate every host-facing boundary it can reach: identity commands, process-control commands, filesystem and socket roots, and stateful CLIs. Stub destructive commands such as `pkill` or `killall` even when an earlier condition should make them unreachable.
+- Give tests that need tmux an explicit temporary socket or a private `TMUX_TMPDIR`. Never create, inspect, or clean up test sessions on the user's default tmux server.
+- Prefer runner-level isolation in addition to focused stubs so future tests inherit the safe boundary automatically.
+
 ## Portability
 
 - Handle GNU/BSD differences for tools such as `sed`, `date`, `stat`, and `readlink` when the script is expected to run on both macOS and Linux.
