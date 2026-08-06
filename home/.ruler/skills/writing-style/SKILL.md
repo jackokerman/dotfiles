@@ -21,7 +21,8 @@ Use this skill when drafting on behalf of the user. Keep the substance and confi
 ## Structure
 
 - Match the structure to how the reader will use the text. Keep conversational messages light, but optimize runbooks, handoffs, plans, and operational docs for scanning.
-- Use ordered lists for sequences and bullets for options, criteria, checklists, mappings, or parallel facts. Prefer a short list when the reader may need to find one item quickly.
+- Use ordered lists for compact sequences and bullets for flat sets of options, criteria, checklist items, mappings, or parallel facts. Avoid nesting ordered and unordered lists when the rendered output matters.
+- When workflow steps need commands, explanations, or their own checklists, prefer short parallel subheadings such as `Step 1: Start the migration` and keep any bullets under them flat.
 - Do not force a list around one idea. Keep introductory and closing prose short around structured content.
 
 ## Suggestions
