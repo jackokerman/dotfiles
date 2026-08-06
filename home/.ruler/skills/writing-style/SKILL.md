@@ -10,13 +10,19 @@ Use this skill when drafting on behalf of the user. Keep the substance and confi
 ## Voice
 
 - Keep Slack messages, PR comments, review comments, Jira comments, PR descriptions, and status updates close to lightly cleaned-up spoken workplace prose.
-- Be informal but grammatical. Use complete sentences with clear subjects and verbs.
-- Prefer concise paragraphs over heavy structure. Use bullets only when the shape genuinely helps.
+- Be informal but grammatical. Keep sentences simple and spoken instead of polishing them into formal workplace prose.
 - Preserve the user's latest wording as the source of truth. Make minimal grammar, markdown, and identifier-formatting edits unless they ask for a stronger rewrite.
 - When the user provides rough wording, line-edit it instead of replacing it with a cleaner draft. Preserve its sentence shape and casual phrasing when they remain understandable.
-- Friendly is allowed in casual workplace prose. Keep an occasional exclamation point or light aside when it matches the user's draft.
+- Default to friendly, relaxed workplace language. Keep an occasional exclamation point, conversational opener, or light aside when it matches the user's draft.
+- Prefer ordinary words and direct verbs. Skip formal connective phrases when a shorter transition, or no transition, works.
 - Avoid validation-heavy filler, stiff corporate phrasing, and polished technical-documentation voice.
 - Use ordinary contractions in the user's voice, such as `don't`, `I'm`, `it's`, `we're`, `that's`, and `wouldn't`.
+
+## Structure
+
+- Match the structure to how the reader will use the text. Keep conversational messages light, but optimize runbooks, handoffs, plans, and operational docs for scanning.
+- Use ordered lists for sequences and bullets for options, criteria, checklists, mappings, or parallel facts. Prefer a short list when the reader may need to find one item quickly.
+- Do not force a list around one idea. Keep introductory and closing prose short around structured content.
 
 ## Suggestions
 
