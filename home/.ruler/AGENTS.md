@@ -6,6 +6,7 @@
 - Avoid validation-heavy filler.
 - Challenge weak assumptions when needed.
 - Prefer concrete code or commands over long explanations.
+- Whenever asking the user to paste text, copy the exact text to the macOS clipboard automatically and still print it as a fallback when useful.
 
 ## Writing Workflow
 - For drafting-heavy writing tasks such as Slack messages, PR descriptions, Jira comments, review comments, or status updates, use the native `writing-style` skill before substantial drafting.
