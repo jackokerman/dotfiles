@@ -130,6 +130,7 @@ changed_any() {
 run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
+        ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
@@ -156,6 +157,7 @@ run_bash_syntax() {
         "scripts/brew-sync.sh"
         "tests/brew-sync/test-brewfile-gh-provider.sh"
         "tests/brew-sync/test-brew-sync.sh"
+        "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
@@ -185,6 +187,7 @@ run_bash_syntax() {
 assert_expected_executables() {
     local -a files=(
         ".dotty/run.sh"
+        ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
@@ -209,6 +212,7 @@ assert_expected_executables() {
         "home/.config/tmux/session-status-left.sh"
         "home/.config/tmux/session-status-refresh.sh"
         "tests/television/test-setup.sh"
+        "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
     )
     local file
 
@@ -311,6 +315,11 @@ run_brew_sync_tests() {
     "$PROJECT_ROOT/tests/brew-sync/test-brew-sync.sh"
 }
 
+run_cleanup_tests() {
+    log "Running cleanup regression tests"
+    "$PROJECT_ROOT/tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
+}
+
 run_sesh_tests() {
     log "Running sesh regression tests"
     "$PROJECT_ROOT/tests/sesh/test-one-shot.sh"
@@ -391,6 +400,7 @@ run_core_checks() {
     run_phase "Codex Nightfly theme generation" 0 run_codex_theme_sync_check
     run_phase "Codex sync input validation" 0 run_codex_sync_validation
     run_phase "brew-sync regression tests" 0 run_brew_sync_tests
+    run_phase "cleanup regression tests" 0 run_cleanup_tests
     run_phase "advisory prose checks" 1 run_prose_checks
 }
 
@@ -432,6 +442,10 @@ run_staged_checks() {
 
     if changed_any ".dotty/commands/brew-sync" "Brewfile" "scripts/brew-sync.sh" "tests/brew-sync/*"; then
         run_phase "brew-sync regression tests" 0 run_brew_sync_tests
+    fi
+
+    if changed_any ".dotty/cleanups/*" "tests/cleanups/*"; then
+        run_phase "cleanup regression tests" 0 run_cleanup_tests
     fi
 
     if changed_any \
