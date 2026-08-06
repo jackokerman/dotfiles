@@ -1,9 +1,9 @@
 ---
 id: 2026-08-03-remove-obsolete-jackie-plan-wrapper-shadows
 title: Remove obsolete Jackie Plan wrapper shadows
-state: ready-to-implement
+state: complete
 createdAt: 2026-08-03T18:48:01.827Z
-updatedAt: 2026-08-03T18:50:32.642Z
+updatedAt: 2026-08-06T17:55:02.145Z
 ---
 
 # Remove obsolete Jackie Plan wrapper shadows
@@ -53,4 +53,16 @@ The base dotfiles migration commit `9c4be56` removed `.dotty/commands/install-ja
 
 ## Agent handoff
 
-Implement in the public base `dotfiles` repository, which owned the removed wrapper mechanism and its migration to manifest-managed devtools. Inspect commit `9c4be56`, the current `.dotty/devtools.tsv` Jackie Plan row, and nearby cleanup tasks before editing. Preserve unrelated dirty files and avoid editing generated live wrappers directly except through cleanup verification.
+### Completed outcome
+
+Implemented guarded removal of the four obsolete Jackie Plan wrapper locations through Dotty cleanup `2026-08-remove-obsolete-jackie-plan-wrappers`. The cleanup deletes only regular files matching the exact removed wrapper template and leaves unrecognized files, symlinks, and the current Bun-owned links untouched.
+
+Added focused regression coverage for removal, dry-run reporting, unrecognized-file preservation, and Bun-link preservation. Wired the test into core and staged repository checks.
+
+Implementation commit `dd32aa8` contains the cleanup, test, and check-runner integration. `./scripts/check --extended --quiet` and the pre-commit extended suite passed. A real `dotty update` ran the cleanup, removed all four matching live wrappers, and installed the cleanup receipt. `command -v jp` now resolves `~/.bun/bin/jp`, and `jp doctor` passes.
+
+The completed plan artifact and this checkpoint are included in the pending lifecycle commit and push scope. No implementation work or separate durable follow-up remains.
+
+### Next honest step
+
+Push the implementation and lifecycle commits to `main`. No implementation work remains after that persistence step.
