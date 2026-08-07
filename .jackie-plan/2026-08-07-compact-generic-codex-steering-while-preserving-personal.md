@@ -3,7 +3,7 @@ id: 2026-08-07-compact-generic-codex-steering-while-preserving-personal
 title: Compact generic Codex steering while preserving personal defaults
 state: ready-to-implement
 createdAt: 2026-08-07T01:09:26.458Z
-updatedAt: 2026-08-07T01:44:00.925Z
+updatedAt: 2026-08-07T02:16:45.390Z
 sourcePlan: 2026-08-07-sequence-codex-steering-cleanup-across-dotty-layers
 ---
 
@@ -104,16 +104,21 @@ Before marking this plan `ready-to-implement`, show the full persisted plan and 
 
 ## Next honest step
 
-Review this persisted contract with the user. If approved as implementable, mark it `ready-to-implement` and persist the plan artifact through the owning repository workflow; otherwise revise the contract without beginning the steering rewrite.
+Persist the approved implementation, apply the committed tracked sources with `dotty update`, complete the generated-output and fresh-context verification, then mark the plan complete and push the implementation and lifecycle commits to `main`. No implementation work remains after those mechanics succeed.
 
 ## Agent handoff
 
 ### Resume state
 
-The user approved the full contract as implementable on 2026-08-06. The plan is `ready-to-implement`, has no unresolved product or design decisions, and is intended to run in one pass. Its stopping points are exception guards for an unexpected unowned invariant, source conflict, generated-output defect, or unsafe Git state; they are not anticipated approval pauses.
+The user approved the review packet. The implementation and plan artifacts are approved for the normal commit, activation, verification, lifecycle, and push path. The plan remains `ready-to-implement` until post-commit `dotty update` and the approved smoke checks succeed.
 
-Begin implementation only through an explicit implementation request or `$jp:implement`.
+Approved implementation scope:
 
-### Process notes
+- `home/.ruler/AGENTS.md`: 7,902-byte active compact steering contract.
+- `home/.codex/AGENTS.md`: byte-identical rollback contract.
+- `home/.ruler/skills/bash-style/SKILL.md`: zsh special-parameter warning relocation.
+- This plan artifact: current contract and implementation handoff.
 
-The recorded `sourcePlan` identifier does not resolve in the current repo-local Jackie Plan root. The compact-steering objective is independently executable, so this is not a dependency unless the parent plan is later restored or linked from another root.
+Pre-commit extended repository checks, focused skill validation, static source identity, size checks, and `git diff --check` pass. No helper, cleanup, test, new skill, or follow-up plan is warranted. The approved paths will be included in the implementation commit; commit and push success have not yet been observed.
+
+After that commit, run `dotty update`, verify the live generated header and managed-skill indexes, perform the three approved fresh-context smoke checks, fix any regression caused by the rewrite, transition the plan to `complete`, replace this checkpoint with final durable facts, create the lifecycle commit, and push both commits.

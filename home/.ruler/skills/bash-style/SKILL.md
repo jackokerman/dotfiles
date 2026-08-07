@@ -41,6 +41,7 @@ Use this skill for shell scripts and shell-based helper tools. Prefer the local 
 - Quote variable expansions as `"${var}"` unless a shell pattern or word-splitting behavior is intentionally required.
 - Prefer `"${var:-default}"` for simple defaults.
 - Use `$(...)` for command substitution, not backticks.
+- In one-off zsh wrappers, do not assign to special parameters such as `status`; use names like `rc` or `exit_code` for captured exit codes.
 
 ## Conditionals And Output
 
