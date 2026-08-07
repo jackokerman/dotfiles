@@ -22,6 +22,7 @@ Use this skill when drafting on behalf of the user. Keep the substance and confi
 
 - Match the structure to how the reader will use the text. Keep conversational messages light, but optimize runbooks, handoffs, plans, and operational docs for scanning.
 - Use ordered lists for compact sequences and bullets for flat sets of options, criteria, checklist items, mappings, or parallel facts. Avoid nesting ordered and unordered lists when the rendered output matters.
+- Write bullets as independent items. Use periods for complete sentences and no punctuation for short fragments. Avoid semicolon-linked lists and a terminal `and`.
 - When workflow steps need commands, explanations, or their own checklists, prefer short parallel subheadings such as `Step 1: Start the migration` and keep any bullets under them flat.
 - Do not force a list around one idea. Keep introductory and closing prose short around structured content.
 
