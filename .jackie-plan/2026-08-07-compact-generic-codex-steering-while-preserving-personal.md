@@ -1,9 +1,9 @@
 ---
 id: 2026-08-07-compact-generic-codex-steering-while-preserving-personal
 title: Compact generic Codex steering while preserving personal defaults
-state: ready-to-implement
+state: complete
 createdAt: 2026-08-07T01:09:26.458Z
-updatedAt: 2026-08-07T02:16:45.390Z
+updatedAt: 2026-08-07T02:20:04.507Z
 sourcePlan: 2026-08-07-sequence-codex-steering-cleanup-across-dotty-layers
 ---
 
@@ -104,21 +104,24 @@ Before marking this plan `ready-to-implement`, show the full persisted plan and 
 
 ## Next honest step
 
-Persist the approved implementation, apply the committed tracked sources with `dotty update`, complete the generated-output and fresh-context verification, then mark the plan complete and push the implementation and lifecycle commits to `main`. No implementation work remains after those mechanics succeed.
+No implementation work remains. Preserve the completed plan and final verification handoff in Git; the compact steering is active after `dotty update` and both implementation and lifecycle commits should be pushed to `main`.
 
 ## Agent handoff
 
 ### Resume state
 
-The user approved the review packet. The implementation and plan artifacts are approved for the normal commit, activation, verification, lifecycle, and push path. The plan remains `ready-to-implement` until post-commit `dotty update` and the approved smoke checks succeed.
+The approved implementation is complete. The plan is `complete`, and no implementation work remains.
 
-Approved implementation scope:
+Outcome:
 
-- `home/.ruler/AGENTS.md`: 7,902-byte active compact steering contract.
-- `home/.codex/AGENTS.md`: byte-identical rollback contract.
-- `home/.ruler/skills/bash-style/SKILL.md`: zsh special-parameter warning relocation.
-- This plan artifact: current contract and implementation handoff.
+- `home/.ruler/AGENTS.md` and `home/.codex/AGENTS.md` are byte-identical at 7,902 bytes and 1,116 words, down from the 18,759-byte and 2,779-word active baseline.
+- The zsh special-parameter warning is owned by `home/.ruler/skills/bash-style/SKILL.md`.
+- `dotty update` succeeded. The live composed `~/.codex/AGENTS.md` is 15,599 bytes and 2,211 words, down from 26,456 bytes and 3,874 words, and its generated header names both tracked Ruler sources.
+- The Codex and Claude managed-skill indexes point portable skills to `home/.ruler/skills/`, and the Codex index points `codex-config-coach` to `home/.codex/skills/`.
+- Extended repository checks, focused skill validation, static source identity and size checks, generated-output checks, and all three approved fresh-context smoke scenarios pass.
 
-Pre-commit extended repository checks, focused skill validation, static source identity, size checks, and `git diff --check` pass. No helper, cleanup, test, new skill, or follow-up plan is warranted. The approved paths will be included in the implementation commit; commit and push success have not yet been observed.
+The implementation is committed as `aa753d4` (`refactor: compact generic Codex steering`). This final plan lifecycle and checkpoint update is approved for a separate lifecycle commit because the commit-first Dotty workflow required activation and smoke verification after the implementation commit. Neither commit has been pushed yet.
 
-After that commit, run `dotty update`, verify the live generated header and managed-skill indexes, perform the three approved fresh-context smoke checks, fix any regression caused by the rewrite, transition the plan to `complete`, replace this checkpoint with final durable facts, create the lifecycle commit, and push both commits.
+### Process notes
+
+The disposition audit found only one genuine unowned rule and relocated it to `bash-style`; all other removed procedure already belonged to repo instructions, existing skills, or active built-in steering. The final lightweight improvement audit found no repeated friction or missing durable rule that warrants another config edit, helper, test, cleanup, skill, or follow-up plan.
