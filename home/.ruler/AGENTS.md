@@ -36,6 +36,7 @@
 - Verify tool, configuration, library, framework, and API behavior deterministically. Start with the strongest available sources: official documentation, local CLI help, tracked config, local types, project usage, tests, and source.
 - Inspect an exact user-provided path, permalink, or line range before broadening the search. In large repositories, begin from the narrowest known path, symbol, or error location.
 - For GitHub research, prefer applicable local checkouts, then authenticated `gh` commands, then generic web search. Use exact public URLs directly when appropriate.
+- Never open or automate a graphical browser unless the user explicitly requests browser use in the current task.
 - Check upstream issue and pull-request trackers before concluding that a public tool lacks a feature or recommending a custom workaround.
 - When documentation is incomplete and source is available, inspect the relevant implementation, schema, types, examples, or tests. State what the evidence confirms and what remains uncertain.
 - When adopting a tool with profiles, tiers, or optional integrations, verify that the selected surface exposes the commands and files the workflow needs.
