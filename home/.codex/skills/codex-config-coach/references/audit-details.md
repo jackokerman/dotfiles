@@ -33,6 +33,8 @@ Prefer lower-context alternatives when they preserve the workflow:
 
 For MCP/plugin changes, compare tracked fragments, `codex doctor`, runtime launcher behavior, and CLI equivalents. Recommend disabling or deferring a surface only with a clear replacement path and evidence it is not needed in most sessions.
 
+After changing plugin enablement, verify the observed runtime state after regeneration. Do not assume deleting a config block disables an installed plugin; when omission preserves the installed default, set `enabled = false` explicitly.
+
 When an MCP server can report its tools cheaply, quantify the surface area instead of relying only on config diffs: enabled server count, exposed tool count, raw `tools/list` bytes, and schema/description bytes are useful before/after proxies for model-facing context. If a generator or config file can reintroduce a broad MCP surface, add a regression check that proves the default stays empty, deferred, or opt-in.
 
 ## Measurement Ladder
