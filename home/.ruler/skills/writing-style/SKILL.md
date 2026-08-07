@@ -21,7 +21,7 @@ Use this skill when drafting on behalf of the user. Keep the substance and confi
 ## Structure
 
 - Match the structure to how the reader will use the text. Keep conversational messages light, but optimize runbooks, handoffs, plans, and operational docs for scanning.
-- In PR `Summary` and `Motivation` sections, prefer compact bullets when there are multiple independent points about what changed or why it matters. Keep a single idea as prose, and avoid canned label-plus-colon bullets or turning every paragraph into a list.
+- Prefer bullets when multiple independent points are easier to scan than prose, especially changes, reasons, evidence, options, or actions. Use prose for a single idea or connected reasoning. Do not use bullets mechanically, and avoid canned label-plus-colon items unless the labels aid lookup.
 - Use ordered lists for compact sequences and bullets for flat sets of options, criteria, checklist items, mappings, or parallel facts. Avoid nesting ordered and unordered lists when the rendered output matters.
 - Write bullets as independent items. Use periods for complete sentences and no punctuation for short fragments. Avoid semicolon-linked lists and a terminal `and`.
 - When workflow steps need commands, explanations, or their own checklists, prefer short parallel subheadings such as `Step 1: Start the migration` and keep any bullets under them flat.
