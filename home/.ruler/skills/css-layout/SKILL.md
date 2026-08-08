@@ -1,6 +1,6 @@
 ---
 name: css-layout
-description: Generic frontend styling and layout guidance for CSS, style objects, utility classes, and layout props. Use when working on spacing, sizing, positioning, overflow, stacking, responsive layout, or visual containment where the problem is not framework-specific.
+description: Use when frontend work needs framework-neutral styling choices or CSS and layout guidance for spacing, sizing, positioning, overflow, stacking, responsiveness, or containment.
 ---
 
 # CSS Layout
@@ -36,3 +36,4 @@ Use this skill for generic styling and layout work. Keep framework-specific rend
 - Add layout properties incrementally and reason about what each one changes. Avoid a shotgun bundle of likely fixes; keep only the properties that prove necessary.
 - Prefer the smallest structural change that removes the need for a layer hack.
 - Keep generic styling rules here rather than piling them into framework-specific skills.
+- For styling-tool selection, load `references/styling-tool-choice.md` before applying framework-specific defaults.

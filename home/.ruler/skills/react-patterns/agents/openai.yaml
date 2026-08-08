@@ -1,4 +1,4 @@
 interface:
   display_name: "React Patterns"
-  short_description: "Generic React cleanup, component, hooks, and testing guidance."
-  default_prompt: "Use $react-patterns for React work that needs help implementing or simplifying components, hooks, rendering, context, effects, or tests."
+  short_description: "React components, hooks, tests, and app tooling."
+  default_prompt: "Use $react-patterns for React components, hooks, tests, or greenfield app tooling decisions."

@@ -1,4 +1,4 @@
 interface:
   display_name: "CSS Layout"
-  short_description: "Generic frontend layout, sizing, spacing, and stacking guidance."
-  default_prompt: "Use $css-layout for CSS, layout, stacking, spacing, sizing, overflow, and positioning work that is not framework-specific."
+  short_description: "Frontend styling choices, layout, and containment."
+  default_prompt: "Use $css-layout for framework-neutral styling choices, layout, spacing, sizing, overflow, or positioning."

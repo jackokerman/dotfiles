@@ -1,6 +1,6 @@
 ---
 name: react-patterns
-description: Use when React or frontend work needs guidance on cleanup and simplification, component boundaries, hooks, context, rendering, testing, or modern React defaults.
+description: Use when React work needs cleanup, component boundaries, hooks, context, rendering, testing, or greenfield tooling defaults.
 ---
 
 # React Patterns
@@ -15,7 +15,7 @@ Use this skill for clearly React or frontend work, including cleanup or simplifi
 - Prefer refactors that reduce invalid states, branching, and incidental complexity over clever abstractions.
 - Name components, hooks, and helpers by domain intent. Prefer short, direct names and avoid vague qualifiers such as `effective`, `resolved`, `computed`, and `final` unless they mark a real distinction.
 - Keep the code shape consistent inside a module. Do not mix unrelated styles without a reason.
-- When implementation details matter, load `references/react-defaults.md` and apply only the sections relevant to the change.
+- Load `references/react-defaults.md` for implementation details and `references/react-tooling-defaults.md` for greenfield tooling selection.
 
 ## Loaded Defaults
 

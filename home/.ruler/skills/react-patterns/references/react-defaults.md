@@ -22,7 +22,6 @@ Detailed React defaults for `react-patterns`. Apply only the sections relevant t
 - Prefer plain helper functions for pure branching or data shaping. Use hooks when the extraction composes hooks, state, refs, or effects.
 - Component bodies should read like orchestration: get data, call domain hooks, render UI.
 - Resolve defaults and fallback chains at the boundary instead of scattering them through the tree.
-- Keep state minimal and close to where it is used. Derive during render when possible, and lift only when multiple consumers need one source of truth.
 - Pass intentful handlers such as `onClose`, `onSave`, or `onToggle` instead of raw state setters by default.
 - Let the nearest responsible component own validation, mutation flow, and form orchestration. Leaf primitives should stay dumb.
 - Use reducers for explicit transitions or many related events. Reach for external client-state libraries only when local state, context, and reducers no longer model the problem cleanly.
@@ -62,15 +61,11 @@ Detailed React defaults for `react-patterns`. Apply only the sections relevant t
 
 ## Performance
 
-- Do not optimize prematurely. Measure before trading readability for speed.
 - Bundle size and network work usually matter more than callback identity churn.
-- Do not reach for `useMemo` or `useCallback` by default. Memoize only for measured expensive work, stable identity requirements, or established local convention.
 - Use `useEffectEvent`, `startTransition`, and `useDeferredValue` to simplify code or preserve responsiveness, not as decorative optimization.
 
 ## Testing
 
-- Test behavior and user outcomes, not implementation details.
-- Prefer meaningful assertions over snapshots, broad mocks, or coverage that only preserves markup shape.
 - Cover default rendering, state transitions, events, edge cases, and failure paths when behavior changes.
 - Write integration tests when component interaction is the real risk.
 - For async DOM appearance, prefer `findBy*` queries. When `waitFor` is needed, wait for one concrete assertion; do not use empty callbacks or bundle multiple assertions.
