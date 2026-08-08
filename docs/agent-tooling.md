@@ -25,6 +25,10 @@
 - Finished shell-only sessions are hidden once no live agent process remains
 - dotfiles-side runtime path and sync tests live under `tests/tmux-agent-bar/`
 
+## Sesh session picker
+
+`Alt+S` opens `sesh-pick` in a popup inside tmux and runs the picker directly in the current terminal outside tmux. Tmux popups require an attached tmux client. Inside tmux, `Ctrl+T` also opens the popup directly.
+
 ## Sesh one-shot launchers
 
 `sesh-one-shot` runs a configured launcher command and invalidates sesh's tmux-session cache when the command exits. Later repos in the dotty chain can opt a repeatable launcher into numbered tmux sessions without changing `sesh-pick`:
