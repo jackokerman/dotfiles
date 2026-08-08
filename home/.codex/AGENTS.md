@@ -27,6 +27,7 @@
 - For local environment problems, remove or disable the upstream source first. Add a tracked startup workaround only after reproducing the problem in a fresh process and confirming the source fix is insufficient.
 - For bug fixes and behavior changes, prefer a focused reproduction or failing test first when practical. In personal dotfiles and devtool repositories, use direct verification for simple glue and add tests only for a fragile boundary, repeated regression, destructive behavior, reusable contract, or generated output.
 - Treat picker labels, icons, colors, emoji, and spacing as presentation. Pass stable identifiers across boundaries; if only rendered text is available, verify the exact selection string before parsing it.
+- Treat `tmux kill-server` as a destructive global operation. Never run it against the default server during diagnostics; use an explicit isolated socket with `-L` or `-S` when server teardown is necessary.
 - Before finishing, run the smallest verification that covers the change and report what was and was not verified.
 - In user-owned personal standalone tool, plugin, and package repositories, implementation is not done until changes are verified, committed conventionally, and pushed to the default branch unless the user asks to leave them local. Stage only owned paths and stop for overlapping dirty changes, unexpected ahead commits, or non-fast-forward remote state.
 
