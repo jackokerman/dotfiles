@@ -32,6 +32,9 @@ Help a newer Neovim user grow a personal config slowly and intentionally. Optimi
 6. Teach while you edit.
    - Explain what changed, why it lives there, how to use it, and one or two next things to learn.
    - Prefer brief explanations tied to the actual diff instead of generic Neovim tutorials.
+7. Keep the learning cheatsheet current.
+   - Treat a Neovim question about a stable motion, configured keymap, or recurring workflow as permission to add a concise, non-duplicate entry to `docs/neovim-basics.md`.
+   - Skip one-off troubleshooting, project-specific fixes, and exhaustive keymap inventories.
 
 ## Defaults
 
