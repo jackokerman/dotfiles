@@ -1,6 +1,6 @@
 # Vim Basics in Neovim
 
-Use `which-key` for the configured mappings that are active in Neovim. Press `Space` and pause to see leader mappings, or pause after a prefix such as `d`, `c`, `y`, `<C-w>`, `g`, or `z` to see the available next keys.
+Use `which-key` for the configured mappings that are active in Neovim. In the tables below, `<leader>` means `Space`. Press `Space` and pause to see leader mappings, or pause after a prefix such as `d`, `c`, `y`, `<C-w>`, `g`, or `z` to see the available next keys.
 
 For broader learning and reference:
 
@@ -31,6 +31,18 @@ For broader learning and reference:
 | `n` / `N` | Move to the next or previous search result. |
 | `*` / `#` | Search forward or backward for the word under the cursor. |
 | `<C-o>` / `<C-i>` | Move backward or forward through jump history. |
+
+## Diagnostics
+
+A red squiggle marks the affected text, `E` in the gutter marks an error on that line, and a red icon in the explorer marks a file containing diagnostics.
+
+| Keys | Action |
+| --- | --- |
+| `<leader>d` | Show the diagnostic under the cursor. |
+| `]d` / `[d` | Move to the next or previous diagnostic. |
+| `<leader>sd` | Search diagnostics across the project. |
+| `<leader>ca` | Show available code actions. |
+| `:LspInfo` | Inspect attached language servers. |
 
 ## Operators and motions
 
