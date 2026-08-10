@@ -19,11 +19,13 @@ Use `GODSPEED_API_TOKEN` only as an explicit automation or debugging override. M
 
 Treat folders as contexts, GTD lists as state, labels as categories or areas, and task/subtask structure as projects. Resolve the `📥 Inbox`, `⚡ Next Actions`, and `🌱 Someday` children dynamically under `🏢 Work` and `🏡 Personal`; ignore the root Godspeed Inbox. Keep scopes separate unless the user explicitly requests both.
 
+Treat an explicit request to capture one task in a known category or area as an end-to-end capture. Discover the existing label and matching smart list, inspect its current `Next Actions` and `Someday` order, infer the task state and relative priority from the supplied context, create it directly in that state, and place it in the smart list. Report the chosen state, position, and short rationale. Use `inbox` only when the category, state, or placement remains materially ambiguous.
+
 ## Mutation Safety
 
 - Use the API through the CLI; never mutate local Godspeed storage.
 - Execute explicit, objective writes on explicit targets directly. Capture ambiguous-priority tasks in `inbox` rather than guessing another state.
-- Require preview or approval before bulk, heuristic, subjective, or inferred categorization. Apply bulk labels only to explicit reviewed task IDs.
+- Require preview or approval before bulk, heuristic, subjective, or inferred categorization. The end-to-end single-task capture above is authorized by the explicit capture request; apply bulk labels only to explicit reviewed task IDs.
 - Complete tasks through `godspeed-gtd task complete`, which completes and clears them by default. Use `--keep-uncleared` only when the completed task should remain visible with a strikethrough; direct task patches can report success without completing the task.
 - Discover labels at runtime. Create a missing label only when explicitly requested. Keep personal category names, matching rules, and smart-list definitions out of tracked config.
 - Use `godspeed-gtd task reparent` for hierarchy corrections so the parent list and adjacent source-order boundary are derived atomically; do not combine manual cross-list moves with smart-list-visible neighbors.
