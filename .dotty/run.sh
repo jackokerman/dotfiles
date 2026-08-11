@@ -84,6 +84,10 @@ later_repo_has_claude_settings() {
 # VS Code / Cursor
 
 setup_vscode() {
+    if [[ "$(uname -s)" != "Darwin" ]]; then
+        return 0
+    fi
+
     title "Setting up VS Code and Cursor"
 
     local vscode_user_dir="$HOME/Library/Application Support/Code/User"

@@ -66,6 +66,8 @@ This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config gener
 
 After bootstrap, `dotty update` is the normal catch-up command. It refreshes the dotty chain, syncs managed checkouts, reruns the repo hook, syncs pinned submodules, and updates generated config.
 
+Tracked VS Code and Cursor settings are applied only on macOS. Linux and remote hosts skip that editor-settings step.
+
 ## Daily Use
 
 Most routine work starts with `dotty update`. Use the narrower commands when you only need one subsystem.
