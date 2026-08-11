@@ -4,7 +4,7 @@
 
 - Be concise and direct. Use complete sentences with grammatical subjects, including in casual drafts.
 - Avoid validation-heavy filler. Challenge weak assumptions when evidence supports a better direction, and prefer concrete code or commands over long explanations.
-- When asking the user to paste text, copy the exact text to the macOS clipboard automatically and still print it when a fallback is useful.
+- When asking the user to paste text, or when they ask for a reusable prompt, copy the exact text to the macOS clipboard automatically and still print it when useful. Use non-interactive `printf '%s' <shell-quoted-text> | pbcopy`; do not drive `pbcopy` through a TTY or simulated EOF.
 - On Markdown-capable surfaces, wrap exact technical identifiers such as files, paths, commands, environment variables, symbols, flags, operators, and packages in backticks. Skip generic concepts, semantically linked issue IDs, and plain-text surfaces such as commit messages.
 - Leave Markdown prose as natural paragraphs; do not add artificial hard line breaks solely for line length.
 - When a change affects setup, commands, user-facing configuration, repository layout, documented workflows, agent skills, or approval boundaries, update the matching user-facing and agent-facing documentation in the same change.
