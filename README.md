@@ -34,7 +34,7 @@ After `./install.sh`, run the steps that apply to the fresh host.
 dotty run brew-sync
 ```
 
-This installs packages from the tracked `Brewfile` on supported Homebrew hosts, including Linuxbrew on Linux. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. Personal-only entries are included when `HOMEBREW_DOTFILES_ENV=personal`, which is the base shell default. Homebrew `gh` is installed only when no non-Homebrew `gh` is already available, so host-provided wrappers can own GitHub CLI behavior; use `dotty run brew-sync` for that path so the helper preserves the pre-Homebrew command path.
+This installs packages from the tracked `Brewfile` on supported Homebrew hosts, including Linuxbrew on Linux. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. Personal-only entries are included when `HOMEBREW_DOTFILES_ENV=personal`, which is the base shell default. Remote installs serialize Homebrew downloads and formula installation because concurrent Linuxbrew jobs can race on shared prefix state. Homebrew `gh` is installed only when no non-Homebrew `gh` is already available, so host-provided wrappers can own GitHub CLI behavior; use `dotty run brew-sync` for that path so the helper preserves the pre-Homebrew command path.
 
 ### 2. Set up GitHub auth and SSH
 

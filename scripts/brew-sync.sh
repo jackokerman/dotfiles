@@ -124,6 +124,12 @@ ensure_homebrew
 trust_formula_if_needed "oven-sh/bun/bun"
 trust_formula_if_needed "agavra/tap/tuicr"
 
+if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "remote" ]]; then
+    # Homebrew's concurrent Linux installs can race on shared prefix state.
+    export HOMEBREW_BUNDLE_JOBS=1
+    export HOMEBREW_DOWNLOAD_CONCURRENCY=1
+fi
+
 info "Installing packages from Brewfile"
 if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "personal" ]]; then
     info "Including personal-only Homebrew entries."

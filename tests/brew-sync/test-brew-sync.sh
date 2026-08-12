@@ -35,6 +35,9 @@ case "\${1:-}" in
     trust)
         ;;
     bundle)
+        printf 'bundle jobs=%s downloads=%s\n' \
+            "\${HOMEBREW_BUNDLE_JOBS:-}" \
+            "\${HOMEBREW_DOWNLOAD_CONCURRENCY:-}" >> "${log_file}"
         ;;
     *)
         printf 'unexpected brew command: %s\n' "\$*" >&2
@@ -66,6 +69,9 @@ case "\${1:-}" in
     trust)
         ;;
     bundle)
+        printf 'bundle jobs=%s downloads=%s\n' \
+            "\${HOMEBREW_BUNDLE_JOBS:-}" \
+            "\${HOMEBREW_DOWNLOAD_CONCURRENCY:-}" >> "${brew_log}"
         ;;
     *)
         printf 'unexpected brew command: %s\n' "\$*" >&2
@@ -121,14 +127,14 @@ run_macos_existing_brew_case() {
     PATH="${fake_bin}:${PATH}" "${repo_dir}/scripts/brew-sync.sh" >/dev/null
 
     assert_equal "macOS existing brew only runs bundle by default" \
-        "brew bundle --file ${repo_dir}/Brewfile" \
+        $'brew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs= downloads=' \
         "$(<"${brew_log}")"
 
     : > "${brew_log}"
     PATH="${fake_bin}:${PATH}" "${repo_dir}/scripts/brew-sync.sh" --cleanup >/dev/null
 
     assert_equal "cleanup is opt-in" \
-        $'brew bundle --file '"${repo_dir}"$'/Brewfile\nbrew bundle cleanup --file '"${repo_dir}"$'/Brewfile --force --formula --cask' \
+        $'brew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs= downloads=\nbrew bundle cleanup --file '"${repo_dir}"$'/Brewfile --force --formula --cask\nbundle jobs= downloads=' \
         "$(<"${brew_log}")"
 
     rm -rf "${tmp_dir}"
@@ -154,6 +160,7 @@ run_linux_install_case() {
     write_fake_curl "${fake_bin}/curl" "${curl_log}" "${tmp_dir}/install.sh"
 
     PATH="${fake_bin}:/usr/bin:/bin" \
+        HOMEBREW_DOTFILES_ENV=remote \
         HOMEBREW_PREFIX="${prefix}" \
         "${repo_dir}/scripts/brew-sync.sh" >/dev/null
 
@@ -162,7 +169,7 @@ run_linux_install_case() {
         "$(<"${curl_log}")"
 
     assert_equal "Linux install activates Linuxbrew, trusts third-party formulas, then bundles" \
-        $'brew shellenv\nbrew trust --formula oven-sh/bun/bun\nbrew trust --formula agavra/tap/tuicr\nbrew bundle --file '"${repo_dir}"$'/Brewfile' \
+        $'brew shellenv\nbrew trust --formula oven-sh/bun/bun\nbrew trust --formula agavra/tap/tuicr\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=1' \
         "$(<"${brew_log}")"
 
     rm -rf "${tmp_dir}"
