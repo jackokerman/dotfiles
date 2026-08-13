@@ -1,0 +1,4 @@
+interface:
+  display_name: "Finish session"
+  short_description: "Close out work and improve future sessions"
+  default_prompt: "Use $finish-session to close out this session, capture durable improvements and follow-ups, and flag avoidable token or workflow waste."

@@ -16,13 +16,22 @@ type RolloutEntry = {
   type?: string;
 };
 
+type TokenUsage = {
+  cacheWriteInputTokens: number;
+  cachedInputTokens: number;
+  inputTokens: number;
+  outputTokens: number;
+  reasoningOutputTokens: number;
+  totalTokens: number;
+};
+
 const DEFAULT_PATTERN =
   /\b(why did you|why'd you|can we do|could we do|instead|next time|prefer|don't|do not|should have|shouldn't|rather than)\b/i;
 
 function usage(): never {
   console.error(`Usage:
-  codex-session-snippets --latest [--query <text>] [--limit <n>]
-  codex-session-snippets --thread <thread-id> [--query <text>] [--limit <n>]`);
+  codex-session-snippets --latest [--query <text>] [--limit <n>] [--usage]
+  codex-session-snippets --thread <thread-id> [--query <text>] [--limit <n>] [--usage]`);
   process.exit(2);
 }
 
@@ -43,6 +52,7 @@ export function parseArgs(argv: string[]) {
   let threadId = "";
   let query = "";
   let limit = 8;
+  let usageOnly = false;
 
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
@@ -62,6 +72,9 @@ export function parseArgs(argv: string[]) {
         limit = parseLimit(valueAfter(argv, index));
         index += 1;
         break;
+      case "--usage":
+        usageOnly = true;
+        break;
       default:
         usage();
     }
@@ -71,7 +84,11 @@ export function parseArgs(argv: string[]) {
     usage();
   }
 
-  return { latest, limit, query, threadId };
+  if (usageOnly && query.length > 0) {
+    usage();
+  }
+
+  return { latest, limit, query, threadId, usage: usageOnly };
 }
 
 function openStateDb() {
@@ -187,6 +204,65 @@ function readEntries(path: string): RolloutEntry[] {
     });
 }
 
+function tokenNumber(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+    return undefined;
+  }
+  return value;
+}
+
+/**
+ * This returns cumulative usage from the latest complete Codex token-count event.
+ */
+export function latestTokenUsage(entries: RolloutEntry[]): TokenUsage | undefined {
+  for (const entry of entries.toReversed()) {
+    if (entry.type !== "event_msg" || !entry.payload || typeof entry.payload !== "object") {
+      continue;
+    }
+
+    const payload = entry.payload as Record<string, unknown>;
+    if (payload.type !== "token_count" || !payload.info || typeof payload.info !== "object") {
+      continue;
+    }
+
+    const info = payload.info as Record<string, unknown>;
+    if (!info.total_token_usage || typeof info.total_token_usage !== "object") {
+      continue;
+    }
+
+    const total = info.total_token_usage as Record<string, unknown>;
+    const usage = {
+      cacheWriteInputTokens: tokenNumber(total.cache_write_input_tokens),
+      cachedInputTokens: tokenNumber(total.cached_input_tokens),
+      inputTokens: tokenNumber(total.input_tokens),
+      outputTokens: tokenNumber(total.output_tokens),
+      reasoningOutputTokens: tokenNumber(total.reasoning_output_tokens),
+      totalTokens: tokenNumber(total.total_tokens),
+    };
+    if (Object.values(usage).some((value) => value === undefined)) {
+      continue;
+    }
+    return usage as TokenUsage;
+  }
+
+  return undefined;
+}
+
+function printTokenUsage(entries: RolloutEntry[]) {
+  const tokenUsage = latestTokenUsage(entries);
+  if (tokenUsage === undefined) {
+    throw new Error("No complete token usage event found in this Codex thread");
+  }
+
+  const format = (value: number) => value.toLocaleString("en-US");
+  console.log(`input tokens: ${format(tokenUsage.inputTokens)}`);
+  console.log(`cached input tokens: ${format(tokenUsage.cachedInputTokens)}`);
+  console.log(`cache write input tokens: ${format(tokenUsage.cacheWriteInputTokens)}`);
+  console.log(`output tokens: ${format(tokenUsage.outputTokens)}`);
+  console.log(`reasoning output tokens: ${format(tokenUsage.reasoningOutputTokens)}`);
+  console.log(`total tokens: ${format(tokenUsage.totalTokens)}`);
+}
+
 export function truncate(text: string) {
   const normalized = text.replace(/\s+/g, " ").trim();
   if (normalized.length <= 600) {
@@ -232,6 +308,12 @@ function main() {
       timestamp: entry.timestamp,
     });
   });
+
+  if (args.usage) {
+    console.log(`thread: ${thread.id}`);
+    printTokenUsage(entries);
+    return;
+  }
 
   console.log(`# ${truncate(thread.title)}`);
   console.log(`thread: ${thread.id}`);

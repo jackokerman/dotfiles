@@ -90,6 +90,10 @@ Notes:
 - For Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` instead of the full macOS setup path.
 - Private managed checkout rows belong in later repos and rely on your machine GitHub auth.
 
+### Codex session closeout
+
+Invoke `$finish-session` before ending a substantial Codex session. It verifies the outcome, routes evidence-backed steering changes through `codex-config-coach`, reconciles durable plan or task follow-ups, and reports cumulative session tokens or concrete waste without generating a report for every session. For a direct token snapshot, run `codex-session-snippets --latest --usage`; the local session data does not include a reliable dollar cost or per-skill attribution.
+
 ### Validation
 
 | Command | Use |

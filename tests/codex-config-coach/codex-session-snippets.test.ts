@@ -3,6 +3,7 @@ import { describe, expect, it } from "bun:test";
 import {
   entryRole,
   entryText,
+  latestTokenUsage,
   parseArgs,
   shouldSearch,
   textFromContent,
@@ -16,6 +17,7 @@ describe("parseArgs", () => {
       limit: 3,
       query: "prefer",
       threadId: "",
+      usage: false,
     });
   });
 
@@ -25,7 +27,59 @@ describe("parseArgs", () => {
       limit: 8,
       query: "",
       threadId: "thread-123",
+      usage: false,
     });
+  });
+
+  it("parses usage lookup options", () => {
+    expect(parseArgs(["--latest", "--usage"])).toEqual({
+      latest: true,
+      limit: 8,
+      query: "",
+      threadId: "",
+      usage: true,
+    });
+  });
+});
+
+describe("token usage", () => {
+  it("returns the latest complete token count event", () => {
+    expect(
+      latestTokenUsage([
+        {
+          payload: {
+            info: {
+              total_token_usage: {
+                cache_write_input_tokens: 20,
+                cached_input_tokens: 80,
+                input_tokens: 100,
+                output_tokens: 10,
+                reasoning_output_tokens: 3,
+                total_tokens: 110,
+              },
+            },
+            type: "token_count",
+          },
+          type: "event_msg",
+        },
+      ]),
+    ).toEqual({
+      cacheWriteInputTokens: 20,
+      cachedInputTokens: 80,
+      inputTokens: 100,
+      outputTokens: 10,
+      reasoningOutputTokens: 3,
+      totalTokens: 110,
+    });
+  });
+
+  it("ignores malformed and incomplete token events", () => {
+    expect(
+      latestTokenUsage([
+        { payload: { type: "token_count" }, type: "event_msg" },
+        { payload: { info: { total_token_usage: { input_tokens: 10 } } } },
+      ]),
+    ).toBeUndefined();
   });
 });
 

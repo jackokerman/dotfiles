@@ -54,9 +54,10 @@ When explicit lookup is useful, run the tracked transcript helper:
 ```bash
 codex-session-snippets --latest
 codex-session-snippets --thread <thread-id> --query "why did you"
+codex-session-snippets --latest --usage
 ```
 
-Use helper output as evidence, not as a replacement for judgment. Pull only the relevant snippets into context and avoid dumping full transcripts.
+Use helper output as evidence, not as a replacement for judgment. Pull only the relevant snippets into context and avoid dumping full transcripts. Usage output reports cumulative tokens recorded by the local Codex rollout; it does not provide dollar cost or reliable per-skill attribution.
 
 ## Good Updates
 
