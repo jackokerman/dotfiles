@@ -24,6 +24,7 @@ Close the session without duplicating the workflows that own configuration, plan
    - update an existing active plan when the session changed its status, decisions, or next step;
    - capture only actionable unfinished work in the applicable plan or task system;
    - do not create a follow-up for completed work, vague ideas, or a small fix that can be completed now.
+   - persist session-owned plan artifacts through required commit and push on invocation. Stage only those paths; stop for overlap or unsafe remote state.
 6. Audit efficiency with evidence. Run `codex-session-snippets --latest --usage` for current-session token counts. Do not estimate dollar cost, attribute tokens to individual skills, or inspect historical sessions unless the user explicitly requests historical analysis. Use `plugin-eval analyze` and `plugin-eval explain-budget` only for a specific suspect skill or plugin. Do not start paid benchmark runs without explicit approval.
 7. Report a compact closeout:
    - outcome and verification;

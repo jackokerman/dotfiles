@@ -92,7 +92,7 @@ Notes:
 
 ### Codex session closeout
 
-Invoke `$finish-session` before ending a substantial Codex session. It verifies the outcome, routes evidence-backed steering changes through `codex-config-coach`, reconciles durable plan or task follow-ups, and reports cumulative session tokens or concrete waste without generating a report for every session. For a direct token snapshot, run `codex-session-snippets --latest --usage`; the local session data does not include a reliable dollar cost or per-skill attribution.
+Invoke `$finish-session` before ending a substantial Codex session. It verifies the outcome, routes evidence-backed steering changes through `codex-config-coach`, reconciles durable plan or task follow-ups, and reports cumulative session tokens or concrete waste without generating a report for every session. The invocation also approves committing and pushing plan artifacts created or changed by that session when their repository requires persistence; unrelated dirty paths remain untouched. For a direct token snapshot, run `codex-session-snippets --latest --usage`; the local session data does not include a reliable dollar cost or per-skill attribution.
 
 ### Validation
 
