@@ -38,6 +38,13 @@ case "\${1:-}" in
         printf 'bundle jobs=%s downloads=%s\n' \
             "\${HOMEBREW_BUNDLE_JOBS:-}" \
             "\${HOMEBREW_DOWNLOAD_CONCURRENCY:-}" >> "${log_file}"
+        if [[ "\${FAKE_BREW_FAIL_BUNDLE:-}" == "always" ]]; then
+            exit 1
+        fi
+        if [[ "\${FAKE_BREW_FAIL_BUNDLE:-}" == "once" && ! -e "\${FAKE_BREW_FAILURE_MARKER:?}" ]]; then
+            : > "\${FAKE_BREW_FAILURE_MARKER}"
+            exit 1
+        fi
         ;;
     *)
         printf 'unexpected brew command: %s\n' "\$*" >&2
@@ -175,5 +182,50 @@ run_linux_install_case() {
     rm -rf "${tmp_dir}"
 }
 
+run_linux_retry_case() {
+    local tmp_dir="" repo_dir="" fake_bin="" brew_log="" prefix="" failure_marker=""
+
+    tmp_dir="$(mktemp -d)"
+    repo_dir="${tmp_dir}/repo"
+    fake_bin="${tmp_dir}/fake-bin"
+    brew_log="${tmp_dir}/brew.log"
+    prefix="${tmp_dir}/linuxbrew"
+    failure_marker="${tmp_dir}/bundle-failed"
+    mkdir -p "${fake_bin}"
+    : > "${brew_log}"
+
+    copy_script_fixture "${repo_dir}" 'brew "jq"'
+    repo_dir="$(cd "${repo_dir}" && pwd -P)"
+    write_fake_uname "${fake_bin}/uname" "Linux"
+    write_fake_brew "${fake_bin}/brew" "${brew_log}" "${prefix}"
+
+    PATH="${fake_bin}:/usr/bin:/bin" \
+        HOMEBREW_DOTFILES_ENV=remote \
+        HOMEBREW_PREFIX="${prefix}" \
+        FAKE_BREW_FAIL_BUNDLE=once \
+        FAKE_BREW_FAILURE_MARKER="${failure_marker}" \
+        "${repo_dir}/scripts/brew-sync.sh" >/dev/null 2>&1
+
+    assert_equal "remote bundle failure retries once with serialization preserved" \
+        $'brew shellenv\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=1\nbrew bundle --verbose --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=1' \
+        "$(<"${brew_log}")"
+
+    : > "${brew_log}"
+    if PATH="${fake_bin}:/usr/bin:/bin" \
+        HOMEBREW_DOTFILES_ENV=remote \
+        HOMEBREW_PREFIX="${prefix}" \
+        FAKE_BREW_FAIL_BUNDLE=always \
+        "${repo_dir}/scripts/brew-sync.sh" >/dev/null 2>&1; then
+        fail "remote bundle retry must propagate the second failure"
+    fi
+
+    assert_equal "remote bundle retry stops after the second failure" \
+        $'brew shellenv\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=1\nbrew bundle --verbose --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=1' \
+        "$(<"${brew_log}")"
+
+    rm -rf "${tmp_dir}"
+}
+
 run_macos_existing_brew_case
 run_linux_install_case
+run_linux_retry_case

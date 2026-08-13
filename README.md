@@ -85,6 +85,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 Notes:
 
 - `brew-sync` includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`, the base shell default.
+- Remote `brew-sync` runs serially and retries the complete, idempotent bundle once after a failure; the retry remains blocking and a second failure stops setup.
 - Use `dotty run brew-sync` instead of invoking `brew bundle` directly so the helper preserves the pre-Homebrew command path for host-provided wrappers.
 - For Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` instead of the full macOS setup path.
 - Private managed checkout rows belong in later repos and rely on your machine GitHub auth.

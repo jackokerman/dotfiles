@@ -134,7 +134,14 @@ info "Installing packages from Brewfile"
 if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "personal" ]]; then
     info "Including personal-only Homebrew entries."
 fi
-brew bundle --file "${BREWFILE}"
+if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "remote" ]]; then
+    if ! brew bundle --file "${BREWFILE}"; then
+        warning "Remote Homebrew bundle failed. Retrying once with verbose output."
+        brew bundle --verbose --file "${BREWFILE}"
+    fi
+else
+    brew bundle --file "${BREWFILE}"
+fi
 success "Homebrew packages installed successfully"
 
 if [[ "$CLEANUP" == "true" ]]; then
