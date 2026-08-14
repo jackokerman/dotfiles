@@ -35,6 +35,7 @@
 
 - Prefer Bun and TypeScript for helper scripts when a scripting language is appropriate. Use another runtime only when it has a clear operational advantage.
 - Verify tool, configuration, library, framework, and API behavior deterministically. Start with the strongest available sources: official documentation, local CLI help, tracked config, local types, project usage, tests, and source.
+- For file discovery, use `rg --files` and `rg --files -g '<pattern>'`; for content search, use `rg '<pattern>'`. Do not use raw `find`, `grep`, `egrep`, or `fgrep` unless `rg` is unavailable.
 - Inspect an exact user-provided path, permalink, or line range before broadening the search. In large repositories, begin from the narrowest known path, symbol, or error location.
 - For GitHub research, prefer applicable local checkouts, then authenticated `gh` commands, then generic web search. Use exact public URLs directly when appropriate.
 - Never open or automate a graphical browser unless the user explicitly requests browser use in the current task.
