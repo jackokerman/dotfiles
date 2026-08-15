@@ -1,6 +1,6 @@
 ---
 name: finish-session
-description: "Finish a Codex session: verify completion, improve steering from friction, capture durable follow-ups, and flag context or token waste. Use when asked to finish, close out, wrap up, end session, reflect, or run pre-close checks."
+description: "Use when asked to finish or close out a Codex session: verify completion, apply durable fixes from friction, capture follow-ups, and report avoidable context or token waste."
 ---
 
 # Finish Session
@@ -30,7 +30,7 @@ Close the session without duplicating the workflows that own configuration, plan
    - outcome and verification;
    - durable improvements applied, or none;
    - plan or task updates, or none;
-   - one concrete efficiency observation, or none;
+   - one concrete efficiency observation and its disposition: fix applied, concrete follow-up captured, or no action with a reason;
    - unresolved blockers, if any.
 
 Avoid numeric quality scores without a calibrated rubric and comparison set. Do not write a per-session report merely to prove that closeout ran.
