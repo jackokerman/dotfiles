@@ -120,14 +120,35 @@ trust_formula_if_needed() {
     brew trust --formula "${formula}"
 }
 
+install_remote_tuicr() {
+    local formula="agavra/tap/tuicr"
+
+    if ! grep -Eq "^[[:space:]]*brew[[:space:]]+\"${formula}\"" "${BREWFILE}"; then
+        return 0
+    fi
+
+    if brew list --formula --versions "${formula}" >/dev/null 2>&1; then
+        return 0
+    fi
+
+    if brew install "${formula}"; then
+        return 0
+    fi
+
+    warning "Remote tuicr install failed. Retrying once with verbose output."
+    brew install --verbose "${formula}"
+}
+
 ensure_homebrew
 trust_formula_if_needed "oven-sh/bun/bun"
 trust_formula_if_needed "agavra/tap/tuicr"
 
-if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "remote" ]]; then
-    # Homebrew's concurrent Linux installs can race on shared prefix state.
+if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "remote" && "${host_os}" == "Linux" ]]; then
+    # Formula installs remain serialized because Linuxbrew shares prefix state.
     export HOMEBREW_BUNDLE_JOBS=1
     export HOMEBREW_DOWNLOAD_CONCURRENCY=1
+    install_remote_tuicr
+    export HOMEBREW_DOWNLOAD_CONCURRENCY=auto
 fi
 
 info "Installing packages from Brewfile"
