@@ -18,6 +18,7 @@ Close the session without duplicating the workflows that own configuration, plan
    - derive the narrow rule that would prevent the class of failure;
    - search existing instructions, skills, and config for the rule;
    - skip an isolated incident or a rule that is already clear; this is an adherence failure, not a knowledge gap;
+   - do not use existing guidance as the sole reason to skip a fix when the user reports recurrence; strengthen the narrowest owner, or explain why added steering would cost more than the likely savings;
    - update an existing owner before proposing a new skill.
 4. Use `codex-config-coach` for any steering, skill, plugin, hook, MCP, or context-cost change. Apply clear bounded fixes now and complete the owning repository workflow. Capture a follow-up only when the change is larger, risky, ambiguous, or blocked.
 5. Reconcile durable work tracking:
@@ -30,7 +31,7 @@ Close the session without duplicating the workflows that own configuration, plan
    - outcome and verification;
    - durable improvements applied, or none;
    - plan or task updates, or none;
-   - one concrete efficiency observation and its disposition: fix applied, concrete follow-up captured, or no action with a reason;
+   - one concrete efficiency observation and its disposition: fix applied, concrete follow-up captured, or no action with a reason that addresses recurrence risk or steering cost;
    - unresolved blockers, if any.
 
 Avoid numeric quality scores without a calibrated rubric and comparison set. Do not write a per-session report merely to prove that closeout ran.
