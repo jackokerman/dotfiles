@@ -9,7 +9,7 @@ Use Things' built-in lists directly:
 - Someday for deferred work.
 - Today and Upcoming for scheduled work.
 
-Do not recreate those states as areas, projects, tags, or custom lists. Use projects for multi-step outcomes and tags only for real categories.
+Do not recreate those states as areas, projects, tags, or custom lists. Use a to-do checklist for simple one-level substeps. Use projects only when the outcome is genuinely a project and its actions need independent task metadata.
 
 ## Agent automation
 

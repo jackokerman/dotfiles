@@ -9,7 +9,7 @@ function usage() {
     "  projects",
     "  tags",
     "  task get --id <id>",
-    "  task create --state inbox|anytime|someday --title <title> [--project-id <id>] [--notes <text>] [--start <YYYY-MM-DD>] [--due <YYYY-MM-DD>] [--tag <name> ...]",
+    "  task create --state inbox|anytime|someday --title <title> [--project-id <id>] [--notes <text>] [--checklist-item <text> ...] [--start <YYYY-MM-DD>] [--due <YYYY-MM-DD>] [--tag <name> ...]",
     "  task update --id <id> [--title <title>] [--notes <text>] [--state inbox|anytime|someday] [--start <YYYY-MM-DD>] [--due <YYYY-MM-DD>] [--tag <name> ...]",
     "  task complete --id <id>",
     "  task delete --id <id>",
@@ -114,6 +114,17 @@ function dateValue(value) {
   } catch (_error) {
     return String(value);
   }
+}
+
+function dateString(value) {
+  const year = String(value.getFullYear());
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return year + "-" + month + "-" + day;
+}
+
+function shellQuote(value) {
+  return "'" + value.replace(/'/g, "'\\''") + "'";
 }
 
 function nameValue(reference) {
@@ -224,8 +235,7 @@ function moveToState(app, todo, state) {
   const currentApplication = Application.currentApplication();
   currentApplication.includeStandardAdditions = true;
   const script = "tell application \"Things3\" to move to do id \"" + todo.id() + "\" to list \"" + target.name() + "\"";
-  const quotedScript = "'" + script.replace(/'/g, "'\\''") + "'";
-  currentApplication.doShellScript("/usr/bin/osascript -e " + quotedScript);
+  currentApplication.doShellScript("/usr/bin/osascript -e " + shellQuote(script));
 }
 
 function scheduleTask(todo, date) {
@@ -241,40 +251,68 @@ function scheduleTask(todo, date) {
     "schedule to do id \"" + todo.id() + "\" for targetDate",
     "end tell",
   ].join("\n");
-  const quotedScript = "'" + script.replace(/'/g, "'\\''") + "'";
-  currentApplication.doShellScript("/usr/bin/osascript -e " + quotedScript);
+  currentApplication.doShellScript("/usr/bin/osascript -e " + shellQuote(script));
+}
+
+function ensureTags(app, names) {
+  const existing = app.tags().map(function (tag) { return tag.name(); });
+  names.forEach(function (name) {
+    if (existing.indexOf(name) !== -1) {
+      return;
+    }
+    const tag = app.Tag({name: name});
+    app.tags.push(tag);
+    existing.push(name);
+  });
+}
+
+function addTaskThroughUrl(app, parameters, title) {
+  const beforeIds = {};
+  app.toDos().forEach(function (todo) { beforeIds[todo.id()] = true; });
+  const query = Object.keys(parameters).map(function (name) {
+    return encodeURIComponent(name) + "=" + encodeURIComponent(parameters[name]);
+  }).join("&");
+  const currentApplication = Application.currentApplication();
+  currentApplication.includeStandardAdditions = true;
+  currentApplication.doShellScript("/usr/bin/open -g " + shellQuote("things:///add?" + query));
+  currentApplication.doShellScript("/bin/sleep 1");
+  const created = app.toDos().filter(function (todo) {
+    return !beforeIds[todo.id()] && todo.name() === title;
+  });
+  if (created.length === 1) {
+    return created[0];
+  }
+  throw new Error("Things did not return the created task: " + title);
 }
 
 function createTask(app, options) {
   const title = requiredOption(options, "title");
   const state = optionalString(options, "state") || "inbox";
   const tags = unique(repeatedStrings(options, "tag"));
-  const properties = {name: title};
+  stateList(app, state);
   const dueDate = parseDateOption(options, "due");
   const startDate = parseDateOption(options, "start");
-  if (tags.length > 0) {
-    properties.tagNames = tags.join(",");
-  }
   const notes = optionalString(options, "notes");
   const projectId = optionalString(options, "project-id");
-  if (notes !== undefined) {
-    properties.notes = notes;
-  }
-  if (dueDate !== undefined) {
-    properties.dueDate = dueDate;
-  }
-
-  const todo = app.ToDo(properties);
+  const checklistItems = repeatedStrings(options, "checklist-item");
   if (projectId !== undefined) {
-    projectById(app, projectId).toDos.push(todo);
-  } else {
-    stateList(app, state).toDos.push(todo);
+    projectById(app, projectId);
   }
-  const id = todo.id();
+  ensureTags(app, tags);
+
+  const parameters = {title: title};
+  if (notes !== undefined) parameters.notes = notes;
+  if (checklistItems.length > 0) parameters["checklist-items"] = checklistItems.join("\n");
+  if (tags.length > 0) parameters.tags = tags.join(",");
+  if (projectId !== undefined) parameters["list-id"] = projectId;
   if (startDate !== undefined) {
-    scheduleTask(todo, startDate);
+    parameters.when = dateString(startDate);
+  } else if (state !== "inbox") {
+    parameters.when = state;
   }
-  return serializeTodo(app, app.toDos.byId(id));
+  if (dueDate !== undefined) parameters.deadline = dateString(dueDate);
+
+  return serializeTodo(app, addTaskThroughUrl(app, parameters, title));
 }
 
 function createProject(app, options) {

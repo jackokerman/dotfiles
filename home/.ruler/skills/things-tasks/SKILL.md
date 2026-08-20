@@ -14,7 +14,7 @@ osascript -l JavaScript "$HOME/.codex/skills/things-tasks/scripts/things-tasks.j
 osascript -l JavaScript "$HOME/.codex/skills/things-tasks/scripts/things-tasks.js" snapshot
 ```
 
-Treat the local Things database as work-only. Use Things' built-in Inbox, Anytime, and Someday lists as task state; do not recreate them as areas, projects, tags, or custom lists. Use projects for multi-step outcomes and tags only for real categories.
+Treat the local Things database as work-only. Use Things' built-in Inbox, Anytime, and Someday lists as task state; do not recreate them as areas, projects, tags, or custom lists. Use a to-do checklist for simple one-level substeps. Use a project only for a genuine multi-step outcome whose actions need independent task metadata.
 
 An explicit request to capture one work task authorizes `task create`. Default ambiguous captures to Inbox. Inspect the current snapshot before inferring another state, project, or relative priority.
 
@@ -24,7 +24,7 @@ An explicit request to capture one work task authorizes `task create`. Default a
 things_script="$HOME/.codex/skills/things-tasks/scripts/things-tasks.js"
 osascript -l JavaScript "$things_script" snapshot
 osascript -l JavaScript "$things_script" task get --id <id>
-osascript -l JavaScript "$things_script" task create --state inbox --title <title> [--project-id <id>] [--notes <text>] [--start <YYYY-MM-DD>] [--due <YYYY-MM-DD>] [--tag <name> ...]
+osascript -l JavaScript "$things_script" task create --state inbox --title <title> [--project-id <id>] [--notes <text>] [--checklist-item <text> ...] [--start <YYYY-MM-DD>] [--due <YYYY-MM-DD>] [--tag <name> ...]
 osascript -l JavaScript "$things_script" task update --id <id> [--title <title>] [--notes <text>] [--state inbox|anytime|someday] [--start <YYYY-MM-DD>] [--due <YYYY-MM-DD>] [--tag <name> ...]
 osascript -l JavaScript "$things_script" task complete --id <id>
 osascript -l JavaScript "$things_script" task delete --id <id>
@@ -36,6 +36,7 @@ The helper also supports `areas`, `projects`, `tags`, `project get`, `project co
 ## Mutation Safety
 
 - Never enable Things Cloud or read Things' private database. Use the local app and its automation dictionary.
+- Create standalone to-dos through Things' URL scheme with an explicit built-in state. Do not let the currently selected project determine placement.
 - Resolve task IDs through `snapshot` or `task get`; do not select a mutation target by title alone.
 - Require preview or approval before bulk, heuristic, or subjective changes. The helper intentionally exposes only single-task mutations.
 - Delete only on an explicit request. Completion is not deletion.
