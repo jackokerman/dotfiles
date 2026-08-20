@@ -152,7 +152,7 @@ Generated or real-directory notes:
 - `dotty update` renders live Glow config, Television config and themes, and sesh config when those sources change.
 - `~/.config/sesh/`, `~/.codex/`, and `~/.claude/` stay real directories so apps can write runtime state; edit tracked sources here, not generated live outputs.
 
-Keep the tracked Godspeed helper and guidance generic. Personal labels, matching rules, and smart-list definitions should be discovered or supplied at runtime.
+Keep the tracked Things helper local-only and use the app's built-in Inbox, Anytime, and Someday lists instead of recreating GTD state in config.
 
 ## More Detail
 
@@ -161,4 +161,4 @@ Keep the tracked Godspeed helper and guidance generic. Personal labels, matching
 - [Agent tooling and managed config](docs/agent-tooling.md)
 - [Vim basics in Neovim](docs/neovim-basics.md)
 - [Git prompt status legend](docs/git-prompt-status.md)
-- [Godspeed keyboard shortcuts](docs/godspeed-keyboard-shortcuts.md)
+- [Things task management](docs/things-task-management.md)
