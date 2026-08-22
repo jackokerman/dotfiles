@@ -85,7 +85,7 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 Notes:
 
 - `brew-sync` includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`, the base shell default.
-- Homebrew owns the Fleet executable. `dotty update` applies the reviewed tmux, Claude, and Codex integration through Fleet's native installers without adding optional keybindings. Fleet's tmux row shows only agents that need attention; use its sidebar or `Ctrl+F` dashboard to see working and idle sessions.
+- Homebrew owns the Fleet executable. `dotty update` applies the reviewed tmux, Claude, and Codex integration through Fleet's native installers without adding optional keybindings. Fleet's tmux row shows only agents that need attention; use `prefix` + `f` for its sidebar or `prefix` + `F` for its dashboard to see working and idle sessions.
 - Remote Linux `brew-sync` serializes formula installation, installs `tuicr` alone with serialized downloads and one bounded retry, then downloads the remaining Bundle concurrently. The complete Bundle may still retry once; second failures stop setup.
 - Use `dotty run brew-sync` instead of invoking `brew bundle` directly so the helper preserves the pre-Homebrew command path for host-provided wrappers.
 - For Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` instead of the full macOS setup path.
