@@ -61,7 +61,7 @@
 
 - Use `writing-style` before substantial drafting and `readme-maintainer` for README or repository landing-page work. Use `slack-clipboard` when approved Slack text needs rich-text clipboard copy or direct paste.
 - For frontend work, use `react-patterns` for React, `typescript-style` for TypeScript or TSX, and `css-layout` for layout or styling. Do not apply this workflow to non-frontend tasks.
-- Use `godspeed-tasks` for Godspeed inbox triage, task planning, and work or personal inbox organization.
+- Use `godspeed-tasks` for native Godspeed Inbox triage, task planning, and flat GTD or category-priority workflows.
 - Use `nvim-config-coach` before substantial personal Neovim configuration, plugin selection, or keymap changes.
 - Use `codex-config-coach` for Codex behavior, steering, context-cost, skill, plugin, MCP, hook, and dotty-chain configuration work. After repeated user correction around writing or implementation style, use it before finishing to decide whether a small durable steering update is warranted.
 - Use `finish-session` when explicitly closing out a session to reconcile completion, config-coach improvements, durable plan or task follow-ups, and concrete context or token waste.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Godspeed Tasks"
-  short_description: "Manage mirrored Godspeed GTD tasks safely."
-  default_prompt: "Use $godspeed-tasks to inspect or organize mirrored Work/Personal Godspeed tasks while preserving scope and mutation safeguards."
+  short_description: "Manage flat Godspeed GTD tasks safely."
+  default_prompt: "Use $godspeed-tasks to inspect or organize the flat Godspeed workflow, resolving the native Inbox, state lists, labels, and smart-list priorities at runtime."
