@@ -66,6 +66,14 @@ For broader learning and reference:
 | `*` / `#` | Search forward or backward for the word under the cursor. |
 | `<C-o>` / `<C-i>` | Move backward or forward through jump history. |
 
+## Markdown review
+
+Markdown files render in place while you read them in normal mode. Enter insert mode to edit the raw Markdown; returning to normal mode restores the rendered view. On the cursor line, concealed syntax is revealed when needed for editing.
+
+| Keys | Action |
+| --- | --- |
+| `<leader>mt` | Toggle rendering for the current Markdown buffer. |
+
 ## Diagnostics
 
 A red squiggle marks the affected text, `E` in the gutter marks an error on that line, and a red icon in the explorer marks a file containing diagnostics.

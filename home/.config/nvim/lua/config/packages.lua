@@ -5,6 +5,7 @@ vim.pack.add({
   { src = "https://github.com/folke/which-key.nvim", name = "which-key.nvim" },
   { src = "https://github.com/neovim/nvim-lspconfig", name = "nvim-lspconfig" },
   { src = "https://github.com/stevearc/conform.nvim", name = "conform.nvim" },
+  { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", name = "render-markdown.nvim" },
 })
 
 vim.cmd("colorscheme nightfly")

@@ -14,6 +14,7 @@ This config uses Neovim's built-in `vim.pack` plugin manager with a small featur
 | `lua/config/discovery.lua` | Keymap discovery and leader groups through `which-key.nvim`. |
 | `lua/config/lsp.lua` | Diagnostics, LSP attach keymaps, and enabled language servers through `nvim-lspconfig`. |
 | `lua/config/format.lua` | The `:Format` command and formatter routing through `conform.nvim`. |
+| `lua/config/markdown.lua` | In-buffer Markdown rendering and its buffer-local toggle through `render-markdown.nvim`. |
 | `nvim-pack-lock.json` | Locked plugin revisions managed by `vim.pack`. Do not edit this by hand. |
 
 ## Plugin ownership
@@ -25,6 +26,7 @@ This config uses Neovim's built-in `vim.pack` plugin manager with a small featur
 | `which-key.nvim` | `lua/config/packages.lua` | `lua/config/discovery.lua` |
 | `nvim-lspconfig` | `lua/config/packages.lua` | `lua/config/lsp.lua` |
 | `conform.nvim` | `lua/config/packages.lua` | `lua/config/format.lua` |
+| `render-markdown.nvim` | `lua/config/packages.lua` | `lua/config/markdown.lua` |
 
 ## Conventions
 
