@@ -3,7 +3,7 @@ id: 2026-08-22-replace-tmux-agent-bar-with-fleet
 title: Replace tmux-agent-bar with Fleet
 state: ready-to-implement
 createdAt: 2026-08-22T19:10:10.292Z
-updatedAt: 2026-08-22T22:07:54.080Z
+updatedAt: 2026-08-22T22:14:14.674Z
 ---
 
 # Replace tmux-agent-bar with Fleet
@@ -14,7 +14,7 @@ updatedAt: 2026-08-22T22:07:54.080Z
 
 Replace the active `tmux-agent-bar` runtime and dotfiles integration with upstream `nicknisi/fleet`, installed through Homebrew, while preserving the existing Nightfly Fleet palette and providing a native Fleet status row, sidebar, and popup workflow. After the Fleet cutover is verified and pushed, change `jackokerman/tmux-agent-bar` from public to private.
 
-The migration is complete only when new Claude and Codex sessions report through Fleet, tmux no longer invokes or manages `tmux-agent-bar`, the Homebrew binary wins on `PATH`, the public dotfiles repo no longer depends on the old repository, and GitHub reports the old repository as private.
+The migration is complete when fresh Codex sessions report through Fleet, tmux no longer invokes or manages `tmux-agent-bar`, the Homebrew binary wins on `PATH`, the public dotfiles repo no longer depends on the old repository, and GitHub reports the old repository as private. Claude Code is deliberately uninstalled and removed from the tracked Brewfile at the user's request; its dormant dotfiles configuration remains available for a future reinstall but is not an acceptance requirement.
 
 ## Confirmed context
 
@@ -42,9 +42,10 @@ The migration is complete only when new Claude and Codex sessions report through
 
 ### 1. Establish the Homebrew source of truth
 
-- Add `nicknisi/formulae` and `nicknisi/formulae/fleet` to the personal-only section of the tracked `Brewfile`, matching the existing rule that Claude Code and Codex are personal tools.
+- Add `nicknisi/formulae` and `nicknisi/formulae/fleet` to the personal-only section of the tracked `Brewfile`.
+- Remove the tracked `claude-code` cask and uninstall that exact Homebrew cask. Preserve dormant `home/.claude` configuration so a future reinstall plus `dotty update` can restore integration.
 - Update setup documentation to name Fleet as the agent dashboard and explain that Homebrew owns the executable while dotfiles own the reviewed integration.
-- Install the tracked formula with the normal `dotty run brew-sync` path.
+- Install the tracked Fleet formula with the normal `dotty run brew-sync` path.
 - Verify the formula and upstream version before removing anything: `brew list --versions fleet`, `brew info nicknisi/formulae/fleet`, and the Homebrew binary's `fleet --version`.
 - Confirm the merged palette contribution is present upstream, then remove only the obsolete `~/.local/bin/fleet` symlink. Do not delete `~/src/fleet`; it remains a contribution checkout.
 - Verify `command -v fleet` and `type -a fleet` resolve the Homebrew executable rather than the development symlink.
@@ -84,7 +85,7 @@ The migration is complete only when new Claude and Codex sessions report through
   - direct `Ctrl-f` remains present in both `root` and `off`;
   - no active tmux option, hook, or process command references `tmux-agent-bar`.
 - Run `fleet doctor`.
-- Start fresh Claude and Codex sessions inside tmux so they load the new integrations. Confirm each appears in Fleet, transitions through working and ready/waiting states, can be opened from the popup and sidebar, and can be reached from the clickable status row.
+- Start a fresh Codex session inside tmux so it loads the new integration. Confirm it appears in Fleet, transitions through working and ready states, and produces the clickable ready chip. Verify the popup and sidebar expose working and idle sessions.
 - Run `./scripts/check --extended --quiet`.
 - Commit the owned dotfiles changes conventionally and push `main`. Run `dotty update` after the commit, reload the live tmux config, and repeat the narrow live checks. Stop for unrelated dirty overlap, unexpected ahead commits, or non-fast-forward remote state.
 
@@ -116,7 +117,8 @@ The migration is complete only when new Claude and Codex sessions report through
 ## Acceptance criteria
 
 - Fleet is installed from `nicknisi/formulae/fleet`, and no earlier executable shadows it.
-- The direct popup, prefix sidebar, native second status row, Claude state, and Codex state all work in fresh tmux sessions.
+- The direct popup, prefix sidebar, native second status row, and Codex state all work in a fresh tmux session.
+- Claude Code is absent from the tracked Brewfile and the installed Homebrew casks; dormant tracked Claude configuration remains preserved for a future reinstall.
 - The active dotfiles tree, generated live config, managed checkout manifest, and tmux server contain no runtime dependency on `tmux-agent-bar`.
 - The Nightfly Fleet palette still loads.
 - Extended repository validation passes.
@@ -125,12 +127,12 @@ The migration is complete only when new Claude and Codex sessions report through
 
 ## Next honest step
 
-Reauthenticate Claude locally with `claude auth login` (or start `claude` and use `/login`), then resume this plan. Run a fresh Claude session inside tmux and confirm Fleet observes its working and ready states and exposes the ready chip, popup, and sidebar behavior. If that passes, remove only `~/.cache/tmux-agent-bar`, run the fresh GitHub/local-checkout preflight, make `jackokerman/tmux-agent-bar` private, verify authenticated fetch still works, and complete the plan.
+Persist the approved Claude Code Brewfile removal and revised Codex-only acceptance contract, run `dotty update`, remove only `~/.cache/tmux-agent-bar`, then run the fresh GitHub/local-checkout preflight. If the preflight remains safe, make `jackokerman/tmux-agent-bar` private, verify authenticated fetch still works, and complete the plan.
 
 ## Agent handoff
 
-The approved dotfiles Fleet cutover was committed as f82a8fd (feat(tmux): replace agent bar with Fleet) and pushed to origin/main. dotty update completed successfully across the base and private overlay. Its one-time cleanup removed the three exact obsolete tmux server hooks, generated ~/.codex/hooks.json now contains only Fleet's PreToolUse and Stop commands, and the live tmux config was reloaded without killing the server.
+The user approved the Codex-only acceptance scope. `claude-code` 2.1.231 is already uninstalled, `/opt/homebrew/bin/claude` no longer resolves, and the tracked Brewfile removal plus revised plan contract are included in the current approved commit-and-push scope. Dormant tracked and live Claude configuration remain preserved for a future reinstall.
 
-Live verification passes for Fleet doctor, two status rows, the exact Fleet statusline command, direct Ctrl-f in root/off, pane-targeted prefix-f, one tracked injection line, and absence of tmux-agent-bar/session-status/agent-status runtime commands. A fresh disposable Codex session loaded the clean hooks, reported both hook events Completed, and moved through IDLE, BUSY, and DONE. Fleet rendered its green ready chip and clear control. The disposable session was removed and Fleet reconciled its orphaned state.
+Verification before persistence: Ruby syntax, git diff whitespace, and `./scripts/check --extended --quiet` pass; Fleet's JSON status path continues to detect Codex sessions, and the prior fresh Codex IDLE/BUSY/DONE hook test remains valid. Fleet 0.22.2 doctor cannot run without a Claude executable because it unconditionally invokes `claude plugin list`; this upstream limitation does not affect the verified Codex path. No follow-up was captured because the Fleet repository has no Jackie Plan root, and no dotfiles workaround is warranted.
 
-The plan remains ready-to-implement. Claude reports loggedIn=false, so its fresh-session acceptance check is externally blocked on interactive user authentication; no browser login was opened or automated. Because Claude has not passed, ~/.cache/tmux-agent-bar remains preserved and jackokerman/tmux-agent-bar remains public. No further implementation or steering follow-up is warranted from the audit. Next: user authenticates Claude, then resume for the fresh Claude check, cache cleanup, repository preflight/privacy change, authenticated fetch verification, and plan completion.
+The plan remains ready-to-implement until the approved Brewfile/plan changes are observed upstream, dotty update succeeds, the obsolete cache is removed, and the retired repository passes fresh preflight, private visibility, and authenticated fetch verification. No cache deletion, visibility change, or lifecycle transition is claimed yet.

@@ -16,7 +16,6 @@ if OS.mac?
 
   # Personal applications
   if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
-    cask "claude-code"              # Anthropic coding agent terminal CLI
     cask "codex"                    # OpenAI coding agent terminal CLI
     cask "discord"                  # chat and voice application
     cask "handy"                    # window snapping and management
