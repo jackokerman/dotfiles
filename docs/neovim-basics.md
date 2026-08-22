@@ -8,6 +8,40 @@ For broader learning and reference:
 - Run `:help quickref` for Neovim's built-in quick reference.
 - Search `:help` when a command or concept needs more detail.
 
+## Files, Explorer, and windows
+
+`<C-p>` means hold `Control` and press `p`. The Explorer is the file-tree sidebar on the left.
+
+### Find files
+
+| Keys | Action |
+| --- | --- |
+| `<C-p>` | Open the file picker. Type to filter, use `<C-j>` / `<C-k>` or the arrow keys to select, then press `Enter` to open. |
+| `<leader>/` | Search for text across project files. |
+| `<leader>,` | Switch between open buffers. |
+| `<leader>r` | Open a recent file. |
+| `<Esc>` | Close a picker without opening a result. |
+
+### Explorer
+
+| Keys | Action |
+| --- | --- |
+| `<leader>e` | Toggle the Explorer. |
+| `j` / `k` in the Explorer | Move down or up the file tree. |
+| `Enter` / `l` in the Explorer | Open the selected file or expand the selected directory. |
+| `h` in the Explorer | Collapse the selected directory. |
+| `q` in the Explorer | Close the Explorer. |
+
+### Windows
+
+| Keys | Action |
+| --- | --- |
+| `<C-w>h` / `<C-w>l` | Move into the Explorer on the left or back to the editor on the right. |
+| `<C-w>w` | Cycle through open windows when their layout is unfamiliar. |
+| `<C-w>c` | Close the current window. |
+| `:only` | Close every window except the current one. |
+| `:w` / `:q` / `:qa` | Save, quit, or quit all. |
+
 ## Movement
 
 | Keys | Action |
@@ -65,12 +99,3 @@ Vim edits are built from an operator followed by a motion or text object. The co
 | `p` / `P` | Paste after or before the cursor. |
 | `u` / `<C-r>` | Undo or redo. |
 | `.` | Repeat the last change. |
-
-## Windows and files
-
-| Keys | Action |
-| --- | --- |
-| `<C-w>h/j/k/l` | Move between windows. |
-| `<C-w>w` / `<C-w>c` | Cycle through or close windows. |
-| `:only` | Close every window except the current one. |
-| `:w` / `:q` / `:qa` | Save, quit, or quit all. |
