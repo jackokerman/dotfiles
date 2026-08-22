@@ -65,9 +65,6 @@ export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
 [[ -d "$HOME/.dotty/bin" ]] && path=("$HOME/.dotty/bin" "${path[@]}")
 export PATH
 
-# Homebrew strips non-HOMEBREW_ env vars before evaluating Brewfiles.
-export HOMEBREW_DOTFILES_ENV="${HOMEBREW_DOTFILES_ENV:-personal}"
-
 # Aerospace window arrangement: "APP_NAME|FILTER|WORKSPACE" comma-separated
 export AEROSPACE_ARRANGEMENTS="\
 Google Chrome||B,\

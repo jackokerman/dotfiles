@@ -190,7 +190,6 @@ run_linux_install_case() {
     write_fake_curl "${fake_bin}/curl" "${curl_log}" "${tmp_dir}/install.sh"
 
     PATH="${fake_bin}:/usr/bin:/bin" \
-        HOMEBREW_DOTFILES_ENV=remote \
         HOMEBREW_PREFIX="${prefix}" \
         "${repo_dir}/scripts/brew-sync.sh" >/dev/null
 
@@ -223,26 +222,24 @@ run_linux_retry_case() {
     write_fake_brew "${fake_bin}/brew" "${brew_log}" "${prefix}"
 
     PATH="${fake_bin}:/usr/bin:/bin" \
-        HOMEBREW_DOTFILES_ENV=remote \
         HOMEBREW_PREFIX="${prefix}" \
         FAKE_BREW_FAIL_BUNDLE=once \
         FAKE_BREW_FAILURE_MARKER="${failure_marker}" \
         "${repo_dir}/scripts/brew-sync.sh" >/dev/null 2>&1
 
-    assert_equal "remote bundle failure retries once with serialization preserved" \
+    assert_equal "Linux bundle failure retries once with serialization preserved" \
         $'brew shellenv\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=auto\nbrew bundle --verbose --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=auto' \
         "$(<"${brew_log}")"
 
     : > "${brew_log}"
     if PATH="${fake_bin}:/usr/bin:/bin" \
-        HOMEBREW_DOTFILES_ENV=remote \
         HOMEBREW_PREFIX="${prefix}" \
         FAKE_BREW_FAIL_BUNDLE=always \
         "${repo_dir}/scripts/brew-sync.sh" >/dev/null 2>&1; then
-        fail "remote bundle retry must propagate the second failure"
+        fail "Linux bundle retry must propagate the second failure"
     fi
 
-    assert_equal "remote bundle retry stops after the second failure" \
+    assert_equal "Linux bundle retry stops after the second failure" \
         $'brew shellenv\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=auto\nbrew bundle --verbose --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=auto' \
         "$(<"${brew_log}")"
 
@@ -267,26 +264,24 @@ run_linux_tuicr_retry_case() {
     write_fake_brew "${fake_bin}/brew" "${brew_log}" "${prefix}"
 
     PATH="${fake_bin}:/usr/bin:/bin" \
-        HOMEBREW_DOTFILES_ENV=remote \
         HOMEBREW_PREFIX="${prefix}" \
         FAKE_BREW_FAIL_INSTALL=once \
         FAKE_BREW_INSTALL_FAILURE_MARKER="${install_failure_marker}" \
         "${repo_dir}/scripts/brew-sync.sh" >/dev/null 2>&1
 
-    assert_equal "remote tuicr failure retries once before concurrent Bundle downloads" \
+    assert_equal "Linux tuicr failure retries once before concurrent Bundle downloads" \
         $'brew shellenv\nbrew trust --formula agavra/tap/tuicr\nbrew list --formula --versions agavra/tap/tuicr\nbrew install agavra/tap/tuicr\ninstall jobs=1 downloads=1\nbrew install --verbose agavra/tap/tuicr\ninstall jobs=1 downloads=1\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=auto' \
         "$(<"${brew_log}")"
 
     : > "${brew_log}"
     if PATH="${fake_bin}:/usr/bin:/bin" \
-        HOMEBREW_DOTFILES_ENV=remote \
         HOMEBREW_PREFIX="${prefix}" \
         FAKE_BREW_FAIL_INSTALL=always \
         "${repo_dir}/scripts/brew-sync.sh" >/dev/null 2>&1; then
-        fail "remote tuicr retry must propagate the second failure"
+        fail "Linux tuicr retry must propagate the second failure"
     fi
 
-    assert_equal "remote tuicr retry stops before Bundle after the second failure" \
+    assert_equal "Linux tuicr retry stops before Bundle after the second failure" \
         $'brew shellenv\nbrew trust --formula agavra/tap/tuicr\nbrew list --formula --versions agavra/tap/tuicr\nbrew install agavra/tap/tuicr\ninstall jobs=1 downloads=1\nbrew install --verbose agavra/tap/tuicr\ninstall jobs=1 downloads=1' \
         "$(<"${brew_log}")"
 

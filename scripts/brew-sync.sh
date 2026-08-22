@@ -28,9 +28,6 @@ Installs packages from the tracked Brewfile. By default this does not remove
 untracked Homebrew packages, because later dotty-chain repos or local machine
 setup may own additional tools.
 
-Brewfile entries marked for personal machines only are included when
-HOMEBREW_DOTFILES_ENV=personal.
-
 Options:
   --cleanup    Remove formulae and casks not present in the active Brewfile.
   -h, --help   Show this help.
@@ -120,7 +117,7 @@ trust_formula_if_needed() {
     brew trust --formula "${formula}"
 }
 
-install_remote_tuicr() {
+install_linux_tuicr() {
     local formula="agavra/tap/tuicr"
 
     if ! grep -Eq "^[[:space:]]*brew[[:space:]]+\"${formula}\"" "${BREWFILE}"; then
@@ -144,21 +141,18 @@ trust_formula_if_needed "oven-sh/bun/bun"
 trust_formula_if_needed "agavra/tap/tuicr"
 trust_formula_if_needed "nicknisi/formulae/fleet"
 
-if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "remote" && "${host_os}" == "Linux" ]]; then
+if [[ "${host_os}" == "Linux" ]]; then
     # Formula installs remain serialized because Linuxbrew shares prefix state.
     export HOMEBREW_BUNDLE_JOBS=1
     export HOMEBREW_DOWNLOAD_CONCURRENCY=1
-    install_remote_tuicr
+    install_linux_tuicr
     export HOMEBREW_DOWNLOAD_CONCURRENCY=auto
 fi
 
 info "Installing packages from Brewfile"
-if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "personal" ]]; then
-    info "Including personal-only Homebrew entries."
-fi
-if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "remote" ]]; then
+if [[ "${host_os}" == "Linux" ]]; then
     if ! brew bundle --file "${BREWFILE}"; then
-        warning "Remote Homebrew bundle failed. Retrying once with verbose output."
+        warning "Linux Homebrew bundle failed. Retrying once with verbose output."
         brew bundle --verbose --file "${BREWFILE}"
     fi
 else

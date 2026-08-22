@@ -1,5 +1,7 @@
 require_relative "scripts/brewfile_helpers"
 
+tap "nicknisi/formulae"
+
 # Applications
 if OS.mac?
   cask "1password"                  # password manager
@@ -14,14 +16,11 @@ if OS.mac?
   cask "raycast"                    # spotlight replacement
   cask "spotify"                    # music streaming service
 
-  # Personal applications
-  if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
-    cask "codex"                    # OpenAI coding agent terminal CLI
-    cask "discord"                  # chat and voice application
-    cask "handy"                    # window snapping and management
-    cask "visual-studio-code"       # code editor
-    cask "zen"                      # firefox-based browser
-  end
+  cask "codex"                      # OpenAI coding agent terminal CLI
+  cask "discord"                    # chat and voice application
+  cask "handy"                      # window snapping and management
+  cask "visual-studio-code"         # code editor
+  cask "zen"                        # firefox-based browser
 end
 
 # Packages
@@ -46,13 +45,8 @@ brew "wget"                         # internet file retriever
 brew "zoxide"                       # smarter cd command (z/zi)
 brew "zsh"                          # zsh shell (latest)
 
-# Personal packages
-if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
-  tap "nicknisi/formulae"
-
-  brew "nicknisi/formulae/fleet"    # multi-agent terminal dashboard
-  brew "git"                        # git version control (latest)
-  brew "node"                       # broad JS CLI compatibility
-  brew "python"                     # python (latest)
-  brew "shellcheck"                 # shell script static analysis
-end
+brew "nicknisi/formulae/fleet"      # multi-agent terminal dashboard
+brew "git"                          # git version control (latest)
+brew "node"                         # broad JS CLI compatibility
+brew "python"                       # python (latest)
+brew "shellcheck"                   # shell script static analysis

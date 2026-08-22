@@ -34,7 +34,7 @@ After `./install.sh`, run the steps that apply to the fresh host.
 dotty run brew-sync
 ```
 
-This installs packages from the tracked `Brewfile` on supported Homebrew hosts, including Linuxbrew on Linux. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. Personal-only entries are included when `HOMEBREW_DOTFILES_ENV=personal`, which is the base shell default; that set includes Fleet as the tmux agent dashboard. Remote Linux installs keep formula installation serialized while allowing concurrent downloads. The helper installs the tracked `tuicr` formula alone with serialized downloads and retries it once if needed before running the unchanged Bundle. Homebrew `gh` is installed only when no non-Homebrew `gh` is already available, so host-provided wrappers can own GitHub CLI behavior; use `dotty run brew-sync` for that path so the helper preserves the pre-Homebrew command path.
+This installs packages from the tracked `Brewfile` on supported Homebrew hosts, including Linuxbrew on Linux. It does not remove untracked Homebrew packages unless you explicitly pass `--cleanup`. Linux installs keep formula installation serialized while allowing concurrent downloads. The helper installs the tracked `tuicr` formula alone with serialized downloads and retries it once if needed before running the unchanged Bundle. Homebrew `gh` is installed only when no non-Homebrew `gh` is already available, so host-provided wrappers can own GitHub CLI behavior; use `dotty run brew-sync` for that path so the helper preserves the pre-Homebrew command path.
 
 ### 2. Set up GitHub auth and SSH
 
@@ -84,9 +84,8 @@ Most routine work starts with `dotty update`. Use the narrower commands when you
 
 Notes:
 
-- `brew-sync` includes personal-only entries when `HOMEBREW_DOTFILES_ENV=personal`, the base shell default.
 - Homebrew owns the Fleet executable. `dotty update` applies the reviewed tmux, Claude, and Codex integration through Fleet's native installers without adding optional keybindings. Fleet's tmux row shows only agents that need attention; use `prefix` + `f` for its sidebar or `prefix` + `F` for its dashboard to see working and idle sessions.
-- Remote Linux `brew-sync` serializes formula installation, installs `tuicr` alone with serialized downloads and one bounded retry, then downloads the remaining Bundle concurrently. The complete Bundle may still retry once; second failures stop setup.
+- Linux `brew-sync` serializes formula installation, installs `tuicr` alone with serialized downloads and one bounded retry, then downloads the remaining Bundle concurrently. The complete Bundle may still retry once; second failures stop setup.
 - Use `dotty run brew-sync` instead of invoking `brew bundle` directly so the helper preserves the pre-Homebrew command path for host-provided wrappers.
 - For Karabiner-only changes, use `bun --install=fallback run scripts/ts/karabiner-config.ts` instead of the full macOS setup path.
 - Private managed checkout rows belong in later repos and rely on your machine GitHub auth.

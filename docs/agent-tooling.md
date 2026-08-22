@@ -9,7 +9,7 @@
 
 ## Fleet agent dashboard
 
-Fleet is the agent dashboard for tmux. Homebrew owns the executable through the personal-only `nicknisi/formulae/fleet` entry, while this repo owns the reviewed integration:
+Fleet is the agent dashboard for tmux. Homebrew owns the executable through the `nicknisi/formulae/fleet` entry, while this repo owns the reviewed integration:
 
 - `home/.config/tmux/tmux.conf` binds `prefix` + `F` to the 55% by 60% dashboard popup, binds `prefix` + `f` to the native 34-column sidebar, and injects Fleet's attention-only second status row after Nightfly loads. The row always shows its sidebar button and adds agents only when they need permission, have a question, or are ready for review.
 - `home/.config/fleet/theme.toml` provides the Nightfly agent-state palette.
