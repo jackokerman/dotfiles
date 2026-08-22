@@ -132,7 +132,6 @@ run_bash_syntax() {
         ".dotty/run.sh"
         ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
         ".dotty/cleanups/2026-08-remove-ruler-managed-output/run.sh"
-        ".dotty/cleanups/2026-08-remove-tmux-agent-bar-hooks/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
@@ -154,7 +153,6 @@ run_bash_syntax() {
         "tests/brew-sync/test-brew-sync.sh"
         "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
         "tests/cleanups/test-remove-ruler-managed-output.sh"
-        "tests/cleanups/test-remove-tmux-agent-bar-hooks.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
@@ -182,7 +180,6 @@ assert_expected_executables() {
         ".dotty/run.sh"
         ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
         ".dotty/cleanups/2026-08-remove-ruler-managed-output/run.sh"
-        ".dotty/cleanups/2026-08-remove-tmux-agent-bar-hooks/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
@@ -204,7 +201,6 @@ assert_expected_executables() {
         "tests/television/test-setup.sh"
         "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
         "tests/cleanups/test-remove-ruler-managed-output.sh"
-        "tests/cleanups/test-remove-tmux-agent-bar-hooks.sh"
     )
     local file
 
@@ -304,7 +300,6 @@ run_cleanup_tests() {
     log "Running cleanup regression tests"
     "$PROJECT_ROOT/tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
     "$PROJECT_ROOT/tests/cleanups/test-remove-ruler-managed-output.sh"
-    "$PROJECT_ROOT/tests/cleanups/test-remove-tmux-agent-bar-hooks.sh"
 }
 
 run_sesh_tests() {
