@@ -8,4 +8,4 @@ After changing `scripts/ts/*.ts`, stage the intended files and run:
 ./scripts/check --staged --quiet
 ```
 
-The staged check runs the pinned `bunx` TypeScript tooling stack for `scripts/ts`: Oxlint with warnings denied, shared Oxfmt config drift checks for `scripts/ts/.oxfmtrc.json`, Oxfmt format checks, `comment-width-check`, and blocking `slop-scan-check`.
+The staged check runs the pinned public TypeScript tooling stack for `scripts/ts`: Oxlint with warnings denied and Oxfmt format checks. Keep private shared-tool checks in the later configuration layer that owns their installation.
