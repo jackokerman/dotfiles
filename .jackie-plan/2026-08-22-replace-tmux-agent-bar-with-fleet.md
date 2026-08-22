@@ -3,7 +3,7 @@ id: 2026-08-22-replace-tmux-agent-bar-with-fleet
 title: Replace tmux-agent-bar with Fleet
 state: ready-to-implement
 createdAt: 2026-08-22T19:10:10.292Z
-updatedAt: 2026-08-22T22:05:42.518Z
+updatedAt: 2026-08-22T22:07:54.080Z
 ---
 
 # Replace tmux-agent-bar with Fleet
@@ -125,14 +125,12 @@ The migration is complete only when new Claude and Codex sessions report through
 
 ## Next honest step
 
-Persist the approved dotfiles cutover on `main`, run `dotty update`, reload the live tmux configuration, and repeat the narrow live and fresh-agent checks. Reauthenticate Claude if its OAuth session remains expired. Only after both Claude and Codex work through Fleet and the pushed live cutover passes should the old runtime cache be removed and `jackokerman/tmux-agent-bar` receive its fresh preflight and private visibility change.
+Reauthenticate Claude locally with `claude auth login` (or start `claude` and use `/login`), then resume this plan. Run a fresh Claude session inside tmux and confirm Fleet observes its working and ready states and exposes the ready chip, popup, and sidebar behavior. If that passes, remove only `~/.cache/tmux-agent-bar`, run the fresh GitHub/local-checkout preflight, make `jackokerman/tmux-agent-bar` private, verify authenticated fetch still works, and complete the plan.
 
 ## Agent handoff
 
-The user approved the Fleet cutover review packet and the recommended stale-hook correction. The tracked implementation now installs Fleet 0.22.2 through the personal Homebrew path, owns only reviewed Fleet/tmux/Claude/Codex configuration, keeps mutable Fleet state outside the repository, removes the tmux-agent-bar checkout/wrappers/tests, and documents the second row accurately as an attention queue rather than an all-agent monitor.
+The approved dotfiles Fleet cutover was committed as f82a8fd (feat(tmux): replace agent bar with Fleet) and pushed to origin/main. dotty update completed successfully across the base and private overlay. Its one-time cleanup removed the three exact obsolete tmux server hooks, generated ~/.codex/hooks.json now contains only Fleet's PreToolUse and Stop commands, and the live tmux config was reloaded without killing the server.
 
-Fresh live diagnosis confirmed Fleet's own Codex PreToolUse hook works; visible exit-127 failures come from generated legacy adapter entries that the approved dotty update will replace. A new one-time Dotty cleanup removes only the three exact retired indexed tmux server actions and preserves foreign actions in those slots. Its focused removal, dry-run, and ownership tests pass.
+Live verification passes for Fleet doctor, two status rows, the exact Fleet statusline command, direct Ctrl-f in root/off, pane-targeted prefix-f, one tracked injection line, and absence of tmux-agent-bar/session-status/agent-status runtime commands. A fresh disposable Codex session loaded the clean hooks, reported both hook events Completed, and moved through IDLE, BUSY, and DONE. Fleet rendered its green ready chip and clear control. The disposable session was removed and Fleet reconciled its orphaned state.
 
-Verification before persistence: Fleet doctor passes; the isolated tmux config has two rows, the exact Fleet statusline command, both direct Ctrl-f popup bindings, the pane-targeted prefix-f sidebar, and no retired runtime references; ./scripts/check --extended --quiet and git diff whitespace checks pass. The only repository advisory is the pre-existing docs/neovim-basics.md paragraph warning.
-
-The plan remains ready-to-implement because live activation, fresh Claude/Codex acceptance, old cache removal, and the GitHub privacy step remain. No follow-up was captured: the attention-row misunderstanding and existing-server cleanup gap were corrected directly in the plan, docs, implementation, and tests. The approved implementation and plan artifacts are included in the current dotfiles commit-and-push scope. Next: observe commit and push, run dotty update and live tmux checks, reauthenticate Claude if necessary, verify both fresh agents, then preflight and privatize jackokerman/tmux-agent-bar.
+The plan remains ready-to-implement. Claude reports loggedIn=false, so its fresh-session acceptance check is externally blocked on interactive user authentication; no browser login was opened or automated. Because Claude has not passed, ~/.cache/tmux-agent-bar remains preserved and jackokerman/tmux-agent-bar remains public. No further implementation or steering follow-up is warranted from the audit. Next: user authenticates Claude, then resume for the fresh Claude check, cache cleanup, repository preflight/privacy change, authenticated fetch verification, and plan completion.
