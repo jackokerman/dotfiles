@@ -1,9 +1,9 @@
 ---
 id: 2026-08-22-replace-tmux-agent-bar-with-fleet
 title: Replace tmux-agent-bar with Fleet
-state: ready-to-implement
+state: complete
 createdAt: 2026-08-22T19:10:10.292Z
-updatedAt: 2026-08-22T22:14:14.674Z
+updatedAt: 2026-08-22T22:16:28.334Z
 ---
 
 # Replace tmux-agent-bar with Fleet
@@ -127,12 +127,14 @@ The migration is complete when fresh Codex sessions report through Fleet, tmux n
 
 ## Next honest step
 
-Persist the approved Claude Code Brewfile removal and revised Codex-only acceptance contract, run `dotty update`, remove only `~/.cache/tmux-agent-bar`, then run the fresh GitHub/local-checkout preflight. If the preflight remains safe, make `jackokerman/tmux-agent-bar` private, verify authenticated fetch still works, and complete the plan.
+No implementation work remains. Restart any Codex process that was already running before the generated Fleet hooks changed so it loads the clean `PreToolUse` and `Stop` configuration.
 
 ## Agent handoff
 
-The user approved the Codex-only acceptance scope. `claude-code` 2.1.231 is already uninstalled, `/opt/homebrew/bin/claude` no longer resolves, and the tracked Brewfile removal plus revised plan contract are included in the current approved commit-and-push scope. Dormant tracked and live Claude configuration remain preserved for a future reinstall.
+The Fleet migration is complete and the user approved the final Codex-only scope. Homebrew Fleet 0.22.2 owns the executable; the tracked and live tmux/Codex integration uses Fleet's native attention row, popup, sidebar, and PreToolUse/Stop hooks; the old checkout integration, wrappers, managed checkout, tests, active server hooks, and runtime cache are gone. The 36 KB cache was moved to `~/.Trash/tmux-agent-bar-2026-08-22`, where it remains recoverable until Trash is emptied. Both development checkouts remain preserved.
 
-Verification before persistence: Ruby syntax, git diff whitespace, and `./scripts/check --extended --quiet` pass; Fleet's JSON status path continues to detect Codex sessions, and the prior fresh Codex IDLE/BUSY/DONE hook test remains valid. Fleet 0.22.2 doctor cannot run without a Claude executable because it unconditionally invokes `claude plugin list`; this upstream limitation does not affect the verified Codex path. No follow-up was captured because the Fleet repository has no Jackie Plan root, and no dotfiles workaround is warranted.
+Fresh Codex verification observed IDLE, BUSY, and DONE with both Fleet hooks completing and a ready chip rendering. The live config has two status rows, the exact Fleet statusline command, both direct Ctrl-f bindings, pane-targeted prefix-f, and no tmux-agent-bar runtime references. Extended validation passed. Claude Code 2.1.231 was intentionally removed from the Brewfile and Homebrew installation; dormant tracked and live Claude configuration remain for a future reinstall. Fleet 0.22.2 doctor has an upstream no-Claude spawn bug, but Fleet's Codex JSON/status path remains healthy.
 
-The plan remains ready-to-implement until the approved Brewfile/plan changes are observed upstream, dotty update succeeds, the obsolete cache is removed, and the retired repository passes fresh preflight, private visibility, and authenticated fetch verification. No cache deletion, visibility change, or lifecycle transition is claimed yet.
+The dotfiles cutover commits f82a8fd and 860959c and activation checkpoint a2618b8 are on origin/main. `jackokerman/tmux-agent-bar` passed preflight with zero forks, stars, watchers, Pages, Actions runs, or open pull requests and one preserved open issue. GitHub now reports PRIVATE, unarchived, enabled, non-forked visibility with authenticated admin access. The first configured fetch immediately after the visibility transition received a transient disabled response; subsequent HTTPS and SSH ls-remote checks and the configured origin fetch all succeeded. The local checkout is clean and synchronized at b6b3e8d.
+
+The plan is complete. The lifecycle artifact is included in the current approved dotfiles commit-and-push scope; no commit or push result for that final artifact is claimed yet. No follow-up was captured, and the improvement audit found no additional dotfiles steering change warranted. Existing pre-migration Codex processes should be restarted to load the clean generated hooks.
