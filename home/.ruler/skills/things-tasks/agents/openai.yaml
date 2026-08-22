@@ -1,4 +1,0 @@
-interface:
-  display_name: "Things Tasks"
-  short_description: "Manage local Things work tasks safely."
-  default_prompt: "Use $things-tasks to inspect or manage local work tasks in Things."

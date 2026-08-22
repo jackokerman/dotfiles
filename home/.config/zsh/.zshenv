@@ -75,7 +75,7 @@ Arc||B,\
 Calendar||C,\
 Messages||M,\
 Obsidian||N,\
-Things3||T,\
+Godspeed||T,\
 Discord||D"
 
 # Source local environment overrides if they exist (e.g., work-specific config)

@@ -1,4 +1,0 @@
-default_agents = ["codex"]
-
-[agents.codex]
-enabled = true

@@ -372,8 +372,7 @@ setup_claude() {
 
     mkdir -p "$claude_dir"
 
-    # Symlink tracked config files when present. CLAUDE.md is normally generated
-    # later by the portable Ruler path.
+    # Symlink tracked config files when present.
     if [[ -f "$src_dir/CLAUDE.md" ]]; then
         create_symlink "$src_dir/CLAUDE.md" "$claude_dir/CLAUDE.md"
     fi
@@ -420,17 +419,12 @@ run_dotfiles_bun_script() {
 setup_codex() {
     local codex_dir="$HOME/.codex"
     local script="$DOTFILES/scripts/ts/sync-codex.ts"
-    local ruler_script="$DOTFILES/scripts/ts/sync-ruler.ts"
     local agents_src="$DOTFILES/home/.codex/AGENTS.md"
-    local ruler_agents_src="$DOTFILES/home/.ruler/AGENTS.md"
-    local portable_skills_src_dir="$DOTFILES/home/.ruler/skills"
     local custom_agents_src_dir="$DOTFILES/home/.codex/agents"
     local config_src="$DOTFILES/home/.codex/config.toml"
     local hooks_src="$DOTFILES/home/.codex/hooks.json"
     local skills_src_dir="$DOTFILES/home/.codex/skills"
     local themes_src_dir="$DOTFILES/home/.codex/themes"
-    local -a portable_skill_source_args=()
-    local -a generated_skill_source_args=()
 
     if ! command -v bun >/dev/null 2>&1; then
         warning "Bun not found. Skipping Codex config sync."
@@ -439,26 +433,7 @@ setup_codex() {
 
     mkdir -p "$codex_dir"
 
-    if [[ -d "$portable_skills_src_dir" ]]; then
-        portable_skill_source_args+=(--skill-source "$portable_skills_src_dir")
-        generated_skill_source_args+=(--source "$portable_skills_src_dir")
-    fi
-
-    local use_portable_ruler=false
-    if [[ "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -d "$portable_skills_src_dir" && -f "$ruler_script" ]]; then
-        use_portable_ruler=true
-    fi
-
-    if [[ "$use_portable_ruler" != "true" && "${DOTTY_CODEX_RULER:-1}" != "0" && -f "$ruler_agents_src" && -f "$ruler_script" ]]; then
-        run_dotfiles_bun_script "$ruler_script" codex-agents \
-            --validate-only \
-            --source "$ruler_agents_src" \
-            || die "Failed to validate Ruler-backed Codex instructions"
-        run_dotfiles_bun_script "$ruler_script" codex-agents \
-            --output "$codex_dir/AGENTS.md" \
-            --source "$ruler_agents_src" \
-            || die "Failed to generate Ruler-backed Codex instructions"
-    elif [[ -f "$agents_src" ]]; then
+    if [[ -f "$agents_src" ]]; then
         run_dotfiles_bun_script "$script" agents \
             --validate-only \
             --source "$agents_src"
@@ -504,8 +479,6 @@ setup_codex() {
                 --skill-source "$skills_src_dir"
             )
         fi
-        custom_agent_args+=("${portable_skill_source_args[@]}")
-
         run_dotfiles_bun_script "$script" custom-agents \
             --validate-only \
             "${custom_agent_args[@]}"
@@ -513,35 +486,6 @@ setup_codex() {
             --output "$codex_dir/agents" \
             --skills-output "$codex_dir/skills" \
             "${custom_agent_args[@]}"
-    fi
-
-    if [[ "$use_portable_ruler" == "true" ]]; then
-        local claude_dir="$HOME/.claude"
-        mkdir -p "$claude_dir"
-        run_dotfiles_bun_script "$ruler_script" portable \
-            --validate-only \
-            --source "$ruler_agents_src" \
-            "${portable_skill_source_args[@]}" \
-            || die "Failed to validate portable Ruler outputs"
-        run_dotfiles_bun_script "$ruler_script" portable \
-            --codex-agents-output "$codex_dir/AGENTS.md" \
-            --claude-output "$claude_dir/CLAUDE.md" \
-            --codex-skills-output "$codex_dir/skills" \
-            --claude-skills-output "$claude_dir/skills" \
-            --source "$ruler_agents_src" \
-            "${portable_skill_source_args[@]}" \
-            || die "Failed to generate portable Ruler outputs"
-
-        if [[ -d "$skills_src_dir" ]]; then
-            run_dotfiles_bun_script "$script" skills \
-                --validate-only \
-                "${generated_skill_source_args[@]}" \
-                --source "$skills_src_dir"
-            run_dotfiles_bun_script "$script" skills \
-                --output "$codex_dir/skills" \
-                "${generated_skill_source_args[@]}" \
-                --source "$skills_src_dir"
-        fi
     fi
 
     if [[ -d "$themes_src_dir" ]]; then

@@ -108,7 +108,7 @@ After changing tracked config, run `dotty update` before testing the live setup.
 
 ## Making Changes
 
-Edit tracked source in this repo, not the generated live output in `$HOME`. For example, change `home/.config/zsh/.zshrc` instead of `~/.config/zsh/.zshrc`, and change tracked Codex sources under `home/.codex/` or `home/.ruler/` instead of generated files under `~/.codex/`.
+Edit tracked source in this repo, not the generated live output in `$HOME`. For example, change `home/.config/zsh/.zshrc` instead of `~/.config/zsh/.zshrc`, and change tracked Codex sources under `home/.codex/` instead of generated files under `~/.codex/`.
 
 For local verification:
 
@@ -144,7 +144,7 @@ Common places to edit:
 | tmux and related wrappers | `home/.config/tmux/`. |
 | sesh defaults | `home/.config/sesh/sesh.toml`. |
 | Raycast script commands | `home/.raycast-scripts/`. |
-| Codex and Claude tracked config | `home/.ruler/`, `home/.codex/`, and `home/.claude/`. |
+| Codex and Claude tracked config | `home/.codex/` and `home/.claude/`. |
 | Public managed checkouts | `.dotty/managed-checkouts.tsv`. |
 
 Generated or real-directory notes:
@@ -152,7 +152,7 @@ Generated or real-directory notes:
 - `dotty update` renders live Glow config, Television config and themes, and sesh config when those sources change.
 - `~/.config/sesh/`, `~/.codex/`, and `~/.claude/` stay real directories so apps can write runtime state; edit tracked sources here, not generated live outputs.
 
-Keep the tracked Things helper local-only and use the app's built-in Inbox, Anytime, and Someday lists instead of recreating GTD state in config.
+Keep the tracked Godspeed helper and guidance generic. Personal labels, matching rules, and smart-list definitions should be discovered or supplied at runtime.
 
 ## More Detail
 
@@ -161,4 +161,4 @@ Keep the tracked Things helper local-only and use the app's built-in Inbox, Anyt
 - [Agent tooling and managed config](docs/agent-tooling.md)
 - [Vim basics in Neovim](docs/neovim-basics.md)
 - [Git prompt status legend](docs/git-prompt-status.md)
-- [Things task management](docs/things-task-management.md)
+- [Godspeed keyboard shortcuts](docs/godspeed-keyboard-shortcuts.md)

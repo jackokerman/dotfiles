@@ -131,6 +131,7 @@ run_bash_syntax() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
+        ".dotty/cleanups/2026-08-remove-ruler-managed-output/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
@@ -158,6 +159,7 @@ run_bash_syntax() {
         "tests/brew-sync/test-brewfile-gh-provider.sh"
         "tests/brew-sync/test-brew-sync.sh"
         "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
+        "tests/cleanups/test-remove-ruler-managed-output.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
@@ -188,6 +190,7 @@ assert_expected_executables() {
     local -a files=(
         ".dotty/run.sh"
         ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
+        ".dotty/cleanups/2026-08-remove-ruler-managed-output/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
@@ -213,6 +216,7 @@ assert_expected_executables() {
         "home/.config/tmux/session-status-refresh.sh"
         "tests/television/test-setup.sh"
         "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
+        "tests/cleanups/test-remove-ruler-managed-output.sh"
     )
     local file
 
@@ -318,6 +322,7 @@ run_brew_sync_tests() {
 run_cleanup_tests() {
     log "Running cleanup regression tests"
     "$PROJECT_ROOT/tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
+    "$PROJECT_ROOT/tests/cleanups/test-remove-ruler-managed-output.sh"
 }
 
 run_sesh_tests() {
@@ -339,7 +344,6 @@ run_karabiner_config_tests() {
 run_codex_sync_tests() {
     log "Running Codex sync regression tests"
     bun --install=fallback test "$PROJECT_ROOT/tests/codex/sync-codex.test.ts"
-    bun --install=fallback test "$PROJECT_ROOT/tests/codex/sync-ruler.test.ts"
 }
 
 run_codex_config_coach_tests() {
@@ -475,7 +479,7 @@ run_staged_checks() {
         run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
     fi
 
-    if changed_any "home/.codex/*" "home/.ruler/*" "scripts/ts/sync-codex-*" "scripts/ts/sync-ruler.ts" "scripts/validate-codex-sync.sh" "tests/codex/*"; then
+    if changed_any "home/.codex/*" "scripts/ts/sync-codex-*" "scripts/validate-codex-sync.sh" "tests/codex/*"; then
         run_phase "Codex sync regression tests" 0 run_codex_sync_tests
         run_phase "Codex sync input validation" 0 run_codex_sync_validation
     fi
