@@ -1,52 +1,33 @@
-# tmux Agent Status
+# tmux and Fleet
 
-This directory now owns the tmux-side wrappers and path resolution for the external `tmux-agent-bar` runtime.
+This directory owns the reviewed tmux integration for the Homebrew-installed Fleet agent dashboard.
 
 ## Ownership
 
-- `session-status-left.sh`: stable tmux entrypoint for the current-session state prefix; it reads the explicit state file directly, falls back to the normalized current-state cache, maps raw `waiting` state to the green check-in prefix, and never calls back into tmux while tmux is evaluating `status-left`.
-- `session-status.sh`: stable tmux entrypoint that resolves the active `tmux-agent-bar` checkout and execs its renderer.
-- `session-status-refresh.sh`: stable tmux entrypoint that refreshes the session-scoped cached `status-right` value from the active `tmux-agent-bar` checkout. Forced refreshes draw cached state first and refresh fresh remote/source state in the background. Fresh renders are timeout-bounded so slow source refresh hooks cannot hang tmux hook processing.
-- `session-status-refresh-cached.sh`: coalesces background cached refreshes so repeated hook events cannot pile up overlapping renderer jobs.
-- `agent-status-hook.sh`: stable hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its explicit-state writer.
-- `codex-agent-status-hook.sh`: stable Codex hook entrypoint that resolves the active `tmux-agent-bar` checkout and execs its Codex lifecycle adapter.
-- `tmux-run-with-timeout.sh`: portable timeout helper for the wrappers so macOS does not fall back to unbounded refresh subprocesses when GNU `timeout` is unavailable.
-- `tmux-agent-bar-path.sh`: shared path-resolution helper for the wrappers.
-- `tmux.conf`: wires the stable wrappers into `status-left` and `status-right`, passes the session name to the left prefix helper, keeps the visible session name tmux-native, and renders only the session-scoped cached right-side option. Hooks update that option on session switches, session closes, and agent state changes.
+- `tmux.conf` keeps the prefixless `Ctrl+F` dashboard popup available in the `root` and nested pass-through `off` tables.
+- `prefix` + `f` runs `fleet sidebar --from '#{pane_id}'`, so Fleet toggles one 34-column sidebar in the invoking window.
+- `themes/nightfly.tmux` owns the normal first-row session and window styling.
+- `run-shell "fleet statusline --inject" # fleet-managed` runs after Nightfly loads and gives Fleet ownership of the native second status row and its mouse bindings. The row is an attention queue: working and idle agents stay in the dashboard, while permission, question, and ready agents appear beside the always-visible sidebar button.
+- `~/.config/fleet/theme.toml` is generated from the tracked Nightfly palette at `home/.config/fleet/theme.toml`.
 
-The generic parser, collector, renderer, prompt heuristics, and Codex event-to-state mapping live in the active `tmux-agent-bar` checkout, not in this repo.
+The Fleet executable comes from `nicknisi/formulae/fleet` in the tracked `Brewfile`. `dotty update` runs Fleet's native installers non-interactively when Fleet and the applicable Claude or Codex CLI are available. The Claude plugin registration, Fleet plugin link, Codex status directory, and agent registry are mutable runtime state; tracked Claude and Codex settings keep their durable enablement and hook contracts.
 
-## Runtime resolution
+The one-time `2026-08-remove-tmux-agent-bar-hooks` cleanup removes the three retired indexed server hooks only when their actions still exactly match the old refresh wrapper. It preserves unrelated actions that reuse those hook slots.
 
-The wrappers resolve the runtime checkout in this order:
+Do not add Fleet's optional `prefix` + `F` popup or window-list state rollup here. The direct popup already owns the dashboard workflow, and Nightfly remains the source of truth for window formats.
 
-1. `TMUX_AGENT_BAR_DIR`
-2. `~/.config/tmux-agent-bar/path.local`
-3. `~/src/tmux-agent-bar`
+## Verification
 
-`dotty update` manages the default development checkout under `~/src/tmux-agent-bar` through `.dotty/dev-checkouts.tsv`.
-
-Optional runtime modules under `~/.config/tmux-agent-bar/agents/` and `~/.config/tmux-agent-bar/sources/` are owned by the current dotty layer or by local user config. The base `dotfiles` repo installs and updates the runtime but does not hardcode private launcher labels or remote transports.
-
-## Change rules
-
-- Keep generic status-bar logic in `tmux-agent-bar`, not here.
-- Keep this repo responsible only for wrapper stability, checkout sync, and path resolution.
-- Keep the visible right side event-driven. `status-right` must read `#{@tmux_agent_bar_status_right}` only; wrappers and hooks refresh that cached option. Do not fix freshness by adding a polling `#()` renderer or refresher back into `status-right`.
-- Agent hook wrappers should refresh the cached option in the background without forcing an immediate tmux redraw. Coalesce repeated cached refreshes and bound them with a portable timeout so a slow renderer cannot fan out into a shell backlog.
-- Client switch and attach hooks should refresh the cached option only. Do not make those hooks call back into `tmux refresh-client`, or the redraw can recursively re-enter the same wrapper path.
-- Before changing status behavior, identify the source of truth and trigger path: explicit hook state, live pane tail, remote/source cache, session-scoped tmux option, and the tmux hook that updates it. Add the regression at the boundary that failed.
-- If a status-bar bug is in agent detection, rendering, or remote-source behavior, fix it in `tmux-agent-bar` and keep the regression there.
-- If a bug is in install/update behavior or wrapper path selection, fix it here and add a focused wrapper or sync test.
-- For latency regressions, verify the live tmux config does not contain `session-status-refresh.sh` in `status-right`, and check that refresh/render processes are not being spawned by polling.
-
-## Required verification
-
-Run these before committing wrapper or sync changes:
+Use an isolated tmux socket for config checks:
 
 ```bash
-./tests/tmux-agent-bar/test-runtime-path.sh
-./tests/tmux-agent-bar/test-session-status-left.sh
-./tests/tmux-agent-bar/test-sync.sh
-./scripts/check
+tmux -L fleet-check -f ~/.config/tmux/tmux.conf new-session -d
+tmux -L fleet-check show-options -gv status
+tmux -L fleet-check show-options -gv 'status-format[1]'
+tmux -L fleet-check list-keys -T prefix | rg 'fleet sidebar'
+tmux -L fleet-check list-keys -T root | rg 'C-f.*fleet'
+tmux -L fleet-check list-keys -T off | rg 'C-f.*fleet'
+tmux -L fleet-check kill-server
 ```
+
+Run `fleet doctor` after the native installers. For end-to-end verification, start fresh Claude and Codex sessions in tmux and confirm their state transitions in the status row, sidebar, and `Ctrl+F` popup.

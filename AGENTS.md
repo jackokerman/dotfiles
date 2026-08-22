@@ -30,14 +30,11 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 ## tmux Agent Status
 
 - Read `home/.config/tmux/README.md` before making tmux agent-status changes.
-- Keep generic parser, collector, renderer, prompt heuristics, and source registration in the external `tmux-agent-bar` repo, not in this repo.
-- Use this repo for `tmux-agent-bar` checkout management, wrapper stability, and runtime path resolution only.
-- Preserve the tmux-expanded session target flow from `tmux.conf` into the wrappers so `#()` jobs do not reuse stale output after a session switch.
-- Keep `status-right` event-driven. It should render cached tmux options only; do not reintroduce a polling `#()` renderer or refresher in `status-right` to fix freshness issues.
-- Keep the remaining tmux checkout tests behavior-first. Assert path precedence and safe update behavior instead of helper boundaries.
-- Before changing tmux status behavior, map the source of truth and trigger path first: local hook state, live pane tail, remote or later-repo source cache, cached tmux option, and the tmux hook that refreshes it. Fix the broken boundary instead of adding a special case for one visible symptom.
-- When a tmux status bug comes from a real session, reduce it to the smallest reproducer in `tmux-agent-bar`; only add a dotfiles test when the bug is specifically about wrapper or checkout behavior.
-- When a status regression crosses `tmux-agent-bar`, this repo, and a later dotty-chain overlay, update the paired tests/docs in every affected repo before pushing.
+- Fleet is installed from the personal-only `nicknisi/formulae/fleet` Homebrew entry. Keep the executable and native agent/status behavior upstream-owned; this repo owns only reviewed tmux bindings, the Nightfly palette, durable Claude/Codex enablement, and non-interactive installer orchestration.
+- Keep Nightfly in charge of the first tmux status row and Fleet in charge of the native second row through `run-shell "fleet statusline --inject" # fleet-managed` after the theme loads.
+- Preserve the direct `Ctrl+F` Fleet popup in the `root` and nested-pass-through `off` tables and the `prefix` + `f` sidebar binding. Do not add Fleet's optional `prefix` + `F` popup, `prefix` + `n`, or window-state rollup without a separate workflow decision.
+- Keep the tracked Codex hook surface limited to Fleet's supported `PreToolUse` and `Stop` hooks through `~/.local/share/fleet/plugin`. Preserve Claude's unrelated commit-validation hook and the tracked Fleet plugin enablement.
+- Test tmux config changes on an explicit isolated socket. Never kill the default tmux server during diagnostics.
 - Do not change tmux agent-status behavior without running `./scripts/check --extended --quiet`.
 
 ## Mental Model
@@ -46,7 +43,6 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - `.dotty/run.sh` is the post-link hook for repo-managed setup work.
 - `scripts/` contains setup, sync, and validation helpers.
 - Keep `.dotty/commands/*` as thin `dotty run` entrypoints. Put substantive reusable workflow logic under `scripts/`, and leave `.dotty/run.sh` inline logic for post-link orchestration that only makes sense inside the hook.
-- `tests/tmux-agent-bar/` holds the remaining runtime path and sync tests for the active `tmux-agent-bar` checkout.
 - `home/.zshenv` is the only top-level zsh bootstrap. It sets `ZDOTDIR=~/.config/zsh`, and `home/.config/zsh/.zshrc` owns interactive completion discovery and the shared shell startup flow.
 - Use `~/.zshenv.local` for machine-local env vars and path tweaks, including local API tokens needed by shell-backed agent workflows, unless a specific tool documents a different secret source.
 - Use `~/.zshrc.pre.local` for pre-`compinit` shell init and `~/.zshrc.local` for post-`compinit` interactive overrides. Do not reintroduce a tracked dependency on a real `~/.zshrc`.
@@ -62,9 +58,8 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Keep install routing for broadly available CLI tools in the tracked `Brewfile` or later repos in the dotty chain.
 - Keep the generic frontend NeoVim baseline minimal: built-in syntax highlighting first, with small `vim.pack` additions for LSP and formatting only when they solve an immediate need.
 - Keep JS repo tools such as `prettier` and `eslint` project-local by default. Repo-managed setup may install editor-facing language server binaries, but it should not replace per-project toolchains.
-- The stable tmux entrypoints live in `home/.config/tmux/`, but the generic implementation lives in the `tmux-agent-bar` checkout under `~/src/tmux-agent-bar` unless an explicit override path is set.
-- `home/.config/tmux/session-status-left.sh` owns the current-session prefix path, `session-status-refresh.sh` owns the cached visible `status-right` refresh path, `session-status.sh` remains the stable renderer wrapper, and `agent-status-hook.sh` owns explicit state writes.
-- Managed runtime checkouts live under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace. Actively developed public tools such as `tmux-agent-bar` use `~/src` through `.dotty/managed-checkouts.tsv`.
+- Fleet's Homebrew package owns its executable and plugin implementation. `home/.config/tmux/tmux.conf`, `home/.config/fleet/theme.toml`, `home/.claude/settings.json`, and `home/.codex/hooks.json` own the reviewed integration.
+- Managed runtime checkouts live under `~/.local/share/` when the checkout is an implementation detail rather than a contribution workspace. Actively developed public tools use `~/src` through `.dotty/managed-checkouts.tsv` only when this repo still depends on that checkout.
 - Development repos for reusable public personal tools live under `~/src` and are listed in `.dotty/managed-checkouts.tsv`; `dotty update` clones missing entries, conservatively fast-forwards clean checkouts, and runs configured install actions.
 - Private, host-specific, or credential-sensitive managed checkout rows belong in later repos in the dotty chain, not this public base repo.
 - Some tracked development checkouts are private GitHub HTTPS repos. Keep machine GitHub auth available for those clone paths, and prefer non-interactive failures over prompt-driven hooks.

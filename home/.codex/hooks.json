@@ -1,56 +1,12 @@
 {
   "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/codex-agent-status-hook.sh SessionStart",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/codex-agent-status-hook.sh UserPromptSubmit",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/codex-agent-status-hook.sh PreToolUse",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/codex-agent-status-hook.sh PostToolUse",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/codex-agent-status-hook.sh PermissionRequest",
-            "timeout": 5
+            "command": "bash ~/.local/share/fleet/plugin/hooks/codex/codex-hook.sh PreToolUse",
+            "timeout": 5000
           }
         ]
       }
@@ -60,8 +16,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/codex-agent-status-hook.sh Stop",
-            "timeout": 5
+            "command": "bash ~/.local/share/fleet/plugin/hooks/codex/codex-hook.sh Stop",
+            "timeout": 5000
           }
         ]
       }

@@ -6,7 +6,7 @@ TARGET_SCRIPT="${PROJECT_ROOT}/.dotty/cleanups/2026-08-remove-obsolete-jackie-pl
 TEST_PREFIX="jackie-plan-wrapper-cleanup-test"
 
 # shellcheck source=/dev/null
-source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
+source "${PROJECT_ROOT}/tests/testlib.sh"
 
 write_legacy_wrapper() {
     local wrapper_path="$1"

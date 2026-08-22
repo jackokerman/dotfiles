@@ -9,7 +9,7 @@ TMP_DIR="$(mktemp -d)"
 SERVER_NAME="sesh-one-shot-test-$$"
 
 # shellcheck source=/dev/null
-source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
+source "${PROJECT_ROOT}/tests/testlib.sh"
 
 cleanup() {
     tmux -L "${SERVER_NAME}" kill-server 2>/dev/null || true

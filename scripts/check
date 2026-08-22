@@ -132,17 +132,11 @@ run_bash_syntax() {
         ".dotty/run.sh"
         ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
         ".dotty/cleanups/2026-08-remove-ruler-managed-output/run.sh"
+        ".dotty/cleanups/2026-08-remove-tmux-agent-bar-hooks/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
-        ".dotty/commands/sync-tmux-agent-bar"
         ".githooks/pre-commit"
-        "home/.config/tmux/agent-status-hook.sh"
-        "home/.config/tmux/codex-agent-status-hook.sh"
-        "home/.config/tmux/session-status-left.sh"
-        "home/.config/tmux/session-status-refresh.sh"
-        "home/.config/tmux/session-status.sh"
-        "home/.config/tmux/tmux-agent-bar-path.sh"
         "home/.local/bin/git-delta-diff-filter"
         "home/.local/bin/git-pager-delta"
         "home/.local/bin/codex-session-snippets"
@@ -160,6 +154,7 @@ run_bash_syntax() {
         "tests/brew-sync/test-brew-sync.sh"
         "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
         "tests/cleanups/test-remove-ruler-managed-output.sh"
+        "tests/cleanups/test-remove-tmux-agent-bar-hooks.sh"
         "scripts/enable-touchid-sudo.sh"
         "scripts/install-fzf.sh"
         "scripts/install-nvim-js-tools.sh"
@@ -168,17 +163,13 @@ run_bash_syntax() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
-        "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "tests/brew-sync/test-brew-sync.sh"
         "tests/sesh/test-one-shot.sh"
         "tests/sesh/test-setup.sh"
         "tests/television/test-setup.sh"
-        "tests/tmux-agent-bar/test-runtime-path.sh"
-        "tests/tmux-agent-bar/test-session-status-left.sh"
-        "tests/tmux-agent-bar/test-sync.sh"
-        "tests/tmux-agent-status/testlib.sh"
+        "tests/testlib.sh"
         "scripts/validate-codex-sync.sh"
     )
 
@@ -191,10 +182,10 @@ assert_expected_executables() {
         ".dotty/run.sh"
         ".dotty/cleanups/2026-08-remove-obsolete-jackie-plan-wrappers/run.sh"
         ".dotty/cleanups/2026-08-remove-ruler-managed-output/run.sh"
+        ".dotty/cleanups/2026-08-remove-tmux-agent-bar-hooks/run.sh"
         ".dotty/commands/brew-sync"
         ".dotty/commands/install-nvim-js-tools"
         ".dotty/commands/macos-setup"
-        ".dotty/commands/sync-tmux-agent-bar"
         "install.sh"
         "scripts/brew-sync.sh"
         "scripts/check"
@@ -205,18 +196,15 @@ assert_expected_executables() {
         "scripts/install-fonts.sh"
         "scripts/install-git-hooks.sh"
         "scripts/macos-setup.sh"
-        "scripts/sync-tmux-agent-bar.sh"
         "scripts/sync-handy-settings.sh"
         "scripts/macos.sh"
         "home/.local/bin/slack-rich-text"
         "home/.local/bin/codex-session-snippets"
         "home/.local/bin/plugin-eval"
-        "home/.config/tmux/codex-agent-status-hook.sh"
-        "home/.config/tmux/session-status-left.sh"
-        "home/.config/tmux/session-status-refresh.sh"
         "tests/television/test-setup.sh"
         "tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
         "tests/cleanups/test-remove-ruler-managed-output.sh"
+        "tests/cleanups/test-remove-tmux-agent-bar-hooks.sh"
     )
     local file
 
@@ -306,13 +294,6 @@ assert_git_local_overrides_last() {
     [[ "$local_include_line" -gt "$github_helper_line" ]] || fail "~/.gitconfig.local include must come after shared github.com credential helpers"
 }
 
-run_tmux_agent_bar_tests() {
-    log "Running tmux-agent-bar runtime path and sync tests"
-    "$PROJECT_ROOT/tests/tmux-agent-bar/test-runtime-path.sh"
-    "$PROJECT_ROOT/tests/tmux-agent-bar/test-session-status-left.sh"
-    "$PROJECT_ROOT/tests/tmux-agent-bar/test-sync.sh"
-}
-
 run_brew_sync_tests() {
     log "Running brew-sync regression tests"
     "$PROJECT_ROOT/tests/brew-sync/test-brewfile-gh-provider.sh"
@@ -323,6 +304,7 @@ run_cleanup_tests() {
     log "Running cleanup regression tests"
     "$PROJECT_ROOT/tests/cleanups/test-remove-obsolete-jackie-plan-wrappers.sh"
     "$PROJECT_ROOT/tests/cleanups/test-remove-ruler-managed-output.sh"
+    "$PROJECT_ROOT/tests/cleanups/test-remove-tmux-agent-bar-hooks.sh"
 }
 
 run_sesh_tests() {
@@ -407,7 +389,6 @@ run_core_checks() {
 
 run_extended_checks() {
     run_core_checks
-    run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
     run_phase "sesh setup regression tests" 0 run_sesh_tests
     run_phase "Television regression tests" 0 run_television_tests
     run_phase "Karabiner config regression tests" 0 run_karabiner_config_tests
@@ -431,15 +412,6 @@ run_staged_checks() {
     fi
 
     run_common_checks
-
-    if changed_any \
-        ".dotty/commands/sync-tmux-agent-bar" \
-        "home/.config/tmux/*" \
-        "scripts/sync-tmux-agent-bar.sh" \
-        "tests/tmux-agent-bar/*" \
-        "tests/tmux-agent-status/*"; then
-        run_phase "tmux-agent-bar runtime path and sync tests" 0 run_tmux_agent_bar_tests
-    fi
 
     if changed_any ".dotty/commands/brew-sync" "Brewfile" "scripts/brew-sync.sh" "tests/brew-sync/*"; then
         run_phase "brew-sync regression tests" 0 run_brew_sync_tests

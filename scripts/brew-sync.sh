@@ -142,6 +142,7 @@ install_remote_tuicr() {
 ensure_homebrew
 trust_formula_if_needed "oven-sh/bun/bun"
 trust_formula_if_needed "agavra/tap/tuicr"
+trust_formula_if_needed "nicknisi/formulae/fleet"
 
 if [[ "${HOMEBREW_DOTFILES_ENV:-}" == "remote" && "${host_os}" == "Linux" ]]; then
     # Formula installs remain serialized because Linuxbrew shares prefix state.

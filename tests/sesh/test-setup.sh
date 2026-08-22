@@ -7,7 +7,7 @@ TARGET_SCRIPT="${PROJECT_ROOT}/.dotty/run.sh"
 TEST_PREFIX="sesh-setup-test"
 
 # shellcheck source=/dev/null
-source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
+source "${PROJECT_ROOT}/tests/testlib.sh"
 
 write_fake_dotty_lib() {
     local path="$1"

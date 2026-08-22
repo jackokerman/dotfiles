@@ -2,4 +2,3 @@
 # checkout: dev for ~/src/<name>, or an absolute path when a tool has a concrete custom location.
 # update: fast-forward skips dirty, branch-mismatched, origin-mismatched, and diverged checkouts.
 # install: empty for checkout-only tools, repo:<relative-command> from the checkout, or dotty:<relative-command> from this repo.
-tmux-agent-bar	https://github.com/jackokerman/tmux-agent-bar.git	main	dev	fast-forward

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+pass() {
+  printf '[%s] pass: %s\n' "${TEST_PREFIX:-test}" "$1"
+}
+
+fail() {
+  printf '[%s] fail: %s\n' "${TEST_PREFIX:-test}" "$1" >&2
+  exit 1
+}
+
+assert_equal() {
+  local name="$1" expected="$2" actual="$3"
+
+  if [[ "${actual}" == "${expected}" ]]; then
+    pass "${name}"
+    return 0
+  fi
+
+  printf '[%s] fail: %s\n' "${TEST_PREFIX:-test}" "${name}" >&2
+  printf '[%s] expected: %q\n' "${TEST_PREFIX:-test}" "${expected}" >&2
+  printf '[%s] actual: %q\n' "${TEST_PREFIX:-test}" "${actual}" >&2
+  exit 1
+}
+
+assert_matches() {
+  local name="$1" pattern="$2" actual="$3"
+
+  if [[ "${actual}" =~ ${pattern} ]]; then
+    pass "${name}"
+    return 0
+  fi
+
+  printf '[%s] fail: %s\n' "${TEST_PREFIX:-test}" "${name}" >&2
+  printf '[%s] expected pattern: %s\n' "${TEST_PREFIX:-test}" "${pattern}" >&2
+  printf '[%s] actual: %q\n' "${TEST_PREFIX:-test}" "${actual}" >&2
+  exit 1
+}

@@ -7,23 +7,17 @@
 - `home/.config/ghostty/config` keeps `mouse-shift-capture = false` so `tmux` mouse bindings and link opening stay predictable
 - Use `tmux-link-test` inside `tmux` to verify hyperlink passthrough quickly
 
-## tmux Agent Status
+## Fleet agent dashboard
 
-- Session state is rendered from files under `/tmp/tmux-agent-$(id -u)`
-- Agents write `agent<TAB>state` via `~/.config/tmux/agent-status-hook.sh <working|waiting|done> <agent>`
-- `home/.config/tmux/session-status-left.sh`, `home/.config/tmux/session-status.sh`, `home/.config/tmux/session-status-refresh.sh`,
-  and `home/.config/tmux/agent-status-hook.sh` are stable wrappers around the active `tmux-agent-bar` checkout
-- `home/.config/tmux/tmux-agent-bar-path.sh` resolves the runtime checkout in this order:
-  - `TMUX_AGENT_BAR_DIR`
-  - `~/.config/tmux-agent-bar/path.local`
-  - `~/src/tmux-agent-bar`
-- `dotty update` keeps `~/src/tmux-agent-bar` current through `.dotty/managed-checkouts.tsv`
-- `home/.config/tmux/README.md` is the code-local change guide for the wrappers and runtime path model
-- The status bar still redraws on tmux's normal interval, while `client-session-changed` and `client-attached` refresh the cached per-session option without forcing another nested tmux redraw
-- Agent hook wrappers refresh the cached right-side option in the background and rely on tmux's normal redraw path instead of forcing a client refresh on every tool event
-- The generic prompt heuristics, reconciliation rules, and source registration now live in the `tmux-agent-bar` repo
-- Finished shell-only sessions are hidden once no live agent process remains
-- dotfiles-side runtime path and sync tests live under `tests/tmux-agent-bar/`
+Fleet is the agent dashboard for tmux. Homebrew owns the executable through the personal-only `nicknisi/formulae/fleet` entry, while this repo owns the reviewed integration:
+
+- `home/.config/tmux/tmux.conf` keeps `Ctrl+F` as the direct 55% by 60% dashboard popup in normal and nested pass-through modes, binds `prefix` + `f` to the native 34-column sidebar, and injects Fleet's attention-only second status row after Nightfly loads. The row always shows its sidebar button and adds agents only when they need permission, have a question, or are ready for review.
+- `home/.config/fleet/theme.toml` provides the Nightfly agent-state palette.
+- `.dotty/run.sh` runs `fleet install` and `fleet install codex` non-interactively when Fleet and the corresponding agent CLI are available.
+- `home/.claude/settings.json` preserves Fleet's enabled plugin entry and the unrelated conventional-commit validation hook.
+- `home/.codex/hooks.json` keeps only Fleet's supported `PreToolUse` and `Stop` hooks through the upgrade-stable plugin link. `home/.codex/config.toml` enables hooks.
+
+Fleet's native installers own the mutable Claude marketplace registration, plugin links, status directories, and agent registry. Run `fleet doctor` after setup, and see `home/.config/tmux/README.md` for isolated tmux verification.
 
 ## Sesh session picker
 
@@ -112,7 +106,7 @@ Use `./scripts/check` as the fast local validation path. It currently:
 
 - runs shell syntax checks for tracked bash and zsh files
 - asserts that zsh runtime artifacts are not present in `home/.config/zsh`
-- runs `tmux-agent-bar` runtime path and sync tests
+- runs Codex hook and sync validation
 - runs Codex sync validation, including tracked skill UI metadata and extra frontend workflow manifest checks when present
 
 To install the repo-local pre-commit hook:

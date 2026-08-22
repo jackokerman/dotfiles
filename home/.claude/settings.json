@@ -1,17 +1,10 @@
 {
   "model": "claude-opus-4-6",
   "alwaysThinkingEnabled": true,
+  "enabledPlugins": {
+    "fleet@fleet-local": true
+  },
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/agent-status-hook.sh working"
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -20,45 +13,6 @@
             "type": "command",
             "command": "$HOME/.claude/hooks/validate-conventional-commits.sh",
             "timeout": 5
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/agent-status-hook.sh working"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/agent-status-hook.sh done"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt|elicitation_dialog",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/agent-status-hook.sh waiting"
-          }
-        ]
-      }
-    ],
-    "ElicitationResult": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/agent-status-hook.sh working"
           }
         ]
       }

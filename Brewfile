@@ -49,6 +49,9 @@ brew "zsh"                          # zsh shell (latest)
 
 # Personal packages
 if ENV["HOMEBREW_DOTFILES_ENV"] == "personal"
+  tap "nicknisi/formulae"
+
+  brew "nicknisi/formulae/fleet"    # multi-agent terminal dashboard
   brew "git"                        # git version control (latest)
   brew "node"                       # broad JS CLI compatibility
   brew "python"                     # python (latest)

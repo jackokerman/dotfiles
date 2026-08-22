@@ -362,6 +362,33 @@ setup_television() {
     fi
 }
 
+setup_fleet_config() {
+    local target_dir="$HOME/.config/fleet"
+    local theme_source="$DOTFILES/home/.config/fleet/theme.toml"
+    local theme_target="$target_dir/theme.toml"
+    local agents_tmp=""
+
+    [[ -f "$theme_source" ]] || return 0
+
+    # Keep Fleet's mutable agent registry out of the tracked theme directory.
+    if [[ -L "$target_dir" ]]; then
+        if [[ -f "$target_dir/agents.json" ]]; then
+            agents_tmp="$(mktemp "${TMPDIR:-/tmp}/fleet-agents.XXXXXX")"
+            cp "$target_dir/agents.json" "$agents_tmp"
+        fi
+        rm -f "$target_dir"
+    fi
+
+    mkdir -p "$target_dir"
+    if [[ -n "$agents_tmp" ]]; then
+        mv "$agents_tmp" "$target_dir/agents.json"
+    fi
+    if [[ -e "$theme_target" && ! -L "$theme_target" ]]; then
+        rm -f "$theme_target"
+    fi
+    create_symlink "$theme_source" "$theme_target"
+}
+
 # Claude: create ~/.claude as a real directory and symlink tracked config.
 # The entire .claude directory is in DOTTY_LINK_IGNORE so dotty won't
 # create a directory symlink (which would cause Claude runtime files like
@@ -501,6 +528,35 @@ setup_codex() {
     fi
 }
 
+setup_fleet() {
+    title "Setting up Fleet agent integrations"
+
+    if ! command -v fleet >/dev/null 2>&1; then
+        warning "Skipping Fleet setup because fleet is not installed"
+        return 0
+    fi
+
+    if command -v claude >/dev/null 2>&1; then
+        if fleet install </dev/null; then
+            success "Fleet Claude integration installed"
+        else
+            warning "Failed to install Fleet Claude integration"
+        fi
+    else
+        warning "Skipping Fleet Claude integration because claude is not installed"
+    fi
+
+    if command -v codex >/dev/null 2>&1; then
+        if fleet install codex </dev/null; then
+            success "Fleet Codex integration installed"
+        else
+            warning "Failed to install Fleet Codex integration"
+        fi
+    else
+        warning "Skipping Fleet Codex integration because codex is not installed"
+    fi
+}
+
 main() {
     setup_vscode
     setup_fzf
@@ -510,6 +566,7 @@ main() {
     setup_sesh
     setup_glow
     setup_television
+    setup_fleet_config
     setup_claude
 
     case "${DOTTY_COMMAND:-}" in
@@ -531,6 +588,7 @@ main() {
     esac
 
     setup_codex
+    setup_fleet
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

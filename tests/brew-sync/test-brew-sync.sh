@@ -7,7 +7,7 @@ TARGET_SCRIPT="${PROJECT_ROOT}/scripts/brew-sync.sh"
 TEST_PREFIX="brew-sync-test"
 
 # shellcheck source=/dev/null
-source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
+source "${PROJECT_ROOT}/tests/testlib.sh"
 
 write_fake_uname() {
     local path="$1" os="$2"
@@ -183,7 +183,7 @@ run_linux_install_case() {
     : > "${brew_log}"
     : > "${curl_log}"
 
-    copy_script_fixture "${repo_dir}" $'tap "oven-sh/bun"\ntap "agavra/tap"\nbrew "oven-sh/bun/bun"\nbrew "agavra/tap/tuicr"'
+    copy_script_fixture "${repo_dir}" $'tap "oven-sh/bun"\ntap "agavra/tap"\ntap "nicknisi/formulae"\nbrew "oven-sh/bun/bun"\nbrew "agavra/tap/tuicr"\nbrew "nicknisi/formulae/fleet"'
     repo_dir="$(cd "${repo_dir}" && pwd -P)"
     write_fake_uname "${fake_bin}/uname" "Linux"
     write_fake_installer "${tmp_dir}/install.sh" "${prefix}/bin/brew" "${brew_log}" "${prefix}"
@@ -199,7 +199,7 @@ run_linux_install_case() {
         "$(<"${curl_log}")"
 
     assert_equal "Linux install activates Linuxbrew, trusts third-party formulas, then bundles" \
-        $'brew shellenv\nbrew trust --formula oven-sh/bun/bun\nbrew trust --formula agavra/tap/tuicr\nbrew list --formula --versions agavra/tap/tuicr\nbrew install agavra/tap/tuicr\ninstall jobs=1 downloads=1\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=auto' \
+        $'brew shellenv\nbrew trust --formula oven-sh/bun/bun\nbrew trust --formula agavra/tap/tuicr\nbrew trust --formula nicknisi/formulae/fleet\nbrew list --formula --versions agavra/tap/tuicr\nbrew install agavra/tap/tuicr\ninstall jobs=1 downloads=1\nbrew bundle --file '"${repo_dir}"$'/Brewfile\nbundle jobs=1 downloads=auto' \
         "$(<"${brew_log}")"
 
     rm -rf "${tmp_dir}"

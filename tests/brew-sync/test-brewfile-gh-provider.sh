@@ -9,7 +9,7 @@ RUBY_BIN="${RUBY_BIN:-$(command -v ruby)}"
 SYSTEM_PATH="/usr/bin:/bin"
 
 # shellcheck source=/dev/null
-source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
+source "${PROJECT_ROOT}/tests/testlib.sh"
 
 write_fake_command() {
     local path="$1"

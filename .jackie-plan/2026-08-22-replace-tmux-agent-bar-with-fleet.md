@@ -3,7 +3,7 @@ id: 2026-08-22-replace-tmux-agent-bar-with-fleet
 title: Replace tmux-agent-bar with Fleet
 state: ready-to-implement
 createdAt: 2026-08-22T19:10:10.292Z
-updatedAt: 2026-08-22T21:26:04.213Z
+updatedAt: 2026-08-22T22:05:42.518Z
 ---
 
 # Replace tmux-agent-bar with Fleet
@@ -32,7 +32,7 @@ The migration is complete only when new Claude and Codex sessions report through
 
 - `Ctrl-f`, without prefix, continues to open Fleet in the existing 55% by 60% popup from normal local tmux mode and nested pass-through mode.
 - `prefix-f` toggles Fleet's native 34-column sidebar in the invoking window using `fleet sidebar --from '#{pane_id}'`.
-- Fleet's native second tmux status row displays all active agents and retains its click-to-switch, acknowledge, clear, and sidebar controls.
+- Fleet's native second tmux status row is an attention queue: it always shows the sidebar button and adds clickable agents only for permission, question, and ready/done states. Working and idle agents remain visible in the dashboard and sidebar instead of the status row.
 - Do not add Fleet's optional `prefix-F` popup because the direct `Ctrl-f` popup already owns that workflow.
 - Do not adopt Nick's `prefix-n` binding in this migration. Preserve tmux's current next-window behavior; `fleet next` remains available as a command and can earn a binding later.
 - Keep Fleet's window-list state rollup disabled. It replaces themed window formats and is not required for the initial adoption.
@@ -125,4 +125,14 @@ The migration is complete only when new Claude and Codex sessions report through
 
 ## Next honest step
 
-Implement the migration in the order above, stopping before the GitHub visibility change unless the Homebrew-backed Fleet cutover, fresh-agent checks, dotfiles commit/push, and live `dotty update` verification have all succeeded.
+Persist the approved dotfiles cutover on `main`, run `dotty update`, reload the live tmux configuration, and repeat the narrow live and fresh-agent checks. Reauthenticate Claude if its OAuth session remains expired. Only after both Claude and Codex work through Fleet and the pushed live cutover passes should the old runtime cache be removed and `jackokerman/tmux-agent-bar` receive its fresh preflight and private visibility change.
+
+## Agent handoff
+
+The user approved the Fleet cutover review packet and the recommended stale-hook correction. The tracked implementation now installs Fleet 0.22.2 through the personal Homebrew path, owns only reviewed Fleet/tmux/Claude/Codex configuration, keeps mutable Fleet state outside the repository, removes the tmux-agent-bar checkout/wrappers/tests, and documents the second row accurately as an attention queue rather than an all-agent monitor.
+
+Fresh live diagnosis confirmed Fleet's own Codex PreToolUse hook works; visible exit-127 failures come from generated legacy adapter entries that the approved dotty update will replace. A new one-time Dotty cleanup removes only the three exact retired indexed tmux server actions and preserves foreign actions in those slots. Its focused removal, dry-run, and ownership tests pass.
+
+Verification before persistence: Fleet doctor passes; the isolated tmux config has two rows, the exact Fleet statusline command, both direct Ctrl-f popup bindings, the pane-targeted prefix-f sidebar, and no retired runtime references; ./scripts/check --extended --quiet and git diff whitespace checks pass. The only repository advisory is the pre-existing docs/neovim-basics.md paragraph warning.
+
+The plan remains ready-to-implement because live activation, fresh Claude/Codex acceptance, old cache removal, and the GitHub privacy step remain. No follow-up was captured: the attention-row misunderstanding and existing-server cleanup gap were corrected directly in the plan, docs, implementation, and tests. The approved implementation and plan artifacts are included in the current dotfiles commit-and-push scope. Next: observe commit and push, run dotty update and live tmux checks, reauthenticate Claude if necessary, verify both fresh agents, then preflight and privatize jackokerman/tmux-agent-bar.

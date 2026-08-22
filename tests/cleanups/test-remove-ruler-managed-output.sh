@@ -5,7 +5,7 @@ PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 TARGET_SCRIPT="${PROJECT_ROOT}/.dotty/cleanups/2026-08-remove-ruler-managed-output/run.sh"
 
 # shellcheck source=/dev/null
-source "${PROJECT_ROOT}/tests/tmux-agent-status/testlib.sh"
+source "${PROJECT_ROOT}/tests/testlib.sh"
 
 run_removal_case() {
     local temp_dir=""

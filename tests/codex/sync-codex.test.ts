@@ -118,18 +118,11 @@ describe("sync-codex skills", () => {
 });
 
 describe("tracked Codex hooks", () => {
-  test("wire tmux status lifecycle events through the Codex adapter wrapper", () => {
+  test("wire Fleet's supported Codex lifecycle events through its stable plugin link", () => {
     const tracked = JSON.parse(readFileSync(hooksSource, "utf8")) as {
       hooks: Record<string, Array<{ hooks: Array<{ command?: string; type: string }> }>>;
     };
-    const expectedEvents = [
-      "SessionStart",
-      "UserPromptSubmit",
-      "PreToolUse",
-      "PostToolUse",
-      "PermissionRequest",
-      "Stop",
-    ];
+    const expectedEvents = ["PreToolUse", "Stop"];
 
     expect(Object.keys(tracked.hooks).sort()).toEqual([...expectedEvents].sort());
 
@@ -139,8 +132,8 @@ describe("tracked Codex hooks", () => {
           hooks: [
             {
               type: "command",
-              command: `~/.config/tmux/codex-agent-status-hook.sh ${eventName}`,
-              timeout: 5,
+              command: `bash ~/.local/share/fleet/plugin/hooks/codex/codex-hook.sh ${eventName}`,
+              timeout: 5000,
             },
           ],
         },
