@@ -34,8 +34,6 @@ brew "git-delta"                    # syntax-highlighted git diff pager
 brew "glow"                         # markdown renderer for the terminal
 brew "jq"                           # parse and work with JSON
 brew "neovim"                       # extensible modal editor
-brew "node-build"                   # nodenv install definitions
-brew "nodenv"                       # Node.js version manager
 brew "ripgrep"                      # fast recursive search tool (`rg`)
 brew "sesh"                         # smart tmux session manager
 brew "television"                   # rich terminal fuzzy finder (`tv`)
