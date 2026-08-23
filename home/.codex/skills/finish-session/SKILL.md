@@ -17,8 +17,10 @@ Close the session without duplicating the workflows that own configuration, plan
 3. Apply the generalization gate to each possible learning:
    - derive the narrow rule that would prevent the class of failure;
    - search existing instructions, skills, and config for the rule;
-   - skip an isolated incident or a rule that is already clear; this is an adherence failure, not a knowledge gap;
-   - do not use existing guidance as the sole reason to skip a fix when the user reports recurrence; strengthen the narrowest owner, or explain why added steering would cost more than the likely savings;
+   - do not treat the existence of a rule as proof that it is salient or specific enough;
+   - when an invoked workflow skill directly governed a materially wasteful action, inspect whether its decision boundary was ambiguous or buried; tighten the narrowest owner when a bounded replacement can make the correct path explicit;
+   - treat the user's report that a problem recurs as sufficient recurrence evidence; do not require historical transcript lookup or dismiss it as adherence failure;
+   - skip a low-cost isolated mistake only when the exact decision boundary is already prominent and no wording or deterministic helper would materially improve compliance;
    - update an existing owner before proposing a new skill.
 4. Use `codex-config-coach` for any steering, skill, plugin, hook, MCP, or context-cost change. Apply clear bounded fixes now and complete the owning repository workflow. Capture a follow-up only when the change is larger, risky, ambiguous, or blocked.
 5. Reconcile durable work tracking:

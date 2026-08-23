@@ -19,7 +19,11 @@ Use `GODSPEED_API_TOKEN` only as an explicit automation or debugging override. M
 
 Treat GTD lists as state, labels as categories or areas, smart-list order as category priority, and task/subtask structure as projects. Resolve the one active native Inbox by `list_type: "inbox"`. Resolve active top-level Next Actions and Someday lists by canonicalized display name; resolve optional Today and category smart lists at the top level. Discover IDs at runtime and ignore archived name collisions.
 
-Treat an explicit request to capture one task in a known category or area as an end-to-end capture. Discover the existing label and matching smart list, inspect its current `Next Actions` and `Someday` order, infer the task state and relative priority from the supplied context, create it directly in that state, and place it in the smart list. Report the chosen state, position, and short rationale. Use `inbox` only when the category, state, or placement remains materially ambiguous.
+## Task Capture
+
+- When the user supplies the GTD state and does not request a category or relative placement, run `task create` directly and verify with `task get`. Do not call `lists`, `labels`, or `snapshot`; those broad reads cannot change the result.
+- For a known category or area, discover its label and matching smart list, inspect only its relevant Next Actions and Someday roots, infer state and relative priority from the supplied context, then create and position the task. Report the chosen state, position, and short rationale.
+- Use `inbox` only when the category, state, or placement remains materially ambiguous.
 
 ## Priority Lookups
 
