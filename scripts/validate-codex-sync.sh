@@ -4,7 +4,6 @@ set -euo pipefail
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-SCRIPT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd -P)"
 SYNC_SCRIPT="$SCRIPT_DIR/ts/sync-codex.ts"
 FRONTEND_WORKFLOW_SCRIPT="$SCRIPT_DIR/ts/validate-codex-frontend-workflow.ts"
 REGISTRY_PATH="${HOME}/.dotty/registry"

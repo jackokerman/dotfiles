@@ -13,8 +13,9 @@ usage() {
     cat <<'EOF'
 Usage: scripts/check-prose.sh [--advisory|--strict] [path ...]
 
-Runs Markdown prose-density checks. Advisory mode is the default and never
-fails the command.
+Runs Markdown prose-density checks. Advisory mode is the default and reports
+findings without failing. Strict mode exits nonzero when it finds a long
+paragraph.
 EOF
 }
 
@@ -52,33 +53,42 @@ default_paths() {
 
 run_density_summary() {
     local path
+    local strict=0
+
+    if [[ "$STRICT" == "true" ]]; then
+        strict=1
+    fi
 
     log "Checking prose density"
     for path in "${PROSE_PATHS[@]}"; do
         [[ -f "$path" ]] || continue
-        awk '
-            BEGIN { paragraph = ""; words = 0; start = 0 }
-            /^[[:space:]]*$/ {
+        awk -v strict="$strict" '
+            function report_long_paragraph() {
                 if (words > 120) {
                     printf "%s:%d: long paragraph (%d words); consider splitting or moving detail into docs.\n", FILENAME, start, words
+                    found = 1
                 }
-                paragraph = ""; words = 0; start = 0
+                words = 0
+                start = 0
+            }
+            BEGIN { words = 0; start = 0 }
+            /^[[:space:]]*$/ {
+                report_long_paragraph()
                 next
             }
             /^```/ {
-                if (in_code == 0 && words > 120) {
-                    printf "%s:%d: long paragraph (%d words); consider splitting or moving detail into docs.\n", FILENAME, start, words
+                if (in_code == 0) {
+                    report_long_paragraph()
+                } else {
+                    words = 0
+                    start = 0
                 }
                 in_code = !in_code
-                paragraph = ""; words = 0; start = 0
                 next
             }
             in_code == 1 { next }
             /^#/ || /^[[:space:]]*[-*] / || /^[[:space:]]*[0-9]+[.][[:space:]]/ {
-                if (words > 120) {
-                    printf "%s:%d: long paragraph (%d words); consider splitting or moving detail into docs.\n", FILENAME, start, words
-                }
-                paragraph = ""; words = 0; start = 0
+                report_long_paragraph()
             }
             {
                 if (start == 0) {
@@ -87,9 +97,8 @@ run_density_summary() {
                 words += split($0, parts, /[[:space:]]+/)
             }
             END {
-                if (words > 120) {
-                    printf "%s:%d: long paragraph (%d words); consider splitting or moving detail into docs.\n", FILENAME, start, words
-                }
+                report_long_paragraph()
+                exit strict && found
             }
         ' "$path"
     done
