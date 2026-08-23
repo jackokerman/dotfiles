@@ -2,6 +2,8 @@
 
 Use `which-key` for the configured mappings that are active in Neovim. In the tables below, `<leader>` means `Space`. Press `Space` and pause to see leader mappings, or pause after a prefix such as `d`, `c`, `y`, `<C-w>`, `g`, or `z` to see the available next keys.
 
+For the module layout, plugin ownership, and maintenance conventions behind these mappings, see the [Neovim config README](../home/.config/nvim/README.md).
+
 For broader learning and reference:
 
 - Run `:Tutor` for the interactive tutorial.

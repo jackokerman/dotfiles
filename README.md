@@ -140,7 +140,7 @@ Common places to edit:
 | Television fuzzy finder | `home/.config/television/`. |
 | SSH hosts and identities | Local `~/.ssh/config`. |
 | Keyboard remaps | `scripts/ts/karabiner-config.ts`. |
-| Neovim | `home/.config/nvim/`; see `home/.config/nvim/README.md` for the module and plugin ownership map. |
+| Neovim | `home/.config/nvim/`; see the [config README](home/.config/nvim/README.md) for module and plugin ownership and [Vim basics](docs/neovim-basics.md) for everyday use. |
 | tmux and Fleet integration | `home/.config/tmux/` and `home/.config/fleet/theme.toml`. |
 | sesh defaults | `home/.config/sesh/sesh.toml`. |
 | Raycast script commands | `home/.raycast-scripts/`. |

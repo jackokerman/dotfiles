@@ -2,6 +2,8 @@
 
 This config uses Neovim's built-in `vim.pack` plugin manager with a small feature-oriented module layout. Keep plugin declarations in `lua/config/packages.lua`, then configure each plugin in the module that owns the editor capability.
 
+For configured keymaps and everyday workflows, see [Vim basics in Neovim](../../../docs/neovim-basics.md).
+
 ## Layout
 
 | Path | Owns |
