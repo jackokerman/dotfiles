@@ -6,9 +6,9 @@ This directory defines the tmux keybindings, Nightfly theme, and Fleet agent das
 
 - `prefix` + `F` opens the Fleet dashboard in a 55% by 60% popup, matching the sesh popup dimensions.
 - `prefix` + `f` runs `fleet sidebar --from '#{pane_id}'`, so Fleet toggles one 34-column sidebar in the invoking window.
+- `prefix` + `n` runs `fleet next`, jumping to the highest-priority waiting agent and cycling through waiting agents on repeated presses. Fleet orders permission prompts before questions, then completed agents ready for review.
 - `?` inside Fleet shows its dashboard keybindings.
 - The second status row always shows the sidebar button. It adds agents only when they need permission, have a question, or are ready for review; working and idle agents remain visible in the dashboard and sidebar.
-- `prefix` + `n` keeps tmux's normal next-window behavior instead of running `fleet next`.
 
 ## Configuration ownership
 
@@ -26,6 +26,7 @@ tmux -L fleet-check show-options -gv status
 tmux -L fleet-check show-options -gv 'status-format[1]'
 tmux -L fleet-check list-keys -T prefix | rg 'fleet sidebar'
 tmux -L fleet-check list-keys -T prefix | rg 'F.*display-popup.*fleet'
+tmux -L fleet-check list-keys -T prefix | rg 'n.*fleet next'
 tmux -L fleet-check kill-server
 ```
 
