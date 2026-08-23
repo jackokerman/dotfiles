@@ -28,6 +28,10 @@ This config uses Neovim's built-in `vim.pack` plugin manager with a small featur
 | `conform.nvim` | `lua/config/packages.lua` | `lua/config/format.lua` |
 | `render-markdown.nvim` | `lua/config/packages.lua` | `lua/config/markdown.lua` |
 
+## Markdown rendering theme
+
+The Markdown renderer adapts Tokyo Night's semantic integration to the Nightfly palette instead of copying its hex colors. Heading levels use Nightfly blue, tan, green, emerald, violet, and purple, with each accent blended 10% over the editor background. The remaining explicit mappings follow the same model: orange for bullets, rules, and table rows; watermelon for table headings; black-blue for code blocks; and the normal Markdown raw style for inline code. The theme overrides reapply after loading Nightfly.
+
 ## Conventions
 
 - Add new plugins to `lua/config/packages.lua`.
