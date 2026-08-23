@@ -31,7 +31,6 @@ This repo is the public base layer for generic personal dotfiles and reusable Co
 - Read `home/.config/tmux/README.md` before making tmux agent-status changes.
 - Fleet is installed from the `nicknisi/formulae/fleet` Homebrew entry. Keep the executable and native agent/status behavior upstream-owned; this repo owns only reviewed tmux bindings, the Nightfly palette, durable Claude/Codex enablement, and non-interactive installer orchestration.
 - Keep Nightfly in charge of the first tmux status row and Fleet in charge of the native second row through `run-shell "fleet statusline --inject" # fleet-managed` after the theme loads.
-- Preserve the `prefix` + `F` Fleet popup, `prefix` + `f` sidebar, and `prefix` + `n` next-waiting-agent bindings. Do not add Fleet's optional window-state rollup without a separate workflow decision.
 - Keep the tracked Codex hook surface limited to Fleet's supported `PreToolUse` and `Stop` hooks through `~/.local/share/fleet/plugin`. Preserve Claude's unrelated commit-validation hook and the tracked Fleet plugin enablement.
 - Test tmux config changes on an explicit isolated socket. Never kill the default tmux server during diagnostics.
 - Do not change tmux agent-status behavior without running `./scripts/check --extended --quiet`.
