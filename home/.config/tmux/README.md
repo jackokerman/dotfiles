@@ -4,6 +4,8 @@ This directory defines the tmux keybindings, Nightfly theme, and Fleet agent das
 
 ## Fleet workflow
 
+In this config, `prefix` means press `Ctrl+A`, release it, then press the binding key.
+
 - `prefix` + `F` opens the Fleet dashboard in a 55% by 60% popup, matching the sesh popup dimensions.
 - `prefix` + `f` runs `fleet sidebar --from '#{pane_id}'`, so Fleet toggles one 34-column sidebar in the invoking window.
 - `prefix` + `n` runs `fleet next`, jumping to the highest-priority waiting agent and cycling through waiting agents on repeated presses. Fleet orders permission prompts before questions, then completed agents ready for review.
