@@ -4,11 +4,10 @@ This directory defines the tmux keybindings, Nightfly theme, and Fleet agent das
 
 ## Fleet workflow
 
-In this config, `prefix` means press `Ctrl+A`, release it, then press the binding key.
-
-- `prefix` + `F` opens the Fleet dashboard in a 55% by 60% popup, matching the sesh popup dimensions.
-- `prefix` + `f` runs `fleet sidebar --from '#{pane_id}'`, so Fleet toggles one 34-column sidebar in the invoking window.
-- `prefix` + `n` runs `fleet next`, jumping to the highest-priority waiting agent and cycling through waiting agents on repeated presses. Fleet orders permission prompts before questions, then completed agents ready for review.
+- `Ctrl+F` opens the Fleet dashboard in a 55% by 60% popup, matching the sesh popup dimensions.
+- `Ctrl+S` runs `fleet sidebar --from '#{pane_id}'`, so Fleet toggles one 34-column sidebar in the invoking window.
+- `Ctrl+N` runs `fleet next`, jumping to the highest-priority waiting agent and cycling through waiting agents on repeated presses. Fleet orders permission prompts before questions, then completed agents ready for review.
+- All three bindings work without the tmux prefix in both normal and nested pass-through modes.
 - `?` inside Fleet shows its dashboard keybindings.
 - The second status row always shows the sidebar button. It adds agents only when they need permission, have a question, or are ready for review; working and idle agents remain visible in the dashboard and sidebar.
 
@@ -26,9 +25,10 @@ Use an isolated tmux socket for config checks:
 tmux -L fleet-check -f ~/.config/tmux/tmux.conf new-session -d
 tmux -L fleet-check show-options -gv status
 tmux -L fleet-check show-options -gv 'status-format[1]'
-tmux -L fleet-check list-keys -T prefix | rg 'fleet sidebar'
-tmux -L fleet-check list-keys -T prefix | rg 'F.*display-popup.*fleet'
-tmux -L fleet-check list-keys -T prefix | rg 'n.*fleet next'
+tmux -L fleet-check list-keys -T root | rg 'C-f.*display-popup.*fleet'
+tmux -L fleet-check list-keys -T root | rg 'C-s.*fleet sidebar'
+tmux -L fleet-check list-keys -T root | rg 'C-n.*fleet next'
+tmux -L fleet-check list-keys -T off | rg 'C-[fsn].*fleet'
 tmux -L fleet-check kill-server
 ```
 
