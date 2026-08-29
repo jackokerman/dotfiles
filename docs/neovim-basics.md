@@ -12,7 +12,7 @@ For broader learning and reference:
 
 ## Files, Explorer, and windows
 
-`<C-p>` means hold `Control` and press `p`. The Explorer is the file-tree sidebar on the left.
+`<C-p>` means hold `Control` and press `p`. The Explorer is the file-tree sidebar on the left. Snacks gives the Explorer its own local keymaps, so some global mappings such as `<C-p>` have a different action while it is focused.
 
 ### Find files
 
@@ -28,6 +28,7 @@ For broader learning and reference:
 
 | Keys | Action |
 | --- | --- |
+| `/` in the Explorer | Focus the search input, then type to filter the tree. |
 | `<leader>e` | Toggle the Explorer. |
 | `j` / `k` in the Explorer | Move down or up the file tree. |
 | `Enter` / `l` in the Explorer | Open the selected file or expand the selected directory. |
@@ -38,7 +39,7 @@ For broader learning and reference:
 
 | Keys | Action |
 | --- | --- |
-| `<C-w>h` / `<C-w>l` | Move into the Explorer on the left or back to the editor on the right. |
+| `<C-w>h` / `<C-w>j` / `<C-w>k` / `<C-w>l` | Move to the window on the left, below, above, or right. Press `Ctrl+W`, release it, then press the direction. |
 | `<C-w>w` | Cycle through open windows when their layout is unfamiliar. |
 | `<C-w>c` | Close the current window. |
 | `:only` | Close every window except the current one. |
