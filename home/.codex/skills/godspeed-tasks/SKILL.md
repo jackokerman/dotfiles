@@ -1,23 +1,19 @@
 ---
 name: godspeed-tasks
-description: Manage Godspeed tasks through the flat GTD workflow. Use when Codex needs list or label discovery, priority or active-task summaries, task capture or completion, labeling, smart lists, or native Inbox triage through godspeed-gtd.
+description: Manage Godspeed tasks with flat GTD. Use when capturing, finding, prioritizing, labeling, completing, or triaging tasks, lists, smart lists, or the native Inbox.
 ---
 
 # Godspeed Tasks
 
 ## Workflow
 
-Use `godspeed-gtd` for the opinionated workflow and `godspeed` for generic API diagnostics or exact resource operations. Run `godspeed-gtd --help` for command syntax.
+Use `godspeed-gtd` for GTD workflows and `godspeed` for exact resource operations or API diagnostics. Run `godspeed-gtd --help` for syntax. Invoke the CLI directly; it reads the shared per-machine credential file.
 
-Invoke the installed CLI directly; normal authentication comes from the shared per-machine credential file:
-
-```bash
-godspeed-gtd lists
-```
-
-Use `GODSPEED_API_TOKEN` only as an explicit automation or debugging override. Missing credentials should point a human to `godspeed auth login`; ordinary agent commands must not start an interactive prompt or source shell startup files.
+Use `GODSPEED_API_TOKEN` only as an explicit automation or debugging override. If credentials are missing, direct the user to `godspeed auth login`; never start an interactive prompt or source shell startup files.
 
 Treat GTD lists as state, labels as categories or areas, smart-list order as category priority, and task/subtask structure as projects. Resolve the one active native Inbox by `list_type: "inbox"`. Resolve active top-level Next Actions and Someday lists by canonicalized display name; resolve optional Today and category smart lists at the top level. Discover IDs at runtime and ignore archived name collisions.
+
+For an existing-task lookup, list tasks from the active Next Actions and Someday source lists and filter titles and notes locally. Do not use `snapshot`; it is broader and can stall.
 
 ## Task Capture
 
