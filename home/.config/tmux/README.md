@@ -2,6 +2,12 @@
 
 This directory defines the tmux keybindings, Nightfly theme, and Fleet agent dashboard integration.
 
+## Status bar
+
+- The first row keeps the full tmux session name and numbered window name because those identify the workspace and distinguish programs such as an editor and Fleet.
+- The right side omits the volatile pane title. It shows `pane N/M` only when the current window is split, followed by a compact clock.
+- The second row is Fleet's attention surface. It always shows the sidebar button and adds a named agent only when it needs permission, has a question, or is ready for review.
+
 ## Fleet workflow
 
 - `Ctrl+F` opens the Fleet dashboard in a 55% by 60% popup, matching the sesh popup dimensions.
@@ -9,7 +15,7 @@ This directory defines the tmux keybindings, Nightfly theme, and Fleet agent das
 - `Ctrl+N` runs `fleet next`, jumping to the highest-priority waiting agent and cycling through waiting agents on repeated presses. Fleet orders permission prompts before questions, then completed agents ready for review.
 - All three bindings work without the tmux prefix in both normal and nested pass-through modes.
 - `?` inside Fleet shows its dashboard keybindings.
-- The second status row always shows the sidebar button. It adds agents only when they need permission, have a question, or are ready for review; working and idle agents remain visible in the dashboard and sidebar.
+- Working and idle agents remain visible in the Fleet dashboard and sidebar without occupying the status bar.
 
 ## Configuration ownership
 

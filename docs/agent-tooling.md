@@ -11,7 +11,7 @@
 
 Fleet is the agent dashboard for tmux. Homebrew owns the executable through the `nicknisi/formulae/fleet` entry, while this repo owns the reviewed integration:
 
-- `home/.config/tmux/tmux.conf` binds `Ctrl+F` to the 55% by 60% dashboard popup, `Ctrl+S` to the native 34-column sidebar, and `Ctrl+N` to the next waiting agent in Fleet's priority order. These prefix-free bindings work in both normal and nested pass-through modes. The config injects Fleet's attention-only second status row after Nightfly loads. The row always shows its sidebar button and adds agents only when they need permission, have a question, or are ready for review.
+- `home/.config/tmux/tmux.conf` binds `Ctrl+F` to the 55% by 60% dashboard popup, `Ctrl+S` to the native 34-column sidebar, and `Ctrl+N` to the next waiting agent in Fleet's priority order. These prefix-free bindings work in both normal and nested pass-through modes. Nightfly's first row shows the full tmux session, numbered windows, split-pane position when relevant, and a compact clock without the volatile pane title. Fleet's injected second row always shows its sidebar button and adds named agents only when they need permission, have a question, or are ready for review.
 - `home/.config/fleet/theme.toml` provides the Nightfly agent-state palette.
 - `.dotty/run.sh` runs `fleet install` and `fleet install codex` non-interactively when Fleet and the corresponding agent CLI are available.
 - `home/.claude/settings.json` preserves Fleet's enabled plugin entry and the unrelated conventional-commit validation hook.

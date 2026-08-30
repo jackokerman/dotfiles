@@ -17,3 +17,6 @@ setw -g window-status-format " #I  #W #[fg=#ff5874]#{?window_flags,#{window_flag
 
 # Set status bar components and style.
 set -g status-left "#[fg=#f78c6c]⠶ #[fg=#82aaff]#S "
+set -g status-left-length 30
+set -g status-right "#{?#{>:#{window_panes},1},pane #P/#{window_panes} · ,}%H:%M"
+set -g status-right-length 24
