@@ -13,7 +13,7 @@ Use `GODSPEED_API_TOKEN` only as an explicit automation or debugging override. I
 
 Treat GTD lists as state, labels as categories or areas, smart-list order as category priority, and task/subtask structure as projects. Resolve the one active native Inbox by `list_type: "inbox"`. Resolve active top-level Next Actions and Someday lists by canonicalized display name; resolve optional Today and category smart lists at the top level. Discover IDs at runtime and ignore archived name collisions.
 
-For an existing-task lookup, list tasks from the active Next Actions and Someday source lists and filter titles and notes locally. Do not use `snapshot`; it is broader and can stall.
+For task lookup, capture, reconciliation, or verification, use bounded commands or locally filter exact source-list queries. Broad snapshots are intentionally unsupported.
 
 ## Task Capture
 
