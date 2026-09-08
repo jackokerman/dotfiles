@@ -5,6 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_ROOT="${DOTFILES_ROOT:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 PROMPT_SOURCE="${HANDY_PROMPT_SOURCE:-${DOTFILES_ROOT}/home/.config/handy/prompts/improve-transcriptions.txt}"
+GLOSSARY_SOURCE="${HANDY_GLOSSARY_SOURCE:-${DOTFILES_ROOT}/home/.config/handy/prompts/contextual-glossary.tsv}"
 SETTINGS_PATH="${HANDY_SETTINGS_PATH:-${HOME}/Library/Application Support/com.pais.handy/settings_store.json}"
 MANAGED_PROMPT_ID="dotfiles_improve_transcriptions"
 MANAGED_PROMPT_NAME="Improve Transcriptions (Dotfiles)"
@@ -134,7 +135,7 @@ sync_handy_settings() {
 }
 
 main() {
-    local prompt_contents="" status=0
+    local glossary_contents="" prompt_contents="" prompt_template="" status=0
 
     if ! command -v jq >/dev/null 2>&1; then
         log "Skipping Handy sync because jq is not available"
@@ -146,12 +147,25 @@ main() {
         return 1
     fi
 
+    if [[ ! -f "${GLOSSARY_SOURCE}" ]]; then
+        warn "Tracked Handy glossary not found at ${GLOSSARY_SOURCE}"
+        return 1
+    fi
+
     if [[ ! -f "${SETTINGS_PATH}" ]]; then
         log "Skipping Handy sync because settings file does not exist at ${SETTINGS_PATH}"
         return 0
     fi
 
-    prompt_contents="$(<"${PROMPT_SOURCE}")"
+    prompt_template="$(<"${PROMPT_SOURCE}")"
+    glossary_contents="$(<"${GLOSSARY_SOURCE}")"
+
+    if [[ "${prompt_template}" != *'{{GLOSSARY}}'* ]]; then
+        warn "Tracked Handy prompt is missing the {{GLOSSARY}} placeholder"
+        return 1
+    fi
+
+    prompt_contents="${prompt_template//\{\{GLOSSARY\}\}/${glossary_contents}}"
     tmp_path="$(mktemp "${TMPDIR:-/tmp}/handy-settings.XXXXXX")"
     trap 'rm -f "${tmp_path:-}"' EXIT
 
