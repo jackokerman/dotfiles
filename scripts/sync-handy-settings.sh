@@ -9,6 +9,8 @@ GLOSSARY_SOURCE="${HANDY_GLOSSARY_SOURCE:-${DOTFILES_ROOT}/home/.config/handy/pr
 SETTINGS_PATH="${HANDY_SETTINGS_PATH:-${HOME}/Library/Application Support/com.pais.handy/settings_store.json}"
 MANAGED_PROMPT_ID="dotfiles_improve_transcriptions"
 MANAGED_PROMPT_NAME="Improve Transcriptions (Dotfiles)"
+TRANSCRIBE_BINDING="option+shift+space"
+POST_PROCESS_BINDING="option+space"
 SKIP_RUNNING_CHECK="${HANDY_SKIP_RUNNING_CHECK:-0}"
 HANDY_PROCESS_NAME="${HANDY_PROCESS_NAME:-handy}"
 HANDY_BUNDLE_ID="${HANDY_BUNDLE_ID:-com.pais.handy}"
@@ -31,7 +33,9 @@ build_synced_settings() {
     jq \
         --arg id "${MANAGED_PROMPT_ID}" \
         --arg name "${MANAGED_PROMPT_NAME}" \
-        --arg prompt "${prompt_contents}" '
+        --arg prompt "${prompt_contents}" \
+        --arg transcribe_binding "${TRANSCRIBE_BINDING}" \
+        --arg post_process_binding "${POST_PROCESS_BINDING}" '
         if (.settings | type) != "object" then
             error("settings_store.json is missing the .settings object")
         else
@@ -46,6 +50,8 @@ build_synced_settings() {
                     end
                 )
                 | .post_process_selected_prompt_id = $id
+                | .bindings.transcribe.current_binding = $transcribe_binding
+                | .bindings.transcribe_with_post_process.current_binding = $post_process_binding
             )
         end
     ' "${SETTINGS_PATH}" >"${output_path}"
