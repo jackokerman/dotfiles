@@ -64,3 +64,4 @@ Important constraints:
 
 Transcript:
 ${output}
+/no_think

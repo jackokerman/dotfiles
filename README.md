@@ -54,7 +54,7 @@ This repo does not track `~/.ssh/`. Keep custom hosts, identities, or non-defaul
 dotty run macos-setup
 ```
 
-This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config generation, Handy settings, and font installation. Handy's managed post-processing prompt and contextual correction glossary live under `home/.config/handy/prompts/`; invoke `$handy-glossary` to view or manage corrections without editing the TSV directly. If you use MonoLisa, download the Complete ZIP to `~/Downloads/`; Symbols Nerd Font is downloaded automatically.
+This applies Touch ID for `sudo`, tracked macOS defaults, Karabiner config generation, Handy settings, and font installation. Handy's managed post-processing prompt and contextual correction glossary live under `home/.config/handy/prompts/`; invoke `$handy-glossary` to view or manage corrections without editing the TSV directly. The prompt ends with Qwen's `/no_think` directive to keep local post-processing responsive; remove it when switching to a provider that does not support that directive. If you use MonoLisa, download the Complete ZIP to `~/Downloads/`; Symbols Nerd Font is downloaded automatically.
 
 ### 4. Finish one-time GUI setup
 
