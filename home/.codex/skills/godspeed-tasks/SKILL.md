@@ -34,7 +34,7 @@ For category-priority requests, stay in the current repository scope but read li
 - Let the CLI manage request throttling and transient retries. Do not add sleeps, retry loops, or batch workarounds around authenticated commands.
 - Discover labels at runtime. Create a missing label only when explicitly requested. Keep personal category names, matching rules, and smart-list definitions out of tracked config.
 - Use `godspeed-gtd task ensure-children` to create or reconcile an ordered child set beneath an existing parent. Give each child a stable key unique within that parent, and retry the same command after interruption; do not orchestrate separate task creation and reparenting loops.
-- Use `godspeed-gtd task reparent` for hierarchy corrections so the parent list and adjacent source-order boundary are derived atomically; do not combine manual cross-list moves with smart-list-visible neighbors.
+- Use `godspeed-gtd task reparent` for hierarchy corrections so the parent list and adjacent source-order boundary are derived atomically; do not combine manual cross-list moves with smart-list-visible neighbors. Notes about ownership or sequencing do not establish hierarchy; verify the resulting indentation in the source list.
 - Treat `/lists`, source-list task records, and the app as the reliable smart-list verification surfaces; task queries by smart-list ID can return empty results despite valid membership.
 - Extend `godspeed-js` and its tests when a workflow is missing. Prefer tracked CLI/client probes over ad hoc scripts or desktop-bundle inspection.
 
