@@ -1,0 +1,4 @@
+interface:
+  display_name: "Handy Glossary"
+  short_description: "View and manage contextual dictation corrections."
+  default_prompt: "Use $handy-glossary to show my current contextual dictation corrections."
