@@ -2,7 +2,6 @@ model = "gpt-5.6-sol"
 personality = "pragmatic"
 sandbox_mode = "danger-full-access"
 approval_policy = "never"
-commit_attribution = ""
 model_reasoning_effort = "medium"
 
 [features]
